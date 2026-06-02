@@ -1136,6 +1136,7 @@ class KekuranganBayarController extends Controller
       'versi' => $versi,
       'detailKurang' => $detailKurang,
       'detailLebih'  => $detailLebih,
+      'detailSelesai' => $detailSelesai,
       'rekapKurang'  => $rekapKurang,
       'rekapLebih'   => $rekapLebih,
       'bankList' => DB::table('b_bank')->select('nama_bank')->whereNotNull('nama_bank')->where('nama_bank','!=','')->distinct()->orderBy('nama_bank')->pluck('nama_bank'),

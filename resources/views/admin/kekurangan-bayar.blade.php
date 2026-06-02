@@ -112,7 +112,7 @@
                 </li>
                 <li class="nav-item" role="presentation">
                     <button class="nav-link" id="tab-selesai-btn" data-bs-toggle="tab" data-bs-target="#tab-data-selesai" type="button" role="tab" aria-selected="false">
-                        Data Selesai (Lunas)
+                        Data Selesai
                     </button>
                 </li>
                 <li class="nav-item" role="presentation">
@@ -452,7 +452,7 @@
                 <div class="tab-pane fade" id="tab-data-selesai" role="tabpanel" tabindex="0">
                     <div class="card mb-4">
                         <div class="card-header d-flex justify-content-between align-items-center">
-                            <h5 class="mb-0">Data Selesai (Lunas)</h5>
+                            <h5 class="mb-0">Data Selesai</h5>
                             <div class="d-flex align-items-center gap-2">
                                 <form action="" method="GET" class="m-0 d-flex gap-2">
                                     @if(request('lebih_page')) <input type="hidden" name="lebih_page" value="{{ request('lebih_page') }}"> @endif
