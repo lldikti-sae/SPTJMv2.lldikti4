@@ -900,7 +900,10 @@ class KekuranganBayarController extends Controller
     $searchKurang = request('search_kurang');
     $queryKurangBase = (clone $baseQuery)->whereRaw('(k2.bersih + 0) < 0');
     if (!empty($fullyPaidNidns)) {
-        $queryKurangBase->whereNotIn('k.NIDN', $fullyPaidNidns);
+        $queryKurangBase->where(function ($q) use ($fullyPaidNidns) {
+            $q->whereNotIn('k.NIDN', $fullyPaidNidns)
+              ->whereNotIn('k.NUPTK', $fullyPaidNidns);
+        });
     }
     if ($searchKurang) {
         $queryKurangBase->where(function($q) use ($searchKurang) {
@@ -914,7 +917,10 @@ class KekuranganBayarController extends Controller
     $searchLebih = request('search_lebih');
     $queryLebihBase = (clone $baseQuery)->whereRaw('(k2.bersih + 0) > 0');
     if (!empty($fullyPaidNidns)) {
-        $queryLebihBase->whereNotIn('k.NIDN', $fullyPaidNidns);
+        $queryLebihBase->where(function ($q) use ($fullyPaidNidns) {
+            $q->whereNotIn('k.NIDN', $fullyPaidNidns)
+              ->whereNotIn('k.NUPTK', $fullyPaidNidns);
+        });
     }
     if ($searchLebih) {
         $queryLebihBase->where(function($q) use ($searchLebih) {
@@ -930,7 +936,10 @@ class KekuranganBayarController extends Controller
     if (empty($fullyPaidNidns)) {
         $querySelesaiBase->whereRaw('1 = 0'); // Force empty if no fully paid
     } else {
-        $querySelesaiBase->whereIn('k.NIDN', $fullyPaidNidns);
+        $querySelesaiBase->where(function ($q) use ($fullyPaidNidns) {
+            $q->whereIn('k.NIDN', $fullyPaidNidns)
+              ->orWhereIn('k.NUPTK', $fullyPaidNidns);
+        });
     }
     if ($searchSelesai) {
         $querySelesaiBase->where(function($q) use ($searchSelesai) {
@@ -975,7 +984,8 @@ class KekuranganBayarController extends Controller
           
           $tarif = (float) (($tarifMap[$jenisKey][$gol] ?? 0) ?: 0);
 
-          $paidNet = $paidKotorByNidnMonth[$row->NIDN][$i] ?? 0;
+          $ident = !empty($row->NIDN) ? $row->NIDN : ($row->NUPTK ?? '');
+          $paidNet = (!empty($ident) && isset($paidKotorByNidnMonth[$ident][$i])) ? $paidKotorByNidnMonth[$ident][$i] : 0;
           if ($paidNet > 0) {
               // paidNet is the actual cash returned (net). We need to convert it to gross to apply to aktKotor
               $paidGross = $paidNet;
