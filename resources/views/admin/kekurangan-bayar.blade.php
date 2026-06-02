@@ -151,7 +151,7 @@
                                     <thead>
                                         <tr>
                                             <th rowspan="3" class="text-center align-middle">No</th>
-                                            <th rowspan="3" class="text-center align-middle">NIDN</th>
+                                            <th rowspan="3" class="text-center align-middle">NIDN / NUPTK</th>
                                             <th rowspan="3" class="text-center align-middle">Nama</th>
                                             <th rowspan="3" class="text-center align-middle">Jenis</th>
                                             <th rowspan="3" class="text-center align-middle">Jabatan</th>
@@ -201,7 +201,7 @@
                                         @endphp
                                         <tr>
                                             <td>{{ $loop->iteration }}</td>
-                                            <td>{{ $row->NIDN }}</td>
+                                            <td>{{ !empty($row->NIDN) ? $row->NIDN : ($row->NUPTK ?? '-') }}</td>
                                             <td>{{ $row->Nama }}</td>
                                             <td>{{ $row->Jenis }}</td>
                                             <td>{{ $row->Jabatan12 }}</td>
@@ -311,7 +311,7 @@
                                     <thead>
                                         <tr>
                                             <th rowspan="3" class="text-center align-middle">No</th>
-                                            <th rowspan="3" class="text-center align-middle">NIDN</th>
+                                            <th rowspan="3" class="text-center align-middle">NIDN / NUPTK</th>
                                             <th rowspan="3" class="text-center align-middle">Nama</th>
                                             <th rowspan="3" class="text-center align-middle">Jenis</th>
                                             <th rowspan="3" class="text-center align-middle">Jabatan</th>
@@ -361,7 +361,7 @@
                                         @endphp
                                         <tr>
                                             <td>{{ $loop->iteration }}</td>
-                                            <td>{{ $row->NIDN }}</td>
+                                            <td>{{ !empty($row->NIDN) ? $row->NIDN : ($row->NUPTK ?? '-') }}</td>
                                             <td>{{ $row->Nama }}</td>
                                             <td>{{ $row->Jenis }}</td>
                                             <td>{{ $row->Jabatan12 }}</td>
@@ -468,7 +468,7 @@
                                     <thead>
                                         <tr>
                                             <th rowspan="3" class="text-center align-middle">No</th>
-                                            <th rowspan="3" class="text-center align-middle">NIDN</th>
+                                            <th rowspan="3" class="text-center align-middle">NIDN / NUPTK</th>
                                             <th rowspan="3" class="text-center align-middle">Nama</th>
                                             <th rowspan="3" class="text-center align-middle">Jenis</th>
                                             <th rowspan="3" class="text-center align-middle">Jabatan</th>
@@ -518,7 +518,7 @@
                                         @endphp
                                         <tr>
                                             <td>{{ $loop->iteration }}</td>
-                                            <td>{{ $row->NIDN }}</td>
+                                            <td>{{ !empty($row->NIDN) ? $row->NIDN : ($row->NUPTK ?? '-') }}</td>
                                             <td>{{ $row->Nama }}</td>
                                             <td>{{ $row->Jenis }}</td>
                                             <td>{{ $row->Jabatan12 }}</td>
@@ -1711,6 +1711,7 @@
                                         },
                                         body: JSON.stringify({
                                             id: id,
+                                            nidn: nidn,
                                             nominal: nominal,
                                             uraian: uraian,
                                             nomor: nomor,

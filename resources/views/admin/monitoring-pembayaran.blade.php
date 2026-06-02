@@ -88,7 +88,7 @@ $months = [
   <div class="row mb-2 mx-2">
     <label class="col-sm-2 col-form-label py-1" style="font-size:13px;font-weight:600;">NIDN - Nama</label>
     <div class="col-sm-7">
-      <input id="hdr-nidn" type="text" class="form-control" readonly style="background:#eceef1;font-size:14px;font-weight:600;" value="{{ $transaksi->NIDN }} - {{ $transaksi->Nama }}">
+      <input id="hdr-nidn" type="text" class="form-control" readonly style="background:#eceef1;font-size:14px;font-weight:600;" value="{{ !empty($transaksi->NIDN) ? $transaksi->NIDN : ($transaksi->NUPTK ?? '-') }} - {{ $transaksi->Nama }}">
     </div>
     <div class="col-sm-3 d-flex align-items-center">
       <span id="badge-jenis" class="badge {{ $isPns ? 'bg-label-primary' : 'bg-label-success' }}" style="font-size:14px;font-weight:700;padding:6px 14px;">{{ $isPns ? 'PNS' : 'Non-PNS' }}</span>
