@@ -156,6 +156,7 @@
                                             <th rowspan="3" class="text-center align-middle">Jenis</th>
                                             <th rowspan="3" class="text-center align-middle">Jabatan</th>
                                             <th rowspan="3" class="text-center align-middle">Status</th>
+                                            <th rowspan="3" class="text-center align-middle">Bank</th>
                                             <th colspan="48" class="text-center">Januari - Desember</th>
                                             <th colspan="11" class="text-center">Jumlah Kotor, Nilai Pajak, dan Bersih</th>
                                             <th rowspan="3" class="text-center align-middle">Aksi</th>
@@ -206,6 +207,7 @@
                                             <td>{{ $row->Jenis }}</td>
                                             <td>{{ $row->Jabatan12 }}</td>
                                             <td>{{ $status }}</td>
+                                            <td>{{ $row->Bank ?? '-' }}</td>
                                                 @for ($i = 1; $i <= 12; $i++)
                                                 @php
                                                     $dbTpd = $row->{'db_tpd'.$i} ?? 0;
@@ -268,7 +270,7 @@
                                         </tr>
                                         @empty
                                         <tr>
-                                            <td colspan="65" class="text-center">Tidak ada data kurang bayar ditemukan</td>
+                                            <td colspan="66" class="text-center">Tidak ada data kurang bayar ditemukan</td>
                                         </tr>
                                         @endforelse
                                     </tbody>
@@ -316,6 +318,7 @@
                                             <th rowspan="3" class="text-center align-middle">Jenis</th>
                                             <th rowspan="3" class="text-center align-middle">Jabatan</th>
                                             <th rowspan="3" class="text-center align-middle">Status</th>
+                                            <th rowspan="3" class="text-center align-middle">Bank</th>
                                             <th colspan="48" class="text-center">Januari - Desember</th>
                                             <th colspan="11" class="text-center">Jumlah Kotor, Nilai Pajak, dan Bersih</th>
                                             <th rowspan="3" class="text-center align-middle">Aksi</th>
@@ -366,6 +369,7 @@
                                             <td>{{ $row->Jenis }}</td>
                                             <td>{{ $row->Jabatan12 }}</td>
                                             <td>{{ $status }}</td>
+                                            <td>{{ $row->Bank ?? '-' }}</td>
                                                 @for ($i = 1; $i <= 12; $i++)
                                                 @php
                                                     $dbTpd = $row->{'db_tpd'.$i} ?? 0;
@@ -432,7 +436,7 @@
                                         </tr>
                                         @empty
                                         <tr>
-                                            <td colspan="65" class="text-center">Tidak ada data lebih bayar ditemukan</td>
+                                            <td colspan="66" class="text-center">Tidak ada data lebih bayar ditemukan</td>
                                         </tr>
                                         @endforelse
                                     </tbody>
@@ -470,9 +474,11 @@
                                             <th rowspan="3" class="text-center align-middle">No</th>
                                             <th rowspan="3" class="text-center align-middle">NIDN / NUPTK</th>
                                             <th rowspan="3" class="text-center align-middle">Nama</th>
+                                            <th rowspan="3" class="text-center align-middle">Status Selisih</th>
                                             <th rowspan="3" class="text-center align-middle">Jenis</th>
                                             <th rowspan="3" class="text-center align-middle">Jabatan</th>
                                             <th rowspan="3" class="text-center align-middle">Status</th>
+                                            <th rowspan="3" class="text-center align-middle">Bank</th>
                                             <th colspan="48" class="text-center">Januari - Desember</th>
                                             <th colspan="11" class="text-center">Jumlah Kotor, Nilai Pajak, dan Bersih</th>
                                             <th rowspan="3" class="text-center align-middle">Aksi</th>
@@ -520,9 +526,24 @@
                                             <td>{{ $loop->iteration }}</td>
                                             <td>{{ !empty($row->NIDN) ? $row->NIDN : ($row->NUPTK ?? '-') }}</td>
                                             <td>{{ $row->Nama }}</td>
+                                            @php
+                                                $sumK = 0;
+                                                for($j=1; $j<=12; $j++) {
+                                                    $sumK += (float)($row->{"k_tpd$j"} ?? 0) + (float)($row->{"k_tkgb$j"} ?? 0);
+                                                }
+                                                if ($sumK > 0) {
+                                                    $badgeStatus = '<span class="badge bg-danger" style="font-size:10px;padding:3px 8px;">Kurang</span>';
+                                                } elseif ($sumK < 0) {
+                                                    $badgeStatus = '<span class="badge bg-success" style="font-size:10px;padding:3px 8px;">Lebih</span>';
+                                                } else {
+                                                    $badgeStatus = '-';
+                                                }
+                                            @endphp
+                                            <td class="text-center">{!! $badgeStatus !!}</td>
                                             <td>{{ $row->Jenis }}</td>
                                             <td>{{ $row->Jabatan12 }}</td>
                                             <td>{{ $status }}</td>
+                                            <td>{{ $row->Bank ?? '-' }}</td>
                                                 @for ($i = 1; $i <= 12; $i++)
                                                 @php
                                                     $dbTpd = $row->{'db_tpd'.$i} ?? 0;
@@ -589,7 +610,7 @@
                                         </tr>
                                         @empty
                                         <tr>
-                                            <td colspan="65" class="text-center">Tidak ada data selesai (lunas) ditemukan</td>
+                                            <td colspan="67" class="text-center">Tidak ada data selesai (lunas) ditemukan</td>
                                         </tr>
                                         @endforelse
                                     </tbody>
