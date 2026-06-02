@@ -378,18 +378,18 @@ class MonitoringPembayaranController extends Controller
 
       // Aplikasikan pool pembayaran/potongan (carry over)
       if ($origHasSp2d) {
-        if ($selisihBulan > 0.01) { // Kurang Bayar (Defisit)
-            if ($poolKurangBayar > 0.01) {
-                $applied = min($selisihBulan, $poolKurangBayar);
-                $selisihBulan -= $applied;
-                $poolKurangBayar -= $applied;
-            }
-        } elseif ($selisihBulan < -0.01) { // Lebih Bayar (Surplus)
-            $absSelisih = abs($selisihBulan);
+        if ($selisihBulan > 0.01) { // Lebih Bayar (Surplus)
             if ($poolLebihBayar > 0.01) {
-                $applied = min($absSelisih, $poolLebihBayar);
-                $absSelisih -= $applied;
+                $applied = min($selisihBulan, $poolLebihBayar);
+                $selisihBulan -= $applied;
                 $poolLebihBayar -= $applied;
+            }
+        } elseif ($selisihBulan < -0.01) { // Kurang Bayar (Defisit)
+            $absSelisih = abs($selisihBulan);
+            if ($poolKurangBayar > 0.01) {
+                $applied = min($absSelisih, $poolKurangBayar);
+                $absSelisih -= $applied;
+                $poolKurangBayar -= $applied;
                 $selisihBulan = -$absSelisih;
             }
         }
@@ -398,20 +398,20 @@ class MonitoringPembayaranController extends Controller
       $selisihBulanan[] = (float) $selisihBulan;
       
       $tarifM = $kotor > 0 ? ($pajak / $kotor) : 0;
-      if ($selisihBulan > 0.01) { // Kurang Bayar (Aktual < Hak)
-          $gross = abs($selisihBulan);
-          $pjk = $gross * $tarifM;
-          $net = $gross - $pjk;
-          $remainingKurangGross += $gross;
-          $remainingKurangPajak += $pjk;
-          $remainingKurangNet += $net;
-      } elseif ($selisihBulan < -0.01) { // Lebih Bayar (Aktual > Hak)
+      if ($selisihBulan > 0.01) { // Lebih Bayar (Aktual > Hak)
           $gross = abs($selisihBulan);
           $pjk = $gross * $tarifM;
           $net = $gross - $pjk;
           $remainingLebihGross += $gross;
           $remainingLebihPajak += $pjk;
           $remainingLebihNet += $net;
+      } elseif ($selisihBulan < -0.01) { // Kurang Bayar (Aktual < Hak)
+          $gross = abs($selisihBulan);
+          $pjk = $gross * $tarifM;
+          $net = $gross - $pjk;
+          $remainingKurangGross += $gross;
+          $remainingKurangPajak += $pjk;
+          $remainingKurangNet += $net;
       }
 
       // Status logic — use origHasSp2d for original status, hasSp2d for resolved display
@@ -424,10 +424,10 @@ class MonitoringPembayaranController extends Controller
         $statusBulanan[] = 'usulan';
       } elseif ($origHasSp2d && $bersih == 0 && $kotor > 0) {
         $statusBulanan[] = 'proses';
-      } elseif ($origHasSp2d && $selisihBulan < -0.01) { // Lebih Bayar (Aktual > Hak)
-        $statusBulanan[] = 'lebih';
-      } elseif ($origHasSp2d && $selisihBulan > 0.01) { // Kurang Bayar (Aktual < Hak)
+      } elseif ($origHasSp2d && $selisihBulan < -0.01) { // Kurang Bayar (Aktual < Hak)
         $statusBulanan[] = 'kurang';
+      } elseif ($origHasSp2d && $selisihBulan > 0.01) { // Lebih Bayar (Aktual > Hak)
+        $statusBulanan[] = 'lebih';
       } elseif ($origHasSp2d && $selisihBulan == 0 && $bersih > 0) {
         $statusBulanan[] = 'selesai';
       } elseif ($isResolved && $hasData) {
@@ -444,8 +444,8 @@ class MonitoringPembayaranController extends Controller
     $netKurang = 0;
     $netLebih = 0;
     foreach ($selisihBulanan as $val) {
-        if ($val > 0.01) $netKurang += $val;
-        elseif ($val < -0.01) $netLebih += abs($val);
+        if ($val > 0.01) $netLebih += $val;
+        elseif ($val < -0.01) $netKurang += abs($val);
     }
     $kompensasi = min($netKurang, $netLebih);
 
@@ -454,18 +454,18 @@ class MonitoringPembayaranController extends Controller
         $poolLebih = $kompensasi;
         
         foreach ($selisihBulanan as $k => $v) {
-            if ($v < -0.01 && $poolLebih > 0.01) { // Lebih Bayar (Negatif)
-                $potong = min(abs($v), $poolLebih);
-                $selisihBulanan[$k] += $potong; // Mendekati 0 (karena negatif, kita tambah agar mendekati 0)
-                $poolLebih -= $potong;
-                if (abs($selisihBulanan[$k]) < 0.01 && $statusBulanan[$k] == 'lebih') {
-                    $statusBulanan[$k] = 'selesai';
-                }
-            } elseif ($v > 0.01 && $poolKurang > 0.01) { // Kurang Bayar (Positif)
-                $potong = min($v, $poolKurang);
-                $selisihBulanan[$k] -= $potong; // Mendekati 0 (karena positif, kita kurang)
+            if ($v < -0.01 && $poolKurang > 0.01) { // Kurang Bayar (Negatif)
+                $potong = min(abs($v), $poolKurang);
+                $selisihBulanan[$k] += $potong; // Mendekati 0
                 $poolKurang -= $potong;
                 if (abs($selisihBulanan[$k]) < 0.01 && $statusBulanan[$k] == 'kurang') {
+                    $statusBulanan[$k] = 'selesai';
+                }
+            } elseif ($v > 0.01 && $poolLebih > 0.01) { // Lebih Bayar (Positif)
+                $potong = min($v, $poolLebih);
+                $selisihBulanan[$k] -= $potong; // Mendekati 0
+                $poolLebih -= $potong;
+                if (abs($selisihBulanan[$k]) < 0.01 && $statusBulanan[$k] == 'lebih') {
                     $statusBulanan[$k] = 'selesai';
                 }
             }
@@ -831,18 +831,18 @@ class MonitoringPembayaranController extends Controller
 
       // Aplikasikan pool pembayaran/potongan (carry over)
       if ($hasSp2d) {
-        if ($selisihBulan > 0.01) { // Kurang Bayar (Defisit)
-            if ($poolKurangBayar > 0.01) {
-                $applied = min($selisihBulan, $poolKurangBayar);
-                $selisihBulan -= $applied;
-                $poolKurangBayar -= $applied;
-            }
-        } elseif ($selisihBulan < -0.01) { // Lebih Bayar (Surplus)
-            $absSelisih = abs($selisihBulan);
+        if ($selisihBulan > 0.01) { // Lebih Bayar (Surplus)
             if ($poolLebihBayar > 0.01) {
-                $applied = min($absSelisih, $poolLebihBayar);
-                $absSelisih -= $applied;
+                $applied = min($selisihBulan, $poolLebihBayar);
+                $selisihBulan -= $applied;
                 $poolLebihBayar -= $applied;
+            }
+        } elseif ($selisihBulan < -0.01) { // Kurang Bayar (Defisit)
+            $absSelisih = abs($selisihBulan);
+            if ($poolKurangBayar > 0.01) {
+                $applied = min($absSelisih, $poolKurangBayar);
+                $absSelisih -= $applied;
+                $poolKurangBayar -= $applied;
                 $selisihBulan = -$absSelisih;
             }
         }
@@ -851,20 +851,20 @@ class MonitoringPembayaranController extends Controller
       $selisihBulanan[] = (float) $selisihBulan;
       
       $tarifM = $kotor > 0 ? ($pajak / $kotor) : 0;
-      if ($selisihBulan > 0.01) { // Kurang Bayar (Aktual < Hak)
-          $gross = abs($selisihBulan);
-          $pjk = $gross * $tarifM;
-          $net = $gross - $pjk;
-          $remainingKurangGross += $gross;
-          $remainingKurangPajak += $pjk;
-          $remainingKurangNet += $net;
-      } elseif ($selisihBulan < -0.01) { // Lebih Bayar (Aktual > Hak)
+      if ($selisihBulan > 0.01) { // Lebih Bayar (Aktual > Hak)
           $gross = abs($selisihBulan);
           $pjk = $gross * $tarifM;
           $net = $gross - $pjk;
           $remainingLebihGross += $gross;
           $remainingLebihPajak += $pjk;
           $remainingLebihNet += $net;
+      } elseif ($selisihBulan < -0.01) { // Kurang Bayar (Aktual < Hak)
+          $gross = abs($selisihBulan);
+          $pjk = $gross * $tarifM;
+          $net = $gross - $pjk;
+          $remainingKurangGross += $gross;
+          $remainingKurangPajak += $pjk;
+          $remainingKurangNet += $net;
       }
 
       // Status logic — use origHasSp2d for original status, hasSp2d for resolved display
@@ -877,10 +877,10 @@ class MonitoringPembayaranController extends Controller
         $statusBulanan[] = 'usulan';
       } elseif ($sp2dNo !== '-' && $bersih == 0 && $kotor > 0) {
         $statusBulanan[] = 'proses';
-      } elseif ($hasSp2d && $selisihBulan < -0.01) { // Lebih Bayar (Aktual > Hak)
-        $statusBulanan[] = 'lebih';
-      } elseif ($hasSp2d && $selisihBulan > 0.01) { // Kurang Bayar (Aktual < Hak)
+      } elseif ($hasSp2d && $selisihBulan < -0.01) { // Kurang Bayar (Aktual < Hak)
         $statusBulanan[] = 'kurang';
+      } elseif ($hasSp2d && $selisihBulan > 0.01) { // Lebih Bayar (Aktual > Hak)
+        $statusBulanan[] = 'lebih';
       } elseif ($hasSp2d && $selisihBulan == 0 && $bersih > 0) {
         $statusBulanan[] = 'selesai';
       } elseif ($kode && !$hasData) {
@@ -894,8 +894,8 @@ class MonitoringPembayaranController extends Controller
     $netKurang = 0;
     $netLebih = 0;
     foreach ($selisihBulanan as $val) {
-        if ($val > 0.01) $netKurang += $val;
-        elseif ($val < -0.01) $netLebih += abs($val);
+        if ($val > 0.01) $netLebih += $val;
+        elseif ($val < -0.01) $netKurang += abs($val);
     }
     $kompensasi = min($netKurang, $netLebih);
 
@@ -904,18 +904,18 @@ class MonitoringPembayaranController extends Controller
         $poolLebih = $kompensasi;
         
         foreach ($selisihBulanan as $k => $v) {
-            if ($v < -0.01 && $poolLebih > 0.01) { // Lebih Bayar (Negatif)
-                $potong = min(abs($v), $poolLebih);
+            if ($v < -0.01 && $poolKurang > 0.01) { // Kurang Bayar (Negatif)
+                $potong = min(abs($v), $poolKurang);
                 $selisihBulanan[$k] += $potong; // Mendekati 0
-                $poolLebih -= $potong;
-                if (abs($selisihBulanan[$k]) < 0.01 && $statusBulanan[$k] == 'lebih') {
-                    $statusBulanan[$k] = 'selesai';
-                }
-            } elseif ($v > 0.01 && $poolKurang > 0.01) { // Kurang Bayar (Positif)
-                $potong = min($v, $poolKurang);
-                $selisihBulanan[$k] -= $potong;
                 $poolKurang -= $potong;
                 if (abs($selisihBulanan[$k]) < 0.01 && $statusBulanan[$k] == 'kurang') {
+                    $statusBulanan[$k] = 'selesai';
+                }
+            } elseif ($v > 0.01 && $poolLebih > 0.01) { // Lebih Bayar (Positif)
+                $potong = min($v, $poolLebih);
+                $selisihBulanan[$k] -= $potong; // Mendekati 0
+                $poolLebih -= $potong;
+                if (abs($selisihBulanan[$k]) < 0.01 && $statusBulanan[$k] == 'lebih') {
                     $statusBulanan[$k] = 'selesai';
                 }
             }
