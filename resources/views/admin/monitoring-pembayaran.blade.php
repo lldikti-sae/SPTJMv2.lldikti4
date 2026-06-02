@@ -248,7 +248,7 @@ $months = [
              }
           @endphp
           <td class="text-center" style="font-size:11px;">{{ $tglSp2dStr }}</td>
-          <td class="text-end fw-bold {{ $sel < 0 ? 'text-danger' : ($sel > 0 ? 'text-purple' : 'text-success') }}" style="{{ $sel > 0 ? 'color:#7c3aed!important;' : '' }}">{{ $sel < 0 ? '-' : ($sel > 0 ? '+' : '') }}{{ number_format(abs($sel),0,',','.') }}</td>
+          <td class="text-end fw-bold {{ $sel < 0 ? 'text-danger' : ($sel > 0 ? 'text-purple' : 'text-success') }}" style="{{ $sel > 0 ? 'color:#7c3aed!important;' : '' }}">{{ $sel < 0 ? '+' : ($sel > 0 ? '-' : '') }}{{ number_format(abs($sel),0,',','.') }}</td>
           <td class="text-center">@if($st && isset($statusMap[$st]))<span class="badge {{ $statusMap[$st][0] }}" style="font-size:10px;">{{ $statusMap[$st][1] }}</span>@else - @endif</td>
         </tr>
         @endforeach
@@ -315,9 +315,9 @@ $months = [
             $jmPajakTpd = $totalPajakTpd + $totalPajakTkgb;
             $jmBersihTpd = $totalBersihTpd + $totalBersihTkgb;
 
-            $totalAkhirKotorTpd = $jmKotorTpd + $kGrossM - $lGrossM;
-            $totalAkhirPajakTpd = $jmPajakTpd + $kPajakM - $lPajakM;
-            $totalAkhirBersihTpd = $jmBersihTpd + $kNetM - $lNetM;
+            $totalAkhirKotorTpd = $jmKotorTpd + $kGrossRow - $lGrossRow;
+            $totalAkhirPajakTpd = $jmPajakTpd + $kPajakRow - $lPajakRow;
+            $totalAkhirBersihTpd = $jmBersihTpd + $kNetRow - $lNetRow;
         @endphp
         <tr class="fw-bold" style="background-color: #f0fff4;">
           <td colspan="4" class="text-center">Total Akhir</td>
@@ -385,21 +385,21 @@ $months = [
         </tr>
         @endforelse
         @php
-           $kGross = $summaryOriginal['pure_k_gross'] ?? 0;
-           $kPajak = $summaryOriginal['pure_k_pajak'] ?? 0;
-           $kNet = $summaryOriginal['pure_k_net'] ?? 0;
+           $kGross = $summaryOriginal['k_gross'] ?? 0;
+           $kPajak = $summaryOriginal['k_pajak'] ?? 0;
+           $kNet = $summaryOriginal['k_net'] ?? 0;
            
-           $lGross = $summaryOriginal['pure_l_gross'] ?? 0;
-           $lPajak = $summaryOriginal['pure_l_pajak'] ?? 0;
-           $lNet = $summaryOriginal['pure_l_net'] ?? 0;
+           $lGross = $summaryOriginal['l_gross'] ?? 0;
+           $lPajak = $summaryOriginal['l_pajak'] ?? 0;
+           $lNet = $summaryOriginal['l_net'] ?? 0;
            
            $pure_k = $summaryOriginal['pure_k_gross'] ?? 0;
            $pure_l = $summaryOriginal['pure_l_gross'] ?? 0;
            $nettingText = ($pure_k > 0 && $pure_l > 0) ? '<br><small class="text-muted fw-normal" style="font-size: 0.85em;">* Hasil kompensasi: Kekurangan Rp' . number_format($pure_k, 0, ',', '.') . ' - Kelebihan Rp' . number_format($pure_l, 0, ',', '.') . '</small>' : '';
            
-           $totalAkhirGross = $totalKotorTpd + $totalKotorTkgb + $kGross - $lGross - $totalUraianNominal;
-           $totalAkhirPajak = $totalPajakTpd + $totalPajakTkgb + $kPajak - $lPajak - $totalUraianPajak;
-           $totalAkhirNet = $totalBersihTpd + $totalBersihTkgb + $kNet - $lNet - $totalUraianBersih;
+           $totalAkhirGross = $totalKotorTpd + $totalKotorTkgb + $kGross - $lGross;
+           $totalAkhirPajak = $totalPajakTpd + $totalPajakTkgb + $kPajak - $lPajak;
+           $totalAkhirNet = $totalBersihTpd + $totalBersihTkgb + $kNet - $lNet;
         @endphp
         <tr class="fw-bold table-light">
           <td colspan="3" class="text-start">Total Pembayaran</td>
@@ -505,7 +505,7 @@ $months = [
 
             for(let i=0;i<months.length;i++){
               const s=sb[i]||0, st=stb[i], sc=s<0?'text-end text-danger fw-bold':(s>0?'text-end text-purple fw-bold':'text-end text-success fw-bold'), ss=s>0?'color:#7c3aed!important;':'';
-              const pfx=s<0?'-':(s>0?'+':'');
+              const pfx=s<0?'+':(s>0?'-':'');
               let stH='-'; if(st&&statusCfg[st]) stH=`<span class="badge ${statusCfg[st][0]}" style="font-size:10px">${statusCfg[st][1]}</span>`;
               
               let tglMain = data.tglSp2d[i] ?? '-';
@@ -613,12 +613,12 @@ $months = [
               const pureL = sumOriU.pure_l_gross || 0;
               const nettingText = (pureK > 0 && pureL > 0) ? `<br><small class="text-muted fw-normal" style="font-size: 0.85em;">* Hasil kompensasi: Kekurangan Rp${fmt(pureK)} - Kelebihan Rp${fmt(pureL)}</small>` : '';
 
-              const kGross = sumOriU.pure_k_gross || 0;
-              const kPajak = sumOriU.pure_k_pajak || 0;
-              const kNet = sumOriU.pure_k_net || 0;
-              const lGross = sumOriU.pure_l_gross || 0;
-              const lPajak = sumOriU.pure_l_pajak || 0;
-              const lNet = sumOriU.pure_l_net || 0;
+              const kGross = sumOriU.k_gross || 0;
+              const kPajak = sumOriU.k_pajak || 0;
+              const kNet = sumOriU.k_net || 0;
+              const lGross = sumOriU.l_gross || 0;
+              const lPajak = sumOriU.l_pajak || 0;
+              const lNet = sumOriU.l_net || 0;
 
               const sumKotorTpd = (data.kotorTpd || []).reduce((a,b)=>a+parseFloat(b||0), 0);
               const sumKotorTkgb = (data.kotorTkgb || []).reduce((a,b)=>a+parseFloat(b||0), 0);
@@ -627,9 +627,9 @@ $months = [
               const sumBersihTpd = (data.bersihTpd || []).reduce((a,b)=>a+parseFloat(b||0), 0);
               const sumBersihTkgb = (data.bersihTkgb || []).reduce((a,b)=>a+parseFloat(b||0), 0);
 
-              const totalAkhirGross = sumKotorTpd + sumKotorTkgb + kGross - lGross - totalUraianNominal;
-              const totalAkhirPajak = sumPajakTpd + sumPajakTkgb + kPajak - lPajak - totalUraianPajak;
-              const totalAkhirNet = sumBersihTpd + sumBersihTkgb + kNet - lNet - totalUraianBersih;
+              const totalAkhirGross = sumKotorTpd + sumKotorTkgb + kGross - lGross;
+              const totalAkhirPajak = sumPajakTpd + sumPajakTkgb + kPajak - lPajak;
+              const totalAkhirNet = sumBersihTpd + sumBersihTkgb + kNet - lNet;
 
               // Row: Total Pembayaran
               const trTotal = document.createElement('tr');

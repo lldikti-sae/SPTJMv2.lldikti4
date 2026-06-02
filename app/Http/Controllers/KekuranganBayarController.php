@@ -158,6 +158,9 @@ class KekuranganBayarController extends Controller
       . '<th rowspan="3">Jenis</th>'
       . '<th rowspan="3">Jabatan</th>'
       . '<th rowspan="3">Status</th>'
+      . '<th rowspan="3">No Rekening</th>'
+      . '<th rowspan="3">Nama Rekening</th>'
+      . '<th rowspan="3">NPWP</th>'
       . '<th colspan="48">Januari - Desember</th>'
       . '<th colspan="11">Jumlah Kotor, Nilai Pajak, dan Bersih</th>'
       . '</tr>';
@@ -206,7 +209,10 @@ class KekuranganBayarController extends Controller
         . '<td>' . $escape($r->Nama ?? $r->nama ?? '') . '</td>'
         . '<td>' . $escape($jenisRow) . '</td>'
         . '<td>' . $escape($jabatan12) . '</td>'
-        . '<td>' . $escape($status) . '</td>';
+        . '<td>' . $escape($status) . '</td>'
+        . '<td>' . $escape($r->No_Rekening ?? '') . '</td>'
+        . '<td>' . $escape($r->Nama_Rekening ?? '') . '</td>'
+        . '<td>' . $escape($r->NPWP ?? '') . '</td>';
 
       for ($i = 1; $i <= 12; $i++) {
         $noSp2d = trim((string) ($r->{'No_sp2d_' . $i} ?? $r->{'NoSP2D' . $i} ?? ''));
@@ -284,7 +290,7 @@ class KekuranganBayarController extends Controller
     }
 
     // Grand Total row
-    $totalColSpan = 6 + (12 * 4) + 10; // No+NIDN+Nama+Jenis+Jabatan+Status + 12 bulan × 4 kolom + 10 kolom jumlah
+    $totalColSpan = 9 + (12 * 4) + 10; // No+NIDN+Nama+Jenis+Jabatan+Status+No_Rek+Nama_Rek+NPWP + 12 bulan × 4 kolom + 10 kolom jumlah
     $html[] = '<tr style="background-color:#e8e8e8;font-weight:bold;">'
       . '<td colspan="' . ($totalColSpan) . '" style="text-align:right;font-weight:bold;">GRAND TOTAL PEMBAYARAN</td>'
       . '<td class="num" style="font-weight:bold;background-color:#d4edda;">' . $fmt(abs($grandKesimpulan)) . '</td>'
@@ -463,6 +469,133 @@ class KekuranganBayarController extends Controller
     }
 
     return $payloadRows;
+  }
+
+  private function getFullyPaidNidns($versi, $tarifMap = [])
+  {
+      $paidKotorByNidnMonth = [];
+      try {
+          $paidRecords = DB::table('t_kekurangan')
+              ->where('tahun', $versi)
+              ->where('jenis_pembayaran', 'like', 'PEMBAYARAN_%')
+              ->select('nidn', 'jenis_pembayaran', 'selisih as nominal')
+              ->get();
+          foreach ($paidRecords as $pr) {
+              $parts = explode('_', $pr->jenis_pembayaran);
+              $m = isset($parts[1]) ? (int) $parts[1] : 0;
+              if ($m > 0) {
+                  if (!isset($paidKotorByNidnMonth[$pr->nidn][$m])) {
+                      $paidKotorByNidnMonth[$pr->nidn][$m] = 0;
+                  }
+                  $paidKotorByNidnMonth[$pr->nidn][$m] += abs((float) $pr->nominal);
+              }
+          }
+      } catch (\Throwable $e) {}
+
+      $k2_sub = clone $this->getPivotSubquery($versi);
+      $fullyPaidNidns = [];
+      
+      if (!empty($paidKotorByNidnMonth)) {
+          $nids = array_keys($paidKotorByNidnMonth);
+          
+          $k2_sub = clone $this->getPivotSubquery($versi);
+          
+          $rows = DB::table('s_transaksi_2 as k')
+              ->joinSub($k2_sub, 'k2', function ($join) {
+                  $join->on('k.NIDN', '=', 'k2.nidn');
+              })
+              ->where('k.Tahun_Versi', $versi)
+              ->whereIn('k.NIDN', $nids)
+              ->select(
+                  'k.NIDN', 'k.Jenis', 'k.Jabatan12',
+                  'k2.k_tpd1', 'k2.k_tkgb1', 'k2.k_tpd2', 'k2.k_tkgb2', 'k2.k_tpd3', 'k2.k_tkgb3',
+                  'k2.k_tpd4', 'k2.k_tkgb4', 'k2.k_tpd5', 'k2.k_tkgb5', 'k2.k_tpd6', 'k2.k_tkgb6',
+                  'k2.k_tpd7', 'k2.k_tkgb7', 'k2.k_tpd8', 'k2.k_tkgb8', 'k2.k_tpd9', 'k2.k_tkgb9',
+                  'k2.k_tpd10', 'k2.k_tkgb10', 'k2.k_tpd11', 'k2.k_tkgb11', 'k2.k_tpd12', 'k2.k_tkgb12',
+                  'k.Gol1', 'k.Gol2', 'k.Gol3', 'k.Gol4', 'k.Gol5', 'k.Gol6', 'k.Gol7', 'k.Gol8', 'k.Gol9', 'k.Gol10', 'k.Gol11', 'k.Gol12',
+                  'k.Jabatan1', 'k.Jabatan2', 'k.Jabatan3', 'k.Jabatan4', 'k.Jabatan5', 'k.Jabatan6', 'k.Jabatan7', 'k.Jabatan8', 'k.Jabatan9', 'k.Jabatan10', 'k.Jabatan11',
+                  'k.TPD1', 'k.TPD2', 'k.TPD3', 'k.TPD4', 'k.TPD5', 'k.TPD6', 'k.TPD7', 'k.TPD8', 'k.TPD9', 'k.TPD10', 'k.TPD11', 'k.TPD12',
+                  'k.TKGB1', 'k.TKGB2', 'k.TKGB3', 'k.TKGB4', 'k.TKGB5', 'k.TKGB6', 'k.TKGB7', 'k.TKGB8', 'k.TKGB9', 'k.TKGB10', 'k.TKGB11', 'k.TKGB12',
+                  'k.No_sp2d_1', 'k.No_sp2d_2', 'k.No_sp2d_3', 'k.No_sp2d_4', 'k.No_sp2d_5', 'k.No_sp2d_6', 'k.No_sp2d_7', 'k.No_sp2d_8', 'k.No_sp2d_9', 'k.No_sp2d_10', 'k.No_sp2d_11', 'k.No_sp2d_12',
+                  'k.Tgl_sp2d_1', 'k.Tgl_sp2d_2', 'k.Tgl_sp2d_3', 'k.Tgl_sp2d_4', 'k.Tgl_sp2d_5', 'k.Tgl_sp2d_6', 'k.Tgl_sp2d_7', 'k.Tgl_sp2d_8', 'k.Tgl_sp2d_9', 'k.Tgl_sp2d_10', 'k.Tgl_sp2d_11', 'k.Tgl_sp2d_12'
+              )
+              ->get();
+          
+          foreach ($rows as $row) {
+              $nidn = $row->NIDN;
+              $jenisKey = trim((string) ($row->Jenis ?? ''));
+              $sumDbBersih = 0.0;
+              $sumAktBersih = 0.0;
+              
+              for ($m = 1; $m <= 12; $m++) {
+                  $noSp2d = trim((string) ($row->{'No_sp2d_' . $m} ?? ''));
+                  $tglSp2d = trim((string) ($row->{'Tgl_sp2d_' . $m} ?? ''));
+                  $sp2dOk = ($noSp2d !== '' && $tglSp2d !== '');
+                  if (!$sp2dOk) continue;
+
+                  $dbKotorTPD = (float) $this->parseMoney($row->{'TPD' . $m} ?? 0);
+                  $dbKotorTKGB = (float) $this->parseMoney($row->{'TKGB' . $m} ?? 0);
+                  
+                  $gol = trim((string) ($row->{'Gol' . $m} ?? ''));
+                  $jabatan = (string) ($row->{'Jabatan' . $m} ?? ($row->Jabatan12 ?? ''));
+                  $kenaTKGB = $this->isGuruBesarAtauProfesor($jabatan);
+                  
+                  $k_tpd = (float) ($row->{'k_tpd' . $m} ?? 0);
+                  $k_tkgb = (float) ($row->{'k_tkgb' . $m} ?? 0);
+                  
+                  $aktKotorTPD = $dbKotorTPD - $k_tpd;
+                  $aktKotorTKGB = $dbKotorTKGB - $k_tkgb;
+                  
+                  $tarif = (float) (($tarifMap[$jenisKey][$gol] ?? 0) ?: 0);
+                  
+                  $paidNet = $paidKotorByNidnMonth[$nidn][$m] ?? 0;
+                  if ($paidNet > 0) {
+                      $paidGross = $paidNet;
+                      if ($tarif < 1 && $tarif >= 0) {
+                          $paidGross = $paidNet / (1 - $tarif);
+                      }
+                      
+                      $diffTPD = $dbKotorTPD - $aktKotorTPD;
+                      if ($diffTPD > 0 && $paidGross > 0) {
+                          $addTPD = min($diffTPD, $paidGross);
+                          $aktKotorTPD += $addTPD;
+                          $paidGross -= $addTPD;
+                      } elseif ($diffTPD < 0 && $paidGross > 0) {
+                          $subTPD = min(abs($diffTPD), $paidGross);
+                          $aktKotorTPD -= $subTPD;
+                          $paidGross -= $subTPD;
+                      }
+
+                      $diffTKGB = $dbKotorTKGB - $aktKotorTKGB;
+                      if ($diffTKGB > 0 && $paidGross > 0) {
+                          $addTKGB = min($diffTKGB, $paidGross);
+                          $aktKotorTKGB += $addTKGB;
+                          $paidGross -= $addTKGB;
+                      } elseif ($diffTKGB < 0 && $paidGross > 0) {
+                          $subTKGB = min(abs($diffTKGB), $paidGross);
+                          $aktKotorTKGB -= $subTKGB;
+                          $paidGross -= $subTKGB;
+                      }
+                  }
+
+                  $dbPajakTPD = $dbKotorTPD * $tarif;
+                  $dbPajakTKGB = $kenaTKGB ? ($dbKotorTKGB * $tarif) : 0.0;
+                  $dbBersih = ($dbKotorTPD - $dbPajakTPD) + ($dbKotorTKGB - $dbPajakTKGB);
+
+                  $aktPajakTPD = $aktKotorTPD * $tarif;
+                  $aktPajakTKGB = $kenaTKGB ? ($aktKotorTKGB * $tarif) : 0.0;
+                  $aktBersih = ($aktKotorTPD - $aktPajakTPD) + ($aktKotorTKGB - $aktPajakTKGB);
+
+                  $sumDbBersih += $dbBersih;
+                  $sumAktBersih += $aktBersih;
+              }
+              
+              if (abs($sumDbBersih - $sumAktBersih) < 0.01) {
+                  $fullyPaidNidns[] = $nidn;
+              }
+          }
+      }
+      return [$fullyPaidNidns, $paidKotorByNidnMonth];
   }
 
   public function cek(Request $request)
@@ -708,51 +841,15 @@ class KekuranganBayarController extends Controller
   {
     $versi = session('tahun');
 
-    $paidKotorByNidnMonth = [];
     try {
-      $paidRecords = DB::table('t_kekurangan')
-        ->where('tahun', $versi)
-        ->where('jenis_pembayaran', 'like', 'PEMBAYARAN_%')
-        ->select('nidn', 'jenis_pembayaran', 'selisih as nominal')
-        ->get();
-      foreach ($paidRecords as $pr) {
-          $parts = explode('_', $pr->jenis_pembayaran);
-          $m = isset($parts[1]) ? (int) $parts[1] : 0;
-          if ($m > 0) {
-              if (!isset($paidKotorByNidnMonth[$pr->nidn][$m])) {
-                  $paidKotorByNidnMonth[$pr->nidn][$m] = 0;
-              }
-              $paidKotorByNidnMonth[$pr->nidn][$m] += abs((float) $pr->nominal);
-          }
-      }
-    } catch (\Throwable $e) { /* table might not exist yet */ }
-
-    $k2_sub = clone $this->getPivotSubquery($versi);
-
-    $fullyPaidNidns = [];
-    if (!empty($paidKotorByNidnMonth)) {
-        $nids = array_keys($paidKotorByNidnMonth);
-        $kekuranganRows = (clone $k2_sub)->whereIn('nidn', $nids)->get();
-            
-        foreach ($kekuranganRows as $kr) {
-            $nidn = $kr->nidn;
-            $hasUnpaid = false;
-            for ($m = 1; $m <= 12; $m++) {
-                $selisihTpd = (float) ($kr->{'k_tpd' . $m} ?? 0);
-                $selisihTkgb = (float) ($kr->{'k_tkgb' . $m} ?? 0);
-                $selisihTotalKotor = abs($selisihTpd) + abs($selisihTkgb);
-                $paidKotor = $paidKotorByNidnMonth[$nidn][$m] ?? 0;
-                
-                if ($selisihTotalKotor > 0.01 && $paidKotor < ($selisihTotalKotor - 0.01)) {
-                    $hasUnpaid = true;
-                    break;
-                }
-            }
-            if (!$hasUnpaid) {
-                $fullyPaidNidns[] = $nidn;
-            }
-        }
+      $tarifMap = $this->loadTarifPajakMap();
+    } catch (\Throwable $e) {
+      $tarifMap = [];
     }
+
+    list($fullyPaidNidns, $paidKotorByNidnMonth) = $this->getFullyPaidNidns($versi, $tarifMap);
+    
+    $k2_sub = clone $this->getPivotSubquery($versi);
 
     $baseQuery = DB::table('s_transaksi_2 as k')
       ->joinSub($k2_sub, 'k2', function ($join) {
@@ -760,11 +857,7 @@ class KekuranganBayarController extends Controller
       })
       ->where('k.Tahun_Versi', $versi);
 
-    // fullyPaidNidns dihilangkan agar dosen yang sudah lunas (SP2D) tetap muncul di tabel
-    // if (!empty($fullyPaidNidns)) {
-    //   $baseQuery->whereNotIn('k.NIDN', $fullyPaidNidns);
-    // }
-
+    // fullyPaidNidns akan di-filter per tab (Kurang, Lebih, Selesai)
     $baseQuery->select(
         'k.NIDN', 'k.Nama', 'k.Jenis', 'k.Jabatan12', 'k.Aktif', 'k.Bank',
         'k2.k_tpd1', 'k2.k_tkgb1', 'k2.k_tpd2', 'k2.k_tkgb2',
@@ -787,6 +880,9 @@ class KekuranganBayarController extends Controller
 
     $searchKurang = request('search_kurang');
     $queryKurangBase = (clone $baseQuery)->whereRaw('(k2.bersih + 0) < 0');
+    if (!empty($fullyPaidNidns)) {
+        $queryKurangBase->whereNotIn('k.NIDN', $fullyPaidNidns);
+    }
     if ($searchKurang) {
         $queryKurangBase->where(function($q) use ($searchKurang) {
             $q->where('k.NIDN', 'like', '%' . $searchKurang . '%')
@@ -797,6 +893,9 @@ class KekuranganBayarController extends Controller
 
     $searchLebih = request('search_lebih');
     $queryLebihBase = (clone $baseQuery)->whereRaw('(k2.bersih + 0) > 0');
+    if (!empty($fullyPaidNidns)) {
+        $queryLebihBase->whereNotIn('k.NIDN', $fullyPaidNidns);
+    }
     if ($searchLebih) {
         $queryLebihBase->where(function($q) use ($searchLebih) {
             $q->where('k.NIDN', 'like', '%' . $searchLebih . '%')
@@ -805,11 +904,22 @@ class KekuranganBayarController extends Controller
     }
     $queryLebih = $queryLebihBase->paginate(50, ['*'], 'lebih_page')->appends(request()->query());
 
-    try {
-      $tarifMap = $this->loadTarifPajakMap();
-    } catch (\Throwable $e) {
-      $tarifMap = [];
+    $searchSelesai = request('search_selesai');
+    $querySelesaiBase = (clone $baseQuery)->whereRaw('(k2.bersih + 0) != 0');
+    if (empty($fullyPaidNidns)) {
+        $querySelesaiBase->whereRaw('1 = 0'); // Force empty if no fully paid
+    } else {
+        $querySelesaiBase->whereIn('k.NIDN', $fullyPaidNidns);
     }
+    if ($searchSelesai) {
+        $querySelesaiBase->where(function($q) use ($searchSelesai) {
+            $q->where('k.NIDN', 'like', '%' . $searchSelesai . '%')
+              ->orWhere('k.Nama', 'like', '%' . $searchSelesai . '%');
+        });
+    }
+    $querySelesai = $querySelesaiBase->paginate(50, ['*'], 'selesai_page')->appends(request()->query());
+
+    // tarifMap has been loaded at the top of the function
 
     $transformer = function ($row) use ($tarifMap, $paidKotorByNidnMonth) {
       $jenisRow = (string) ($row->Jenis ?? '');
@@ -908,8 +1018,13 @@ class KekuranganBayarController extends Controller
         $transformer($row);
     }
 
+    foreach ($querySelesai as $row) {
+        $transformer($row);
+    }
+
     $detailKurang = $queryKurang;
     $detailLebih  = $queryLebih;
+    $detailSelesai = $querySelesai;
 
     $rekapKurang = DB::table('u_rekap_kekurangan')->whereRaw('RIGHT(periode, 4) = ?', [$versi])->where(function ($q) {
         $q->where('excel', 'like', 'rekap_kekurangan/%')->orWhere('periode', 'like', 'Kurang%');
@@ -972,6 +1087,7 @@ class KekuranganBayarController extends Controller
       $selectCols = [
         'k.NIDN as NIDN', 'k.Nama as Nama', 'k.Jenis as Jenis', 'k.Bank as Bank',
         'k.Jabatan12 as Jabatan12', 'k.Aktif as Aktif',
+        'k.No_Rekening as No_Rekening', 'k.Nama_Rekening as Nama_Rekening', 'k.NPWP as NPWP',
       ];
       for ($i = 1; $i <= 12; $i++) {
         $selectCols[] = 'k.Gol' . $i;
@@ -1272,6 +1388,7 @@ class KekuranganBayarController extends Controller
         $select = [
           'k.NIDN as NIDN', 'k.Nama as Nama', 'k.Jenis as Jenis', 'k.Bank as Bank',
           'k.Jabatan12 as Jabatan12', 'k.Aktif as Aktif', 'ku.bersih as delta_bersih',
+          'k.No_Rekening as No_Rekening', 'k.Nama_Rekening as Nama_Rekening', 'k.NPWP as NPWP',
         ];
         for ($i = 1; $i <= 12; $i++) {
           $select[] = 'k.Gol' . $i; $select[] = 'k.Jabatan' . $i;
@@ -1690,9 +1807,51 @@ class KekuranganBayarController extends Controller
 
       DB::commit();
 
+      $isLunas = false;
+      if ($nidnInput) {
+          $paidRecords = DB::table('t_kekurangan')
+            ->where('tahun', $versi)
+            ->where('nidn', $nidnInput)
+            ->where('jenis_pembayaran', 'like', 'PEMBAYARAN_%')
+            ->select('jenis_pembayaran', 'selisih as nominal')
+            ->get();
+          $paidKotorByMonth = [];
+          foreach ($paidRecords as $pr) {
+              $parts = explode('_', $pr->jenis_pembayaran);
+              $m = isset($parts[1]) ? (int) $parts[1] : 0;
+              if ($m > 0) {
+                  if (!isset($paidKotorByMonth[$m])) $paidKotorByMonth[$m] = 0;
+                  $paidKotorByMonth[$m] += abs((float) $pr->nominal);
+              }
+          }
+          
+          $k2_sub = clone $this->getPivotSubquery($versi);
+          $dosenData = DB::table('s_transaksi_2 as k')
+            ->joinSub($k2_sub, 'ku', function($join) { $join->on('k.NIDN', '=', 'ku.nidn'); })
+            ->where('k.Tahun_Versi', $versi)
+            ->where('k.NIDN', $nidnInput)
+            ->first();
+            
+          if ($dosenData) {
+              $hasUnpaid = false;
+              for ($m = 1; $m <= 12; $m++) {
+                  $selisihTpd = (float) ($dosenData->{'k_tpd' . $m} ?? 0);
+                  $selisihTkgb = (float) ($dosenData->{'k_tkgb' . $m} ?? 0);
+                  $selisihTotalKotor = abs($selisihTpd) + abs($selisihTkgb);
+                  $paidKotor = $paidKotorByMonth[$m] ?? 0;
+                  if ($selisihTotalKotor > 0.01 && $paidKotor < ($selisihTotalKotor - 0.01)) {
+                      $hasUnpaid = true;
+                      break;
+                  }
+              }
+              $isLunas = !$hasUnpaid;
+          }
+      }
+
       $skipMsg = $totalSkipped > 0 ? " ({$totalSkipped} baris di-skip karena sudah pernah diproses.)" : '';
       return response()->json([
         'success' => true,
+        'is_lunas' => $isLunas,
         'message' => "Berhasil memproses SP2D. {$totalGenerated} baris uraian pembayaran di-generate.{$skipMsg}",
       ]);
     } catch (\Throwable $e) {
@@ -1966,6 +2125,14 @@ class KekuranganBayarController extends Controller
 
       if (!empty($excludeNidns)) {
           $base->whereNotIn('k.NIDN', $excludeNidns);
+      }
+      
+      // JIKA REKAP BELUM DIPROSES SP2D, HILANGKAN DOSEN YANG SUDAH LUNAS SECARA INDIVIDU
+      if (empty($rekap->sp2d)) {
+          list($fullyPaidNidns, $paidKotorByNidnMonthDummy) = $this->getFullyPaidNidns($versi);
+          if (!empty($fullyPaidNidns)) {
+              $base->whereNotIn('k.NIDN', $fullyPaidNidns);
+          }
       }
       
       $search = $request->input('search');

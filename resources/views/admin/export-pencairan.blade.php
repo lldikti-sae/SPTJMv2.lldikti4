@@ -116,6 +116,7 @@
                     <th style="border: 1px solid black; padding: 4px; text-align: center;">PPH Pasal 21</th>
                     <th style="border: 1px solid black; padding: 4px; text-align: center;">Jumlah Bersih</th>
                     <th style="border: 1px solid black; padding: 4px; text-align: center;">No Rekening</th>
+                    <th style="border: 1px solid black; padding: 4px; text-align: center;">Nama Rekening</th>
                     <th style="border: 1px solid black; padding: 4px; text-align: center;">NPWP</th>
             </tr>
         </thead>
@@ -180,6 +181,9 @@
                     <td style="border: 1px solid black; padding: 4px; text-align: center;">
                         {{ $data->No_Rekening ?? '-' }}
                     </td>
+                    <td style="border: 1px solid black; padding: 4px; text-align: center;">
+                        {{ $data->Nama_Rekening ?? '-' }}
+                    </td>
                     <td style="border: 1px solid black; padding: 4px; text-align: center;">{{ $data->NPWP ?? '-' }}</td>
             </tr>
 
@@ -203,7 +207,7 @@
                 <td style="border: 1px solid black; padding: 4px; text-align: right;">
                     {{ number_format($totalBersihSemua, 0, ',', '.') }}
                 </td>
-                <td colspan="2" style="border: 1px solid black; padding: 4px;"></td>
+                <td colspan="3" style="border: 1px solid black; padding: 4px;"></td>
             </tr>
         </tbody>
     </table>

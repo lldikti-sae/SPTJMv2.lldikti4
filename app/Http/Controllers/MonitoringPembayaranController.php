@@ -493,7 +493,7 @@ class MonitoringPembayaranController extends Controller
           }
           
           return $item;
-      })->unique('bulan')->sortBy('bulan')->values();
+      })->sortBy('bulan')->values();
     } catch (\Throwable $e) {
       // Table may not exist yet — silently continue
       $riwayatPembayaran = collect();
@@ -523,47 +523,30 @@ class MonitoringPembayaranController extends Controller
         'l_net' => $sisaLebihNet,
     ];
 
-    // Netting ASLI (Sebelum Cicilan)
-    $totalAsliGross = array_sum($originalSelisihBulanan ?? []);
-    $asliKurangGross = 0; $asliKurangPajak = 0; $asliKurangNet = 0;
-    $asliLebihGross = 0; $asliLebihPajak = 0; $asliLebihNet = 0;
+    // Kalkulasi Total yang SUDAH DIBAYAR (Cicilan/Pengembalian) dari riwayat
+    $paidKurangGross = 0;
+    $paidLebihGross = 0;
+    foreach ($riwayatPembayaran as $rp) {
+        if ($rp->nominal > 0) {
+            $paidKurangGross += abs($rp->nominal);
+        } else {
+            $paidLebihGross += abs($rp->nominal);
+        }
+    }
+    
+    $paidKurangPajak = $paidKurangGross * $globalTarif;
+    $paidKurangNet = $paidKurangGross - $paidKurangPajak;
 
-    if ($totalAsliGross < -0.01) { // Lebih Bayar
-        $asliLebihGross = abs($totalAsliGross);
-        $asliLebihPajak = abs($totalAsliGross) * $globalTarif;
-        $asliLebihNet = abs($totalAsliGross) - $asliLebihPajak;
-    } elseif ($totalAsliGross > 0.01) { // Kurang Bayar
-        $asliKurangGross = $totalAsliGross;
-        $asliKurangPajak = $totalAsliGross * $globalTarif;
-        $asliKurangNet = $totalAsliGross - $asliKurangPajak;
-    }
-    
-    // Kalkulasi Total Kotor Kurang dan Lebih untuk keperluan label penjelasan di UI
-    $pureKurangGross = 0;
-    $pureLebihGross = 0;
-    foreach ($originalSelisihBulanan ?? [] as $val) {
-        if ($val > 0.01) $pureKurangGross += $val;
-        elseif ($val < -0.01) $pureLebihGross += abs($val);
-    }
-    
-    $pureKurangPajak = $pureKurangGross * $globalTarif;
-    $pureKurangNet = $pureKurangGross - $pureKurangPajak;
-    $pureLebihPajak = $pureLebihGross * $globalTarif;
-    $pureLebihNet = $pureLebihGross - $pureLebihPajak;
+    $paidLebihPajak = $paidLebihGross * $globalTarif;
+    $paidLebihNet = $paidLebihGross - $paidLebihPajak;
 
     $summaryOriginal = [
-        'k_gross' => $asliKurangGross,
-        'k_pajak' => $asliKurangPajak,
-        'k_net' => $asliKurangNet,
-        'l_gross' => $asliLebihGross,
-        'l_pajak' => $asliLebihPajak,
-        'l_net' => $asliLebihNet,
-        'pure_k_gross' => $pureKurangGross,
-        'pure_k_pajak' => $pureKurangPajak,
-        'pure_k_net' => $pureKurangNet,
-        'pure_l_gross' => $pureLebihGross,
-        'pure_l_pajak' => $pureLebihPajak,
-        'pure_l_net' => $pureLebihNet,
+        'k_gross' => $paidKurangGross,
+        'k_pajak' => $paidKurangPajak,
+        'k_net' => $paidKurangNet,
+        'l_gross' => $paidLebihGross,
+        'l_pajak' => $paidLebihPajak,
+        'l_net' => $paidLebihNet,
     ];
 
     return view(
@@ -912,49 +895,6 @@ class MonitoringPembayaranController extends Controller
         'l_net' => $sisaLebihNet,
     ];
 
-    // Netting ASLI (Sebelum Cicilan)
-    $totalAsliGross = array_sum($originalSelisihBulanan ?? []);
-    $asliKurangGross = 0; $asliKurangPajak = 0; $asliKurangNet = 0;
-    $asliLebihGross = 0; $asliLebihPajak = 0; $asliLebihNet = 0;
-
-    if ($totalAsliGross < -0.01) { // Lebih Bayar
-        $asliLebihGross = abs($totalAsliGross);
-        $asliLebihPajak = abs($totalAsliGross) * $globalTarif;
-        $asliLebihNet = abs($totalAsliGross) - $asliLebihPajak;
-    } elseif ($totalAsliGross > 0.01) { // Kurang Bayar
-        $asliKurangGross = $totalAsliGross;
-        $asliKurangPajak = $totalAsliGross * $globalTarif;
-        $asliKurangNet = $totalAsliGross - $asliKurangPajak;
-    }
-    
-    // Kalkulasi Total Kotor Kurang dan Lebih untuk keperluan label penjelasan di UI
-    $pureKurangGross = 0;
-    $pureLebihGross = 0;
-    foreach ($originalSelisihBulanan ?? [] as $val) {
-        if ($val > 0.01) $pureKurangGross += $val;
-        elseif ($val < -0.01) $pureLebihGross += abs($val);
-    }
-
-    $pureKurangPajak = $pureKurangGross * $globalTarif;
-    $pureKurangNet = $pureKurangGross - $pureKurangPajak;
-    $pureLebihPajak = $pureLebihGross * $globalTarif;
-    $pureLebihNet = $pureLebihGross - $pureLebihPajak;
-    
-    $summaryOriginal = [
-        'k_gross' => $asliKurangGross,
-        'k_pajak' => $asliKurangPajak,
-        'k_net' => $asliKurangNet,
-        'l_gross' => $asliLebihGross,
-        'l_pajak' => $asliLebihPajak,
-        'l_net' => $asliLebihNet,
-        'pure_k_gross' => $pureKurangGross,
-        'pure_k_pajak' => $pureKurangPajak,
-        'pure_k_net' => $pureKurangNet,
-        'pure_l_gross' => $pureLebihGross,
-        'pure_l_pajak' => $pureLebihPajak,
-        'pure_l_net' => $pureLebihNet,
-    ];
-
     // Query uraian pembayaran dari t_kekurangan
     $riwayatPembayaran = [];
     try {
@@ -983,10 +923,36 @@ class MonitoringPembayaranController extends Controller
           }
           
           return $item;
-      })->unique('bulan')->sortBy('bulan')->values();
+      })->sortBy('bulan')->values();
     } catch (\Throwable $e) {
       $riwayatPembayaran = collect();
     }
+
+    // Kalkulasi Total yang SUDAH DIBAYAR (Cicilan/Pengembalian) dari riwayat
+    $paidKurangGross = 0;
+    $paidLebihGross = 0;
+    foreach ($riwayatPembayaran as $rp) {
+        if ($rp->nominal > 0) {
+            $paidKurangGross += abs($rp->nominal);
+        } else {
+            $paidLebihGross += abs($rp->nominal);
+        }
+    }
+    
+    $paidKurangPajak = $paidKurangGross * $globalTarif;
+    $paidKurangNet = $paidKurangGross - $paidKurangPajak;
+
+    $paidLebihPajak = $paidLebihGross * $globalTarif;
+    $paidLebihNet = $paidLebihGross - $paidLebihPajak;
+
+    $summaryOriginal = [
+        'k_gross' => $paidKurangGross,
+        'k_pajak' => $paidKurangPajak,
+        'k_net' => $paidKurangNet,
+        'l_gross' => $paidLebihGross,
+        'l_pajak' => $paidLebihPajak,
+        'l_net' => $paidLebihNet,
+    ];
 
     return response()->json([
       'success' => true,

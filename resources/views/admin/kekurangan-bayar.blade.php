@@ -21,6 +21,7 @@
     // Panggil variabel yang dikirim dari controller (Gak butuh dipisah manual lagi)
     $kurangRows = $detailKurang ?? []; 
     $lebihRows  = $detailLebih ?? []; 
+    $selesaiRows = $detailSelesai ?? []; 
     
     $rekapKurangRows = collect($rekapKurang ?? []);
     $rekapLebihRows = collect($rekapLebih ?? []);
@@ -107,6 +108,11 @@
                 <li class="nav-item" role="presentation">
                     <button class="nav-link" id="tab-lebih-btn" data-bs-toggle="tab" data-bs-target="#tab-data-lebih" type="button" role="tab" aria-selected="false">
                         Data Lebih Bayar
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="tab-selesai-btn" data-bs-toggle="tab" data-bs-target="#tab-data-selesai" type="button" role="tab" aria-selected="false">
+                        Data Selesai (Lunas)
                     </button>
                 </li>
                 <li class="nav-item" role="presentation">
@@ -255,7 +261,7 @@
                                                     </button>
                                                     @else
                                                     <span class="badge bg-label-success d-inline-flex align-items-center" style="font-size:10px;padding:3px 8px;" title="Tidak ada selisih">
-                                                        <i class="bx bx-check me-1"></i> Lunas
+                                                        <i class="bx bx-check me-1"></i> Selesai
                                                     </span>
                                                     @endif
                                                 </td>
@@ -419,7 +425,7 @@
                                                     </button>
                                                     @else
                                                     <span class="badge bg-label-success d-inline-flex align-items-center" style="font-size:10px;padding:3px 8px;" title="Tidak ada selisih">
-                                                        <i class="bx bx-check me-1"></i> Lunas
+                                                        <i class="bx bx-check me-1"></i> Selesai
                                                     </span>
                                                     @endif
                                                 </td>
@@ -436,6 +442,163 @@
                             @if($lebihRows instanceof \Illuminate\Pagination\LengthAwarePaginator)
         <div class="mt-4 d-flex justify-content-end">
             {{ $lebihRows->appends(request()->query())->links('pagination::bootstrap-5') }}
+        </div>
+    @endif
+                        </div>
+                    </div>
+                </div>
+
+                {{-- TAB 3: DATA SELESAI (LUNAS) --}}
+                <div class="tab-pane fade" id="tab-data-selesai" role="tabpanel" tabindex="0">
+                    <div class="card mb-4">
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <h5 class="mb-0">Data Selesai (Lunas)</h5>
+                            <div class="d-flex align-items-center gap-2">
+                                <form action="" method="GET" class="m-0 d-flex gap-2">
+                                    @if(request('lebih_page')) <input type="hidden" name="lebih_page" value="{{ request('lebih_page') }}"> @endif
+                                    @if(request('search_lebih')) <input type="hidden" name="search_lebih" value="{{ request('search_lebih') }}"> @endif
+                                    <input type="text" name="search_selesai" class="form-control form-control-sm" placeholder="Cari NIDN / Nama..." value="{{ request('search_selesai') }}">
+                                    <button type="submit" class="btn btn-sm btn-outline-primary"><i class="bx bx-search"></i></button>
+                                </form>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive text-nowrap">
+                                <table class="table table-bordered">
+                                    <thead>
+                                        <tr>
+                                            <th rowspan="3" class="text-center align-middle">No</th>
+                                            <th rowspan="3" class="text-center align-middle">NIDN</th>
+                                            <th rowspan="3" class="text-center align-middle">Nama</th>
+                                            <th rowspan="3" class="text-center align-middle">Jenis</th>
+                                            <th rowspan="3" class="text-center align-middle">Jabatan</th>
+                                            <th rowspan="3" class="text-center align-middle">Status</th>
+                                            <th colspan="48" class="text-center">Januari - Desember</th>
+                                            <th colspan="11" class="text-center">Jumlah Kotor, Nilai Pajak, dan Bersih</th>
+                                            <th rowspan="3" class="text-center align-middle">Aksi</th>
+                                        </tr>
+                                        <tr>
+                                            <th colspan="2" class="text-center">Jan</th><th colspan="2" class="text-center">Jan (Aktual)</th>
+                                            <th colspan="2" class="text-center">Feb</th><th colspan="2" class="text-center">Feb (Aktual)</th>
+                                            <th colspan="2" class="text-center">Mar</th><th colspan="2" class="text-center">Mar (Aktual)</th>
+                                            <th colspan="2" class="text-center">Apr</th><th colspan="2" class="text-center">Apr (Aktual)</th>
+                                            <th colspan="2" class="text-center">Mei</th><th colspan="2" class="text-center">Mei (Aktual)</th>
+                                            <th colspan="2" class="text-center">Jun</th><th colspan="2" class="text-center">Jun (Aktual)</th>
+                                            <th colspan="2" class="text-center">Jul</th><th colspan="2" class="text-center">Jul (Aktual)</th>
+                                            <th colspan="2" class="text-center">Ags</th><th colspan="2" class="text-center">Ags (Aktual)</th>
+                                            <th colspan="2" class="text-center">Sep</th><th colspan="2" class="text-center">Sep (Aktual)</th>
+                                            <th colspan="2" class="text-center">Okt</th><th colspan="2" class="text-center">Okt (Aktual)</th>
+                                            <th colspan="2" class="text-center">Nov</th><th colspan="2" class="text-center">Nov (Aktual)</th>
+                                            <th colspan="2" class="text-center">Des</th><th colspan="2" class="text-center">Des (Aktual)</th>
+                                            <th colspan="2" class="text-center">Jumlah Kotor</th>
+                                            <th colspan="2" class="text-center">Nilai Pajak</th>
+                                            <th rowspan="2" class="text-center align-middle">Bersih</th>
+                                            <th colspan="2" class="text-center">Jumlah Kotor (Aktual)</th>
+                                            <th colspan="2" class="text-center">Nilai Pajak (Aktual)</th>
+                                            <th rowspan="2" class="text-center align-middle">Bersih (Aktual)</th>
+                                            <th rowspan="2" class="text-center align-middle">Kesimpulan</th>
+                                        </tr>
+                                        <tr>
+                                            @for ($i = 1; $i <= 12; $i++)
+                                            <th class="text-center">TPD</th><th class="text-center">TKGB</th>
+                                            <th class="text-center">TPD</th><th class="text-center">TKGB</th>
+                                            @endfor
+                                            <th class="text-center">TPD</th><th class="text-center">TKGB</th>
+                                            <th class="text-center">TPD</th><th class="text-center">TKGB</th>
+                                            <th class="text-center">TPD</th><th class="text-center">TKGB</th>
+                                            <th class="text-center">TPD</th><th class="text-center">TKGB</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @forelse($selesaiRows as $row)
+                                        @php
+                                        $status = $row->Aktif == 1 ? 'Aktif' : 'Tidak Aktif';
+                                        $kesimpulan = ((float) ($row->bersih ?? 0)) - ((float) ($row->bersih_akt ?? 0));
+                                        $clsKesimpulan = $kesimpulan == 0.0 ? '' : ($kesimpulan > 0 ? 'table-success' : 'table-danger');
+                                        @endphp
+                                        <tr>
+                                            <td>{{ $loop->iteration }}</td>
+                                            <td>{{ $row->NIDN }}</td>
+                                            <td>{{ $row->Nama }}</td>
+                                            <td>{{ $row->Jenis }}</td>
+                                            <td>{{ $row->Jabatan12 }}</td>
+                                            <td>{{ $status }}</td>
+                                                @for ($i = 1; $i <= 12; $i++)
+                                                @php
+                                                    $dbTpd = $row->{'db_tpd'.$i} ?? 0;
+                                                    $dbTkgb = $row->{'db_tkgb'.$i} ?? 0;
+                                                    $aktTpd = $row->{'exp_tpd'.$i} ?? 0;
+                                                    $aktTkgb = $row->{'exp_tkgb'.$i} ?? 0;
+                                                    $clsTpd = $diffBgClass($dbTpd, $aktTpd);
+                                                    $clsTkgb = $diffBgClass($dbTkgb, $aktTkgb);
+                                                @endphp
+                                                <td class="{{ $clsTpd }}">{{ $formatInt($dbTpd) }}</td>
+                                                <td class="{{ $clsTkgb }}">{{ $formatInt($dbTkgb) }}</td>
+                                                <td>{{ $formatInt($aktTpd) }}</td>
+                                                <td>{{ $formatInt($aktTkgb) }}</td>
+                                                @endfor
+                                                @php
+                                                    $clsSumTpd = $diffBgClass($row->jml_tpd ?? 0, $row->jml_tpd_akt ?? 0);
+                                                    $clsSumTkgb = $diffBgClass($row->jml_tkgb ?? 0, $row->jml_tkgb_akt ?? 0);
+                                                    $clsPjkTpd = $diffBgClass($row->nilai_pjk_tpd ?? 0, $row->nilai_pjk_tpd_akt ?? 0);
+                                                    $clsPjkTkgb = $diffBgClass($row->nilai_pjk_tkgb ?? 0, $row->nilai_pjk_tkgb_akt ?? 0);
+                                                    $clsBersih = $diffBgClass($row->bersih ?? 0, $row->bersih_akt ?? 0);
+                                                @endphp
+                                                <td class="{{ $clsSumTpd }}">{{ $formatInt($row->jml_tpd ?? 0) }}</td>
+                                                <td class="{{ $clsSumTkgb }}">{{ $formatInt($row->jml_tkgb ?? 0) }}</td>
+                                                <td class="{{ $clsPjkTpd }}">{{ $formatInt($row->nilai_pjk_tpd ?? 0) }}</td>
+                                                <td class="{{ $clsPjkTkgb }}">{{ $formatInt($row->nilai_pjk_tkgb ?? 0) }}</td>
+                                                <td class="{{ $clsBersih }}">{{ $formatInt($row->bersih ?? 0) }}</td>
+                                                <td>{{ $formatInt($row->jml_tpd_akt ?? 0) }}</td>
+                                                <td>{{ $formatInt($row->jml_tkgb_akt ?? 0) }}</td>
+                                                <td>{{ $formatInt($row->nilai_pjk_tpd_akt ?? 0) }}</td>
+                                                <td>{{ $formatInt($row->nilai_pjk_tkgb_akt ?? 0) }}</td>
+                                                <td>{{ $formatInt($row->bersih_akt ?? 0) }}</td>
+                                                <td class="{{ $clsKesimpulan }}">{{ $formatInt($kesimpulan) }}</td>
+                                                <td class="text-center align-middle">
+                                                    @if(in_array($row->NIDN, $processedRekapNidnsLebih ?? []))
+                                                    <span class="badge bg-label-info d-inline-flex align-items-center" style="font-size:10px;padding:3px 8px;" title="Sudah diproses SP2D melalui Rekap">
+                                                        <i class="bx bx-check-circle me-1"></i> SP2D
+                                                    </span>
+                                                    @elseif($kesimpulan != 0)
+                                                    @php
+                                                        $availMonths = [];
+                                                        for($m=1; $m<=12; $m++) {
+                                                            $dbK = ($row->{'db_tpd'.$m} ?? 0) + ($row->{'db_tkgb'.$m} ?? 0);
+                                                            $akK = ($row->{'exp_tpd'.$m} ?? 0) + ($row->{'exp_tkgb'.$m} ?? 0);
+                                                            // Lebih bayar: aktual yang dibayar (ak) > hak (db)
+                                                            if($akK > $dbK) {
+                                                                $dbB = $row->{'db_bersih'.$m} ?? 0;
+                                                                $akB = $row->{'akt_bersih'.$m} ?? 0;
+                                                                $selisihBersih = $akB - $dbB;
+                                                                $nominal = $selisihBersih > 0 ? $selisihBersih : ($akK - $dbK);
+                                                                $availMonths[] = ['bulan' => $m, 'nominal' => $nominal];
+                                                            }
+                                                        }
+                                                    @endphp
+                                                    <button type="button" class="btn btn-sm btn-primary btn-aksi-sp2d-individu py-0 px-2"
+                                                        data-nidn="{{ $row->NIDN }}" data-nama="{{ $row->Nama }}" data-jenis="lebih" data-bulan="{{ json_encode($availMonths) }}" title="Input Pembayaran NIDN: {{ $row->NIDN }}" style="font-size:11px;">
+                                                        <i class="bx bx-edit-alt"></i> Pembayaran
+                                                    </button>
+                                                    @else
+                                                    <span class="badge bg-label-success d-inline-flex align-items-center" style="font-size:10px;padding:3px 8px;" title="Tidak ada selisih">
+                                                        <i class="bx bx-check me-1"></i> Selesai
+                                                    </span>
+                                                    @endif
+                                                </td>
+                                        </tr>
+                                        @empty
+                                        <tr>
+                                            <td colspan="65" class="text-center">Tidak ada data selesai (lunas) ditemukan</td>
+                                        </tr>
+                                        @endforelse
+                                    </tbody>
+                                </table>
+                            </div>
+                            
+                            @if($selesaiRows instanceof \Illuminate\Pagination\LengthAwarePaginator)
+        <div class="mt-4 d-flex justify-content-end">
+            {{ $selesaiRows->appends(request()->query())->links('pagination::bootstrap-5') }}
         </div>
     @endif
                         </div>
@@ -1289,7 +1452,27 @@
                     if (data.success) {
                         if (alertApi) await alertApi.success('Berhasil', data.message);
                         else alert('Berhasil memproses SP2D.');
-                        window.location.reload();
+                        
+                        if (data.is_lunas) {
+                            const btn = document.querySelector(`button.btn-aksi-sp2d-individu[data-nidn="${nidn}"]`);
+                            if (btn) {
+                                const tr = btn.closest('tr');
+                                if (tr) {
+                                    const tdAksi = tr.querySelector('td:last-child');
+                                    if (tdAksi) {
+                                        tdAksi.innerHTML = '<span class="badge bg-label-success d-inline-flex align-items-center" style="font-size:10px;padding:3px 8px;" title="Tidak ada selisih"><i class="bx bx-check me-1"></i> Selesai</span>';
+                                    }
+                                    const selesaiTbody = document.querySelector('#tab-data-selesai tbody');
+                                    if (selesaiTbody) {
+                                        const emptyTr = selesaiTbody.querySelector('td[colspan="65"]');
+                                        if (emptyTr) emptyTr.closest('tr').remove();
+                                        selesaiTbody.appendChild(tr);
+                                    }
+                                }
+                            }
+                        } else {
+                            window.location.reload();
+                        }
                     } else {
                         if (alertApi) await alertApi.error('Gagal', data.message || 'Terjadi kesalahan.');
                         else alert(data.message || 'Terjadi kesalahan.');
@@ -1403,7 +1586,27 @@
                     if (data.success) {
                         if (alertApi) await alertApi.success('Berhasil', data.message);
                         else alert('Berhasil memproses Pembayaran.');
-                        window.location.reload();
+                        
+                        if (data.is_lunas) {
+                            const btn = document.querySelector(`button.btn-aksi-sp2d-individu[data-nidn="${nidn}"]`);
+                            if (btn) {
+                                const tr = btn.closest('tr');
+                                if (tr) {
+                                    const tdAksi = tr.querySelector('td:last-child');
+                                    if (tdAksi) {
+                                        tdAksi.innerHTML = '<span class="badge bg-label-success d-inline-flex align-items-center" style="font-size:10px;padding:3px 8px;" title="Tidak ada selisih"><i class="bx bx-check me-1"></i> Selesai</span>';
+                                    }
+                                    const selesaiTbody = document.querySelector('#tab-data-selesai tbody');
+                                    if (selesaiTbody) {
+                                        const emptyTr = selesaiTbody.querySelector('td[colspan="65"]');
+                                        if (emptyTr) emptyTr.closest('tr').remove();
+                                        selesaiTbody.appendChild(tr);
+                                    }
+                                }
+                            }
+                        } else {
+                            window.location.reload();
+                        }
                     } else {
                         if (alertApi) await alertApi.error('Gagal', data.message || 'Terjadi kesalahan.');
                         else alert(data.message || 'Terjadi kesalahan.');
