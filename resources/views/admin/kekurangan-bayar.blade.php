@@ -196,8 +196,8 @@
                                         @forelse($kurangRows as $row)
                                         @php
                                         $status = $row->Aktif == 1 ? 'Aktif' : 'Tidak Aktif';
-                                        $kesimpulan = ((float) ($row->bersih ?? 0)) - ((float) ($row->bersih_akt ?? 0));
-                                        $clsKesimpulan = $kesimpulan == 0.0 ? '' : ($kesimpulan > 0 ? 'table-success' : 'table-danger');
+                                        $kesimpulan = ((float) ($row->bersih_akt ?? 0)) - ((float) ($row->bersih ?? 0));
+                                        $clsKesimpulan = $kesimpulan == 0.0 ? '' : ($kesimpulan < 0 ? 'table-danger' : 'table-success');
                                         @endphp
                                         <tr>
                                             <td>{{ $loop->iteration }}</td>
@@ -356,7 +356,7 @@
                                         @forelse($lebihRows as $row)
                                         @php
                                         $status = $row->Aktif == 1 ? 'Aktif' : 'Tidak Aktif';
-                                        $kesimpulan = ((float) ($row->bersih ?? 0)) - ((float) ($row->bersih_akt ?? 0));
+                                        $kesimpulan = ((float) ($row->bersih_akt ?? 0)) - ((float) ($row->bersih ?? 0));
                                         $clsKesimpulan = $kesimpulan == 0.0 ? '' : ($kesimpulan > 0 ? 'table-success' : 'table-danger');
                                         @endphp
                                         <tr>
@@ -1364,14 +1364,14 @@
                     const prefix = trxType === 'Pemotongan' ? 'Pemotongan' : 'Pengembalian';
                     document.getElementById('ntpnIndividuUraian').placeholder = 'Cth: '+ prefix + ' pembayaran untuk bulan ' + monthName;
                     
-                    if (trxType === 'Pemotongan') {
+                    if (trxType === 'Pemotongan' || trxType === 'Pengembalian') {
                         if(nominal) {
                             document.getElementById('ntpnIndividuNominal').value = nominal;
                         }
                     }
                 } else {
                     document.getElementById('ntpnIndividuUraian').placeholder = 'Cth: Pemotongan Pembayaran ';
-                    if (trxType === 'Pemotongan') {
+                    if (trxType === 'Pemotongan' || trxType === 'Pengembalian') {
                         document.getElementById('ntpnIndividuNominal').value = '';
                     }
                 }

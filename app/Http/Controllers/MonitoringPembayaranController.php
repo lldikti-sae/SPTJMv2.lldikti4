@@ -370,20 +370,20 @@ class MonitoringPembayaranController extends Controller
       $selisihBulanan[] = (float) $selisihBulan;
       
       $tarifM = $kotor > 0 ? ($pajak / $kotor) : 0;
-      if ($selisihBulan > 0.01) {
-          $gross = abs($selisihBulan);
-          $pjk = $gross * $tarifM;
-          $net = $gross - $pjk;
-          $remainingKurangGross += $gross;
-          $remainingKurangPajak += $pjk;
-          $remainingKurangNet += $net;
-      } elseif ($selisihBulan < -0.01) {
+      if ($selisihBulan > 0.01) { // Lebih Bayar (Aktual > Hak)
           $gross = abs($selisihBulan);
           $pjk = $gross * $tarifM;
           $net = $gross - $pjk;
           $remainingLebihGross += $gross;
           $remainingLebihPajak += $pjk;
           $remainingLebihNet += $net;
+      } elseif ($selisihBulan < -0.01) { // Kurang Bayar (Aktual < Hak)
+          $gross = abs($selisihBulan);
+          $pjk = $gross * $tarifM;
+          $net = $gross - $pjk;
+          $remainingKurangGross += $gross;
+          $remainingKurangPajak += $pjk;
+          $remainingKurangNet += $net;
       }
 
       // Status logic — use origHasSp2d for original status, hasSp2d for resolved display
@@ -395,9 +395,9 @@ class MonitoringPembayaranController extends Controller
         $statusBulanan[] = 'usulan';
       } elseif ($origHasSp2d && $bersih == 0 && $kotor > 0) {
         $statusBulanan[] = 'proses';
-      } elseif ($origHasSp2d && $selisihBulan > 0) {
+      } elseif ($origHasSp2d && $selisihBulan < 0) { // Kurang Bayar (Aktual < Hak)
         $statusBulanan[] = 'kurang';
-      } elseif ($origHasSp2d && $selisihBulan < 0) {
+      } elseif ($origHasSp2d && $selisihBulan > 0) { // Lebih Bayar (Aktual > Hak)
         $statusBulanan[] = 'lebih';
       } elseif ($origHasSp2d && $selisihBulan == 0 && $bersih > 0) {
         $statusBulanan[] = 'selesai';
@@ -425,16 +425,16 @@ class MonitoringPembayaranController extends Controller
         $poolLebih = $kompensasi;
         
         foreach ($selisihBulanan as $k => $v) {
-            if ($v < -0.01 && $poolLebih > 0.01) {
-                $potong = min(abs($v), $poolLebih);
-                $selisihBulanan[$k] += $potong; // Mendekati 0
+            if ($v > 0.01 && $poolLebih > 0.01) { // Lebih Bayar (Positif)
+                $potong = min($v, $poolLebih);
+                $selisihBulanan[$k] -= $potong; // Mendekati 0
                 $poolLebih -= $potong;
                 if (abs($selisihBulanan[$k]) < 0.01 && $statusBulanan[$k] == 'lebih') {
                     $statusBulanan[$k] = 'selesai';
                 }
-            } elseif ($v > 0.01 && $poolKurang > 0.01) {
-                $potong = min($v, $poolKurang);
-                $selisihBulanan[$k] -= $potong;
+            } elseif ($v < -0.01 && $poolKurang > 0.01) { // Kurang Bayar (Negatif)
+                $potong = min(abs($v), $poolKurang);
+                $selisihBulanan[$k] += $potong;
                 $poolKurang -= $potong;
                 if (abs($selisihBulanan[$k]) < 0.01 && $statusBulanan[$k] == 'kurang') {
                     $statusBulanan[$k] = 'selesai';
@@ -504,14 +504,14 @@ class MonitoringPembayaranController extends Controller
     $sisaKurangGross = 0; $sisaKurangPajak = 0; $sisaKurangNet = 0;
     $sisaLebihGross = 0; $sisaLebihPajak = 0; $sisaLebihNet = 0;
 
-    if ($totalSisaGross < -0.01) { // Lebih Bayar
-        $sisaLebihGross = abs($totalSisaGross);
-        $sisaLebihPajak = abs($totalSisaGross) * $globalTarif;
-        $sisaLebihNet = abs($totalSisaGross) - $sisaLebihPajak;
-    } elseif ($totalSisaGross > 0.01) { // Kurang Bayar
-        $sisaKurangGross = $totalSisaGross;
-        $sisaKurangPajak = $totalSisaGross * $globalTarif;
-        $sisaKurangNet = $totalSisaGross - $sisaKurangPajak;
+    if ($totalSisaGross > 0.01) { // Lebih Bayar (Aktual > Hak)
+        $sisaLebihGross = $totalSisaGross;
+        $sisaLebihPajak = $totalSisaGross * $globalTarif;
+        $sisaLebihNet = $totalSisaGross - $sisaLebihPajak;
+    } elseif ($totalSisaGross < -0.01) { // Kurang Bayar (Aktual < Hak)
+        $sisaKurangGross = abs($totalSisaGross);
+        $sisaKurangPajak = abs($totalSisaGross) * $globalTarif;
+        $sisaKurangNet = abs($totalSisaGross) - $sisaKurangPajak;
     }
 
     $summaryRekap = [

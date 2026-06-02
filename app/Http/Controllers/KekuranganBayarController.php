@@ -533,8 +533,8 @@ class KekuranganBayarController extends Controller
                   $sp2dOk = ($noSp2d !== '' && $tglSp2d !== '');
                   if (!$sp2dOk) continue;
 
-                  $dbKotorTPD = (float) $this->parseMoney($row->{'TPD' . $m} ?? 0);
-                  $dbKotorTKGB = (float) $this->parseMoney($row->{'TKGB' . $m} ?? 0);
+                  $aktKotorTPD = (float) $this->parseMoney($row->{'TPD' . $m} ?? 0);
+                  $aktKotorTKGB = (float) $this->parseMoney($row->{'TKGB' . $m} ?? 0);
                   
                   $gol = trim((string) ($row->{'Gol' . $m} ?? ''));
                   $jabatan = (string) ($row->{'Jabatan' . $m} ?? ($row->Jabatan12 ?? ''));
@@ -543,8 +543,8 @@ class KekuranganBayarController extends Controller
                   $k_tpd = (float) ($row->{'k_tpd' . $m} ?? 0);
                   $k_tkgb = (float) ($row->{'k_tkgb' . $m} ?? 0);
                   
-                  $aktKotorTPD = $dbKotorTPD - $k_tpd;
-                  $aktKotorTKGB = $dbKotorTKGB - $k_tkgb;
+                  $dbKotorTPD = $aktKotorTPD + $k_tpd;
+                  $dbKotorTKGB = $aktKotorTKGB + $k_tkgb;
                   
                   $tarif = (float) (($tarifMap[$jenisKey][$gol] ?? 0) ?: 0);
                   
@@ -671,7 +671,7 @@ class KekuranganBayarController extends Controller
         $row->jml_tpd = $sumDbKotorTPD; $row->jml_tkgb = $sumDbKotorTKGB; $row->nilai_pjk_tpd = $sumDbPajakTPD; $row->nilai_pjk_tkgb = $sumDbPajakTKGB; $row->bersih = $sumDbBersih;
         $row->jml_tpd_akt = $sumAktKotorTPD; $row->jml_tkgb_akt = $sumAktKotorTKGB; $row->nilai_pjk_tpd_akt = $sumAktPajakTPD; $row->nilai_pjk_tkgb_akt = $sumAktPajakTKGB; $row->bersih_akt = $sumAktBersih;
 
-        $kesimpulan = $sumDbBersih - $sumAktBersih;
+        $kesimpulan = $sumAktBersih - $sumDbBersih;
         if ($kesimpulan < 0) {
             $kurangArr[] = $row;
         } elseif ($kesimpulan > 0) {
@@ -766,7 +766,7 @@ class KekuranganBayarController extends Controller
         $sumDbBersih += $dbBersih;
         $sumAktBersih += $aktBersih;
       }
-      $kesimpulan = $sumDbBersih - $sumAktBersih;
+      $kesimpulan = $sumAktBersih - $sumDbBersih;
       $grandTotal += abs($kesimpulan);
     }
     return $grandTotal;
@@ -935,10 +935,8 @@ class KekuranganBayarController extends Controller
 
         $dbTPD = 0; $dbTKGB = 0; $aktTPD = 0; $aktTKGB = 0;
         if ($sp2dOk) {
-          $dbKotorTPD = (float) $this->parseMoney($row->{'TPD' . $i} ?? 0);
-          $dbKotorTKGB = (float) $this->parseMoney($row->{'TKGB' . $i} ?? 0);
-          $dbTPD = (int) round($dbKotorTPD);
-          $dbTKGB = (int) round($dbKotorTKGB);
+          $aktKotorTPD = (float) $this->parseMoney($row->{'TPD' . $i} ?? 0);
+          $aktKotorTKGB = (float) $this->parseMoney($row->{'TKGB' . $i} ?? 0);
 
           $gol = trim((string) ($row->{'Gol' . $i} ?? ''));
           $jabatan = (string) ($row->{'Jabatan' . $i} ?? ($row->Jabatan12 ?? ''));
@@ -947,8 +945,11 @@ class KekuranganBayarController extends Controller
           $k_tpd = (float) ($row->{'k_tpd' . $i} ?? 0);
           $k_tkgb = (float) ($row->{'k_tkgb' . $i} ?? 0);
           
-          $aktKotorTPD = $dbKotorTPD - $k_tpd;
-          $aktKotorTKGB = $dbKotorTKGB - $k_tkgb;
+          $dbKotorTPD = $aktKotorTPD + $k_tpd;
+          $dbKotorTKGB = $aktKotorTKGB + $k_tkgb;
+          
+          $dbTPD = (int) round($dbKotorTPD);
+          $dbTKGB = (int) round($dbKotorTKGB);
           
           $tarif = (float) (($tarifMap[$jenisKey][$gol] ?? 0) ?: 0);
 
@@ -993,6 +994,9 @@ class KekuranganBayarController extends Controller
           $aktPajakTPD = $aktKotorTPD * $tarif;
           $aktPajakTKGB = $kenaTKGB ? ($aktKotorTKGB * $tarif) : 0.0;
           $aktBersih = ($aktKotorTPD - $aktPajakTPD) + ($aktKotorTKGB - $aktPajakTKGB);
+
+          $row->{'db_bersih' . $i} = $dbBersih;
+          $row->{'akt_bersih' . $i} = $aktBersih;
 
           $sumDbKotorTPD += $dbKotorTPD; $sumDbKotorTKGB += $dbKotorTKGB; $sumDbPajakTPD += $dbPajakTPD; $sumDbPajakTKGB += $dbPajakTKGB; $sumDbBersih += $dbBersih;
           $sumAktKotorTPD += $aktKotorTPD; $sumAktKotorTKGB += $aktKotorTKGB; $sumAktPajakTPD += $aktPajakTPD; $sumAktPajakTKGB += $aktPajakTKGB; $sumAktBersih += $aktBersih;
@@ -1194,8 +1198,8 @@ class KekuranganBayarController extends Controller
                     'nuptk' => $arr['NUPTK'] ?? null,
                     'nama' => $arr['nama'] ?? null,
                     'tahun' => $arr['tahun'] ?? null,
-                    'selisih' => round($kTpd, 2) * -1,
-                    'jenis_pembayaran' => ($kTpd > 0 ? 'K_TPD' : 'L_TPD') . $i,
+                    'selisih' => round($kTpd, 2),
+                    'jenis_pembayaran' => ($kTpd < 0 ? 'K_TPD' : 'L_TPD') . $i,
                     'created_at' => now(),
                     'updated_at' => now()
                 ];
@@ -1206,8 +1210,8 @@ class KekuranganBayarController extends Controller
                     'nuptk' => $arr['NUPTK'] ?? null,
                     'nama' => $arr['nama'] ?? null,
                     'tahun' => $arr['tahun'] ?? null,
-                    'selisih' => round($kTkgb, 2) * -1,
-                    'jenis_pembayaran' => ($kTkgb > 0 ? 'K_TKGB' : 'L_TKGB') . $i,
+                    'selisih' => round($kTkgb, 2),
+                    'jenis_pembayaran' => ($kTkgb < 0 ? 'K_TKGB' : 'L_TKGB') . $i,
                     'created_at' => now(),
                     'updated_at' => now()
                 ];
@@ -1890,10 +1894,17 @@ class KekuranganBayarController extends Controller
         $rekapsKurangNidns = array_merge($rekapsKurangNidns, $nids);
     }
     $rekapsKurangNidns = array_unique($rekapsKurangNidns);
+    
+    // Protect fully paid NIDNs
+    list($fullyPaidNidns, ) = $this->getFullyPaidNidns($versi);
+    $protectedNidns = array_unique(array_merge($rekapsKurangNidns, $fullyPaidNidns));
 
-    $query = DB::table('t_kekurangan')->where('tahun', $versi)->where('selisih', '<', 0);
-    if (!empty($rekapsKurangNidns)) {
-        $query->whereNotIn('nidn', $rekapsKurangNidns);
+    $query = DB::table('t_kekurangan')
+        ->where('tahun', $versi)
+        ->where('jenis_pembayaran', 'like', 'K_%');
+        
+    if (!empty($protectedNidns)) {
+        $query->whereNotIn('nidn', $protectedNidns);
     }
     $query->delete();
     
@@ -1916,10 +1927,17 @@ class KekuranganBayarController extends Controller
         $rekapsLebihNidns = array_merge($rekapsLebihNidns, $nids);
     }
     $rekapsLebihNidns = array_unique($rekapsLebihNidns);
+    
+    // Protect fully paid NIDNs
+    list($fullyPaidNidns, ) = $this->getFullyPaidNidns($versi);
+    $protectedNidns = array_unique(array_merge($rekapsLebihNidns, $fullyPaidNidns));
 
-    $query = DB::table('t_kekurangan')->where('tahun', $versi)->where('selisih', '>', 0);
-    if (!empty($rekapsLebihNidns)) {
-        $query->whereNotIn('nidn', $rekapsLebihNidns);
+    $query = DB::table('t_kekurangan')
+        ->where('tahun', $versi)
+        ->where('jenis_pembayaran', 'like', 'L_%');
+        
+    if (!empty($protectedNidns)) {
+        $query->whereNotIn('nidn', $protectedNidns);
     }
     $query->delete();
     
@@ -1945,9 +1963,9 @@ class KekuranganBayarController extends Controller
           // Delete underlying data for these NIDNs (original selisih + PEMBAYARAN rows)
           if (!empty($nidns)) {
               if ($isKurang) {
-                  DB::table('t_kekurangan')->where('tahun', $versi)->where('selisih', '<', 0)->whereIn('nidn', $nidns)->delete();
+                  DB::table('t_kekurangan')->where('tahun', $versi)->where('jenis_pembayaran', 'like', 'K_%')->whereIn('nidn', $nidns)->delete();
               } else {
-                  DB::table('t_kekurangan')->where('tahun', $versi)->where('selisih', '>', 0)->whereIn('nidn', $nidns)->delete();
+                  DB::table('t_kekurangan')->where('tahun', $versi)->where('jenis_pembayaran', 'like', 'L_%')->whereIn('nidn', $nidns)->delete();
               }
               // Also delete PEMBAYARAN rows generated by SP2D processing for this rekap
               DB::table('t_kekurangan')->where('tahun', $versi)
@@ -1995,9 +2013,9 @@ class KekuranganBayarController extends Controller
               // Delete underlying data for these NIDNs (original selisih + PEMBAYARAN rows)
               if (!empty($nidns)) {
                   if ($isKurang) {
-                      DB::table('t_kekurangan')->where('tahun', $versi)->where('selisih', '<', 0)->whereIn('nidn', $nidns)->delete();
+                      DB::table('t_kekurangan')->where('tahun', $versi)->where('jenis_pembayaran', 'like', 'K_%')->whereIn('nidn', $nidns)->delete();
                   } else {
-                      DB::table('t_kekurangan')->where('tahun', $versi)->where('selisih', '>', 0)->whereIn('nidn', $nidns)->delete();
+                      DB::table('t_kekurangan')->where('tahun', $versi)->where('jenis_pembayaran', 'like', 'L_%')->whereIn('nidn', $nidns)->delete();
                   }
                   // Also delete PEMBAYARAN rows generated by SP2D processing
                   DB::table('t_kekurangan')->where('tahun', $versi)
@@ -2159,15 +2177,19 @@ class KekuranganBayarController extends Controller
           for ($i = 1; $i <= 12; $i++) {
               $sp2dOk = (trim((string) ($row->{'No_sp2d_' . $i} ?? '')) !== '' && trim((string) ($row->{'Tgl_sp2d_' . $i} ?? '')) !== '');
               if ($sp2dOk) {
-                  $dbKotorTPD = (float) $this->parseMoney($row->{'TPD' . $i} ?? 0);
-                  $dbKotorTKGB = (float) $this->parseMoney($row->{'TKGB' . $i} ?? 0);
+                  $aktKotorTPD = (float) $this->parseMoney($row->{'TPD' . $i} ?? 0);
+                  $aktKotorTKGB = (float) $this->parseMoney($row->{'TKGB' . $i} ?? 0);
                   $gaji = $this->parseMoney($row->{'Gaji' . $i} ?? 0);
                   
                   $gol = trim((string) ($row->{'Gol' . $i} ?? ''));
                   $jabatan = (string) ($row->{'Jabatan' . $i} ?? ($row->Jabatan12 ?? ''));
                   $kenaTKGB = $this->isGuruBesarAtauProfesor($jabatan);
                   
-                  [$aktKotorTPD, $aktKotorTKGB] = $this->splitAktualKotorFromGaji($gaji, $kenaTKGB);
+                  $k_tpd = (float) ($row->{'k_tpd' . $i} ?? 0);
+                  $k_tkgb = (float) ($row->{'k_tkgb' . $i} ?? 0);
+                  
+                  $dbKotorTPD = $aktKotorTPD + $k_tpd;
+                  $dbKotorTKGB = $aktKotorTKGB + $k_tkgb;
                   
                   $tarif = (float) (($tarifMap[$jenisKey][$gol] ?? 0) ?: 0);
                   
@@ -2183,7 +2205,7 @@ class KekuranganBayarController extends Controller
                   $sumAktBersih += $aktBersih;
               }
           }
-          $row->kesimpulan = $sumDbBersih - $sumAktBersih;
+          $row->kesimpulan = $sumAktBersih - $sumDbBersih;
           return $row;
       };
 

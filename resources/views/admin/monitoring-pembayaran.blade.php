@@ -248,7 +248,7 @@ $months = [
              }
           @endphp
           <td class="text-center" style="font-size:11px;">{{ $tglSp2dStr }}</td>
-          <td class="text-end fw-bold {{ $sel < 0 ? 'text-danger' : ($sel > 0 ? 'text-purple' : 'text-success') }}" style="{{ $sel > 0 ? 'color:#7c3aed!important;' : '' }}">{{ $sel < 0 ? '+' : ($sel > 0 ? '-' : '') }}{{ number_format(abs($sel),0,',','.') }}</td>
+          <td class="text-end fw-bold {{ $sel < 0 ? 'text-danger' : ($sel > 0 ? 'text-success' : 'text-success') }}">{{ $sel < 0 ? '-' : ($sel > 0 ? '+' : '') }}{{ number_format(abs($sel),0,',','.') }}</td>
           <td class="text-center">@if($st && isset($statusMap[$st]))<span class="badge {{ $statusMap[$st][0] }}" style="font-size:10px;">{{ $statusMap[$st][1] }}</span>@else - @endif</td>
         </tr>
         @endforeach
@@ -504,8 +504,8 @@ $months = [
             const tkc=(v)=>hasTkgb?`<td class="text-end tkgb-col">${fmt(v)}</td>`:'';
 
             for(let i=0;i<months.length;i++){
-              const s=sb[i]||0, st=stb[i], sc=s<0?'text-end text-danger fw-bold':(s>0?'text-end text-purple fw-bold':'text-end text-success fw-bold'), ss=s>0?'color:#7c3aed!important;':'';
-              const pfx=s<0?'+':(s>0?'-':'');
+              const s=sb[i]||0, st=stb[i], sc=s<0?'text-end text-danger fw-bold':(s>0?'text-end text-success fw-bold':'text-end text-success fw-bold'), ss='';
+              const pfx=s<0?'-':(s>0?'+':'');
               let stH='-'; if(st&&statusCfg[st]) stH=`<span class="badge ${statusCfg[st][0]}" style="font-size:10px">${statusCfg[st][1]}</span>`;
               
               let tglMain = data.tglSp2d[i] ?? '-';
@@ -554,9 +554,9 @@ $months = [
             const jmPajakTpd = (t.pajakTpd||0) + (t.pajakTkgb||0);
             const jmBersihTpd = (t.bersihTpd||0) + (t.bersihTkgb||0);
             
-            const taKotorTpd = jmKotorTpd + valKGr - valLGr;
-            const taPajakTpd = jmPajakTpd + valKPj - valLPj;
-            const taBersihTpd = jmBersihTpd + valKNe - valLNe;
+            const taKotorTpd = jmKotorTpd + valKGrRow - valLGrRow;
+            const taPajakTpd = jmPajakTpd + valKPjRow - valLPjRow;
+            const taBersihTpd = jmBersihTpd + valKNeRow - valLNeRow;
             tbody.innerHTML+=`<tr class="fw-bold" style="background-color:#f0fff4"><td colspan="4" class="text-center">Total Akhir</td><td class="text-end">${fmt(t.gaji||0)}</td><td class="text-end">${fmt(taKotorTpd)}</td>${tkc(0)}<td class="text-end">${fmt(taPajakTpd)}</td>${tkc(0)}<td class="text-end">${fmt(taBersihTpd)}</td>${tkc(0)}<td colspan="2"></td><td colspan="2"></td></tr>`;
           }
 
