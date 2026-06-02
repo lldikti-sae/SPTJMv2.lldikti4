@@ -1383,7 +1383,7 @@
                     const nominal = selectedOpt.dataset.nominal || '';
                     const monthName = selectedOpt.text;
                     const prefix = trxType === 'Pemotongan' ? 'Pemotongan' : 'Pengembalian';
-                    document.getElementById('ntpnIndividuUraian').placeholder = 'Cth: '+ prefix + ' pembayaran untuk bulan ' + monthName;
+                    document.getElementById('ntpnIndividuUraian').placeholder = 'Cth: '+ prefix + ' kelebihan pembayaran';
                     
                     if (trxType === 'Pemotongan' || trxType === 'Pengembalian') {
                         if(nominal) {
@@ -1391,7 +1391,7 @@
                         }
                     }
                 } else {
-                    document.getElementById('ntpnIndividuUraian').placeholder = 'Cth: Pemotongan Pembayaran ';
+                    document.getElementById('ntpnIndividuUraian').placeholder = 'Cth: Pemotongan kelebihan pembayaran';
                     if (trxType === 'Pemotongan' || trxType === 'Pengembalian') {
                         document.getElementById('ntpnIndividuNominal').value = '';
                     }
@@ -1532,9 +1532,9 @@
                         const ntpnBulanEl = document.getElementById('ntpnIndividuBulan');
                         const monthName = ntpnBulanEl.options[ntpnBulanEl.selectedIndex].text;
                         const prefix = isPemotongan ? 'Pemotongan' : 'Pengembalian';
-                        uraianPembayaran = prefix + ' pembayaran untuk bulan ' + monthName;
+                        uraianPembayaran = prefix + ' kelebihan pembayaran';
                     } else {
-                        uraianPembayaran = jenisTrx;
+                        uraianPembayaran = isPemotongan ? 'Pemotongan kelebihan pembayaran' : 'Pengembalian kelebihan pembayaran';
                     }
                 }
 
