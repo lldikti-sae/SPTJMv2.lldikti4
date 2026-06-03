@@ -1,128 +1,260 @@
 <?php
 
 use Illuminate\Database\Migrations\Migration;
-use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\DB;
 
 class CreateSTransaksi2Table extends Migration
 {
-    /**
-     * Run the migrations.
-     *
-     * @return void
-     */
     public function up()
     {
-        Schema::create('s_transaksi_2', function (Blueprint $table) {
-            $table->bigIncrements('No');
-            $table->string('NIDN', 50)->nullable();
-            $table->string('NUPTK', 50)->nullable();
-            $table->string('NIK', 100)->nullable();
-            $table->string('Nama', 255)->nullable();
-            $table->string('TTL', 250)->nullable();
-            $table->string('Tanggal_Lahir', 50)->nullable();
-            $table->string('Usia', 2)->nullable();
-            $table->string('Sertifikat_Dosen', 50)->nullable();
-            $table->string('Tahun_Lulus', 50)->nullable();
-            $table->string('PTS', 255)->nullable();
-            $table->string('Kode_PT', 250)->nullable();
-            $table->string('Jenis', 10)->nullable();
-            $table->string('TMT_JAD_Pertama', 100)->nullable();
-            $table->string('Inpassing', 100)->nullable();
-            $table->string('TMT_Inpassing_Akhir', 50)->nullable();
-            $table->string('TMT_JAD_Akhir', 50)->nullable();
-
-            for ($i = 1; $i <= 12; $i++) {
-                $table->string('Jabatan'.$i, 15)->nullable();
-            }
-            for ($i = 1; $i <= 12; $i++) {
-                $table->string('Gol'.$i, 5)->nullable();
-            }
-            for ($i = 1; $i <= 12; $i++) {
-                $table->string('Tahun'.$i, 2)->nullable();
-            }
-
-            $table->string('NPWP', 100)->nullable();
-            $table->string('No_Rek', 100)->nullable();
-            $table->string('No_Rekening', 250)->nullable();
-            $table->string('Nama_Pegawai', 250)->nullable();
-            $table->string('Nama_Rekening', 250)->nullable();
-            $table->string('Nama_Penerima', 250)->nullable();
-            $table->string('Bank', 250)->nullable();
-            $table->string('Biaya_Per_Bulan', 250)->nullable();
-            $table->char('Aktif', 1)->nullable();
-            $table->string('Keterangan', 255)->nullable();
-            $table->string('Eligible_span', 50)->nullable();
-            $table->string('Tanggal_Update_Terakhir', 100)->nullable();
-            $table->string('Pemegang_Wilayah', 50)->nullable();
-
-            for ($i = 1; $i <= 12; $i++) {
-                $table->string('Gaji'.$i, 50)->nullable();
-            }
-            for ($i = 1; $i <= 12; $i++) {
-                $table->string('KodeUsulan'.$i, 30)->nullable();
-            }
-
-            $months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Ags','Sep','Okt','Nov','Des'];
-            foreach ($months as $m) {
-                $table->string($m, 20)->nullable();
-            }
-
-            for ($i = 1; $i <= 12; $i++) {
-                $table->string('TPD'.$i, 30)->nullable();
-                $table->string('TKGB'.$i, 30)->nullable();
-            }
-
-            for ($i = 1; $i <= 12; $i++) {
-                $table->decimal('pajakTPD'.$i, 10, 2)->nullable();
-                $table->decimal('pajakTKGB'.$i, 10, 2)->nullable();
-                $table->decimal('nilaiPajakTPD'.$i, 10, 0)->nullable();
-                $table->decimal('nilaiPajakTKGB'.$i, 10, 0)->nullable();
-                $table->decimal('bersihTPD'.$i, 10, 0)->nullable();
-                $table->decimal('bersihTKGB'.$i, 10, 0)->nullable();
-            }
-
-            for ($i = 1; $i <= 12; $i++) {
-                $table->string('No_sp2d_'.$i, 100)->nullable();
-                $table->string('Tgl_sp2d_'.$i, 30)->nullable();
-            }
-
-            $table->string('JmlTPD_Selisih', 50)->nullable();
-            $table->string('JmlTKGB_Selisih', 50)->nullable();
-            $table->string('Pajak_TPD_Selisih', 20)->nullable();
-            $table->string('Pajak_TKGB_Selisih', 20)->nullable();
-            $table->string('Bersih_TPD_Selisih', 20)->nullable();
-            $table->string('Bersih_TKGB_Selisih', 20)->nullable();
-            $table->string('No_SPM_TPD', 50)->nullable();
-            $table->string('No_SPM_TKGB', 50)->nullable();
-            $table->string('TglTPD', 50)->nullable();
-            $table->string('TglTKGB', 50)->nullable();
-            $table->string('Pengguna', 20)->nullable();
-            $table->string('Tahun_Versi', 50)->nullable();
-
-            $table->timestamps();
-
-            $table->index('NIDN');
-
-            // Table options: latin1 and MyISAM with compressed row format
-            $table->engine = 'MyISAM';
-            $table->charset = 'latin1';
-            $table->collation = 'latin1_swedish_ci';
-        });
-
-        // Set ROW_FORMAT=COMPRESSED and AUTO_INCREMENT to match original SQL
-        DB::statement("ALTER TABLE `s_transaksi_2` ROW_FORMAT=COMPRESSED;");
-        DB::statement("ALTER TABLE `s_transaksi_2` AUTO_INCREMENT = 41559;");
+        DB::statement('DROP TABLE IF EXISTS `s_transaksi_2`');
+        DB::statement(<<<SQL
+CREATE TABLE `s_transaksi_2` (
+  `No` bigint NOT NULL AUTO_INCREMENT,
+  `NIDN` varchar(50) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `NUPTK` varchar(50) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `NIK` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `Nama` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `TTL` varchar(250) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `Tanggal_Lahir` varchar(50) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `Usia` varchar(2) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `Sertifikat_Dosen` varchar(50) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `Tahun_Lulus` varchar(50) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `PTS` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `Kode_PT` varchar(250) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `Jenis` varchar(10) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `TMT_JAD_Pertama` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `Inpassing` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `TMT_Inpassing_Akhir` varchar(50) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `TMT_JAD_Akhir` varchar(50) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `Jabatan1` varchar(15) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `Jabatan2` varchar(15) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `Jabatan3` varchar(15) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `Jabatan4` varchar(15) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `Jabatan5` varchar(15) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `Jabatan6` varchar(15) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `Jabatan7` varchar(15) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `Jabatan8` varchar(15) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `Jabatan9` varchar(15) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `Jabatan10` varchar(15) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `Jabatan11` varchar(15) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `Jabatan12` varchar(15) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `Gol1` varchar(5) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `Gol2` varchar(5) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `Gol3` varchar(5) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `Gol4` varchar(5) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `Gol5` varchar(5) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `Gol6` varchar(5) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `Gol7` varchar(5) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `Gol8` varchar(5) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `Gol9` varchar(5) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `Gol10` varchar(5) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `Gol11` varchar(5) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `Gol12` varchar(5) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `Tahun1` varchar(2) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `Tahun2` varchar(2) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `Tahun3` varchar(2) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `Tahun4` varchar(2) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `Tahun5` varchar(2) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `Tahun6` varchar(2) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `Tahun7` varchar(2) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `Tahun8` varchar(2) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `Tahun9` varchar(2) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `Tahun10` varchar(2) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `Tahun11` varchar(2) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `Tahun12` varchar(2) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `NPWP` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `No_Rek` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `No_Rekening` varchar(250) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `Nama_Pegawai` varchar(250) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `Nama_Rekening` varchar(250) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `Nama_Penerima` varchar(250) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `Bank` varchar(250) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `Biaya_Per_Bulan` varchar(250) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `Aktif` char(1) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `Keterangan` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `Eligible_span` varchar(50) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `Tanggal_Update_Terakhir` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `Pemegang_Wilayah` varchar(50) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `Gaji1` varchar(50) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `Gaji2` varchar(50) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `Gaji3` varchar(50) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `Gaji4` varchar(50) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `Gaji5` varchar(50) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `Gaji6` varchar(50) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `Gaji7` varchar(50) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `Gaji8` varchar(50) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `Gaji9` varchar(50) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `Gaji10` varchar(50) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `Gaji11` varchar(50) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `Gaji12` varchar(50) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `KodeUsulan1` varchar(30) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `KodeUsulan2` varchar(30) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `KodeUsulan3` varchar(30) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `KodeUsulan4` varchar(30) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `KodeUsulan5` varchar(30) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `KodeUsulan6` varchar(30) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `KodeUsulan7` varchar(30) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `KodeUsulan8` varchar(30) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `KodeUsulan9` varchar(30) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `KodeUsulan10` varchar(30) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `KodeUsulan11` varchar(30) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `KodeUsulan12` varchar(30) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `Jan` varchar(20) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `Feb` varchar(20) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `Mar` varchar(20) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `Apr` varchar(20) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `May` varchar(20) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `Jun` varchar(20) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `Jul` varchar(20) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `Ags` varchar(20) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `Sep` varchar(20) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `Okt` varchar(20) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `Nov` varchar(20) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `Des` varchar(20) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `TPD1` varchar(30) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `TKGB1` varchar(30) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `TPD2` varchar(30) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `TKGB2` varchar(30) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `TPD3` varchar(30) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `TKGB3` varchar(30) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `TPD4` varchar(30) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `TKGB4` varchar(30) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `TPD5` varchar(30) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `TKGB5` varchar(30) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `TPD6` varchar(30) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `TKGB6` varchar(30) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `TPD7` varchar(30) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `TKGB7` varchar(30) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `TPD8` varchar(30) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `TKGB8` varchar(30) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `TPD9` varchar(30) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `TKGB9` varchar(30) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `TPD10` varchar(30) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `TKGB10` varchar(30) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `TPD11` varchar(30) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `TKGB11` varchar(30) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `TPD12` varchar(30) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `TKGB12` varchar(30) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `pajakTPD1` decimal(10,2) DEFAULT NULL,
+  `pajakTKGB1` decimal(10,2) DEFAULT NULL,
+  `pajakTPD2` decimal(10,2) DEFAULT NULL,
+  `pajakTKGB2` decimal(10,2) DEFAULT NULL,
+  `pajakTPD3` decimal(10,2) DEFAULT NULL,
+  `pajakTKGB3` decimal(10,2) DEFAULT NULL,
+  `pajakTPD4` decimal(10,2) DEFAULT NULL,
+  `pajakTKGB4` decimal(10,2) DEFAULT NULL,
+  `pajakTPD5` decimal(10,2) DEFAULT NULL,
+  `pajakTKGB5` decimal(10,2) DEFAULT NULL,
+  `pajakTPD6` decimal(10,2) DEFAULT NULL,
+  `pajakTKGB6` decimal(10,2) DEFAULT NULL,
+  `pajakTPD7` decimal(10,2) DEFAULT NULL,
+  `pajakTKGB7` decimal(10,2) DEFAULT NULL,
+  `pajakTPD8` decimal(10,2) DEFAULT NULL,
+  `pajakTKGB8` decimal(10,2) DEFAULT NULL,
+  `pajakTPD9` decimal(10,2) DEFAULT NULL,
+  `pajakTKGB9` decimal(10,2) DEFAULT NULL,
+  `pajakTPD10` decimal(10,2) DEFAULT NULL,
+  `pajakTKGB10` decimal(10,2) DEFAULT NULL,
+  `pajakTPD11` decimal(10,2) DEFAULT NULL,
+  `pajakTKGB11` decimal(10,2) DEFAULT NULL,
+  `pajakTPD12` decimal(10,2) DEFAULT NULL,
+  `pajakTKGB12` decimal(10,2) DEFAULT NULL,
+  `nilaiPajakTPD1` decimal(10,0) DEFAULT NULL,
+  `nilaiPajakTKGB1` decimal(10,0) DEFAULT NULL,
+  `nilaiPajakTPD2` decimal(10,0) DEFAULT NULL,
+  `nilaiPajakTKGB2` decimal(10,0) DEFAULT NULL,
+  `nilaiPajakTPD3` decimal(10,0) DEFAULT NULL,
+  `nilaiPajakTKGB3` decimal(10,0) DEFAULT NULL,
+  `nilaiPajakTPD4` decimal(10,0) DEFAULT NULL,
+  `nilaiPajakTKGB4` decimal(10,0) DEFAULT NULL,
+  `nilaiPajakTPD5` decimal(10,0) DEFAULT NULL,
+  `nilaiPajakTKGB5` decimal(10,0) DEFAULT NULL,
+  `nilaiPajakTPD6` decimal(10,0) DEFAULT NULL,
+  `nilaiPajakTKGB6` decimal(10,0) DEFAULT NULL,
+  `nilaiPajakTPD7` decimal(10,0) DEFAULT NULL,
+  `nilaiPajakTKGB7` decimal(10,0) DEFAULT NULL,
+  `nilaiPajakTPD8` decimal(10,0) DEFAULT NULL,
+  `nilaiPajakTKGB8` decimal(10,0) DEFAULT NULL,
+  `nilaiPajakTPD9` decimal(10,0) DEFAULT NULL,
+  `nilaiPajakTKGB9` decimal(10,0) DEFAULT NULL,
+  `nilaiPajakTPD10` decimal(10,0) DEFAULT NULL,
+  `nilaiPajakTKGB10` decimal(10,0) DEFAULT NULL,
+  `nilaiPajakTPD11` decimal(10,0) DEFAULT NULL,
+  `nilaiPajakTKGB11` decimal(10,0) DEFAULT NULL,
+  `nilaiPajakTPD12` decimal(10,0) DEFAULT NULL,
+  `nilaiPajakTKGB12` decimal(10,0) DEFAULT NULL,
+  `bersihTPD1` decimal(10,0) DEFAULT NULL,
+  `bersihTKGB1` decimal(10,0) DEFAULT NULL,
+  `bersihTPD2` decimal(10,0) DEFAULT NULL,
+  `bersihTKGB2` decimal(10,0) DEFAULT NULL,
+  `bersihTPD3` decimal(10,0) DEFAULT NULL,
+  `bersihTKGB3` decimal(10,0) DEFAULT NULL,
+  `bersihTPD4` decimal(10,0) DEFAULT NULL,
+  `bersihTKGB4` decimal(10,0) DEFAULT NULL,
+  `bersihTPD5` decimal(10,0) DEFAULT NULL,
+  `bersihTKGB5` decimal(10,0) DEFAULT NULL,
+  `bersihTPD6` decimal(10,0) DEFAULT NULL,
+  `bersihTKGB6` decimal(10,0) DEFAULT NULL,
+  `bersihTPD7` decimal(10,0) DEFAULT NULL,
+  `bersihTKGB7` decimal(10,0) DEFAULT NULL,
+  `bersihTPD8` decimal(10,0) DEFAULT NULL,
+  `bersihTKGB8` decimal(10,0) DEFAULT NULL,
+  `bersihTPD9` decimal(10,0) DEFAULT NULL,
+  `bersihTKGB9` decimal(10,0) DEFAULT NULL,
+  `bersihTPD10` decimal(10,0) DEFAULT NULL,
+  `bersihTKGB10` decimal(10,0) DEFAULT NULL,
+  `bersihTPD11` decimal(10,0) DEFAULT NULL,
+  `bersihTKGB11` decimal(10,0) DEFAULT NULL,
+  `bersihTPD12` decimal(10,0) DEFAULT NULL,
+  `bersihTKGB12` decimal(10,0) DEFAULT NULL,
+  `No_sp2d_1` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `No_sp2d_2` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `No_sp2d_3` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `No_sp2d_4` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `No_sp2d_5` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `No_sp2d_6` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `No_sp2d_7` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `No_sp2d_8` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `No_sp2d_9` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `No_sp2d_10` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `No_sp2d_11` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `No_sp2d_12` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `Tgl_sp2d_1` varchar(30) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `Tgl_sp2d_2` varchar(30) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `Tgl_sp2d_3` varchar(30) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `Tgl_sp2d_4` varchar(30) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `Tgl_sp2d_5` varchar(30) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `Tgl_sp2d_6` varchar(30) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `Tgl_sp2d_7` varchar(30) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `Tgl_sp2d_8` varchar(30) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `Tgl_sp2d_9` varchar(30) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `Tgl_sp2d_10` varchar(30) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `Tgl_sp2d_11` varchar(30) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `Tgl_sp2d_12` varchar(30) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `Kotor_Selisih` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `Pajak_Selisih` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `Bersih_Selisih` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `No_SPM_TPD` varchar(50) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `No_SPM_TKGB` varchar(50) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `TglTPD` varchar(50) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `TglTKGB` varchar(50) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `Pengguna` varchar(20) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `Tahun_Versi` varchar(50) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  PRIMARY KEY (`No`) USING BTREE,
+  KEY `NIDN` (`NIDN`) USING BTREE,
+  KEY `idx_s_transaksi_2_tahun_pemegang_nidn` (`Tahun_Versi`,`Pemegang_Wilayah`,`NIDN`),
+  KEY `idx_s_transaksi_2_tahun_pemegang_nuptk` (`Tahun_Versi`,`Pemegang_Wilayah`,`NUPTK`),
+  KEY `idx_s_transaksi_2_tahun_nidn` (`Tahun_Versi`,`NIDN`),
+  KEY `idx_s_transaksi_2_tahun_nuptk` (`Tahun_Versi`,`NUPTK`),
+  KEY `Tahun_Versi` (`Tahun_Versi`)
+) ENGINE=MyISAM AUTO_INCREMENT=135692 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=COMPRESSED
+SQL
+        );
     }
 
-    /**
-     * Reverse the migrations.
-     *
-     * @return void
-     */
     public function down()
     {
-        Schema::dropIfExists('s_transaksi_2');
+        DB::statement('DROP TABLE IF EXISTS `s_transaksi_2`');
     }
 }
