@@ -1533,6 +1533,12 @@ class KekuranganBayarController extends Controller
 
   public function prosesAksiSp2d(Request $request)
   {
+    if (!\Illuminate\Support\Facades\Schema::hasColumn('s_transaksi_2', 'Riwayat_Pembayaran')) {
+        \Illuminate\Support\Facades\Schema::table('s_transaksi_2', function (\Illuminate\Database\Schema\Blueprint $table) {
+            $table->longText('Riwayat_Pembayaran')->nullable();
+        });
+    }
+
     // Pastikan tabel t_uraian_pembayaran ada
     if (!\Illuminate\Support\Facades\Schema::hasTable('t_uraian_pembayaran')) {
         \Illuminate\Support\Facades\Schema::create('t_uraian_pembayaran', function (\Illuminate\Database\Schema\Blueprint $table) {

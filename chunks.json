@@ -1,2 +1,0 @@
-[{"AllowMultiple":false,"EndLine":1614,"ReplacementContent":"    try {\n      $tarifMap = $this->loadTarifPajakMap();\n    } catch (\\Throwable $e) {\n      return response()->json(['success' => false, 'message' => 'Gagal memuat tarif pajak.'], 500);\n    
-<truncated 4647 bytes>
