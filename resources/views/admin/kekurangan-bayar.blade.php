@@ -533,14 +533,17 @@
                                             <td>{{ !empty($row->NIDN) ? $row->NIDN : ($row->NUPTK ?? '-') }}</td>
                                             <td>{{ $row->Nama }}</td>
                                             @php
-                                                $sumK = 0;
-                                                for($j=1; $j<=12; $j++) {
-                                                    $sumK += (float)($row->{"k_tpd$j"} ?? 0) + (float)($row->{"k_tkgb$j"} ?? 0);
+                                                $deltaBersih = (float)($row->delta_bersih ?? 0);
+                                                if ($deltaBersih == 0) {
+                                                    // Fallback: Jika data asli (K_TPD/L_TPD) terhapus tapi riwayat pembayaran (PEMBAYARAN_) masih ada
+                                                    $totalPembayaran = (float)($row->total_pembayaran ?? 0);
+                                                    $deltaBersih = $totalPembayaran * -1;
                                                 }
-                                                if ($sumK > 0) {
-                                                    $badgeStatus = '<span class="badge bg-danger" style="font-size:10px;padding:3px 8px;">Kurang</span>';
-                                                } elseif ($sumK < 0) {
-                                                    $badgeStatus = '<span class="badge bg-success" style="font-size:10px;padding:3px 8px;">Lebih</span>';
+
+                                                if ($deltaBersih < 0) {
+                                                    $badgeStatus = '<span class="badge bg-danger" style="font-size:10px;padding:3px 8px;">Kurang</span><br><small class="text-danger fw-bold mt-1 d-block" style="font-size:11px; white-space:nowrap;">Rp ' . number_format(abs($deltaBersih), 0, ',', '.') . '</small>';
+                                                } elseif ($deltaBersih > 0) {
+                                                    $badgeStatus = '<span class="badge bg-success" style="font-size:10px;padding:3px 8px;">Lebih</span><br><small class="text-success fw-bold mt-1 d-block" style="font-size:11px; white-space:nowrap;">Rp ' . number_format(abs($deltaBersih), 0, ',', '.') . '</small>';
                                                 } else {
                                                     $badgeStatus = '-';
                                                 }
@@ -1620,6 +1623,23 @@
                                     if (tdAksi) {
                                         tdAksi.innerHTML = '<span class="badge bg-label-success d-inline-flex align-items-center" style="font-size:10px;padding:3px 8px;" title="Tidak ada selisih"><i class="bx bx-check me-1"></i> Selesai</span>';
                                     }
+                                    
+                                    // Inject missing "STATUS SELISIH" column to prevent DOM shifting
+                                    const namaTd = tr.querySelector('td:nth-child(3)');
+                                    if (namaTd) {
+                                        const newTd = document.createElement('td');
+                                        newTd.className = 'text-center';
+                                        
+                                        const isKurangTab = tr.closest('.tab-pane').id === 'tab-data-kurang';
+                                        if (isKurangTab) {
+                                            newTd.innerHTML = '<span class="badge bg-danger" style="font-size:10px;padding:3px 8px;">Kurang</span><br><small class="text-danger fw-bold mt-1 d-block" style="font-size:11px; white-space:nowrap;">Lunas</small>';
+                                        } else {
+                                            newTd.innerHTML = '<span class="badge bg-success" style="font-size:10px;padding:3px 8px;">Lebih</span><br><small class="text-success fw-bold mt-1 d-block" style="font-size:11px; white-space:nowrap;">Lunas</small>';
+                                        }
+                                        
+                                        namaTd.after(newTd);
+                                    }
+
                                     const selesaiTbody = document.querySelector('#tab-data-selesai tbody');
                                     if (selesaiTbody) {
                                         const emptyTr = selesaiTbody.querySelector('td[colspan="65"]');

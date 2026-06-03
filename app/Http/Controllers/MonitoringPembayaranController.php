@@ -329,15 +329,7 @@ class MonitoringPembayaranController extends Controller
       $origSp2dTgl = trim((string) ($tglSp2d[$i] ?? ''));
       $origHasSp2d = ($origSp2dNo !== '' && $origSp2dNo !== '-' && $origSp2dTgl !== '' && $origSp2dTgl !== '-');
 
-      // Override SP2D No & Tgl for DISPLAY only (after computing original selisih)
-      if (isset($resolvedMonths[$bulanNum])) {
-        if (!empty($resolvedMonths[$bulanNum]['nomor'])) {
-          $noSp2d[$i] = $resolvedMonths[$bulanNum]['nomor'];
-        }
-        if (!empty($resolvedMonths[$bulanNum]['tanggal'])) {
-          $tglSp2d[$i] = $resolvedMonths[$bulanNum]['tanggal'];
-        }
-      }
+      // (Removed SP2D override logic per user request. Original monthly SP2D remains in main table, new SP2D stays in Uraian Pembayaran)
 
       // Recalculate hasSp2d after override for status display
       $sp2dNo = trim((string) ($noSp2d[$i] ?? ''));
