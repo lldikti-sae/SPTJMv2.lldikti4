@@ -2423,8 +2423,7 @@ class KekuranganBayarController extends Controller
 
   private function syncLunasToTransaksi($nidn, $versi)
   {
-      list($fullyPaidNidns, ) = $this->evaluateFullyPaidNidns($versi, [], $nidn);
-      
+      list($fullyPaidNidns, ) = $this->evaluateFullyPaidNidns($versi, [], $nidn); 
       if (in_array($nidn, $fullyPaidNidns)) {
           // Hitung total hutang asli dari t_kekurangan
           $originalSelisih = DB::table('t_kekurangan')
