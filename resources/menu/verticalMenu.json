@@ -87,6 +87,11 @@
           "url": "admin/hapus-data-dosen-tidak-aktif",
           "name": "Hapus Data Dosen Tidak Aktif",
           "slug": "data-dosen-tidak-aktif"
+        },
+        {
+          "url": "admin/skpp",
+          "name": "SKPP",
+          "slug": "admin.skpp"
         }
       ]
     },
