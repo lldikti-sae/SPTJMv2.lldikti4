@@ -458,6 +458,12 @@
                         <div class="card-header d-flex justify-content-between align-items-center">
                             <h5 class="mb-0">Data Selesai</h5>
                             <div class="d-flex align-items-center gap-2">
+                                <form action="{{ route('admin.kekurangan-bayar.sync-all-lunas') }}" method="POST" class="m-0 me-2 d-inline-block">
+                                    @csrf
+                                    <button type="submit" class="btn btn-sm btn-success" title="Sinkronkan ulang nilai selisih kotor/pajak/bersih ke tabel transaksi untuk semua dosen di tab ini">
+                                        <i class="bx bx-sync"></i> Sinkronisasi ke Transaksi
+                                    </button>
+                                </form>
                                 <form action="" method="GET" class="m-0 d-flex gap-2">
                                     @if(request('lebih_page')) <input type="hidden" name="lebih_page" value="{{ request('lebih_page') }}"> @endif
                                     @if(request('search_lebih')) <input type="hidden" name="search_lebih" value="{{ request('search_lebih') }}"> @endif
@@ -1382,8 +1388,8 @@
                     const selectedOpt = this.options[this.selectedIndex];
                     const nominal = selectedOpt.dataset.nominal || '';
                     const monthName = selectedOpt.text;
-                    const prefix = trxType === 'Pemotongan' ? 'Pemotongan' : 'Pengembalian';
-                    document.getElementById('ntpnIndividuUraian').placeholder = 'Cth: '+ prefix + ' pembayaran untuk bulan ' + monthName;
+                    const prefix = trxType === 'Pemotongan' ? 'Pemotongan Kelebihan' : 'Pengembalian Pemotongan';
+                    document.getElementById('ntpnIndividuUraian').placeholder = 'Cth: '+ prefix;
                     
                     if (trxType === 'Pemotongan' || trxType === 'Pengembalian') {
                         if(nominal) {
@@ -1391,7 +1397,7 @@
                         }
                     }
                 } else {
-                    document.getElementById('ntpnIndividuUraian').placeholder = 'Cth: Pemotongan Pembayaran ';
+                    document.getElementById('ntpnIndividuUraian').placeholder = 'Cth: Pemotongan Kelebihan';
                     if (trxType === 'Pemotongan' || trxType === 'Pengembalian') {
                         document.getElementById('ntpnIndividuNominal').value = '';
                     }
@@ -1408,6 +1414,10 @@
                 let uraianPembayaran = document.getElementById('sp2dIndividuUraian').value.trim();
                 const noSp2d = document.getElementById('sp2dIndividuNomor').value.trim();
                 const tglSp2d = document.getElementById('sp2dIndividuTanggal').value;
+
+                if (uraianPembayaran === '') {
+                    uraianPembayaran = 'Kekurangan Pembayaran';
+                }
 
                 if (!noSp2d || !tglSp2d) {
                     if (sp2dIndividuModal) sp2dIndividuModal.hide();
@@ -1525,17 +1535,10 @@
 
                 const trxType = document.getElementById('ntpnIndividuJenisTransaksi').value;
                 const isPemotongan = (trxType === 'Pemotongan');
-                const jenisTrx = isPemotongan ? 'Pemotongan Lebih Bayar' : 'Pengembalian Lebih Bayar';
+                const jenisTrx = isPemotongan ? 'Pemotongan Kelebihan' : 'Pengembalian Pemotongan';
                 
                 if (uraianPembayaran === '') {
-                    if (bulan) {
-                        const ntpnBulanEl = document.getElementById('ntpnIndividuBulan');
-                        const monthName = ntpnBulanEl.options[ntpnBulanEl.selectedIndex].text;
-                        const prefix = isPemotongan ? 'Pemotongan' : 'Pengembalian';
-                        uraianPembayaran = prefix + ' pembayaran untuk bulan ' + monthName;
-                    } else {
-                        uraianPembayaran = jenisTrx;
-                    }
+                    uraianPembayaran = jenisTrx;
                 }
 
                 if ((!isPemotongan && !noSp2d) || !tglSp2d || !bulan || !nominalBayar) {

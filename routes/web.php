@@ -367,6 +367,7 @@ Route::delete('/admin/kekurangan-bayar/lebih', [KekuranganBayarController::class
 Route::post('/admin/kekurangan-bayar/aksi-sp2d', [KekuranganBayarController::class, 'prosesAksiSp2d'])->name('admin.kekurangan-bayar.aksi-sp2d');
 Route::post('/admin/kekurangan-bayar/get-riwayat', [KekuranganBayarController::class, 'getRiwayat'])->name('admin.kekurangan-bayar.get-riwayat');
 Route::post('/admin/kekurangan-bayar/update-riwayat', [KekuranganBayarController::class, 'updateRiwayat'])->name('admin.kekurangan-bayar.update-riwayat');
+Route::post('/admin/kekurangan-bayar/sync-all-lunas', [KekuranganBayarController::class, 'syncAllLunas'])->name('admin.kekurangan-bayar.sync-all-lunas');
 Route::get('/admin/rekap-usulan-non-el', [RekapUsulanNonEligibleController::class, 'index'])->name(
   'admin.rekap-usulan-non-el'
 );

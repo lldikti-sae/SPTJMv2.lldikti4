@@ -471,56 +471,44 @@ class KekuranganBayarController extends Controller
     return $payloadRows;
   }
 
-  private function getFullyPaidNidns($versi, $tarifMap = [])
+  private function evaluateFullyPaidNidns($versi, $tarifMap = [], $targetNidn = null)
   {
+      if (empty($tarifMap)) {
+          $tarifMap = $this->loadTarifPajakMap();
+      }
       $paidKotorByNidnMonth = [];
-      try {
-          $transaksiList = DB::table('s_transaksi_2')
-              ->where('Tahun_Versi', $versi)
-              ->whereNotNull('Riwayat_Pembayaran')
-              ->where('Riwayat_Pembayaran', '<>', '')
-              ->select('NIDN', 'NUPTK', 'Riwayat_Pembayaran')
-              ->get();
-          foreach ($transaksiList as $t) {
-              $decoded = json_decode($t->Riwayat_Pembayaran, true);
-              if (is_array($decoded)) {
-                  $ident = !empty($t->NIDN) ? $t->NIDN : ($t->NUPTK ?? null);
-                  if (!$ident) continue;
-                  foreach ($decoded as $item) {
-                      if (isset($item['jenis_pembayaran']) && str_starts_with($item['jenis_pembayaran'], 'PEMBAYARAN_')) {
-                          $parts = explode('_', $item['jenis_pembayaran']);
-                          $m = isset($parts[1]) ? (int) $parts[1] : 0;
-                          if ($m > 0) {
-                              if (!isset($paidKotorByNidnMonth[$ident][$m])) {
-                                  $paidKotorByNidnMonth[$ident][$m] = 0;
-                              }
-                              $paidKotorByNidnMonth[$ident][$m] += abs((float) ($item['nominal'] ?? 0));
-                          }
-                      }
-                  }
+      $activePayments = DB::table('t_kekurangan')
+          ->where('tahun', $versi)
+          ->where('jenis_pembayaran', 'like', 'PEMBAYARAN_%')
+          ->get();
+      foreach ($activePayments as $p) {
+          $ident = !empty($p->nidn) ? $p->nidn : ($p->nuptk ?? null);
+          if (!$ident) continue;
+          $parts = explode('_', $p->jenis_pembayaran);
+          $m = isset($parts[1]) ? (int) $parts[1] : 0;
+          if ($m > 0) {
+              if (!isset($paidKotorByNidnMonth[$ident][$m])) {
+                  $paidKotorByNidnMonth[$ident][$m] = 0;
               }
+              $paidKotorByNidnMonth[$ident][$m] += abs((float) $p->selisih);
           }
-      } catch (\Throwable $e) {}
+      }
 
       $k2_sub = clone $this->getPivotSubquery($versi);
-      $fullyPaidNidns = [];
-      
-      if (!empty($paidKotorByNidnMonth)) {
-          $nids = array_keys($paidKotorByNidnMonth);
-          
-          $k2_sub = clone $this->getPivotSubquery($versi);
-          
-          $rows = DB::table('s_transaksi_2 as k')
-              ->joinSub($k2_sub, 'k2', function ($join) {
-                  $join->on('k.NIDN', '=', 'k2.nidn')
-                       ->orOn('k.NUPTK', '=', 'k2.nidn');
-              })
-              ->where('k.Tahun_Versi', $versi)
-              ->where(function($q) use ($nids) {
-                  $q->whereIn('k.NIDN', $nids)
-                    ->orWhereIn('k.NUPTK', $nids);
-              })
-              ->select(
+      $rowsQuery = DB::table('s_transaksi_2 as k')
+          ->joinSub($k2_sub, 'k2', function ($join) {
+              $join->on(DB::raw("COALESCE(NULLIF(k.NIDN, ''), k.NUPTK)"), '=', 'k2.nidn');
+          })
+          ->where('k.Tahun_Versi', $versi);
+
+      if ($targetNidn) {
+          $rowsQuery->where(function($q) use ($targetNidn) {
+              $q->where('k.NIDN', $targetNidn)
+                ->orWhere('k.NUPTK', $targetNidn);
+          });
+      }
+
+      $rows = $rowsQuery->select(
                   'k.NIDN', 'k.NUPTK', 'k.Jenis', 'k.Jabatan12',
                   'k2.k_tpd1', 'k2.k_tkgb1', 'k2.k_tpd2', 'k2.k_tkgb2', 'k2.k_tpd3', 'k2.k_tkgb3',
                   'k2.k_tpd4', 'k2.k_tkgb4', 'k2.k_tpd5', 'k2.k_tkgb5', 'k2.k_tpd6', 'k2.k_tkgb6',
@@ -609,7 +597,57 @@ class KekuranganBayarController extends Controller
                   $fullyPaidNidns[] = $nidn;
               }
           }
+      return [$fullyPaidNidns, $paidKotorByNidnMonth];
+    }
+    
+    private function getNidnsWithPayments($versi)
+    {
+        return DB::table('t_kekurangan')
+            ->where('tahun', $versi)
+            ->where('jenis_pembayaran', 'like', 'PEMBAYARAN_%')
+            ->distinct()
+            ->pluck('nidn')
+            ->toArray();
+    }
+
+  private function getFullyPaidNidns($versi)
+  {
+      $paidKotorByNidnMonth = [];
+      $activePayments = DB::table('t_kekurangan')
+          ->where('tahun', $versi)
+          ->where('jenis_pembayaran', 'like', 'PEMBAYARAN_%')
+          ->get();
+      foreach ($activePayments as $p) {
+          $ident = !empty($p->nidn) ? $p->nidn : ($p->nuptk ?? null);
+          if (!$ident) continue;
+          $parts = explode('_', $p->jenis_pembayaran);
+          $m = isset($parts[1]) ? (int) $parts[1] : 0;
+          if ($m > 0) {
+              if (!isset($paidKotorByNidnMonth[$ident][$m])) {
+                  $paidKotorByNidnMonth[$ident][$m] = 0;
+              }
+              $paidKotorByNidnMonth[$ident][$m] += abs((float) $p->selisih);
+          }
       }
+
+      $nidns = DB::table('s_transaksi_2')
+          ->where('Tahun_Versi', $versi)
+          ->whereNotNull('Bersih_Selisih')
+          ->where('Bersih_Selisih', '<>', 0)
+          ->pluck('NIDN')
+          ->filter()
+          ->toArray();
+
+      $nuptks = DB::table('s_transaksi_2')
+          ->where('Tahun_Versi', $versi)
+          ->whereNotNull('Bersih_Selisih')
+          ->where('Bersih_Selisih', '<>', 0)
+          ->pluck('NUPTK')
+          ->filter()
+          ->toArray();
+
+      $fullyPaidNidns = array_unique(array_merge($nidns, $nuptks));
+
       return [$fullyPaidNidns, $paidKotorByNidnMonth];
   }
 
@@ -800,7 +838,6 @@ class KekuranganBayarController extends Controller
 
       return DB::table('t_kekurangan')
           ->where('tahun', $versi)
-          ->where('jenis_pembayaran', 'NOT LIKE', 'PEMBAYARAN%')
           ->selectRaw($selectRaw)
           ->groupBy('nidn', 'tahun');
   }
@@ -823,8 +860,7 @@ class KekuranganBayarController extends Controller
 
       $base = DB::table('s_transaksi_2 as k')
           ->joinSub($k2_sub, 'ku', function ($join) {
-              $join->on('ku.nidn', '=', 'k.NIDN')
-                   ->orOn('ku.nidn', '=', 'k.NUPTK');
+              $join->on('ku.nidn', '=', DB::raw("COALESCE(NULLIF(k.NIDN, ''), k.NUPTK)"));
           })
           ->where('k.Tahun_Versi', $versi)
           ->whereRaw($bersihCondition);
@@ -865,14 +901,13 @@ class KekuranganBayarController extends Controller
       $tarifMap = [];
     }
 
-    list($fullyPaidNidns, $paidKotorByNidnMonth) = $this->getFullyPaidNidns($versi, $tarifMap);
+    list($fullyPaidNidns, $paidKotorByNidnMonth) = $this->getFullyPaidNidns($versi);
     
     $k2_sub = clone $this->getPivotSubquery($versi);
 
     $baseQuery = DB::table('s_transaksi_2 as k')
       ->joinSub($k2_sub, 'k2', function ($join) {
-        $join->on('k.NIDN', '=', 'k2.nidn')
-             ->orOn('k.NUPTK', '=', 'k2.nidn');
+        $join->on(DB::raw("COALESCE(NULLIF(k.NIDN, ''), k.NUPTK)"), '=', 'k2.nidn');
       })
       ->where('k.Tahun_Versi', $versi);
 
@@ -1089,8 +1124,7 @@ class KekuranganBayarController extends Controller
       $k2_sub = clone $this->getPivotSubquery($versi);
       $q = DB::table('s_transaksi_2 as k')
         ->joinSub($k2_sub, 'ku', function ($join) {
-            $join->on('ku.nidn', '=', 'k.NIDN')
-                 ->orOn('ku.nidn', '=', 'k.NUPTK');
+            $join->on('ku.nidn', '=', DB::raw("COALESCE(NULLIF(k.NIDN, ''), k.NUPTK)"));
         })
         ->where('k.Tahun_Versi', $versi)
         ->whereRaw($bersihCond);
@@ -1326,8 +1360,7 @@ class KekuranganBayarController extends Controller
         
         $combinationsRaw = DB::table('s_transaksi_2 as k')
             ->joinSub($k2_sub, 'ku', function ($join) {
-                $join->on('ku.nidn', '=', 'k.NIDN')
-                     ->orOn('ku.nidn', '=', 'k.NUPTK');
+                $join->on('ku.nidn', '=', DB::raw("COALESCE(NULLIF(k.NIDN, ''), k.NUPTK)"));
             })
             ->where('k.Tahun_Versi', $versi)
             ->whereRaw('(ku.bersih + 0) < 0')
@@ -1402,8 +1435,7 @@ class KekuranganBayarController extends Controller
 
         $base = DB::table('s_transaksi_2 as k')
           ->joinSub($k2_sub, 'ku', function ($join) {
-              $join->on('ku.nidn', '=', 'k.NIDN')
-                   ->orOn('ku.nidn', '=', 'k.NUPTK');
+              $join->on('ku.nidn', '=', DB::raw("COALESCE(NULLIF(k.NIDN, ''), k.NUPTK)"));
           })
           ->where('k.Tahun_Versi', $versi);
 
@@ -1612,8 +1644,7 @@ class KekuranganBayarController extends Controller
       
       $dosenQuery = DB::table('s_transaksi_2 as k')
         ->joinSub($k2_sub, 'ku', function ($join) {
-          $join->on('k.NIDN', '=', 'ku.nidn')
-               ->orOn('k.NUPTK', '=', 'ku.nidn');
+          $join->on(DB::raw("COALESCE(NULLIF(k.NIDN, ''), k.NUPTK)"), '=', 'ku.nidn');
         })
         ->where('k.Tahun_Versi', $versi)
         ->whereRaw($bersihCondition);
@@ -1671,8 +1702,7 @@ class KekuranganBayarController extends Controller
           'k.TPD1', 'k.TPD2', 'k.TPD3', 'k.TPD4', 'k.TPD5', 'k.TPD6', 'k.TPD7', 'k.TPD8', 'k.TPD9', 'k.TPD10', 'k.TPD11', 'k.TPD12',
           'k.TKGB1', 'k.TKGB2', 'k.TKGB3', 'k.TKGB4', 'k.TKGB5', 'k.TKGB6', 'k.TKGB7', 'k.TKGB8', 'k.TKGB9', 'k.TKGB10', 'k.TKGB11', 'k.TKGB12',
           'k.bersihTPD1', 'k.bersihTPD2', 'k.bersihTPD3', 'k.bersihTPD4', 'k.bersihTPD5', 'k.bersihTPD6', 'k.bersihTPD7', 'k.bersihTPD8', 'k.bersihTPD9', 'k.bersihTPD10', 'k.bersihTPD11', 'k.bersihTPD12',
-          'k.bersihTKGB1', 'k.bersihTKGB2', 'k.bersihTKGB3', 'k.bersihTKGB4', 'k.bersihTKGB5', 'k.bersihTKGB6', 'k.bersihTKGB7', 'k.bersihTKGB8', 'k.bersihTKGB9', 'k.bersihTKGB10', 'k.bersihTKGB11', 'k.bersihTKGB12',
-          'k.Riwayat_Pembayaran'
+          'k.bersihTKGB1', 'k.bersihTKGB2', 'k.bersihTKGB3', 'k.bersihTKGB4', 'k.bersihTKGB5', 'k.bersihTKGB6', 'k.bersihTKGB7', 'k.bersihTKGB8', 'k.bersihTKGB9', 'k.bersihTKGB10', 'k.bersihTKGB11', 'k.bersihTKGB12'
         )
         ->get();
 
@@ -1696,6 +1726,7 @@ class KekuranganBayarController extends Controller
       } catch (\Throwable $e) { /* table might not exist yet */ }
 
       $insertBatch = [];
+      $processedNidns = [];
       $batchSize = 500;
       $totalGenerated = 0;
       $totalSkipped = 0;
@@ -1704,6 +1735,8 @@ class KekuranganBayarController extends Controller
         $nidn = trim($dosen->nidn ?? '');
         if ($nidn === '') continue;
 
+        $processedNidns[] = $nidn;
+        
         $jenisRow = trim($dosen->Jenis ?? '');
         $jenisKey = $jenisRow;
 
@@ -1753,13 +1786,18 @@ class KekuranganBayarController extends Controller
           if ($inputUraian !== '') {
               $uraian = $inputUraian;
           } else {
-              $uraian = $isKurang
-                ? 'Pembayaran kekurangan'
-                : 'Potongan kelebihan bayar';
+              if ($isKurang) {
+                  $uraian = 'Kekurangan Pembayaran';
+              } else {
+                  if (strtolower($trxType) === 'pengembalian') {
+                      $uraian = 'Pengembalian Pemotongan';
+                  } else {
+                      $uraian = 'Pemotongan Kelebihan';
+                  }
+              }
           }
 
           $riwayatBaru = [
-            'id' => uniqid('rwy_'),
             'rekap_id' => $rekapId,
             'nidn' => $nidn,
             'tahun' => (string) $versi,
@@ -1772,25 +1810,7 @@ class KekuranganBayarController extends Controller
             'updated_at' => now()->toDateTimeString(),
           ];
           
-          $existingRiwayat = [];
-          if (!empty($dosen->Riwayat_Pembayaran)) {
-              $decoded = json_decode($dosen->Riwayat_Pembayaran, true);
-              if (is_array($decoded)) {
-                  $existingRiwayat = $decoded;
-              }
-          }
-          $existingRiwayat[] = $riwayatBaru;
-          
-          DB::table('s_transaksi_2')
-              ->where(function($q) use ($nidn) {
-                  $q->where('NIDN', $nidn)
-                    ->orWhere('NUPTK', $nidn);
-              })
-              ->where('Tahun_Versi', $versi)
-              ->update(['Riwayat_Pembayaran' => json_encode($existingRiwayat)]);
-              
-          $dosen->Riwayat_Pembayaran = json_encode($existingRiwayat); // update for next iteration if any
-          
+          $insertBatch[] = $riwayatBaru;
           $totalGenerated++;
         }
         
@@ -1874,6 +1894,11 @@ class KekuranganBayarController extends Controller
 
       DB::commit();
 
+      $processedNidns = array_unique($processedNidns);
+      foreach ($processedNidns as $pnidn) {
+          $this->syncLunasToTransaksi($pnidn, $versi);
+      }
+
       $isLunas = false;
       if ($nidnInput) {
           $transaksi = DB::table('s_transaksi_2')
@@ -1884,49 +1909,8 @@ class KekuranganBayarController extends Controller
               ->where('Tahun_Versi', $versi)
               ->first();
 
-          $paidKotorByMonth = [];
-          if ($transaksi && !empty($transaksi->Riwayat_Pembayaran)) {
-              $decoded = json_decode($transaksi->Riwayat_Pembayaran, true);
-              if (is_array($decoded)) {
-                  foreach ($decoded as $item) {
-                      if (isset($item['jenis_pembayaran']) && str_starts_with($item['jenis_pembayaran'], 'PEMBAYARAN_')) {
-                          $parts = explode('_', $item['jenis_pembayaran']);
-                          $m = isset($parts[1]) ? (int) $parts[1] : 0;
-                          if ($m > 0) {
-                              if (!isset($paidKotorByMonth[$m])) $paidKotorByMonth[$m] = 0;
-                              $paidKotorByMonth[$m] += abs((float) ($item['nominal'] ?? 0));
-                          }
-                      }
-                  }
-              }
-          }
-          
-          $k2_sub = clone $this->getPivotSubquery($versi);
-          $dosenData = DB::table('s_transaksi_2 as k')
-            ->joinSub($k2_sub, 'ku', function($join) {
-                $join->on('k.NIDN', '=', 'ku.nidn')
-                     ->orOn('k.NUPTK', '=', 'ku.nidn');
-            })
-            ->where('k.Tahun_Versi', $versi)
-            ->where(function($q) use ($nidnInput) {
-                $q->where('k.NIDN', $nidnInput)
-                  ->orWhere('k.NUPTK', $nidnInput);
-            })
-            ->first();
-            
-          if ($dosenData) {
-              $hasUnpaid = false;
-              for ($m = 1; $m <= 12; $m++) {
-                  $selisihTpd = (float) ($dosenData->{'k_tpd' . $m} ?? 0);
-                  $selisihTkgb = (float) ($dosenData->{'k_tkgb' . $m} ?? 0);
-                  $selisihTotalKotor = abs($selisihTpd) + abs($selisihTkgb);
-                  $paidKotor = $paidKotorByMonth[$m] ?? 0;
-                  if ($selisihTotalKotor > 0.01 && $paidKotor < ($selisihTotalKotor - 0.01)) {
-                      $hasUnpaid = true;
-                      break;
-                  }
-              }
-              $isLunas = !$hasUnpaid;
+          if ($transaksi && (float)($transaksi->Bersih_Selisih ?? 0) <> 0) {
+              $isLunas = true;
           }
       }
 
@@ -1972,9 +1956,10 @@ class KekuranganBayarController extends Controller
     }
     $rekapsKurangNidns = array_unique($rekapsKurangNidns);
     
-    // Protect fully paid NIDNs
+    // Protect fully paid NIDNs and those with payments
     list($fullyPaidNidns, ) = $this->getFullyPaidNidns($versi);
-    $protectedNidns = array_unique(array_merge($rekapsKurangNidns, $fullyPaidNidns));
+    $nidnsWithPayments = $this->getNidnsWithPayments($versi);
+    $protectedNidns = array_unique(array_merge($rekapsKurangNidns, $fullyPaidNidns, $nidnsWithPayments));
 
     $query = DB::table('t_kekurangan')
         ->where('tahun', $versi)
@@ -2005,9 +1990,10 @@ class KekuranganBayarController extends Controller
     }
     $rekapsLebihNidns = array_unique($rekapsLebihNidns);
     
-    // Protect fully paid NIDNs
+    // Protect fully paid NIDNs and those with payments
     list($fullyPaidNidns, ) = $this->getFullyPaidNidns($versi);
-    $protectedNidns = array_unique(array_merge($rekapsLebihNidns, $fullyPaidNidns));
+    $nidnsWithPayments = $this->getNidnsWithPayments($versi);
+    $protectedNidns = array_unique(array_merge($rekapsLebihNidns, $fullyPaidNidns, $nidnsWithPayments));
 
     $query = DB::table('t_kekurangan')
         ->where('tahun', $versi)
@@ -2035,14 +2021,20 @@ class KekuranganBayarController extends Controller
       // Get NIDNs in this rekap
       $nidns = $this->getNidnsInRekap($rekap, $versi, $isKurang);
       
+      // Protect fully paid NIDNs and those with payments
+      list($fullyPaidNidns, ) = $this->getFullyPaidNidns($versi);
+      $nidnsWithPayments = $this->getNidnsWithPayments($versi);
+      $protectedForDelete = array_unique(array_merge($fullyPaidNidns, $nidnsWithPayments));
+      $nidnsToDelete = array_diff($nidns, $protectedForDelete);
+      
       DB::beginTransaction();
       try {
           // Delete underlying data for these NIDNs (original selisih + PEMBAYARAN rows)
-          if (!empty($nidns)) {
+          if (!empty($nidnsToDelete)) {
               if ($isKurang) {
-                  DB::table('t_kekurangan')->where('tahun', $versi)->where('jenis_pembayaran', 'like', 'K_%')->whereIn('nidn', $nidns)->delete();
+                  DB::table('t_kekurangan')->where('tahun', $versi)->where('jenis_pembayaran', 'like', 'K_%')->whereIn('nidn', $nidnsToDelete)->delete();
               } else {
-                  DB::table('t_kekurangan')->where('tahun', $versi)->where('jenis_pembayaran', 'like', 'L_%')->whereIn('nidn', $nidns)->delete();
+                  DB::table('t_kekurangan')->where('tahun', $versi)->where('jenis_pembayaran', 'like', 'L_%')->whereIn('nidn', $nidnsToDelete)->delete();
               }
               // Sengaja TIDAK menghapus baris PEMBAYARAN% agar riwayat cicilan manual tersimpan aman di database
           }
@@ -2083,12 +2075,18 @@ class KekuranganBayarController extends Controller
               // Get NIDNs in this rekap
               $nidns = $this->getNidnsInRekap($rekap, $versi, $isKurang);
               
+              // Protect fully paid NIDNs and those with payments
+              list($fullyPaidNidns, ) = $this->getFullyPaidNidns($versi);
+              $nidnsWithPayments = $this->getNidnsWithPayments($versi);
+              $protectedForDelete = array_unique(array_merge($fullyPaidNidns, $nidnsWithPayments));
+              $nidnsToDelete = array_diff($nidns, $protectedForDelete);
+              
               // Delete underlying data for these NIDNs (original selisih + PEMBAYARAN rows)
-              if (!empty($nidns)) {
+              if (!empty($nidnsToDelete)) {
                   if ($isKurang) {
-                      DB::table('t_kekurangan')->where('tahun', $versi)->where('jenis_pembayaran', 'like', 'K_%')->whereIn('nidn', $nidns)->delete();
+                      DB::table('t_kekurangan')->where('tahun', $versi)->where('jenis_pembayaran', 'like', 'K_%')->whereIn('nidn', $nidnsToDelete)->delete();
                   } else {
-                      DB::table('t_kekurangan')->where('tahun', $versi)->where('jenis_pembayaran', 'like', 'L_%')->whereIn('nidn', $nidns)->delete();
+                      DB::table('t_kekurangan')->where('tahun', $versi)->where('jenis_pembayaran', 'like', 'L_%')->whereIn('nidn', $nidnsToDelete)->delete();
                   }
                   // Sengaja TIDAK menghapus baris PEMBAYARAN% agar riwayat cicilan manual tersimpan aman di database
               }
@@ -2115,7 +2113,7 @@ class KekuranganBayarController extends Controller
       }
   }
 
-  public function getRiwayat(Request $request)
+    public function getRiwayat(Request $request)
   {
       $nidn = $request->input('nidn');
       $tahun = session('versi', date('Y'));
@@ -2124,24 +2122,13 @@ class KekuranganBayarController extends Controller
           return response()->json(['success' => false, 'message' => 'NIDN tidak valid']);
       }
 
-      $transaksi = DB::table('s_transaksi_2')
-          ->where(function ($q) use ($nidn) {
-              $q->where('NIDN', $nidn)
-                ->orWhere('NUPTK', $nidn);
-          })
-          ->where('Tahun_Versi', $tahun)
-          ->first();
+      $riwayatRows = DB::table('t_kekurangan')
+          ->where('nidn', $nidn)
+          ->where('tahun', $tahun)
+          ->where('jenis_pembayaran', 'like', 'PEMBAYARAN_%')
+          ->get();
 
-      $riwayatRowsRaw = [];
-      if ($transaksi && !empty($transaksi->Riwayat_Pembayaran)) {
-          $decoded = json_decode($transaksi->Riwayat_Pembayaran, true);
-          if (is_array($decoded)) {
-              $riwayatRowsRaw = $decoded;
-          }
-      }
-
-      $riwayat = collect($riwayatRowsRaw)->map(function($r) {
-          $r = (object) $r;
+      $riwayat = $riwayatRows->map(function($r) {
           $r->nomor = $r->kode_bayar_k ?? '';
           $r->tanggal = $r->tgl_bayar_k ?? '';
           $r->nominal = (float) ($r->selisih ?? 0);
@@ -2151,12 +2138,9 @@ class KekuranganBayarController extends Controller
           $r->bulan = isset($parts[1]) ? (int)$parts[1] : 0;
           $r->bersih = abs($r->nominal); // Asumsi kotor = bersih jika tarif 0
           return $r;
-      })->sortBy('bulan')->values();
+      });
 
-      return response()->json([
-          'success' => true,
-          'data' => $riwayat
-      ]);
+      return response()->json(['success' => true, 'data' => $riwayat]);
   }
 
   public function detailRekap(Request $request, $id)
@@ -2192,8 +2176,7 @@ class KekuranganBayarController extends Controller
 
       $base = DB::table('s_transaksi_2 as k')
           ->joinSub($k2_sub, 'ku', function ($join) {
-              $join->on('ku.nidn', '=', 'k.NIDN')
-                   ->orOn('ku.nidn', '=', 'k.NUPTK');
+              $join->on('ku.nidn', '=', DB::raw("COALESCE(NULLIF(k.NIDN, ''), k.NUPTK)"));
           })
           ->where('k.Tahun_Versi', $versi)
           ->whereRaw($bersihCondition);
@@ -2344,18 +2327,14 @@ class KekuranganBayarController extends Controller
       return back()->with('success', "NIDN {$nidn} berhasil dikeluarkan dari rekap.");
   }
 
-  public function updateRiwayat(Request $request)
+    public function updateRiwayat(Request $request)
   {
       $id = $request->input('id');
       $nidn = $request->input('nidn');
-      $nominal = $request->input('nominal'); // ini nominal bersih
+      $nominal = $request->input('nominal');
       $uraian = $request->input('uraian');
       $nomor = $request->input('nomor');
       $tanggal = $request->input('tanggal');
-
-      if (!$id || !$nidn) {
-          return response()->json(['success' => false, 'message' => 'ID Riwayat atau NIDN tidak valid']);
-      }
 
       $versi = session('tahun');
       if (!$versi) {
@@ -2365,6 +2344,11 @@ class KekuranganBayarController extends Controller
       $nominalBersih = (float) str_replace(',', '', trim((string) $nominal));
       if ($nominalBersih < 0) {
           return response()->json(['success' => false, 'message' => 'Nominal tidak boleh kurang dari 0']);
+      }
+      
+      $riwayat = DB::table('t_kekurangan')->where('id', $id)->first();
+      if (!$riwayat) {
+          return response()->json(['success' => false, 'message' => 'Data riwayat tidak ditemukan dalam database']);
       }
 
       // Ambil transaksi untuk hitung ulang pajak/kotor dan mendapatkan JSON
@@ -2379,28 +2363,6 @@ class KekuranganBayarController extends Controller
       if (!$transaksi) {
           return response()->json(['success' => false, 'message' => 'Data Dosen tidak ditemukan']);
       }
-      
-      $riwayatArr = [];
-      if (!empty($transaksi->Riwayat_Pembayaran)) {
-          $decoded = json_decode($transaksi->Riwayat_Pembayaran, true);
-          if (is_array($decoded)) {
-              $riwayatArr = $decoded;
-          }
-      }
-      
-      $riwayatIndex = -1;
-      foreach ($riwayatArr as $idx => $rwy) {
-          if (($rwy['id'] ?? '') === $id) {
-              $riwayatIndex = $idx;
-              break;
-          }
-      }
-      
-      if ($riwayatIndex === -1) {
-          return response()->json(['success' => false, 'message' => 'Data riwayat tidak ditemukan dalam JSON']);
-      }
-      
-      $riwayat = (object) $riwayatArr[$riwayatIndex];
 
       $tarif = 0.0;
       if ($transaksi) {
@@ -2425,20 +2387,88 @@ class KekuranganBayarController extends Controller
 
       // Update the specific array element
       $isKurang = ($riwayat->selisih > 0);
-      $riwayatArr[$riwayatIndex]['selisih'] = $isKurang ? round($nominalKotor, 2) : -round($nominalKotor, 2);
-      $riwayatArr[$riwayatIndex]['keterangan'] = $uraian;
-      $riwayatArr[$riwayatIndex]['kode_bayar_k'] = $nomor;
-      $riwayatArr[$riwayatIndex]['tgl_bayar_k'] = $tanggal;
-      $riwayatArr[$riwayatIndex]['updated_at'] = now()->toDateTimeString();
+      
+      DB::table('t_kekurangan')->where('id', $id)->update([
+          'selisih' => $isKurang ? round($nominalKotor, 2) : -round($nominalKotor, 2),
+          'keterangan' => $uraian,
+          'kode_bayar_k' => $nomor,
+          'tgl_bayar_k' => $tanggal,
+          'updated_at' => now()->toDateTimeString(),
+      ]);
 
-      DB::table('s_transaksi_2')
-          ->where(function ($q) use ($nidn) {
-              $q->where('NIDN', $nidn)
-                ->orWhere('NUPTK', $nidn);
-          })
-          ->where('Tahun_Versi', $versi)
-          ->update(['Riwayat_Pembayaran' => json_encode($riwayatArr)]);
+      $this->syncLunasToTransaksi($nidn, $versi);
 
       return response()->json(['success' => true, 'message' => 'Data riwayat berhasil diupdate']);
+  }
+
+  public function syncAllLunas(Request $request)
+  {
+      $versi = session('tahun');
+      list($fullyPaidNidns, ) = $this->evaluateFullyPaidNidns($versi);
+
+      $count = 0;
+      foreach ($fullyPaidNidns as $nidn) {
+          $this->syncLunasToTransaksi($nidn, $versi);
+          $count++;
+      }
+
+      return redirect()->back()->with('success', "Berhasil menyinkronkan $count data selesai ke tabel transaksi utama.");
+  }
+
+  private function syncLunasToTransaksi($nidn, $versi)
+  {
+      list($fullyPaidNidns, ) = $this->evaluateFullyPaidNidns($versi, [], $nidn);
+      
+      if (in_array($nidn, $fullyPaidNidns)) {
+          // Hitung total hutang asli dari t_kekurangan
+          $originalSelisih = DB::table('t_kekurangan')
+              ->where('tahun', $versi)
+              ->where('nidn', $nidn)
+              ->where('jenis_pembayaran', 'not like', 'PEMBAYARAN_%')
+              ->sum('selisih');
+
+          // Balikkan nilainya agar Kurang (+) dan Lebih (-) sesuai ekspektasi user
+          // Karena di database t_kekurangan, Kurang = negatif, Lebih = positif
+          $originalSelisih = $originalSelisih * -1;
+
+          // Nilai dari t_kekurangan adalah nilai KOTOR
+          $kotorSelisih = $originalSelisih;
+
+          $transaksi = DB::table('s_transaksi_2')
+              ->where('NIDN', $nidn)
+              ->where('Tahun_Versi', $versi)
+              ->first();
+              
+          if ($transaksi) {
+              $gol = $transaksi->Gol1 ?? $transaksi->Gol2 ?? $transaksi->Gol3 ?? '';
+              $jenis = $transaksi->Jenis ?? '';
+              $tarifMap = $this->loadTarifPajakMap();
+              $tarif = (float) (($tarifMap[trim($jenis)][trim($gol)] ?? 0) ?: 0);
+              
+              // Hitung Pajak dan Bersih dari nilai Kotor
+              $pajakSelisih = $kotorSelisih * $tarif;
+              $bersihSelisih = $kotorSelisih - $pajakSelisih;
+
+              // Simpan ke s_transaksi_2
+              DB::table('s_transaksi_2')
+                  ->where('NIDN', $nidn)
+                  ->where('Tahun_Versi', $versi)
+                  ->update([
+                      'Kotor_Selisih' => round($kotorSelisih, 2),
+                      'Pajak_Selisih' => round($pajakSelisih, 2),
+                      'Bersih_Selisih' => round($bersihSelisih, 2),
+                  ]);
+          }
+      } else {
+          // Jika belum lunas atau batal lunas, bersihkan kolomnya
+          DB::table('s_transaksi_2')
+              ->where('NIDN', $nidn)
+              ->where('Tahun_Versi', $versi)
+              ->update([
+                  'Kotor_Selisih' => 0,
+                  'Pajak_Selisih' => 0,
+                  'Bersih_Selisih' => 0,
+              ]);
+      }
   }
 }

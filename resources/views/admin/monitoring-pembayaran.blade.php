@@ -253,7 +253,8 @@ $months = [
         </tr>
         @endforeach
 
-        @php $colsBefore = $hasTkgb ? 4 : 4; @endphp
+
+
         <tr class="fw-bold table-light">
           <td colspan="4" class="text-center">Jumlah</td>
           <td class="text-end">{{ number_format($totalGaji,0,',','.') }}</td>
@@ -283,9 +284,6 @@ $months = [
            $lGrossM = $summaryRekap['l_gross'] ?? 0;
            $lPajakM = $summaryRekap['l_pajak'] ?? 0;
            $lNetM = $summaryRekap['l_net'] ?? 0;
-           
-           $pure_k = $summaryOriginal['pure_k_gross'] ?? 0;
-           $pure_l = $summaryOriginal['pure_l_gross'] ?? 0;
         @endphp
         <tr class="fw-bold" style="background-color: #fff0f0">
           <td colspan="4" class="text-center">Pembayaran Kekurangan</td>
@@ -393,9 +391,7 @@ $months = [
            $lPajak = $summaryOriginal['l_pajak'] ?? 0;
            $lNet = $summaryOriginal['l_net'] ?? 0;
            
-           $pure_k = $summaryOriginal['pure_k_gross'] ?? 0;
-           $pure_l = $summaryOriginal['pure_l_gross'] ?? 0;
-           $nettingText = ($pure_k > 0 && $pure_l > 0) ? '<br><small class="text-muted fw-normal" style="font-size: 0.85em;">* Hasil kompensasi: Kekurangan Rp' . number_format($pure_k, 0, ',', '.') . ' - Kelebihan Rp' . number_format($pure_l, 0, ',', '.') . '</small>' : '';
+           $nettingText = '';
            
            $totalAkhirGross = $totalKotorTpd + $totalKotorTkgb + $kGross - $lGross;
            $totalAkhirPajak = $totalPajakTpd + $totalPajakTkgb + $kPajak - $lPajak;
@@ -535,9 +531,6 @@ $months = [
             const valLPjRow = sumOri.l_pajak || 0;
             const valLNeRow = sumOri.l_net || 0;
             
-            const pureKRow = sumOri.pure_k_gross || 0;
-            const pureLRow = sumOri.pure_l_gross || 0;
-            
             tbody.innerHTML+=`<tr class="fw-bold" style="background-color:#fff0f0"><td colspan="4" class="text-center">Pembayaran Kekurangan</td><td></td><td class="text-end">${fmt(valKGrRow)}</td>${tkc(0)}<td class="text-end">${fmt(valKPjRow)}</td>${tkc(0)}<td class="text-end">${fmt(valKNeRow)}</td>${tkc(0)}<td colspan="2"></td><td colspan="2"></td></tr>`;
             tbody.innerHTML+=`<tr class="fw-bold" style="background-color:#f0f0ff"><td colspan="4" class="text-center">Pengembalian Kelebihan</td><td></td><td class="text-end">${fmt(valLGrRow)}</td>${tkc(0)}<td class="text-end">${fmt(valLPjRow)}</td>${tkc(0)}<td class="text-end">${fmt(valLNeRow)}</td>${tkc(0)}<td colspan="2"></td><td colspan="2"></td></tr>`;
 
@@ -609,9 +602,7 @@ $months = [
             }
 
               const sumOriU = data.summaryOriginal || {};
-              const pureK = sumOriU.pure_k_gross || 0;
-              const pureL = sumOriU.pure_l_gross || 0;
-              const nettingText = (pureK > 0 && pureL > 0) ? `<br><small class="text-muted fw-normal" style="font-size: 0.85em;">* Hasil kompensasi: Kekurangan Rp${fmt(pureK)} - Kelebihan Rp${fmt(pureL)}</small>` : '';
+              const nettingText = '';
 
               const kGross = sumOriU.k_gross || 0;
               const kPajak = sumOriU.k_pajak || 0;
