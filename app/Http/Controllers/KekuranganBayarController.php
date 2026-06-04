@@ -1802,7 +1802,7 @@ class KekuranganBayarController extends Controller
                   $uraian = 'Kekurangan Pembayaran';
               } else {
                   if (strtolower($trxType) === 'pengembalian') {
-                      $uraian = 'Pengembalian Pemotongan';
+                      $uraian = 'Pengembalian Kelebihan';
                   } else {
                       $uraian = 'Pemotongan Kelebihan';
                   }

@@ -1632,9 +1632,9 @@
                                         
                                         const isKurangTab = tr.closest('.tab-pane').id === 'tab-data-kurang';
                                         if (isKurangTab) {
-                                            newTd.innerHTML = '<span class="badge bg-danger" style="font-size:10px;padding:3px 8px;">Kurang</span><br><small class="text-danger fw-bold mt-1 d-block" style="font-size:11px; white-space:nowrap;">Lunas</small>';
+                                            newTd.innerHTML = '<span class="badge bg-danger" style="font-size:10px;padding:3px 8px;">Kurang</span><br><small class="text-danger fw-bold mt-1 d-block" style="font-size:11px; white-space:nowrap;">Selesai</small>';
                                         } else {
-                                            newTd.innerHTML = '<span class="badge bg-success" style="font-size:10px;padding:3px 8px;">Lebih</span><br><small class="text-success fw-bold mt-1 d-block" style="font-size:11px; white-space:nowrap;">Lunas</small>';
+                                            newTd.innerHTML = '<span class="badge bg-success" style="font-size:10px;padding:3px 8px;">Lebih</span><br><small class="text-success fw-bold mt-1 d-block" style="font-size:11px; white-space:nowrap;">Selesai</small>';
                                         }
                                         
                                         namaTd.after(newTd);
