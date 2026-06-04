@@ -358,9 +358,6 @@ class MonitoringPembayaranController extends Controller
         $tarif = $kotor > 0 ? ($pajak / $kotor) : $globalTarif;
         
         $pGross = abs($pNominal);
-        if ($tarif < 1 && $tarif >= 0) {
-            $pGross = abs($pNominal) / (1 - $tarif);
-        }
         
         // $pNominal > 0 berarti Kurang Bayar (pembayaran kekurangan)
         // $pNominal < 0 berarti Lebih Bayar (pengembalian kelebihan)
@@ -841,9 +838,6 @@ class MonitoringPembayaranController extends Controller
         $tarif = $kotor > 0 ? ($pajak / $kotor) : $globalTarif;
         
         $pGross = abs($pNominal);
-        if ($tarif < 1 && $tarif >= 0) {
-            $pGross = abs($pNominal) / (1 - $tarif);
-        }
         
         // $pNominal > 0 berarti Kurang Bayar (pembayaran kekurangan)
         // $pNominal < 0 berarti Lebih Bayar (pengembalian kelebihan)
