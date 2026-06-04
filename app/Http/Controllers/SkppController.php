@@ -21,14 +21,16 @@ class SkppController extends Controller
 
         $search = trim((string) $request->input('search', ''));
 
-        $query = DB::table('skpp')->orderByDesc('created_at');
+        $query = DB::table('i_complain')
+            ->where('pelapor_tipe', 'admin')
+            ->whereIn('jenis_pengajuan', ['Surat Keterangan', 'Surat SKPP'])
+            ->orderByDesc('created_at');
 
         if ($search !== '') {
             $query->where(function ($q) use ($search) {
                 $q->where('nidn', 'like', "%{$search}%")
                   ->orWhere('nuptk', 'like', "%{$search}%")
-                  ->orWhere('nama', 'like', "%{$search}%")
-                  ->orWhere('pts', 'like', "%{$search}%");
+                  ->orWhere('pesan', 'like', "%{$search}%");
             });
         }
 
@@ -215,18 +217,23 @@ class SkppController extends Controller
             'jenis_surat' => 'required|string|in:Surat Keterangan,Surat SKPP',
         ]);
 
-        DB::table('skpp')->insert([
-            'nidn' => $request->nidn,
-            'nuptk' => $request->nuptk,
+        $pesanJson = json_encode([
             'nama' => $request->nama,
-            'jabatan_status' => $request->jabatan_status,
-            'kode_pt' => $request->kode_pt,
             'pts' => $request->pts,
+            'jabatan_status' => $request->jabatan_status,
             'tahun' => $request->tahun,
             'bulan_belum_usulan' => $request->bulan_belum_usulan,
-            'status' => 'Proses',
-            'jenis_surat' => $request->jenis_surat,
-            'created_by' => auth()->user()->email ?? 'admin',
+        ]);
+
+        DB::table('i_complain')->insert([
+            'pelapor_tipe' => 'admin',
+            'kode_pts' => $request->kode_pt,
+            'nidn' => $request->nidn,
+            'nuptk' => $request->nuptk,
+            'judul' => 'Pengajuan ' . $request->jenis_surat,
+            'pesan' => $pesanJson,
+            'jenis_pengajuan' => $request->jenis_surat,
+            'status' => 'open',
             'created_at' => now(),
             'updated_at' => now(),
         ]);

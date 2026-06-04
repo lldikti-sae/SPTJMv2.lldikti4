@@ -449,14 +449,15 @@ class ComplainAdminController extends Controller
                         'c.created_at',
                         DB::raw('COALESCE(d.nama_dosen, p.nama_pts) as nama_pelapor'),
                         DB::raw('COALESCE(pn.pic_nidn, pu.pic_nuptk) as pic'),
-                    ]);
+                    ])
+                    ->whereIn('c.pelapor_tipe', ['pts', 'dosen']);
                 // Apply session year filter to list (compare created_at year)
                 $tahunSession = (int) session('tahun');
                 if ($tahunSession > 0) {
                     $baseQuery->whereYear('c.created_at', $tahunSession);
                 }
 
-                $recordsTotalQuery = DB::table('i_complain');
+                $recordsTotalQuery = DB::table('i_complain')->whereIn('pelapor_tipe', ['pts', 'dosen']);
                 if ($tahunSession > 0) {
                     $recordsTotalQuery->whereYear('created_at', $tahunSession);
                 }
@@ -488,7 +489,8 @@ class ComplainAdminController extends Controller
                 // Filtered count (avoid counting full select, and avoid PIC subqueries)
                 $filteredCountQuery = DB::table('i_complain as c')
                     ->leftJoin('a_dosen as d', 'c.dosen_id', '=', 'd.id')
-                    ->leftJoin('a_pts as p', 'c.pts_id', '=', 'p.id');
+                    ->leftJoin('a_pts as p', 'c.pts_id', '=', 'p.id')
+                    ->whereIn('c.pelapor_tipe', ['pts', 'dosen']);
                 if ($tahunSession > 0) {
                     $filteredCountQuery->whereYear('c.created_at', $tahunSession);
                 }

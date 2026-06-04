@@ -41,24 +41,27 @@
             </thead>
             <tbody>
                 @forelse ($skppList as $idx => $skpp)
+                @php 
+                    $detail = json_decode($skpp->pesan, true) ?? []; 
+                @endphp
                 <tr>
                     <td class="text-center">{{ $skppList->firstItem() + $idx }}</td>
                     <td>{{ $skpp->nidn ?: '-' }}</td>
                     <td>{{ $skpp->nuptk ?: '-' }}</td>
-                    <td>{{ $skpp->nama }}</td>
-                    <td class="text-center">{{ $skpp->kode_pt ?: '-' }}</td>
-                    <td>{{ $skpp->pts ?: '-' }}</td>
-                    <td class="text-center">{{ $skpp->tahun }}</td>
-                    <td>{{ $skpp->jenis_surat }}</td>
+                    <td>{{ $detail['nama'] ?? '-' }}</td>
+                    <td class="text-center">{{ $skpp->kode_pts ?: '-' }}</td>
+                    <td>{{ $detail['pts'] ?? '-' }}</td>
+                    <td class="text-center">{{ $detail['tahun'] ?? '-' }}</td>
+                    <td>{{ $skpp->jenis_pengajuan }}</td>
                     <td class="text-center">
-                        @if($skpp->status === 'Proses')
+                        @if($skpp->status === 'open')
                             <span class="badge bg-label-warning">Proses</span>
-                        @elseif($skpp->status === 'Selesai')
+                        @elseif($skpp->status === 'setuju')
                             <span class="badge bg-label-success">Selesai</span>
-                        @elseif($skpp->status === 'Ditolak')
+                        @elseif($skpp->status === 'tolak')
                             <span class="badge bg-label-danger">Ditolak</span>
                         @else
-                            <span class="badge bg-label-secondary">{{ $skpp->status }}</span>
+                            <span class="badge bg-label-secondary">{{ ucfirst($skpp->status) }}</span>
                         @endif
                     </td>
                     <td class="text-center">{{ \Carbon\Carbon::parse($skpp->created_at)->format('d-m-Y H:i') }}</td>
@@ -76,6 +79,13 @@
         {{ $skppList->links('pagination::simple-bootstrap-5') }}
     </div>
 </div>
+
+<style>
+/* Fix z-index issue where SweetAlert goes behind Bootstrap modal */
+.swal2-container {
+    z-index: 99999 !important;
+}
+</style>
 
 {{-- Modal Buat SKPP --}}
 <div class="modal fade" id="modalSkpp" tabindex="-1" aria-labelledby="modalSkppLabel" aria-hidden="true">
@@ -430,9 +440,13 @@ document.addEventListener('DOMContentLoaded', function() {
         // Build bulan string
         const bulanStr = currentBulanKosong.map(b => b.kode + ' (' + b.bulan + ' ' + b.tahun + '): ' + b.status).join(', ');
 
+        // Save variables locally before entering async Swal to prevent null reference if modal resets
+        const dosenData = { ...currentDosen };
+        const selectedTahun = currentTahun;
+
         Swal.fire({
             title: 'Konfirmasi',
-            html: `Buat <strong>${jenisSurat}</strong> untuk dosen <strong>${currentDosen.nama}</strong> tahun <strong>${currentTahun}</strong>?`,
+            html: `Buat <strong>${jenisSurat}</strong> untuk dosen <strong>${dosenData.nama}</strong> tahun <strong>${selectedTahun}</strong>?`,
             icon: 'question',
             showCancelButton: true,
             confirmButtonText: 'Ya, Buat',
@@ -449,28 +463,36 @@ document.addEventListener('DOMContentLoaded', function() {
                 title: 'Mohon Tunggu...',
                 html: '<div class="spinner-border text-primary" role="status"></div><div class="mt-2">Menyimpan SKPP...</div>',
                 showConfirmButton: false,
-                allowOutsideClick: false,
+                allowOutsideClick: false
             });
 
             fetch("{{ route('admin.skpp.store') }}", {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
+                    'Accept': 'application/json',
                     'X-CSRF-TOKEN': '{{ csrf_token() }}',
                 },
                 body: JSON.stringify({
-                    nidn: currentDosen.nidn || '',
-                    nuptk: currentDosen.nuptk || '',
-                    nama: currentDosen.nama,
-                    jabatan_status: currentDosen.jabatan_status,
-                    kode_pt: currentDosen.kode_pt,
-                    pts: currentDosen.pts,
-                    tahun: currentTahun,
+                    nidn: dosenData.nidn || '',
+                    nuptk: dosenData.nuptk || '',
+                    nama: dosenData.nama,
+                    jabatan_status: dosenData.jabatan_status,
+                    kode_pt: dosenData.kode_pt,
+                    pts: dosenData.pts,
+                    tahun: selectedTahun,
                     bulan_belum_usulan: bulanStr,
                     jenis_surat: jenisSurat,
                 }),
             })
-            .then(r => r.json())
+            .then(async r => {
+                if (!r.ok) {
+                    const text = await r.text();
+                    console.error("HTTP Error:", r.status, text);
+                    throw new Error(text.substring(0, 100));
+                }
+                return r.json();
+            })
             .then(json => {
                 if (json.success) {
                     Swal.fire({
@@ -490,7 +512,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             })
             .catch(err => {
-                Swal.fire('Error', 'Terjadi kesalahan saat menyimpan SKPP.', 'error');
+                console.error("Fetch Error:", err);
+                Swal.fire('Error', 'Terjadi kesalahan saat menyimpan SKPP: ' + err.message, 'error');
             });
         });
     }

@@ -149,6 +149,7 @@ class ComplainPicController extends ComplainAdminController
                         'c.created_at',
                         DB::raw('COALESCE(d.nama_dosen, p.nama_pts) as nama_pelapor'),
                     ])
+                    ->whereIn('c.pelapor_tipe', ['pts', 'dosen'])
                     ->selectRaw('? as pic', [$email]);
 
                 // Enforce PIC scope via joined identifier lists
@@ -192,7 +193,8 @@ class ComplainPicController extends ComplainAdminController
                     })
                     ->where(function ($q) {
                         $q->whereNotNull('an.nidn')->orWhereNotNull('au.nuptk');
-                    });
+                    })
+                    ->whereIn('c.pelapor_tipe', ['pts', 'dosen']);
                 if ($startOfYear && $startOfNextYear) {
                     $recordsTotalQuery->where('c.created_at', '>=', $startOfYear)
                         ->where('c.created_at', '<', $startOfNextYear);
@@ -209,7 +211,8 @@ class ComplainPicController extends ComplainAdminController
                     })
                     ->where(function ($q) {
                         $q->whereNotNull('an.nidn')->orWhereNotNull('au.nuptk');
-                    });
+                    })
+                    ->whereIn('c.pelapor_tipe', ['pts', 'dosen']);
                 if (trim($searchValue) !== '') {
                     $filteredCountQuery->leftJoin('a_dosen as d', 'c.dosen_id', '=', 'd.id')
                         ->leftJoin('a_pts as p', 'c.pts_id', '=', 'p.id');

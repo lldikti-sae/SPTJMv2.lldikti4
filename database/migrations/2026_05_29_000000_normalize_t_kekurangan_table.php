@@ -16,13 +16,13 @@ class NormalizeTKekuranganTable extends Migration
         // Create the new vertical t_kekurangan table
         Schema::create('t_kekurangan', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->unsignedBigInteger('rekap_id')->nullable()->comment('Relasi ke tabel u_rekap_kekurangan/Kode Rekap');
+            $table->unsignedBigInteger('rekap_id')->nullable();
             $table->string('nidn', 50)->nullable();
             $table->string('nuptk', 50)->nullable();
             $table->string('nama', 225)->nullable();
             $table->string('tahun', 4)->nullable();
-            $table->decimal('selisih', 15, 2)->default(0)->comment('Negatif = Hutang/Kurang, Positif = Lunas/Lebih');
-            $table->string('jenis_pembayaran', 50)->nullable()->comment('Misal: K_TPD1, K_TKGB1, PEMBAYARAN');
+            $table->decimal('selisih', 15, 2)->default(0);
+            $table->string('jenis_pembayaran', 50)->nullable();
             $table->string('kode_bayar_k', 100)->nullable()->comment('Nomor SP2D');
             $table->date('tgl_bayar_k')->nullable()->comment('Tanggal SP2D');
             $table->string('keterangan', 255)->nullable();
