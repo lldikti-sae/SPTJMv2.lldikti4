@@ -307,6 +307,13 @@ Route::get('/admin/export-monitoring-usulan-dosen', [MonitoringUsulanDosenContro
   'admin.export-monitoring-usulan-dosen'
 );
 
+// Route SKPP
+Route::get('/admin/skpp', [App\Http\Controllers\SkppController::class, 'index'])->name('admin.skpp');
+Route::post('/admin/skpp/search-dosen', [App\Http\Controllers\SkppController::class, 'searchDosen'])->name('admin.skpp.search-dosen');
+Route::post('/admin/skpp/get-tahun', [App\Http\Controllers\SkppController::class, 'getTahunDosen'])->name('admin.skpp.get-tahun');
+Route::post('/admin/skpp/get-detail-bulan', [App\Http\Controllers\SkppController::class, 'getDetailBulan'])->name('admin.skpp.get-detail-bulan');
+Route::post('/admin/skpp/store', [App\Http\Controllers\SkppController::class, 'store'])->name('admin.skpp.store');
+
 // Route Data Sisternas Admin
 Route::prefix('admin')
   ->name('admin.')
