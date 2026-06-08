@@ -201,6 +201,73 @@ class SkppController extends Controller
     }
 
     /**
+     * Get default preview data for SKPP Form.
+     */
+    public function getPreviewData(Request $request)
+    {
+        $request->validate([
+            'nidn' => 'nullable|string',
+            'nuptk' => 'nullable|string',
+            'tahun' => 'required|string',
+        ]);
+
+        $nidn = $request->nidn;
+        $nuptk = $request->nuptk;
+        $tahun = $request->tahun;
+
+        $dosen = DB::table('s_transaksi_2')
+            ->where('Tahun_Versi', $tahun)
+            ->where(function ($q) use ($nidn, $nuptk) {
+                if ($nidn) $q->where('NIDN', $nidn);
+                if ($nuptk) $q->orWhere('NUPTK', $nuptk);
+            })
+            ->first();
+
+        if (!$dosen) {
+            $dosen = DB::table('s_transaksi_2')
+                ->where(function ($q) use ($nidn, $nuptk) {
+                    if ($nidn) $q->where('NIDN', $nidn);
+                    if ($nuptk) $q->orWhere('NUPTK', $nuptk);
+                })
+                ->orderBy('Tahun_Versi', 'desc')
+                ->first();
+        }
+
+        $tpd_kotor = 0;
+        $tpd_pajak = 0;
+        $tpd_bersih = 0;
+        $bulan_terakhir = 1;
+
+        if ($dosen) {
+            for ($i = 12; $i >= 1; $i--) {
+                $tpd_val = $dosen->{'TPD' . $i} ?? 0;
+                if ($tpd_val > 0) {
+                    $tpd_kotor = $tpd_val;
+                    $tpd_pajak = $dosen->{'nilaiPajakTPD' . $i} ?? 0;
+                    $tpd_bersih = $dosen->{'bersihTPD' . $i} ?? 0;
+                    $bulan_terakhir = $i;
+                    break;
+                }
+            }
+        }
+
+        $bulanIndonesia = [
+            1 => 'Januari', 2 => 'Februari', 3 => 'Maret',
+            4 => 'April', 5 => 'Mei', 6 => 'Juni',
+            7 => 'Juli', 8 => 'Agustus', 9 => 'September',
+            10 => 'Oktober', 11 => 'November', 12 => 'Desember',
+        ];
+
+        return response()->json([
+            'tpd_kotor' => $tpd_kotor,
+            'tpd_pajak' => $tpd_pajak,
+            'tpd_bersih' => $tpd_bersih,
+            'bulan_terakhir_nama' => $bulanIndonesia[$bulan_terakhir] ?? '',
+            'nomor_skpp' => date('Y') . '/LL4/PR/2026',
+        ]);
+    }
+
+    /**
      * Store a new SKPP record.
      */
     public function store(Request $request)
@@ -215,6 +282,15 @@ class SkppController extends Controller
             'tahun' => 'required|string',
             'bulan_belum_usulan' => 'nullable|string',
             'jenis_surat' => 'required|string|in:Surat Keterangan,Surat SKPP',
+            'nomor_skpp' => 'nullable|string',
+            'nomor_surat_pts' => 'nullable|string',
+            'tanggal_surat_pts' => 'nullable|string',
+            'nomor_surat_lolos_butuh' => 'nullable|string',
+            'tanggal_surat_lolos_butuh' => 'nullable|string',
+            'tpd_kotor' => 'nullable|numeric',
+            'tpd_pajak' => 'nullable|numeric',
+            'tpd_bersih' => 'nullable|numeric',
+            'terhitung_bulan' => 'nullable|string',
         ]);
 
         $pesanJson = json_encode([
@@ -223,6 +299,15 @@ class SkppController extends Controller
             'jabatan_status' => $request->jabatan_status,
             'tahun' => $request->tahun,
             'bulan_belum_usulan' => $request->bulan_belum_usulan,
+            'nomor_skpp' => $request->nomor_skpp,
+            'nomor_surat_pts' => $request->nomor_surat_pts,
+            'tanggal_surat_pts' => $request->tanggal_surat_pts,
+            'nomor_surat_lolos_butuh' => $request->nomor_surat_lolos_butuh,
+            'tanggal_surat_lolos_butuh' => $request->tanggal_surat_lolos_butuh,
+            'tpd_kotor' => $request->tpd_kotor,
+            'tpd_pajak' => $request->tpd_pajak,
+            'tpd_bersih' => $request->tpd_bersih,
+            'terhitung_bulan' => $request->terhitung_bulan,
         ]);
 
         DB::table('i_complain')->insert([
@@ -239,5 +324,103 @@ class SkppController extends Controller
         ]);
 
         return response()->json(['success' => true, 'message' => 'SKPP berhasil dibuat.']);
+    }
+
+    /**
+     * Cetak Surat SKPP / Keterangan.
+     */
+    public function cetak($id)
+    {
+        $skpp = DB::table('i_complain')->where('id', $id)->first();
+        if (!$skpp) {
+            return redirect()->back()->with('error', 'Data SKPP tidak ditemukan.');
+        }
+
+        $detail = json_decode($skpp->pesan, true) ?? [];
+        $tahun = $detail['tahun'] ?? date('Y');
+        $nidn = $skpp->nidn;
+        $nuptk = $skpp->nuptk;
+
+        // Ambil data dosen dari s_transaksi_2
+        $dosen = DB::table('s_transaksi_2')
+            ->where('Tahun_Versi', $tahun)
+            ->where(function ($q) use ($nidn, $nuptk) {
+                if ($nidn) $q->where('NIDN', $nidn);
+                if ($nuptk) $q->orWhere('NUPTK', $nuptk);
+            })
+            ->first();
+
+        if (!$dosen) {
+            // Coba ambil dari tahun apa saja jika tidak ketemu di tahun yang dipilih
+            $dosen = DB::table('s_transaksi_2')
+                ->where(function ($q) use ($nidn, $nuptk) {
+                    if ($nidn) $q->where('NIDN', $nidn);
+                    if ($nuptk) $q->orWhere('NUPTK', $nuptk);
+                })
+                ->orderBy('Tahun_Versi', 'desc')
+                ->first();
+        }
+
+        if (!$dosen) {
+            return redirect()->back()->with('error', 'Data Dosen tidak ditemukan di transaksi.');
+        }
+
+        // Cari bulan terakhir yang TPD/TKGB-nya ada isinya untuk mendapatkan besaran jika kosong di JSON
+        $tpd_kotor = $detail['tpd_kotor'] ?? 0;
+        $tpd_pajak = $detail['tpd_pajak'] ?? 0;
+        $tpd_bersih = $detail['tpd_bersih'] ?? 0;
+        $bulan_terakhir_nama = $detail['terhitung_bulan'] ?? '';
+
+        if (empty($tpd_kotor)) {
+            $bulan_terakhir = 1;
+            for ($i = 12; $i >= 1; $i--) {
+                $tpd_val = $dosen->{'TPD' . $i} ?? 0;
+                if ($tpd_val > 0) {
+                    $tpd_kotor = $tpd_val;
+                    $tpd_pajak = $dosen->{'nilaiPajakTPD' . $i} ?? 0;
+                    $tpd_bersih = $dosen->{'bersihTPD' . $i} ?? 0;
+                    $bulan_terakhir = $i;
+                    break;
+                }
+            }
+            $bulanIndonesia = [
+                1 => 'Januari', 2 => 'Februari', 3 => 'Maret',
+                4 => 'April', 5 => 'Mei', 6 => 'Juni',
+                7 => 'Juli', 8 => 'Agustus', 9 => 'September',
+                10 => 'Oktober', 11 => 'November', 12 => 'Desember',
+            ];
+            $bulan_terakhir_nama = $bulanIndonesia[$bulan_terakhir] ?? '';
+        }
+
+        $data = [
+            'skpp' => $skpp,
+            'dosen' => $dosen,
+            'detail' => $detail,
+            'bulan_terakhir_nama' => $bulan_terakhir_nama,
+            'tpd_kotor' => $tpd_kotor,
+            'tpd_pajak' => $tpd_pajak,
+            'tpd_bersih' => $tpd_bersih,
+        ];
+
+        $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('admin.cetak-skpp', $data);
+        $pdf->setPaper('a4', 'portrait');
+
+        return $pdf->stream('SKPP_' . ($dosen->Nama ?? 'Dosen') . '.pdf');
+    }
+
+    /**
+     * Hapus SKPP.
+     */
+    public function destroy($id)
+    {
+        $skpp = DB::table('i_complain')->where('id', $id)->first();
+        
+        if (!$skpp) {
+            return response()->json(['success' => false, 'message' => 'Data tidak ditemukan.'], 404);
+        }
+
+        DB::table('i_complain')->where('id', $id)->delete();
+
+        return response()->json(['success' => true, 'message' => 'Surat berhasil dihapus.']);
     }
 }

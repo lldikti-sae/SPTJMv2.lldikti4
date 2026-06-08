@@ -1,0 +1,120 @@
+Array
+(
+    [0] => Array
+        (
+            [query] => select `status`, `akumulasi`, `tarif_pajak` from `d_pajak`
+            [bindings] => Array
+                (
+                )
+
+            [time] => 4.15
+        )
+
+    [1] => Array
+        (
+            [query] => select `status`, `akumulasi`, `tarif_pajak` from `d_pajak`
+            [bindings] => Array
+                (
+                )
+
+            [time] => 0.39
+        )
+
+    [2] => Array
+        (
+            [query] => select * from `t_kekurangan` where `tahun` = ? and `jenis_pembayaran` like ?
+            [bindings] => Array
+                (
+                    [0] => 2024
+                    [1] => PEMBAYARAN_%
+                )
+
+            [time] => 0.94
+        )
+
+    [3] => Array
+        (
+            [query] => select count(*) as aggregate from `s_transaksi_2` as `k` inner join (select nidn, tahun, SUM(CASE WHEN jenis_pembayaran NOT LIKE 'PEMBAYARAN_%' THEN selisih ELSE 0 END) as bersih, SUM(CASE WHEN jenis_pembayaran IN ('K_TPD1', 'L_TPD1') THEN selisih * -1 ELSE 0 END) as k_tpd1, SUM(CASE WHEN jenis_pembayaran IN ('K_TKGB1', 'L_TKGB1') THEN selisih * -1 ELSE 0 END) as k_tkgb1, SUM(CASE WHEN jenis_pembayaran IN ('K_TPD2', 'L_TPD2') THEN selisih * -1 ELSE 0 END) as k_tpd2, SUM(CASE WHEN jenis_pembayaran IN ('K_TKGB2', 'L_TKGB2') THEN selisih * -1 ELSE 0 END) as k_tkgb2, SUM(CASE WHEN jenis_pembayaran IN ('K_TPD3', 'L_TPD3') THEN selisih * -1 ELSE 0 END) as k_tpd3, SUM(CASE WHEN jenis_pembayaran IN ('K_TKGB3', 'L_TKGB3') THEN selisih * -1 ELSE 0 END) as k_tkgb3, SUM(CASE WHEN jenis_pembayaran IN ('K_TPD4', 'L_TPD4') THEN selisih * -1 ELSE 0 END) as k_tpd4, SUM(CASE WHEN jenis_pembayaran IN ('K_TKGB4', 'L_TKGB4') THEN selisih * -1 ELSE 0 END) as k_tkgb4, SUM(CASE WHEN jenis_pembayaran IN ('K_TPD5', 'L_TPD5') THEN selisih * -1 ELSE 0 END) as k_tpd5, SUM(CASE WHEN jenis_pembayaran IN ('K_TKGB5', 'L_TKGB5') THEN selisih * -1 ELSE 0 END) as k_tkgb5, SUM(CASE WHEN jenis_pembayaran IN ('K_TPD6', 'L_TPD6') THEN selisih * -1 ELSE 0 END) as k_tpd6, SUM(CASE WHEN jenis_pembayaran IN ('K_TKGB6', 'L_TKGB6') THEN selisih * -1 ELSE 0 END) as k_tkgb6, SUM(CASE WHEN jenis_pembayaran IN ('K_TPD7', 'L_TPD7') THEN selisih * -1 ELSE 0 END) as k_tpd7, SUM(CASE WHEN jenis_pembayaran IN ('K_TKGB7', 'L_TKGB7') THEN selisih * -1 ELSE 0 END) as k_tkgb7, SUM(CASE WHEN jenis_pembayaran IN ('K_TPD8', 'L_TPD8') THEN selisih * -1 ELSE 0 END) as k_tpd8, SUM(CASE WHEN jenis_pembayaran IN ('K_TKGB8', 'L_TKGB8') THEN selisih * -1 ELSE 0 END) as k_tkgb8, SUM(CASE WHEN jenis_pembayaran IN ('K_TPD9', 'L_TPD9') THEN selisih * -1 ELSE 0 END) as k_tpd9, SUM(CASE WHEN jenis_pembayaran IN ('K_TKGB9', 'L_TKGB9') THEN selisih * -1 ELSE 0 END) as k_tkgb9, SUM(CASE WHEN jenis_pembayaran IN ('K_TPD10', 'L_TPD10') THEN selisih * -1 ELSE 0 END) as k_tpd10, SUM(CASE WHEN jenis_pembayaran IN ('K_TKGB10', 'L_TKGB10') THEN selisih * -1 ELSE 0 END) as k_tkgb10, SUM(CASE WHEN jenis_pembayaran IN ('K_TPD11', 'L_TPD11') THEN selisih * -1 ELSE 0 END) as k_tpd11, SUM(CASE WHEN jenis_pembayaran IN ('K_TKGB11', 'L_TKGB11') THEN selisih * -1 ELSE 0 END) as k_tkgb11, SUM(CASE WHEN jenis_pembayaran IN ('K_TPD12', 'L_TPD12') THEN selisih * -1 ELSE 0 END) as k_tpd12, SUM(CASE WHEN jenis_pembayaran IN ('K_TKGB12', 'L_TKGB12') THEN selisih * -1 ELSE 0 END) as k_tkgb12, SUM(CASE WHEN jenis_pembayaran LIKE '%TPD%' AND jenis_pembayaran NOT LIKE 'PEMBAYARAN%' THEN selisih * -1 ELSE 0 END) as jml_tpd, SUM(CASE WHEN jenis_pembayaran LIKE '%TKGB%' AND jenis_pembayaran NOT LIKE 'PEMBAYARAN%' THEN selisih * -1 ELSE 0 END) as jml_tkgb, SUM(CASE WHEN jenis_pembayaran LIKE 'PEMBAYARAN_%' THEN selisih ELSE 0 END) as total_pembayaran from `t_kekurangan` where `tahun` = ? group by `nidn`, `tahun` having (bersih + 0) < 0) as `k2` on COALESCE(NULLIF(k.NIDN, ''), k.NUPTK) = `k2`.`nidn` where `k`.`Tahun_Versi` = ?
+            [bindings] => Array
+                (
+                    [0] => 2024
+                    [1] => 2024
+                )
+
+            [time] => 390.7
+        )
+
+    [4] => Array
+        (
+            [query] => select count(*) as aggregate from `s_transaksi_2` as `k` inner join (select nidn, tahun, SUM(CASE WHEN jenis_pembayaran NOT LIKE 'PEMBAYARAN_%' THEN selisih ELSE 0 END) as bersih, SUM(CASE WHEN jenis_pembayaran IN ('K_TPD1', 'L_TPD1') THEN selisih * -1 ELSE 0 END) as k_tpd1, SUM(CASE WHEN jenis_pembayaran IN ('K_TKGB1', 'L_TKGB1') THEN selisih * -1 ELSE 0 END) as k_tkgb1, SUM(CASE WHEN jenis_pembayaran IN ('K_TPD2', 'L_TPD2') THEN selisih * -1 ELSE 0 END) as k_tpd2, SUM(CASE WHEN jenis_pembayaran IN ('K_TKGB2', 'L_TKGB2') THEN selisih * -1 ELSE 0 END) as k_tkgb2, SUM(CASE WHEN jenis_pembayaran IN ('K_TPD3', 'L_TPD3') THEN selisih * -1 ELSE 0 END) as k_tpd3, SUM(CASE WHEN jenis_pembayaran IN ('K_TKGB3', 'L_TKGB3') THEN selisih * -1 ELSE 0 END) as k_tkgb3, SUM(CASE WHEN jenis_pembayaran IN ('K_TPD4', 'L_TPD4') THEN selisih * -1 ELSE 0 END) as k_tpd4, SUM(CASE WHEN jenis_pembayaran IN ('K_TKGB4', 'L_TKGB4') THEN selisih * -1 ELSE 0 END) as k_tkgb4, SUM(CASE WHEN jenis_pembayaran IN ('K_TPD5', 'L_TPD5') THEN selisih * -1 ELSE 0 END) as k_tpd5, SUM(CASE WHEN jenis_pembayaran IN ('K_TKGB5', 'L_TKGB5') THEN selisih * -1 ELSE 0 END) as k_tkgb5, SUM(CASE WHEN jenis_pembayaran IN ('K_TPD6', 'L_TPD6') THEN selisih * -1 ELSE 0 END) as k_tpd6, SUM(CASE WHEN jenis_pembayaran IN ('K_TKGB6', 'L_TKGB6') THEN selisih * -1 ELSE 0 END) as k_tkgb6, SUM(CASE WHEN jenis_pembayaran IN ('K_TPD7', 'L_TPD7') THEN selisih * -1 ELSE 0 END) as k_tpd7, SUM(CASE WHEN jenis_pembayaran IN ('K_TKGB7', 'L_TKGB7') THEN selisih * -1 ELSE 0 END) as k_tkgb7, SUM(CASE WHEN jenis_pembayaran IN ('K_TPD8', 'L_TPD8') THEN selisih * -1 ELSE 0 END) as k_tpd8, SUM(CASE WHEN jenis_pembayaran IN ('K_TKGB8', 'L_TKGB8') THEN selisih * -1 ELSE 0 END) as k_tkgb8, SUM(CASE WHEN jenis_pembayaran IN ('K_TPD9', 'L_TPD9') THEN selisih * -1 ELSE 0 END) as k_tpd9, SUM(CASE WHEN jenis_pembayaran IN ('K_TKGB9', 'L_TKGB9') THEN selisih * -1 ELSE 0 END) as k_tkgb9, SUM(CASE WHEN jenis_pembayaran IN ('K_TPD10', 'L_TPD10') THEN selisih * -1 ELSE 0 END) as k_tpd10, SUM(CASE WHEN jenis_pembayaran IN ('K_TKGB10', 'L_TKGB10') THEN selisih * -1 ELSE 0 END) as k_tkgb10, SUM(CASE WHEN jenis_pembayaran IN ('K_TPD11', 'L_TPD11') THEN selisih * -1 ELSE 0 END) as k_tpd11, SUM(CASE WHEN jenis_pembayaran IN ('K_TKGB11', 'L_TKGB11') THEN selisih * -1 ELSE 0 END) as k_tkgb11, SUM(CASE WHEN jenis_pembayaran IN ('K_TPD12', 'L_TPD12') THEN selisih * -1 ELSE 0 END) as k_tpd12, SUM(CASE WHEN jenis_pembayaran IN ('K_TKGB12', 'L_TKGB12') THEN selisih * -1 ELSE 0 END) as k_tkgb12, SUM(CASE WHEN jenis_pembayaran LIKE '%TPD%' AND jenis_pembayaran NOT LIKE 'PEMBAYARAN%' THEN selisih * -1 ELSE 0 END) as jml_tpd, SUM(CASE WHEN jenis_pembayaran LIKE '%TKGB%' AND jenis_pembayaran NOT LIKE 'PEMBAYARAN%' THEN selisih * -1 ELSE 0 END) as jml_tkgb, SUM(CASE WHEN jenis_pembayaran LIKE 'PEMBAYARAN_%' THEN selisih ELSE 0 END) as total_pembayaran from `t_kekurangan` where `tahun` = ? group by `nidn`, `tahun` having (bersih + 0) > 0) as `k2` on COALESCE(NULLIF(k.NIDN, ''), k.NUPTK) = `k2`.`nidn` where `k`.`Tahun_Versi` = ?
+            [bindings] => Array
+                (
+                    [0] => 2024
+                    [1] => 2024
+                )
+
+            [time] => 407.11
+        )
+
+    [5] => Array
+        (
+            [query] => select count(*) as aggregate from `s_transaksi_2` as `k` inner join (select nidn, tahun, SUM(CASE WHEN jenis_pembayaran NOT LIKE 'PEMBAYARAN_%' THEN selisih ELSE 0 END) as bersih, SUM(CASE WHEN jenis_pembayaran IN ('K_TPD1', 'L_TPD1') THEN selisih * -1 ELSE 0 END) as k_tpd1, SUM(CASE WHEN jenis_pembayaran IN ('K_TKGB1', 'L_TKGB1') THEN selisih * -1 ELSE 0 END) as k_tkgb1, SUM(CASE WHEN jenis_pembayaran IN ('K_TPD2', 'L_TPD2') THEN selisih * -1 ELSE 0 END) as k_tpd2, SUM(CASE WHEN jenis_pembayaran IN ('K_TKGB2', 'L_TKGB2') THEN selisih * -1 ELSE 0 END) as k_tkgb2, SUM(CASE WHEN jenis_pembayaran IN ('K_TPD3', 'L_TPD3') THEN selisih * -1 ELSE 0 END) as k_tpd3, SUM(CASE WHEN jenis_pembayaran IN ('K_TKGB3', 'L_TKGB3') THEN selisih * -1 ELSE 0 END) as k_tkgb3, SUM(CASE WHEN jenis_pembayaran IN ('K_TPD4', 'L_TPD4') THEN selisih * -1 ELSE 0 END) as k_tpd4, SUM(CASE WHEN jenis_pembayaran IN ('K_TKGB4', 'L_TKGB4') THEN selisih * -1 ELSE 0 END) as k_tkgb4, SUM(CASE WHEN jenis_pembayaran IN ('K_TPD5', 'L_TPD5') THEN selisih * -1 ELSE 0 END) as k_tpd5, SUM(CASE WHEN jenis_pembayaran IN ('K_TKGB5', 'L_TKGB5') THEN selisih * -1 ELSE 0 END) as k_tkgb5, SUM(CASE WHEN jenis_pembayaran IN ('K_TPD6', 'L_TPD6') THEN selisih * -1 ELSE 0 END) as k_tpd6, SUM(CASE WHEN jenis_pembayaran IN ('K_TKGB6', 'L_TKGB6') THEN selisih * -1 ELSE 0 END) as k_tkgb6, SUM(CASE WHEN jenis_pembayaran IN ('K_TPD7', 'L_TPD7') THEN selisih * -1 ELSE 0 END) as k_tpd7, SUM(CASE WHEN jenis_pembayaran IN ('K_TKGB7', 'L_TKGB7') THEN selisih * -1 ELSE 0 END) as k_tkgb7, SUM(CASE WHEN jenis_pembayaran IN ('K_TPD8', 'L_TPD8') THEN selisih * -1 ELSE 0 END) as k_tpd8, SUM(CASE WHEN jenis_pembayaran IN ('K_TKGB8', 'L_TKGB8') THEN selisih * -1 ELSE 0 END) as k_tkgb8, SUM(CASE WHEN jenis_pembayaran IN ('K_TPD9', 'L_TPD9') THEN selisih * -1 ELSE 0 END) as k_tpd9, SUM(CASE WHEN jenis_pembayaran IN ('K_TKGB9', 'L_TKGB9') THEN selisih * -1 ELSE 0 END) as k_tkgb9, SUM(CASE WHEN jenis_pembayaran IN ('K_TPD10', 'L_TPD10') THEN selisih * -1 ELSE 0 END) as k_tpd10, SUM(CASE WHEN jenis_pembayaran IN ('K_TKGB10', 'L_TKGB10') THEN selisih * -1 ELSE 0 END) as k_tkgb10, SUM(CASE WHEN jenis_pembayaran IN ('K_TPD11', 'L_TPD11') THEN selisih * -1 ELSE 0 END) as k_tpd11, SUM(CASE WHEN jenis_pembayaran IN ('K_TKGB11', 'L_TKGB11') THEN selisih * -1 ELSE 0 END) as k_tkgb11, SUM(CASE WHEN jenis_pembayaran IN ('K_TPD12', 'L_TPD12') THEN selisih * -1 ELSE 0 END) as k_tpd12, SUM(CASE WHEN jenis_pembayaran IN ('K_TKGB12', 'L_TKGB12') THEN selisih * -1 ELSE 0 END) as k_tkgb12, SUM(CASE WHEN jenis_pembayaran LIKE '%TPD%' AND jenis_pembayaran NOT LIKE 'PEMBAYARAN%' THEN selisih * -1 ELSE 0 END) as jml_tpd, SUM(CASE WHEN jenis_pembayaran LIKE '%TKGB%' AND jenis_pembayaran NOT LIKE 'PEMBAYARAN%' THEN selisih * -1 ELSE 0 END) as jml_tkgb, SUM(CASE WHEN jenis_pembayaran LIKE 'PEMBAYARAN_%' THEN selisih ELSE 0 END) as total_pembayaran from `t_kekurangan` where `tahun` = ? group by `nidn`, `tahun`) as `k2` on COALESCE(NULLIF(k.NIDN, ''), k.NUPTK) = `k2`.`nidn` where `k`.`Tahun_Versi` = ? and 1 = 0
+            [bindings] => Array
+                (
+                    [0] => 2024
+                    [1] => 2024
+                )
+
+            [time] => 0.66
+        )
+
+    [6] => Array
+        (
+            [query] => select * from `u_rekap_kekurangan` where RIGHT(periode, 4) = ? and (`excel` like ? or `periode` like ?) order by `created_at` desc
+            [bindings] => Array
+                (
+                    [0] => 2024
+                    [1] => rekap_kekurangan/%
+                    [2] => Kurang%
+                )
+
+            [time] => 0.36
+        )
+
+    [7] => Array
+        (
+            [query] => select * from `u_rekap_kekurangan` where RIGHT(periode, 4) = ? and (`excel` like ? or `periode` like ?) order by `created_at` desc
+            [bindings] => Array
+                (
+                    [0] => 2024
+                    [1] => rekap_kelebihan/%
+                    [2] => Lebih%
+                )
+
+            [time] => 0.3
+        )
+
+    [8] => Array
+        (
+            [query] => select * from `u_rekap_kekurangan` where RIGHT(periode, 4) = ? and `sp2d` is not null and `sp2d` != ?
+            [bindings] => Array
+                (
+                    [0] => 2024
+                    [1] => 
+                )
+
+            [time] => 0.46
+        )
+
+    [9] => Array
+        (
+            [query] => select distinct `nama_bank` from `b_bank` where `nama_bank` is not null and `nama_bank` != ? order by `nama_bank` asc
+            [bindings] => Array
+                (
+                    [0] => 
+                )
+
+            [time] => 1.97
+        )
+
+)

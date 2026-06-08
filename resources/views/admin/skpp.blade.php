@@ -37,6 +37,7 @@
                     <th>Jenis Surat</th>
                     <th>Status</th>
                     <th>Tanggal Dibuat</th>
+                    <th>Aksi</th>
                 </tr>
             </thead>
             <tbody>
@@ -65,10 +66,20 @@
                         @endif
                     </td>
                     <td class="text-center">{{ \Carbon\Carbon::parse($skpp->created_at)->format('d-m-Y H:i') }}</td>
+                    <td class="text-center">
+                        <div class="d-flex justify-content-center gap-1">
+                            <a href="{{ route('admin.skpp.cetak', $skpp->id) }}" class="btn btn-sm btn-outline-info" target="_blank" title="Cetak Surat">
+                                <i class="bx bx-printer"></i>
+                            </a>
+                            <button type="button" class="btn btn-sm btn-outline-danger" onclick="hapusSkpp({{ $skpp->id }})" title="Hapus Surat">
+                                <i class="bx bx-trash"></i>
+                            </button>
+                        </div>
+                    </td>
                 </tr>
                 @empty
                 <tr>
-                    <td colspan="10" class="text-center text-muted">Belum ada data SKPP.</td>
+                    <td colspan="11" class="text-center text-muted">Belum ada data SKPP.</td>
                 </tr>
                 @endforelse
             </tbody>
@@ -208,6 +219,64 @@
                         </div>
                     </div>
                 </div>
+
+                {{-- Step 3: Preview & Edit SKPP --}}
+                <div id="skppStep3" style="display: none;">
+                    <hr>
+                    <h6 class="fw-bold mb-3"><i class="bx bx-edit me-1"></i> Preview & Lengkapi Data SKPP</h6>
+                    <form id="formSkppPreview">
+                        <div class="row g-3 mb-3">
+                            <div class="col-md-12">
+                                <label class="form-label">Nomor Surat SKPP / Keterangan</label>
+                                <input type="text" class="form-control" id="prev_nomor_skpp" name="nomor_skpp" placeholder="Misal: 3137/LL4/PR/2026">
+                            </div>
+                        </div>
+                        <div class="row g-3 mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label">Nomor Surat dari PTS</label>
+                                <input type="text" class="form-control" id="prev_nomor_surat_pts" name="nomor_surat_pts" placeholder="Misal: 1627/SPm/01/2026">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Tanggal Surat dari PTS</label>
+                                <input type="text" class="form-control" id="prev_tanggal_surat_pts" name="tanggal_surat_pts" placeholder="Misal: 18 Mei 2026">
+                            </div>
+                        </div>
+                        <div class="row g-3 mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label">Nomor Surat Lolos Butuh</label>
+                                <input type="text" class="form-control" id="prev_nomor_surat_lolos_butuh" name="nomor_surat_lolos_butuh" placeholder="Opsional">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Tanggal Surat Lolos Butuh</label>
+                                <input type="text" class="form-control" id="prev_tanggal_surat_lolos_butuh" name="tanggal_surat_lolos_butuh" placeholder="Opsional">
+                            </div>
+                        </div>
+                        <div class="row g-3 mb-3">
+                            <div class="col-md-4">
+                                <label class="form-label">Tunjangan Kotor (Rp)</label>
+                                <input type="number" class="form-control" id="prev_tpd_kotor" name="tpd_kotor">
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">Pajak Penghasilan (Rp)</label>
+                                <input type="number" class="form-control" id="prev_tpd_pajak" name="tpd_pajak">
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">Tunjangan Bersih (Rp)</label>
+                                <input type="number" class="form-control" id="prev_tpd_bersih" name="tpd_bersih">
+                            </div>
+                        </div>
+                        <div class="row g-3 mb-3">
+                            <div class="col-md-12">
+                                <label class="form-label">Terhitung s.d Bulan</label>
+                                <input type="text" class="form-control" id="prev_terhitung_bulan" name="terhitung_bulan" placeholder="Misal: Mei">
+                            </div>
+                        </div>
+                        <div class="d-flex justify-content-end gap-2 mt-4">
+                            <button type="button" class="btn btn-secondary" id="btnKembaliStep2">Kembali</button>
+                            <button type="button" class="btn btn-primary" id="btnSimpanSkppFinal"><i class="bx bx-save me-1"></i> Simpan & Buat Surat</button>
+                        </div>
+                    </form>
+                </div>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
@@ -257,10 +326,12 @@ document.addEventListener('DOMContentLoaded', function() {
         document.getElementById('skppSearchNotFound').style.display = 'none';
         document.getElementById('skppDetailBulan').style.display = 'none';
         document.getElementById('skppButtonArea').style.display = 'none';
+        document.getElementById('skppStep3').style.display = 'none';
         document.getElementById('skppTahunSelect').innerHTML = '<option value="">-- Pilih Tahun --</option>';
         currentDosen = null;
         currentTahun = null;
         currentBulanKosong = [];
+        currentJenisSurat = '';
     }
 
     // Search Dosen
@@ -423,33 +494,100 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Buat Surat Keterangan
     document.getElementById('btnBuatSuratKeterangan').addEventListener('click', function() {
-        submitSkpp('Surat Keterangan');
+        previewSkpp('Surat Keterangan');
     });
 
     // Buat Surat SKPP
     document.getElementById('btnBuatSuratSkpp').addEventListener('click', function() {
-        submitSkpp('Surat SKPP');
+        previewSkpp('Surat SKPP');
     });
 
-    function submitSkpp(jenisSurat) {
+    document.getElementById('btnKembaliStep2').addEventListener('click', function() {
+        document.getElementById('skppStep3').style.display = 'none';
+        document.getElementById('skppStep2').style.display = 'block';
+    });
+
+    function previewSkpp(jenisSurat) {
         if (!currentDosen || !currentTahun) {
             Swal.fire('Perhatian', 'Data dosen dan tahun harus dipilih.', 'warning');
             return;
         }
 
-        // Build bulan string
+        currentJenisSurat = jenisSurat;
+
+        Swal.fire({
+            title: 'Memuat Data...',
+            allowOutsideClick: false,
+            didOpen: () => {
+                Swal.showLoading();
+            }
+        });
+
+        fetch("{{ route('admin.skpp.get-preview-data') }}", {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json',
+                'X-CSRF-TOKEN': '{{ csrf_token() }}',
+            },
+            body: JSON.stringify({
+                nidn: currentDosen.nidn || '',
+                nuptk: currentDosen.nuptk || '',
+                tahun: currentTahun
+            })
+        })
+        .then(r => r.json())
+        .then(data => {
+            Swal.close();
+            // Populate form
+            document.getElementById('prev_nomor_skpp').value = data.nomor_skpp || '';
+            document.getElementById('prev_tpd_kotor').value = data.tpd_kotor || 0;
+            document.getElementById('prev_tpd_pajak').value = data.tpd_pajak || 0;
+            document.getElementById('prev_tpd_bersih').value = data.tpd_bersih || 0;
+            document.getElementById('prev_terhitung_bulan').value = data.bulan_terakhir_nama || '';
+
+            // Hide step 2, show step 3
+            document.getElementById('skppStep2').style.display = 'none';
+            document.getElementById('skppStep3').style.display = 'block';
+        })
+        .catch(err => {
+            console.error(err);
+            Swal.fire('Error', 'Gagal memuat data preview', 'error');
+        });
+    }
+
+    // Save Data
+    document.getElementById('btnSimpanSkppFinal').addEventListener('click', function() {
+        const jenisSurat = currentJenisSurat;
         const bulanStr = currentBulanKosong.map(b => b.kode + ' (' + b.bulan + ' ' + b.tahun + '): ' + b.status).join(', ');
 
-        // Save variables locally before entering async Swal to prevent null reference if modal resets
-        const dosenData = { ...currentDosen };
-        const selectedTahun = currentTahun;
+        const payload = {
+            nidn: currentDosen.nidn || '',
+            nuptk: currentDosen.nuptk || '',
+            nama: currentDosen.nama,
+            jabatan_status: currentDosen.jabatan_status,
+            kode_pt: currentDosen.kode_pt,
+            pts: currentDosen.pts,
+            tahun: currentTahun,
+            bulan_belum_usulan: bulanStr,
+            jenis_surat: jenisSurat,
+            nomor_skpp: document.getElementById('prev_nomor_skpp').value,
+            nomor_surat_pts: document.getElementById('prev_nomor_surat_pts').value,
+            tanggal_surat_pts: document.getElementById('prev_tanggal_surat_pts').value,
+            nomor_surat_lolos_butuh: document.getElementById('prev_nomor_surat_lolos_butuh').value,
+            tanggal_surat_lolos_butuh: document.getElementById('prev_tanggal_surat_lolos_butuh').value,
+            tpd_kotor: document.getElementById('prev_tpd_kotor').value,
+            tpd_pajak: document.getElementById('prev_tpd_pajak').value,
+            tpd_bersih: document.getElementById('prev_tpd_bersih').value,
+            terhitung_bulan: document.getElementById('prev_terhitung_bulan').value,
+        };
 
         Swal.fire({
             title: 'Konfirmasi',
-            html: `Buat <strong>${jenisSurat}</strong> untuk dosen <strong>${dosenData.nama}</strong> tahun <strong>${selectedTahun}</strong>?`,
+            html: `Simpan dan buat <strong>${jenisSurat}</strong>?`,
             icon: 'question',
             showCancelButton: true,
-            confirmButtonText: 'Ya, Buat',
+            confirmButtonText: 'Ya, Simpan',
             cancelButtonText: 'Batal',
             customClass: {
                 confirmButton: 'btn btn-primary me-2',
@@ -473,22 +611,11 @@ document.addEventListener('DOMContentLoaded', function() {
                     'Accept': 'application/json',
                     'X-CSRF-TOKEN': '{{ csrf_token() }}',
                 },
-                body: JSON.stringify({
-                    nidn: dosenData.nidn || '',
-                    nuptk: dosenData.nuptk || '',
-                    nama: dosenData.nama,
-                    jabatan_status: dosenData.jabatan_status,
-                    kode_pt: dosenData.kode_pt,
-                    pts: dosenData.pts,
-                    tahun: selectedTahun,
-                    bulan_belum_usulan: bulanStr,
-                    jenis_surat: jenisSurat,
-                }),
+                body: JSON.stringify(payload),
             })
             .then(async r => {
                 if (!r.ok) {
                     const text = await r.text();
-                    console.error("HTTP Error:", r.status, text);
                     throw new Error(text.substring(0, 100));
                 }
                 return r.json();
@@ -502,7 +629,6 @@ document.addEventListener('DOMContentLoaded', function() {
                         customClass: { confirmButton: 'btn btn-primary' },
                         buttonsStyling: false
                     }).then(() => {
-                        // Close modal and reload
                         const modal = bootstrap.Modal.getInstance(modalEl);
                         if (modal) modal.hide();
                         window.location.reload();
@@ -516,7 +642,66 @@ document.addEventListener('DOMContentLoaded', function() {
                 Swal.fire('Error', 'Terjadi kesalahan saat menyimpan SKPP: ' + err.message, 'error');
             });
         });
-    }
+    });
 });
+
+function hapusSkpp(id) {
+    Swal.fire({
+        title: 'Apakah Anda yakin?',
+        text: "Data surat SKPP ini akan dihapus permanen!",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#d33',
+        cancelButtonColor: '#3085d6',
+        confirmButtonText: 'Ya, hapus!',
+        cancelButtonText: 'Batal',
+        customClass: {
+            confirmButton: 'btn btn-danger me-2',
+            cancelButton: 'btn btn-secondary'
+        },
+        buttonsStyling: false
+    }).then((result) => {
+        if (result.isConfirmed) {
+            Swal.fire({
+                title: 'Mohon Tunggu...',
+                html: '<div class="spinner-border text-primary" role="status"></div><div class="mt-2">Menghapus SKPP...</div>',
+                showConfirmButton: false,
+                allowOutsideClick: false
+            });
+
+            fetch(`/admin/skpp/${id}`, {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                }
+            })
+            .then(async r => {
+                if (!r.ok) throw new Error(await r.text());
+                return r.json();
+            })
+            .then(json => {
+                if (json.success) {
+                    Swal.fire({
+                        title: 'Terhapus!',
+                        text: json.message || 'Surat berhasil dihapus.',
+                        icon: 'success',
+                        customClass: { confirmButton: 'btn btn-primary' },
+                        buttonsStyling: false
+                    }).then(() => {
+                        window.location.reload();
+                    });
+                } else {
+                    Swal.fire('Gagal', json.message || 'Terjadi kesalahan.', 'error');
+                }
+            })
+            .catch(err => {
+                console.error(err);
+                Swal.fire('Error', 'Gagal menghapus data', 'error');
+            });
+        }
+    });
+}
 </script>
 @endsection

@@ -499,6 +499,13 @@ class KekuranganBayarController extends Controller
           }
       }
 
+      // Performance: Only query NIDNs that actually have payments
+      // instead of scanning the entire s_transaksi_2 table
+      $nidnsWithPayments = array_unique(array_keys($paidKotorByNidnMonth));
+      if (empty($nidnsWithPayments) && !$targetNidn) {
+          return [$fullyPaidNidns, $paidKotorByNidnMonth];
+      }
+
       $k2_sub = clone $this->getPivotSubquery($versi);
       $rowsQuery = DB::table('s_transaksi_2 as k')
           ->joinSub($k2_sub, 'k2', function ($join) {
@@ -510,6 +517,12 @@ class KekuranganBayarController extends Controller
           $rowsQuery->where(function($q) use ($targetNidn) {
               $q->where('k.NIDN', $targetNidn)
                 ->orWhere('k.NUPTK', $targetNidn);
+          });
+      } else {
+          // Only check NIDNs that have payment records — huge perf gain
+          $rowsQuery->where(function($q) use ($nidnsWithPayments) {
+              $q->whereIn('k.NIDN', $nidnsWithPayments)
+                ->orWhereIn('k.NUPTK', $nidnsWithPayments);
           });
       }
 
@@ -865,37 +878,66 @@ class KekuranganBayarController extends Controller
 
     list($fullyPaidNidns, $paidKotorByNidnMonth) = $this->evaluateFullyPaidNidns($versi);
     
-    $k2_sub = clone $this->getPivotSubquery($versi);
+    $k2_sub_raw = $this->getPivotSubquery($versi);
+    
+    $buildBaseQuery = function ($k2_sub) use ($versi) {
+        return DB::table('s_transaksi_2 as k')
+          ->joinSub($k2_sub, 'k2', function ($join) {
+            $join->on(DB::raw("COALESCE(NULLIF(k.NIDN, ''), k.NUPTK)"), '=', 'k2.nidn');
+          })
+          ->where('k.Tahun_Versi', $versi)
+          ->select(
+            'k.NIDN', 'k.NUPTK', 'k.Nama', 'k.Jenis', 'k.Jabatan12', 'k.Aktif', 'k.Bank',
+            'k2.k_tpd1', 'k2.k_tkgb1', 'k2.k_tpd2', 'k2.k_tkgb2',
+            'k2.k_tpd3', 'k2.k_tkgb3', 'k2.k_tpd4', 'k2.k_tkgb4',
+            'k2.k_tpd5', 'k2.k_tkgb5', 'k2.k_tpd6', 'k2.k_tkgb6',
+            'k2.k_tpd7', 'k2.k_tkgb7', 'k2.k_tpd8', 'k2.k_tkgb8',
+            'k2.k_tpd9', 'k2.k_tkgb9', 'k2.k_tpd10', 'k2.k_tkgb10',
+            'k2.k_tpd11', 'k2.k_tkgb11', 'k2.k_tpd12', 'k2.k_tkgb12',
+            DB::raw('0 as jml_tpd'), DB::raw('0 as jml_tkgb'), DB::raw('0 as nilai_pjk_tpd'), DB::raw('0 as nilai_pjk_tkgb'), 'k2.bersih', 'k2.bersih as delta_bersih', 'k2.total_pembayaran',
+            'k.Gol1', 'k.Gol2', 'k.Gol3', 'k.Gol4', 'k.Gol5', 'k.Gol6', 'k.Gol7', 'k.Gol8', 'k.Gol9', 'k.Gol10', 'k.Gol11', 'k.Gol12',
+            'k.Jabatan1', 'k.Jabatan2', 'k.Jabatan3', 'k.Jabatan4', 'k.Jabatan5', 'k.Jabatan6', 'k.Jabatan7', 'k.Jabatan8', 'k.Jabatan9', 'k.Jabatan10', 'k.Jabatan11', 'k.Jabatan12 as Jabatan12Monthly',
+            'k.TPD1', 'k.TPD2', 'k.TPD3', 'k.TPD4', 'k.TPD5', 'k.TPD6', 'k.TPD7', 'k.TPD8', 'k.TPD9', 'k.TPD10', 'k.TPD11', 'k.TPD12',
+            'k.TKGB1', 'k.TKGB2', 'k.TKGB3', 'k.TKGB4', 'k.TKGB5', 'k.TKGB6', 'k.TKGB7', 'k.TKGB8', 'k.TKGB9', 'k.TKGB10', 'k.TKGB11', 'k.TKGB12',
+            'k.Gaji1', 'k.Gaji2', 'k.Gaji3', 'k.Gaji4', 'k.Gaji5', 'k.Gaji6', 'k.Gaji7', 'k.Gaji8', 'k.Gaji9', 'k.Gaji10', 'k.Gaji11', 'k.Gaji12',
+            'k.bersihTPD1', 'k.bersihTPD2', 'k.bersihTPD3', 'k.bersihTPD4', 'k.bersihTPD5', 'k.bersihTPD6', 'k.bersihTPD7', 'k.bersihTPD8', 'k.bersihTPD9', 'k.bersihTPD10', 'k.bersihTPD11', 'k.bersihTPD12',
+            'k.bersihTKGB1', 'k.bersihTKGB2', 'k.bersihTKGB3', 'k.bersihTKGB4', 'k.bersihTKGB5', 'k.bersihTKGB6', 'k.bersihTKGB7', 'k.bersihTKGB8', 'k.bersihTKGB9', 'k.bersihTKGB10', 'k.bersihTKGB11', 'k.bersihTKGB12',
+            'k.No_sp2d_1', 'k.No_sp2d_2', 'k.No_sp2d_3', 'k.No_sp2d_4', 'k.No_sp2d_5', 'k.No_sp2d_6', 'k.No_sp2d_7', 'k.No_sp2d_8', 'k.No_sp2d_9', 'k.No_sp2d_10', 'k.No_sp2d_11', 'k.No_sp2d_12',
+            'k.Tgl_sp2d_1', 'k.Tgl_sp2d_2', 'k.Tgl_sp2d_3', 'k.Tgl_sp2d_4', 'k.Tgl_sp2d_5', 'k.Tgl_sp2d_6', 'k.Tgl_sp2d_7', 'k.Tgl_sp2d_8', 'k.Tgl_sp2d_9', 'k.Tgl_sp2d_10', 'k.Tgl_sp2d_11', 'k.Tgl_sp2d_12'
+          );
+    };
 
-    $baseQuery = DB::table('s_transaksi_2 as k')
-      ->joinSub($k2_sub, 'k2', function ($join) {
-        $join->on(DB::raw("COALESCE(NULLIF(k.NIDN, ''), k.NUPTK)"), '=', 'k2.nidn');
-      })
-      ->where('k.Tahun_Versi', $versi);
+    // PRE-FETCH NIDNs FOR KURANG AND LEBIH
+    // This avoids doing a massive JOIN on the entire s_transaksi_2 table
+    $nidnsByKategori = DB::table('t_kekurangan')
+        ->where('tahun', $versi)
+        ->selectRaw("nidn, SUM(CASE WHEN jenis_pembayaran NOT LIKE 'PEMBAYARAN_%' THEN selisih ELSE 0 END) as bersih")
+        ->groupBy('nidn')
+        ->havingRaw('bersih <> 0')
+        ->get();
 
-    // fullyPaidNidns akan di-filter per tab (Kurang, Lebih, Selesai)
-    $baseQuery->select(
-        'k.NIDN', 'k.NUPTK', 'k.Nama', 'k.Jenis', 'k.Jabatan12', 'k.Aktif', 'k.Bank',
-        'k2.k_tpd1', 'k2.k_tkgb1', 'k2.k_tpd2', 'k2.k_tkgb2',
-        'k2.k_tpd3', 'k2.k_tkgb3', 'k2.k_tpd4', 'k2.k_tkgb4',
-        'k2.k_tpd5', 'k2.k_tkgb5', 'k2.k_tpd6', 'k2.k_tkgb6',
-        'k2.k_tpd7', 'k2.k_tkgb7', 'k2.k_tpd8', 'k2.k_tkgb8',
-        'k2.k_tpd9', 'k2.k_tkgb9', 'k2.k_tpd10', 'k2.k_tkgb10',
-        'k2.k_tpd11', 'k2.k_tkgb11', 'k2.k_tpd12', 'k2.k_tkgb12',
-        DB::raw('0 as jml_tpd'), DB::raw('0 as jml_tkgb'), DB::raw('0 as nilai_pjk_tpd'), DB::raw('0 as nilai_pjk_tkgb'), 'k2.bersih', 'k2.bersih as delta_bersih', 'k2.total_pembayaran',
-        'k.Gol1', 'k.Gol2', 'k.Gol3', 'k.Gol4', 'k.Gol5', 'k.Gol6', 'k.Gol7', 'k.Gol8', 'k.Gol9', 'k.Gol10', 'k.Gol11', 'k.Gol12',
-        'k.Jabatan1', 'k.Jabatan2', 'k.Jabatan3', 'k.Jabatan4', 'k.Jabatan5', 'k.Jabatan6', 'k.Jabatan7', 'k.Jabatan8', 'k.Jabatan9', 'k.Jabatan10', 'k.Jabatan11', 'k.Jabatan12 as Jabatan12Monthly',
-        'k.TPD1', 'k.TPD2', 'k.TPD3', 'k.TPD4', 'k.TPD5', 'k.TPD6', 'k.TPD7', 'k.TPD8', 'k.TPD9', 'k.TPD10', 'k.TPD11', 'k.TPD12',
-        'k.TKGB1', 'k.TKGB2', 'k.TKGB3', 'k.TKGB4', 'k.TKGB5', 'k.TKGB6', 'k.TKGB7', 'k.TKGB8', 'k.TKGB9', 'k.TKGB10', 'k.TKGB11', 'k.TKGB12',
-        'k.Gaji1', 'k.Gaji2', 'k.Gaji3', 'k.Gaji4', 'k.Gaji5', 'k.Gaji6', 'k.Gaji7', 'k.Gaji8', 'k.Gaji9', 'k.Gaji10', 'k.Gaji11', 'k.Gaji12',
-        'k.bersihTPD1', 'k.bersihTPD2', 'k.bersihTPD3', 'k.bersihTPD4', 'k.bersihTPD5', 'k.bersihTPD6', 'k.bersihTPD7', 'k.bersihTPD8', 'k.bersihTPD9', 'k.bersihTPD10', 'k.bersihTPD11', 'k.bersihTPD12',
-        'k.bersihTKGB1', 'k.bersihTKGB2', 'k.bersihTKGB3', 'k.bersihTKGB4', 'k.bersihTKGB5', 'k.bersihTKGB6', 'k.bersihTKGB7', 'k.bersihTKGB8', 'k.bersihTKGB9', 'k.bersihTKGB10', 'k.bersihTKGB11', 'k.bersihTKGB12',
-        'k.No_sp2d_1', 'k.No_sp2d_2', 'k.No_sp2d_3', 'k.No_sp2d_4', 'k.No_sp2d_5', 'k.No_sp2d_6', 'k.No_sp2d_7', 'k.No_sp2d_8', 'k.No_sp2d_9', 'k.No_sp2d_10', 'k.No_sp2d_11', 'k.No_sp2d_12',
-        'k.Tgl_sp2d_1', 'k.Tgl_sp2d_2', 'k.Tgl_sp2d_3', 'k.Tgl_sp2d_4', 'k.Tgl_sp2d_5', 'k.Tgl_sp2d_6', 'k.Tgl_sp2d_7', 'k.Tgl_sp2d_8', 'k.Tgl_sp2d_9', 'k.Tgl_sp2d_10', 'k.Tgl_sp2d_11', 'k.Tgl_sp2d_12'
-      );
+    $nidnsKurang = [];
+    $nidnsLebih = [];
+    foreach ($nidnsByKategori as $row) {
+        if ($row->bersih < 0) {
+            $nidnsKurang[] = $row->nidn;
+        } elseif ($row->bersih > 0) {
+            $nidnsLebih[] = $row->nidn;
+        }
+    }
 
     $searchKurang = request('search_kurang');
-    $queryKurangBase = (clone $baseQuery)->whereRaw('(k2.bersih + 0) < 0');
+    $queryKurangBase = $buildBaseQuery($k2_sub_raw);
+    
+    // Force empty if no one has < 0
+    if (empty($nidnsKurang)) {
+        $queryKurangBase->whereRaw('1 = 0');
+    } else {
+        $queryKurangBase->where(function($q) use ($nidnsKurang) {
+            $q->whereIn('k.NIDN', $nidnsKurang)->orWhereIn('k.NUPTK', $nidnsKurang);
+        });
+    }
+
     if (!empty($fullyPaidNidns)) {
         $queryKurangBase->where(function ($q) use ($fullyPaidNidns) {
             $q->whereNotIn('k.NIDN', $fullyPaidNidns)
@@ -912,7 +954,17 @@ class KekuranganBayarController extends Controller
     $queryKurang = $queryKurangBase->paginate(50, ['*'], 'kurang_page')->appends(request()->query());
 
     $searchLebih = request('search_lebih');
-    $queryLebihBase = (clone $baseQuery)->whereRaw('(k2.bersih + 0) > 0');
+    $queryLebihBase = $buildBaseQuery($k2_sub_raw);
+
+    // Force empty if no one has > 0
+    if (empty($nidnsLebih)) {
+        $queryLebihBase->whereRaw('1 = 0');
+    } else {
+        $queryLebihBase->where(function($q) use ($nidnsLebih) {
+            $q->whereIn('k.NIDN', $nidnsLebih)->orWhereIn('k.NUPTK', $nidnsLebih);
+        });
+    }
+
     if (!empty($fullyPaidNidns)) {
         $queryLebihBase->where(function ($q) use ($fullyPaidNidns) {
             $q->whereNotIn('k.NIDN', $fullyPaidNidns)
@@ -929,14 +981,13 @@ class KekuranganBayarController extends Controller
     $queryLebih = $queryLebihBase->paginate(50, ['*'], 'lebih_page')->appends(request()->query());
 
     $searchSelesai = request('search_selesai');
-    $querySelesaiBase = clone $baseQuery;
+    $k2_sub_selesai = clone $k2_sub_raw;
+    if (!empty($fullyPaidNidns)) {
+        $k2_sub_selesai->whereIn('nidn', $fullyPaidNidns); // push filter inside pivot too!
+    }
+    $querySelesaiBase = $buildBaseQuery($k2_sub_selesai);
     if (empty($fullyPaidNidns)) {
         $querySelesaiBase->whereRaw('1 = 0'); // Force empty if no fully paid
-    } else {
-        $querySelesaiBase->where(function ($q) use ($fullyPaidNidns) {
-            $q->whereIn('k.NIDN', $fullyPaidNidns)
-              ->orWhereIn('k.NUPTK', $fullyPaidNidns);
-        });
     }
     if ($searchSelesai) {
         $querySelesaiBase->where(function($q) use ($searchSelesai) {
@@ -1066,27 +1117,33 @@ class KekuranganBayarController extends Controller
 
     // Backfill total_nominal untuk rekap yang belum terisi (atau terisi 0)
     $allRekapIds = $rekapKurang->merge($rekapLebih);
-    $tarifMapBackfill = null; // lazy-load
+    $tarifMapBackfill = $tarifMap; // reuse already-loaded tarif map
     foreach ($allRekapIds as $rekap) {
       if (!empty($rekap->total_nominal) && (float) $rekap->total_nominal > 0) continue;
 
-      // Lazy-load tarif map
-      if ($tarifMapBackfill === null) {
-        $tarifMapBackfill = $this->loadTarifPajakMap();
-      }
-
       $periodeText = strtolower(trim($rekap->periode ?? ''));
       $isKurang = (strpos($periodeText, 'kurang') !== false);
-      $bersihCond = $isKurang ? '(ku.bersih + 0) < 0' : '(ku.bersih + 0) > 0';
 
-      // Build query yang sama seperti proses()
+      // Gunakan pre-fetched NIDNs untuk mem-bypass join berat
+      if ($isKurang && empty($nidnsKurang)) continue;
+      if (!$isKurang && empty($nidnsLebih)) continue;
+
       $k2_sub = clone $this->getPivotSubquery($versi);
       $q = DB::table('s_transaksi_2 as k')
         ->joinSub($k2_sub, 'ku', function ($join) {
             $join->on('ku.nidn', '=', DB::raw("COALESCE(NULLIF(k.NIDN, ''), k.NUPTK)"));
         })
-        ->where('k.Tahun_Versi', $versi)
-        ->whereRaw($bersihCond);
+        ->where('k.Tahun_Versi', $versi);
+
+      if ($isKurang) {
+          $q->where(function($q) use ($nidnsKurang) {
+              $q->whereIn('k.NIDN', $nidnsKurang)->orWhereIn('k.NUPTK', $nidnsKurang);
+          });
+      } else {
+          $q->where(function($q) use ($nidnsLebih) {
+              $q->whereIn('k.NIDN', $nidnsLebih)->orWhereIn('k.NUPTK', $nidnsLebih);
+          });
+      }
 
       // Filter tipe
       $rekapTipe = trim($rekap->tipe ?? 'Semua');

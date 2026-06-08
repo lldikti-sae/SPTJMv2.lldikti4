@@ -312,7 +312,10 @@ Route::get('/admin/skpp', [App\Http\Controllers\SkppController::class, 'index'])
 Route::post('/admin/skpp/search-dosen', [App\Http\Controllers\SkppController::class, 'searchDosen'])->name('admin.skpp.search-dosen');
 Route::post('/admin/skpp/get-tahun', [App\Http\Controllers\SkppController::class, 'getTahunDosen'])->name('admin.skpp.get-tahun');
 Route::post('/admin/skpp/get-detail-bulan', [App\Http\Controllers\SkppController::class, 'getDetailBulan'])->name('admin.skpp.get-detail-bulan');
+Route::post('/admin/skpp/get-preview-data', [App\Http\Controllers\SkppController::class, 'getPreviewData'])->name('admin.skpp.get-preview-data');
 Route::post('/admin/skpp/store', [App\Http\Controllers\SkppController::class, 'store'])->name('admin.skpp.store');
+Route::get('/admin/skpp/{id}/cetak', [App\Http\Controllers\SkppController::class, 'cetak'])->name('admin.skpp.cetak');
+Route::delete('/admin/skpp/{id}', [App\Http\Controllers\SkppController::class, 'destroy'])->name('admin.skpp.destroy');
 
 // Route Data Sisternas Admin
 Route::prefix('admin')
