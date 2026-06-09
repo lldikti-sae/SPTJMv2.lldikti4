@@ -315,6 +315,7 @@ Route::post('/admin/skpp/get-detail-bulan', [App\Http\Controllers\SkppController
 Route::post('/admin/skpp/get-preview-data', [App\Http\Controllers\SkppController::class, 'getPreviewData'])->name('admin.skpp.get-preview-data');
 Route::post('/admin/skpp/store', [App\Http\Controllers\SkppController::class, 'store'])->name('admin.skpp.store');
 Route::get('/admin/skpp/{id}/cetak', [App\Http\Controllers\SkppController::class, 'cetak'])->name('admin.skpp.cetak');
+Route::post('/admin/skpp/upload-pdf', [App\Http\Controllers\SkppController::class, 'uploadPdf'])->name('admin.skpp.upload-pdf');
 Route::delete('/admin/skpp/{id}', [App\Http\Controllers\SkppController::class, 'destroy'])->name('admin.skpp.destroy');
 
 // Route Data Sisternas Admin

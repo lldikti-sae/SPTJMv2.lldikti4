@@ -72,9 +72,7 @@
                 NO. 38 BANDUNG
             </td>
             <td width="35%" class="text-center fw-bold" style="font-size: 13pt;">
-                SURAT KETERANGAN<br>
-                PENGHENTIAN<br>
-                PEMBAYARAN
+                SURAT KETERANGAN
             </td>
             <td width="35%" style="padding: 0;">
                 <table style="width: 100%; border: none; border-collapse: collapse;">
@@ -135,7 +133,7 @@
         </table>
 
         <p style="text-align: justify;">
-            Berdasarkan Surat dari {{ $detail['nama_surat_pts'] ?? ($dosen->PTS ?? '-') }} Nomor : {{ $detail['nomor_surat_pts'] ?? '..........' }} tanggal {{ $detail['tanggal_surat_pts'] ?? '..........' }} tentang Permohonan SKPP, dan Surat Keterangan Lolos Butuh Nomor : {{ $detail['nomor_surat_lolos_butuh'] ?? '..........' }} tanggal {{ $detail['tanggal_surat_lolos_butuh'] ?? '..........' }} .
+            Berdasarkan Surat dari {{ $detail['nama_surat_pts'] ?? ($dosen->PTS ?? '-') }} Nomor : {{ $detail['nomor_surat_pts'] ?? '..........' }} tanggal {{ $detail['tanggal_surat_pts'] ?? '..........' }} tentang Permohonan Surat Keterangan, dan Surat Keterangan Lolos Butuh Nomor : {{ $detail['nomor_surat_lolos_butuh'] ?? '..........' }} tanggal {{ $detail['tanggal_surat_lolos_butuh'] ?? '..........' }} .
         </p>
 
         <p class="mt-4 fw-bold">

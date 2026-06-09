@@ -87,8 +87,29 @@ class SkppController extends Controller
         $statusDisplay = (in_array($dosen->Aktif, ['1', 1, 'YA', 'Ya', 'ya', 'Y'], true)) ? 'Aktif' : 'Tidak Aktif';
         $jabatanStatus = $jabatanDisplay . ' - ' . $statusDisplay;
 
+        // Cek apakah dosen sudah memiliki SKPP / Surat Keterangan yang open atau setuju
+        $existing = DB::table('i_complain')
+            ->where('pelapor_tipe', 'admin')
+            ->whereIn('jenis_pengajuan', ['Surat Keterangan', 'Surat SKPP'])
+            ->where(function ($q) use ($identifier) {
+                $q->where('nidn', $identifier)
+                  ->orWhere('nuptk', $identifier);
+            })
+            ->whereIn('status', ['open', 'setuju'])
+            ->first();
+
+        $existing_skpp = false;
+        $existing_message = '';
+        if ($existing) {
+            $existing_skpp = true;
+            $statusStr = $existing->status === 'setuju' ? 'Selesai' : 'Proses';
+            $existing_message = 'Dosen ini sudah memiliki ' . $existing->jenis_pengajuan . ' (Status: ' . $statusStr . '). Tidak dapat membuat pengajuan baru.';
+        }
+
         return response()->json([
             'found' => true,
+            'existing_skpp' => $existing_skpp,
+            'existing_message' => $existing_message,
             'data' => [
                 'nidn' => $dosen->NIDN,
                 'nuptk' => $dosen->NUPTK,
@@ -105,18 +126,20 @@ class SkppController extends Controller
      */
     public function getTahunDosen(Request $request)
     {
-        $request->validate([
-            'identifier' => 'required|string',
-        ]);
+        $nidn = $request->input('nidn');
+        $nuptk = $request->input('nuptk');
 
-        $identifier = trim((string) $request->input('identifier'));
+        $query = DB::table('s_transaksi_2');
+        
+        if (!empty($nidn)) {
+            $query->where('NIDN', $nidn);
+        } elseif (!empty($nuptk)) {
+            $query->where('NUPTK', $nuptk);
+        } else {
+            return response()->json(['tahun' => []]);
+        }
 
-        $tahunList = DB::table('s_transaksi_2')
-            ->where(function ($q) use ($identifier) {
-                $q->where('NIDN', $identifier)
-                  ->orWhere('NUPTK', $identifier);
-            })
-            ->distinct()
+        $tahunList = $query->distinct()
             ->orderBy('Tahun_Versi', 'desc')
             ->pluck('Tahun_Versi')
             ->all();
@@ -129,11 +152,9 @@ class SkppController extends Controller
      */
     public function getDetailBulan(Request $request)
     {
-        $request->validate([
-            'identifier' => 'required|string',
-        ]);
-
-        $identifier = trim((string) $request->input('identifier'));
+        $nidn = $request->input('nidn');
+        $nuptk = $request->input('nuptk');
+        $tahun = $request->input('tahun');
 
         $bulanIndonesia = [
             1 => 'Januari', 2 => 'Februari', 3 => 'Maret',
@@ -142,13 +163,21 @@ class SkppController extends Controller
             10 => 'Oktober', 11 => 'November', 12 => 'Desember',
         ];
 
+        $query = DB::table('s_transaksi_2');
+        if (!empty($nidn)) {
+            $query->where('NIDN', $nidn);
+        } elseif (!empty($nuptk)) {
+            $query->where('NUPTK', $nuptk);
+        } else {
+            return response()->json(['found' => false, 'message' => 'Data tidak ditemukan.']);
+        }
+        
+        if (!empty($tahun)) {
+            $query->where('Tahun_Versi', $tahun);
+        }
+
         // Ambil semua data transaksi dosen dari berbagai tahun
-        $rows = DB::table('s_transaksi_2')
-            ->where(function ($q) use ($identifier) {
-                $q->where('NIDN', $identifier)
-                  ->orWhere('NUPTK', $identifier);
-            })
-            ->select(
+        $rows = $query->select(
                 'Tahun_Versi',
                 'KodeUsulan1', 'KodeUsulan2', 'KodeUsulan3', 'KodeUsulan4',
                 'KodeUsulan5', 'KodeUsulan6', 'KodeUsulan7', 'KodeUsulan8',
@@ -237,8 +266,37 @@ class SkppController extends Controller
         $tpd_pajak = 0;
         $tpd_bersih = 0;
         $bulan_terakhir = 1;
+        $pangkat = '';
+        $golongan = '';
+
+        $pangkatMap = [
+            'I/a' => 'Juru Muda',
+            'I/b' => 'Juru Muda Tingkat I',
+            'I/c' => 'Juru',
+            'I/d' => 'Juru Tingkat I',
+            'II/a' => 'Pengatur Muda',
+            'II/b' => 'Pengatur Muda Tingkat I',
+            'II/c' => 'Pengatur',
+            'II/d' => 'Pengatur Tingkat I',
+            'III/a' => 'Penata Muda',
+            'III/b' => 'Penata Muda Tingkat I',
+            'III/c' => 'Penata',
+            'III/d' => 'Penata Tingkat I',
+            'IV/a' => 'Pembina',
+            'IV/b' => 'Pembina Tingkat I',
+            'IV/c' => 'Pembina Utama Muda',
+            'IV/d' => 'Pembina Utama Madya',
+            'IV/e' => 'Pembina Utama',
+        ];
 
         if ($dosen) {
+            $gol = $dosen->Gol12 ?? ($dosen->Gol1 ?? '');
+            
+            if (!empty($gol)) {
+                $pangkat = $pangkatMap[$gol] ?? '';
+                $golongan = $gol;
+            }
+
             for ($i = 12; $i >= 1; $i--) {
                 $tpd_val = $dosen->{'TPD' . $i} ?? 0;
                 if ($tpd_val > 0) {
@@ -258,12 +316,22 @@ class SkppController extends Controller
             10 => 'Oktober', 11 => 'November', 12 => 'Desember',
         ];
 
+        $tahunSekarang = date('Y');
+        $count = DB::table('i_complain')
+            ->whereIn('jenis_pengajuan', ['Surat Keterangan', 'Surat SKPP'])
+            ->whereYear('created_at', $tahunSekarang)
+            ->count();
+        $nextNumber = $count + 1;
+        $nomor_skpp_auto = $nextNumber . '/LL4/PR/' . $tahunSekarang;
+
         return response()->json([
             'tpd_kotor' => $tpd_kotor,
             'tpd_pajak' => $tpd_pajak,
             'tpd_bersih' => $tpd_bersih,
             'bulan_terakhir_nama' => $bulanIndonesia[$bulan_terakhir] ?? '',
-            'nomor_skpp' => date('Y') . '/LL4/PR/2026',
+            'nomor_skpp' => $nomor_skpp_auto,
+            'pangkat' => $pangkat,
+            'golongan' => $golongan,
         ]);
     }
 
@@ -279,6 +347,7 @@ class SkppController extends Controller
             'jabatan_status' => 'nullable|string',
             'kode_pt' => 'nullable|string',
             'pts' => 'nullable|string',
+            'nama_surat_pts' => 'nullable|string',
             'tahun' => 'required|string',
             'bulan_belum_usulan' => 'nullable|string',
             'jenis_surat' => 'required|string|in:Surat Keterangan,Surat SKPP',
@@ -291,11 +360,33 @@ class SkppController extends Controller
             'tpd_pajak' => 'nullable|numeric',
             'tpd_bersih' => 'nullable|numeric',
             'terhitung_bulan' => 'nullable|string',
+            'pangkat' => 'nullable|string',
+            'teks_tambahan_1' => 'nullable|string',
+            'teks_tambahan_2' => 'nullable|string',
+            'golongan' => 'nullable|string',
+            'wilayah_lldikti' => 'nullable|string',
+            'kota_lldikti' => 'nullable|string',
         ]);
 
-        $pesanJson = json_encode([
+        // Cek kembali di sisi server agar tidak ada duplikasi jika tombol di-klik dua kali atau by-pass
+        $existing = DB::table('i_complain')
+            ->where('pelapor_tipe', 'admin')
+            ->whereIn('jenis_pengajuan', ['Surat Keterangan', 'Surat SKPP'])
+            ->where(function ($q) use ($request) {
+                if ($request->nidn) $q->where('nidn', $request->nidn);
+                if ($request->nuptk) $q->orWhere('nuptk', $request->nuptk);
+            })
+            ->whereIn('status', ['open', 'setuju'])
+            ->first();
+
+        if ($existing) {
+            return response()->json(['success' => false, 'message' => 'Gagal: Dosen ini sudah dibuatkan pengajuan sebelumnya.']);
+        }
+
+        $pesanData = [
             'nama' => $request->nama,
             'pts' => $request->pts,
+            'nama_surat_pts' => $request->nama_surat_pts,
             'jabatan_status' => $request->jabatan_status,
             'tahun' => $request->tahun,
             'bulan_belum_usulan' => $request->bulan_belum_usulan,
@@ -308,7 +399,21 @@ class SkppController extends Controller
             'tpd_pajak' => $request->tpd_pajak,
             'tpd_bersih' => $request->tpd_bersih,
             'terhitung_bulan' => $request->terhitung_bulan,
-        ]);
+        ];
+            $teks1 = trim($request->teks_tambahan_1);
+            if (!empty($teks1) && substr($teks1, -1) !== '.') {
+                $teks1 .= '.';
+            }
+            $pangkatPart = trim($request->pangkat . ' ' . $teks1 . ' ' . $request->teks_tambahan_2);
+            $pangkatGolongan = $pangkatPart;
+            if (!empty($request->golongan)) {
+                $pangkatGolongan = $pangkatPart . ($pangkatPart ? ', ' : '') . $request->golongan;
+            }
+            $pesanData['pangkat_golongan'] = $pangkatGolongan;
+            $pesanData['wilayah_lldikti'] = $request->wilayah_lldikti;
+            $pesanData['kota_lldikti'] = $request->kota_lldikti;
+
+            $pesanJson = json_encode($pesanData);
 
         DB::table('i_complain')->insert([
             'pelapor_tipe' => 'admin',
@@ -402,10 +507,70 @@ class SkppController extends Controller
             'tpd_bersih' => $tpd_bersih,
         ];
 
-        $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('admin.cetak-skpp', $data);
+        $viewName = ($skpp->jenis_pengajuan === 'Surat Keterangan') ? 'admin.cetak-surat-keterangan' : 'admin.cetak-skpp';
+
+        $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView($viewName, $data);
         $pdf->setPaper('a4', 'portrait');
 
-        return $pdf->stream('SKPP_' . ($dosen->Nama ?? 'Dosen') . '.pdf');
+        $prefix = ($skpp->jenis_pengajuan === 'Surat Keterangan') ? 'Surat_Keterangan_SKPP_' : 'SKPP_';
+        $namaDosen = str_replace([' ', '/', '\\'], '_', $dosen->Nama ?? 'Dosen');
+        
+        return $pdf->stream($prefix . $namaDosen . '.pdf');
+    }
+
+    /**
+     * Upload PDF and mark SKPP as Selesai (setuju).
+     */
+    public function uploadPdf(Request $request)
+    {
+        $request->validate([
+            'skpp_id' => 'required|integer',
+            'pdf_file' => 'required|mimes:pdf|max:5120', // Max 5MB
+        ]);
+
+        $skpp = DB::table('i_complain')->where('id', $request->skpp_id)->first();
+        if (!$skpp) {
+            return response()->json(['success' => false, 'message' => 'Data SKPP tidak ditemukan.']);
+        }
+
+        if ($request->hasFile('pdf_file')) {
+            $file = $request->file('pdf_file');
+            $filename = time() . '_SKPP_' . ($skpp->nidn ?: $skpp->nuptk) . '.' . $file->getClientOriginalExtension();
+            
+            // Simpan ke storage/app/public/Dokumen_Histori_Dosen2
+            $file->storeAs('public/Dokumen_Histori_Dosen2', $filename);
+
+            DB::table('i_complain')->where('id', $request->skpp_id)->update([
+                'lampiran' => $filename,
+                'status' => 'setuju',
+                'handled_by' => auth()->user() ? auth()->user()->name : 'Admin',
+                'handled_at' => now(),
+                'updated_at' => now(),
+            ]);
+
+            // Catat ke histori dosen
+            $detail = json_decode($skpp->pesan, true) ?? [];
+            DB::table('j_histori_dosen')->insert([
+                'nidn' => $skpp->nidn,
+                'nuptk' => $skpp->nuptk,
+                'nama' => $detail['nama'] ?? '-',
+                'pts' => $detail['pts'] ?? '-',
+                'kode_pt' => $skpp->kode_pts,
+                'aktif' => '1',
+                'keterangan' => 'Penerbitan ' . $skpp->jenis_pengajuan,
+                'pengguna' => auth()->user() ? auth()->user()->name : 'Admin',
+                'no_dokumen_ubah' => $detail['nomor_skpp'] ?? '',
+                'tgl_dokumen_ubah' => now()->format('Y-m-d'),
+                'alasan_perubahan' => 'Penerbitan ' . $skpp->jenis_pengajuan . ' Selesai',
+                'dokumen' => $filename,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+
+            return response()->json(['success' => true, 'message' => 'PDF berhasil diupload dan dicatat di Histori Dosen.']);
+        }
+
+        return response()->json(['success' => false, 'message' => 'File PDF tidak ditemukan.']);
     }
 
     /**
@@ -419,8 +584,21 @@ class SkppController extends Controller
             return response()->json(['success' => false, 'message' => 'Data tidak ditemukan.'], 404);
         }
 
+        // Jika SKPP ini sudah memiliki lampiran (selesai), hapus file dan histori dosen
+        if (!empty($skpp->lampiran)) {
+            // Hapus dari histori dosen
+            DB::table('j_histori_dosen')->where('dokumen', $skpp->lampiran)->delete();
+
+            // Hapus file fisik
+            $filePath = public_path('storage/Dokumen_Histori_Dosen2/' . $skpp->lampiran);
+            if (file_exists($filePath)) {
+                unlink($filePath);
+            }
+        }
+
+        // Hapus dari tabel pengajuan
         DB::table('i_complain')->where('id', $id)->delete();
 
-        return response()->json(['success' => true, 'message' => 'Surat berhasil dihapus.']);
+        return response()->json(['success' => true, 'message' => 'Data pengajuan dan histori (jika ada) berhasil dihapus.']);
     }
 }

@@ -5,6 +5,9 @@
 @section('content')
 
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+<script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/id.js"></script>
 
 <div class="card" style="width: 100%; padding: 10px;">
     <h5 class="card-header text-start p-2">SKPP</h5>
@@ -19,7 +22,7 @@
             </div>
         </form>
         {{-- Buat SKPP Button --}}
-        <button class="btn btn-sm btn-primary" id="btnBuatSkpp" data-bs-toggle="modal" data-bs-target="#modalSkpp">
+        <button class="btn btn-sm btn-primary" id="btnBuatSkpp" data-bs-toggle="modal" data-bs-target="#modalSkpp" data-bs-backdrop="static" data-backdrop="static" data-bs-keyboard="false" data-keyboard="false">
             <i class="bx bx-plus bx-sm me-1"></i> Buat SKPP
         </button>
     </div>
@@ -71,6 +74,17 @@
                             <a href="{{ route('admin.skpp.cetak', $skpp->id) }}" class="btn btn-sm btn-outline-info" target="_blank" title="Cetak Surat">
                                 <i class="bx bx-printer"></i>
                             </a>
+                            @if($skpp->status !== 'setuju')
+                            <button type="button" class="btn btn-sm btn-outline-success" onclick="uploadPdf({{ $skpp->id }})" title="Upload PDF (Selesai)">
+                                <i class="bx bx-upload"></i>
+                            </button>
+                            @else
+                                @if(!empty($skpp->lampiran))
+                                <a href="{{ asset('storage/Dokumen_Histori_Dosen2/' . $skpp->lampiran) }}" class="btn btn-sm btn-success" target="_blank" title="Lihat PDF SKPP">
+                                    <i class="bx bx-file"></i>
+                                </a>
+                                @endif
+                            @endif
                             <button type="button" class="btn btn-sm btn-outline-danger" onclick="hapusSkpp({{ $skpp->id }})" title="Hapus Surat">
                                 <i class="bx bx-trash"></i>
                             </button>
@@ -96,10 +110,20 @@
 .swal2-container {
     z-index: 99999 !important;
 }
+
+/* Sembunyikan panah (spin button) pada input number */
+input[type=number]::-webkit-inner-spin-button, 
+input[type=number]::-webkit-outer-spin-button { 
+    -webkit-appearance: none; 
+    margin: 0; 
+}
+input[type=number] {
+    -moz-appearance: textfield;
+}
 </style>
 
 {{-- Modal Buat SKPP --}}
-<div class="modal fade" id="modalSkpp" tabindex="-1" aria-labelledby="modalSkppLabel" aria-hidden="true">
+<div class="modal fade" id="modalSkpp" tabindex="-1" aria-labelledby="modalSkppLabel" aria-hidden="true" data-bs-backdrop="static" data-backdrop="static" data-bs-keyboard="false" data-keyboard="false">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
@@ -207,8 +231,9 @@
                     </div>
 
                     {{-- Buttons: Buat Surat --}}
-                    <div id="skppButtonArea" style="display: none;">
+                    <div id="skppButtonArea" class="mt-4" style="display: none;">
                         <hr>
+                        <div id="skppExistingAlert" class="alert alert-danger mb-3" style="display: none;"></div>
                         <div class="d-flex justify-content-center gap-3">
                             <button type="button" class="btn btn-success" id="btnBuatSuratKeterangan">
                                 <i class="bx bx-file me-1"></i> Buat Surat Keterangan
@@ -232,23 +257,47 @@
                             </div>
                         </div>
                         <div class="row g-3 mb-3">
+                            <div class="col-md-3">
+                                <label class="form-label">Pangkat</label>
+                                <input type="text" class="form-control" id="prev_pangkat" name="pangkat" placeholder="Misal: Penata Muda">
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label">Teks Tambahan 1</label>
+                                <input type="text" class="form-control" id="prev_teks_tambahan_1" name="teks_tambahan_1" placeholder="Misal: Tk.">
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label">Teks Tambahan 2</label>
+                                <input type="text" class="form-control" id="prev_teks_tambahan_2" name="teks_tambahan_2" placeholder="Misal: I">
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label">Golongan</label>
+                                <input type="text" class="form-control" id="prev_golongan" name="golongan" placeholder="Misal: III/b">
+                            </div>
+                        </div>
+                        <div class="row g-3 mb-3">
+                            <div class="col-md-12">
+                                <label class="form-label">Berdasarkan Surat dari (Nama Univ/PTS yang dituju)</label>
+                                <input type="text" class="form-control" id="prev_nama_surat_pts" name="nama_surat_pts" placeholder="Ketik nama instansi...">
+                            </div>
+                        </div>
+                        <div class="row g-3 mb-3">
                             <div class="col-md-6">
                                 <label class="form-label">Nomor Surat dari PTS</label>
                                 <input type="text" class="form-control" id="prev_nomor_surat_pts" name="nomor_surat_pts" placeholder="Misal: 1627/SPm/01/2026">
                             </div>
                             <div class="col-md-6">
                                 <label class="form-label">Tanggal Surat dari PTS</label>
-                                <input type="text" class="form-control" id="prev_tanggal_surat_pts" name="tanggal_surat_pts" placeholder="Misal: 18 Mei 2026">
+                                <input type="text" class="form-control bg-white" id="prev_tanggal_surat_pts" name="tanggal_surat_pts" placeholder="Pilih Tanggal...">
                             </div>
                         </div>
                         <div class="row g-3 mb-3">
                             <div class="col-md-6">
                                 <label class="form-label">Nomor Surat Lolos Butuh</label>
-                                <input type="text" class="form-control" id="prev_nomor_surat_lolos_butuh" name="nomor_surat_lolos_butuh" placeholder="Opsional">
+                                <input type="text" class="form-control" id="prev_nomor_surat_lolos_butuh" name="nomor_surat_lolos_butuh" placeholder="1627/SPm/01/2026">
                             </div>
                             <div class="col-md-6">
                                 <label class="form-label">Tanggal Surat Lolos Butuh</label>
-                                <input type="text" class="form-control" id="prev_tanggal_surat_lolos_butuh" name="tanggal_surat_lolos_butuh" placeholder="Opsional">
+                                <input type="text" class="form-control bg-white" id="prev_tanggal_surat_lolos_butuh" name="tanggal_surat_lolos_butuh" placeholder="Pilih Tanggal...">
                             </div>
                         </div>
                         <div class="row g-3 mb-3">
@@ -271,6 +320,56 @@
                                 <input type="text" class="form-control" id="prev_terhitung_bulan" name="terhitung_bulan" placeholder="Misal: Mei">
                             </div>
                         </div>
+                        <hr>
+                        <h6 class="fw-bold mb-3">Tembusan (Disampaikan kepada)</h6>
+                        <div class="row g-3 mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label">LLDIKTI Tujuan (Wilayah)</label>
+                                <select class="form-select" id="prev_wilayah_lldikti" name="wilayah_lldikti">
+                                    <option value="">-- Pilih Wilayah --</option>
+                                    <option value="I">Wilayah I</option>
+                                    <option value="II">Wilayah II</option>
+                                    <option value="III">Wilayah III</option>
+                                    <option value="IV">Wilayah IV</option>
+                                    <option value="V">Wilayah V</option>
+                                    <option value="VI">Wilayah VI</option>
+                                    <option value="VII">Wilayah VII</option>
+                                    <option value="VIII">Wilayah VIII</option>
+                                    <option value="IX">Wilayah IX</option>
+                                    <option value="X">Wilayah X</option>
+                                    <option value="XI">Wilayah XI</option>
+                                    <option value="XII">Wilayah XII</option>
+                                    <option value="XIII">Wilayah XIII</option>
+                                    <option value="XIV">Wilayah XIV</option>
+                                    <option value="XV">Wilayah XV</option>
+                                    <option value="XVI">Wilayah XVI</option>
+                                    <option value="XVII">Wilayah XVII</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Kota LLDIKTI Tujuan</label>
+                                <select class="form-select" id="prev_kota_lldikti" name="kota_lldikti">
+                                    <option value="">-- Pilih Kota --</option>
+                                    <option value="Medan">Medan</option>
+                                    <option value="Palembang">Palembang</option>
+                                    <option value="Jakarta">Jakarta</option>
+                                    <option value="Bandung">Bandung</option>
+                                    <option value="Yogyakarta">Yogyakarta</option>
+                                    <option value="Semarang">Semarang</option>
+                                    <option value="Surabaya">Surabaya</option>
+                                    <option value="Denpasar">Denpasar</option>
+                                    <option value="Makassar">Makassar</option>
+                                    <option value="Padang">Padang</option>
+                                    <option value="Banjarmasin">Banjarmasin</option>
+                                    <option value="Ambon">Ambon</option>
+                                    <option value="Banda Aceh">Banda Aceh</option>
+                                    <option value="Manokwari">Manokwari</option>
+                                    <option value="Kupang">Kupang</option>
+                                    <option value="Gorontalo">Gorontalo</option>
+                                    <option value="Pekanbaru">Pekanbaru</option>
+                                </select>
+                            </div>
+                        </div>
                         <div class="d-flex justify-content-end gap-2 mt-4">
                             <button type="button" class="btn btn-secondary" id="btnKembaliStep2">Kembali</button>
                             <button type="button" class="btn btn-primary" id="btnSimpanSkppFinal"><i class="bx bx-save me-1"></i> Simpan & Buat Surat</button>
@@ -287,6 +386,26 @@
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
+    // Nonaktifkan scroll wheel pada input number
+    document.addEventListener('wheel', function(event) {
+        if (document.activeElement.type === 'number') {
+            event.preventDefault();
+        }
+    }, { passive: false });
+
+    // Inisialisasi Flatpickr
+    flatpickr("#prev_tanggal_surat_pts", {
+        dateFormat: "j F Y",
+        locale: "id",
+        allowInput: true
+    });
+    
+    flatpickr("#prev_tanggal_surat_lolos_butuh", {
+        dateFormat: "j F Y",
+        locale: "id",
+        allowInput: true
+    });
+
     // SweetAlert notifications
     @if(session('success'))
     Swal.fire({
@@ -311,6 +430,8 @@ document.addEventListener('DOMContentLoaded', function() {
     let currentDosen = null;
     let currentTahun = null;
     let currentBulanKosong = [];
+    let currentDosenExistingSkpp = false;
+    let currentDosenExistingMessage = '';
 
     // Reset modal on close
     const modalEl = document.getElementById('modalSkpp');
@@ -332,6 +453,8 @@ document.addEventListener('DOMContentLoaded', function() {
         currentTahun = null;
         currentBulanKosong = [];
         currentJenisSurat = '';
+        currentDosenExistingSkpp = false;
+        currentDosenExistingMessage = '';
     }
 
     // Search Dosen
@@ -367,6 +490,8 @@ document.addEventListener('DOMContentLoaded', function() {
             }
 
             currentDosen = json.data;
+            currentDosenExistingSkpp = json.existing_skpp || false;
+            currentDosenExistingMessage = json.existing_message || '';
             const d = json.data;
 
             // Populate dosen data
@@ -382,7 +507,7 @@ document.addEventListener('DOMContentLoaded', function() {
             document.getElementById('skppStep2').style.display = 'block';
 
             // Load available years
-            loadTahunDosen(identifier);
+            loadTahunDosen(currentDosen.nidn || '', currentDosen.nuptk || '');
         })
         .catch(err => {
             document.getElementById('skppSearchLoading').style.display = 'none';
@@ -399,14 +524,14 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     // Load Tahun Dosen
-    function loadTahunDosen(identifier) {
+    function loadTahunDosen(nidn, nuptk) {
         fetch("{{ route('admin.skpp.get-tahun') }}", {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
                 'X-CSRF-TOKEN': '{{ csrf_token() }}',
             },
-            body: JSON.stringify({ identifier: identifier }),
+            body: JSON.stringify({ nidn: nidn, nuptk: nuptk }),
         })
         .then(r => r.json())
         .then(json => {
@@ -435,7 +560,6 @@ document.addEventListener('DOMContentLoaded', function() {
         }
 
         currentTahun = tahun;
-        const identifier = currentDosen.nidn || currentDosen.nuptk;
 
         document.getElementById('skppDetailBulan').style.display = 'block';
         document.getElementById('skppDetailBulanLoading').style.display = 'block';
@@ -449,7 +573,11 @@ document.addEventListener('DOMContentLoaded', function() {
                 'Content-Type': 'application/json',
                 'X-CSRF-TOKEN': '{{ csrf_token() }}',
             },
-            body: JSON.stringify({ identifier: identifier }),
+            body: JSON.stringify({ 
+                nidn: currentDosen.nidn || '', 
+                nuptk: currentDosen.nuptk || '',
+                tahun: currentTahun 
+            }),
         })
         .then(r => r.json())
         .then(json => {
@@ -485,6 +613,18 @@ document.addEventListener('DOMContentLoaded', function() {
 
             // Show buttons
             document.getElementById('skppButtonArea').style.display = 'block';
+
+            if (currentDosenExistingSkpp) {
+                const alertEl = document.getElementById('skppExistingAlert');
+                alertEl.style.display = 'block';
+                alertEl.innerHTML = '<i class="bx bx-error me-1"></i> ' + currentDosenExistingMessage;
+                document.getElementById('btnBuatSuratKeterangan').disabled = true;
+                document.getElementById('btnBuatSuratSkpp').disabled = true;
+            } else {
+                document.getElementById('skppExistingAlert').style.display = 'none';
+                document.getElementById('btnBuatSuratKeterangan').disabled = false;
+                document.getElementById('btnBuatSuratSkpp').disabled = false;
+            }
         })
         .catch(err => {
             document.getElementById('skppDetailBulanLoading').style.display = 'none';
@@ -541,10 +681,17 @@ document.addEventListener('DOMContentLoaded', function() {
             Swal.close();
             // Populate form
             document.getElementById('prev_nomor_skpp').value = data.nomor_skpp || '';
+            document.getElementById('prev_nama_surat_pts').value = '';
+            document.getElementById('prev_pangkat').value = data.pangkat || '';
+            document.getElementById('prev_teks_tambahan_1').value = '';
+            document.getElementById('prev_teks_tambahan_2').value = '';
+            document.getElementById('prev_golongan').value = data.golongan || '';
             document.getElementById('prev_tpd_kotor').value = data.tpd_kotor || 0;
             document.getElementById('prev_tpd_pajak').value = data.tpd_pajak || 0;
             document.getElementById('prev_tpd_bersih').value = data.tpd_bersih || 0;
             document.getElementById('prev_terhitung_bulan').value = data.bulan_terakhir_nama || '';
+            document.getElementById('prev_wilayah_lldikti').value = 'VI';
+            document.getElementById('prev_kota_lldikti').value = 'Semarang';
 
             // Hide step 2, show step 3
             document.getElementById('skppStep2').style.display = 'none';
@@ -568,6 +715,7 @@ document.addEventListener('DOMContentLoaded', function() {
             jabatan_status: currentDosen.jabatan_status,
             kode_pt: currentDosen.kode_pt,
             pts: currentDosen.pts,
+            nama_surat_pts: document.getElementById('prev_nama_surat_pts').value,
             tahun: currentTahun,
             bulan_belum_usulan: bulanStr,
             jenis_surat: jenisSurat,
@@ -580,7 +728,35 @@ document.addEventListener('DOMContentLoaded', function() {
             tpd_pajak: document.getElementById('prev_tpd_pajak').value,
             tpd_bersih: document.getElementById('prev_tpd_bersih').value,
             terhitung_bulan: document.getElementById('prev_terhitung_bulan').value,
+            pangkat: document.getElementById('prev_pangkat').value,
+            teks_tambahan_1: document.getElementById('prev_teks_tambahan_1').value,
+            teks_tambahan_2: document.getElementById('prev_teks_tambahan_2').value,
+            golongan: document.getElementById('prev_golongan').value,
+            wilayah_lldikti: document.getElementById('prev_wilayah_lldikti').value,
+            kota_lldikti: document.getElementById('prev_kota_lldikti').value,
         };
+
+        const requiredFields = [
+            'nomor_skpp', 'nama_surat_pts', 'nomor_surat_pts', 'tanggal_surat_pts',
+            'nomor_surat_lolos_butuh', 'tanggal_surat_lolos_butuh',
+            'tpd_kotor', 'tpd_pajak', 'tpd_bersih', 'terhitung_bulan',
+            'pangkat', 'teks_tambahan_1', 'teks_tambahan_2', 'golongan',
+            'wilayah_lldikti', 'kota_lldikti'
+        ];
+
+        let isValid = true;
+        for (let field of requiredFields) {
+            let value = document.getElementById('prev_' + field).value;
+            if (!value || value.toString().trim() === '') {
+                isValid = false;
+                break;
+            }
+        }
+
+        if (!isValid) {
+            Swal.fire('Perhatian', 'Harap lengkapi semua isian terlebih dahulu sebelum menyimpan.', 'warning');
+            return;
+        }
 
         Swal.fire({
             title: 'Konfirmasi',
@@ -593,7 +769,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 confirmButton: 'btn btn-primary me-2',
                 cancelButton: 'btn btn-secondary'
             },
-            buttonsStyling: false
+            buttonsStyling: false,
+            allowOutsideClick: false
         }).then(result => {
             if (!result.isConfirmed) return;
 
@@ -659,7 +836,8 @@ function hapusSkpp(id) {
             confirmButton: 'btn btn-danger me-2',
             cancelButton: 'btn btn-secondary'
         },
-        buttonsStyling: false
+        buttonsStyling: false,
+        allowOutsideClick: false
     }).then((result) => {
         if (result.isConfirmed) {
             Swal.fire({
@@ -703,5 +881,87 @@ function hapusSkpp(id) {
         }
     });
 }
+
+function uploadPdf(id) {
+    Swal.fire({
+        title: 'Upload PDF SKPP',
+        text: 'Upload file PDF SKPP yang sudah ditandatangani. Status pengajuan ini akan otomatis menjadi "Selesai".',
+        input: 'file',
+        inputAttributes: {
+            'accept': 'application/pdf',
+            'aria-label': 'Pilih File PDF'
+        },
+        showCancelButton: true,
+        confirmButtonText: 'Upload & Selesai',
+        cancelButtonText: 'Batal',
+        customClass: {
+            confirmButton: 'btn btn-success me-2',
+            cancelButton: 'btn btn-secondary'
+        },
+        buttonsStyling: false,
+        allowOutsideClick: false
+    }).then((result) => {
+        if (result.isConfirmed && result.value) {
+            const file = result.value;
+            const formData = new FormData();
+            formData.append('pdf_file', file);
+            formData.append('skpp_id', id);
+
+            Swal.fire({
+                title: 'Mengunggah...',
+                html: '<div class="spinner-border text-primary" role="status"></div><div class="mt-2">Mohon tunggu...</div>',
+                showConfirmButton: false,
+                allowOutsideClick: false
+            });
+
+            fetch("{{ route('admin.skpp.upload-pdf') }}", {
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                },
+                body: formData
+            })
+            .then(async r => {
+                if (!r.ok) throw new Error(await r.text());
+                return r.json();
+            })
+            .then(json => {
+                if (json.success) {
+                    Swal.fire({
+                        title: 'Berhasil!',
+                        text: json.message || 'PDF berhasil diupload.',
+                        icon: 'success',
+                        customClass: { confirmButton: 'btn btn-primary' },
+                        buttonsStyling: false
+                    }).then(() => {
+                        window.location.reload();
+                    });
+                } else {
+                    Swal.fire('Gagal', json.message || 'Terjadi kesalahan.', 'error');
+                }
+            })
+            .catch(err => {
+                console.error(err);
+                Swal.fire('Error', 'Gagal mengunggah file.', 'error');
+            });
+        }
+    });
+}
+
+// Auto update kota berdasarkan wilayah
+const kotaMap = {
+    'I': 'Medan', 'II': 'Palembang', 'III': 'Jakarta', 'IV': 'Bandung',
+    'V': 'Yogyakarta', 'VI': 'Semarang', 'VII': 'Surabaya', 'VIII': 'Denpasar',
+    'IX': 'Makassar', 'X': 'Padang', 'XI': 'Banjarmasin', 'XII': 'Ambon',
+    'XIII': 'Banda Aceh', 'XIV': 'Manokwari', 'XV': 'Kupang', 'XVI': 'Gorontalo',
+    'XVII': 'Pekanbaru'
+};
+
+document.getElementById('prev_wilayah_lldikti').addEventListener('change', function() {
+    const wil = this.value;
+    if (kotaMap[wil]) {
+        document.getElementById('prev_kota_lldikti').value = kotaMap[wil];
+    }
+});
 </script>
 @endsection
