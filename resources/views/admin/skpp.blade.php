@@ -248,7 +248,7 @@ input[type=number] {
                 {{-- Step 3: Preview & Edit SKPP --}}
                 <div id="skppStep3" style="display: none;">
                     <hr>
-                    <h6 class="fw-bold mb-3"><i class="bx bx-edit me-1"></i> Preview & Lengkapi Data SKPP</h6>
+                    <h6 class="fw-bold mb-3" id="skppStep3Title"><i class="bx bx-edit me-1"></i> Preview & Lengkapi Data SKPP</h6>
                     <form id="formSkppPreview">
                         <div class="row g-3 mb-3">
                             <div class="col-md-12">
@@ -256,22 +256,25 @@ input[type=number] {
                                 <input type="text" class="form-control" id="prev_nomor_skpp" name="nomor_skpp" placeholder="Misal: 3137/LL4/PR/2026">
                             </div>
                         </div>
-                        <div class="row g-3 mb-3">
-                            <div class="col-md-3">
-                                <label class="form-label">Pangkat</label>
-                                <input type="text" class="form-control" id="prev_pangkat" name="pangkat" placeholder="Misal: Penata Muda">
-                            </div>
-                            <div class="col-md-3">
-                                <label class="form-label">Teks Tambahan 1</label>
-                                <input type="text" class="form-control" id="prev_teks_tambahan_1" name="teks_tambahan_1" placeholder="Misal: Tk.">
-                            </div>
-                            <div class="col-md-3">
-                                <label class="form-label">Teks Tambahan 2</label>
-                                <input type="text" class="form-control" id="prev_teks_tambahan_2" name="teks_tambahan_2" placeholder="Misal: I">
-                            </div>
-                            <div class="col-md-3">
-                                <label class="form-label">Golongan</label>
-                                <input type="text" class="form-control" id="prev_golongan" name="golongan" placeholder="Misal: III/b">
+                        {{-- Fields hanya untuk Surat SKPP --}}
+                        <div id="skppOnlyFields">
+                            <div class="row g-3 mb-3">
+                                <div class="col-md-3">
+                                    <label class="form-label">Pangkat</label>
+                                    <input type="text" class="form-control" id="prev_pangkat" name="pangkat" placeholder="Misal: Penata Muda">
+                                </div>
+                                <div class="col-md-3">
+                                    <label class="form-label">Teks Tambahan 1</label>
+                                    <input type="text" class="form-control" id="prev_teks_tambahan_1" name="teks_tambahan_1" placeholder="Misal: Tk.">
+                                </div>
+                                <div class="col-md-3">
+                                    <label class="form-label">Teks Tambahan 2</label>
+                                    <input type="text" class="form-control" id="prev_teks_tambahan_2" name="teks_tambahan_2" placeholder="Misal: I">
+                                </div>
+                                <div class="col-md-3">
+                                    <label class="form-label">Golongan</label>
+                                    <input type="text" class="form-control" id="prev_golongan" name="golongan" placeholder="Misal: III/b">
+                                </div>
                             </div>
                         </div>
                         <div class="row g-3 mb-3">
@@ -290,84 +293,103 @@ input[type=number] {
                                 <input type="text" class="form-control bg-white" id="prev_tanggal_surat_pts" name="tanggal_surat_pts" placeholder="Pilih Tanggal...">
                             </div>
                         </div>
-                        <div class="row g-3 mb-3">
-                            <div class="col-md-6">
-                                <label class="form-label">Nomor Surat Lolos Butuh</label>
-                                <input type="text" class="form-control" id="prev_nomor_surat_lolos_butuh" name="nomor_surat_lolos_butuh" placeholder="1627/SPm/01/2026">
+                        {{-- Fields hanya untuk Surat SKPP --}}
+                        <div id="skppOnlyFields2">
+                            <div class="row g-3 mb-3">
+                                <div class="col-md-6">
+                                    <label class="form-label">Nomor Surat Lolos Butuh</label>
+                                    <input type="text" class="form-control" id="prev_nomor_surat_lolos_butuh" name="nomor_surat_lolos_butuh" placeholder="1627/SPm/01/2026">
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Tanggal Surat Lolos Butuh</label>
+                                    <input type="text" class="form-control bg-white" id="prev_tanggal_surat_lolos_butuh" name="tanggal_surat_lolos_butuh" placeholder="Pilih Tanggal...">
+                                </div>
                             </div>
-                            <div class="col-md-6">
-                                <label class="form-label">Tanggal Surat Lolos Butuh</label>
-                                <input type="text" class="form-control bg-white" id="prev_tanggal_surat_lolos_butuh" name="tanggal_surat_lolos_butuh" placeholder="Pilih Tanggal...">
+                            <div class="row g-3 mb-3">
+                                <div class="col-md-4">
+                                    <label class="form-label">Tunjangan Kotor (Rp)</label>
+                                    <input type="number" class="form-control" id="prev_tpd_kotor" name="tpd_kotor">
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label">Pajak Penghasilan (Rp)</label>
+                                    <input type="number" class="form-control" id="prev_tpd_pajak" name="tpd_pajak">
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label">Tunjangan Bersih (Rp)</label>
+                                    <input type="number" class="form-control" id="prev_tpd_bersih" name="tpd_bersih">
+                                </div>
                             </div>
-                        </div>
-                        <div class="row g-3 mb-3">
-                            <div class="col-md-4">
-                                <label class="form-label">Tunjangan Kotor (Rp)</label>
-                                <input type="number" class="form-control" id="prev_tpd_kotor" name="tpd_kotor">
+                            <div class="row g-3 mb-3">
+                                <div class="col-md-12">
+                                    <label class="form-label">Terhitung s.d Bulan</label>
+                                    <input type="text" class="form-control" id="prev_terhitung_bulan" name="terhitung_bulan" placeholder="Misal: Mei">
+                                </div>
                             </div>
-                            <div class="col-md-4">
-                                <label class="form-label">Pajak Penghasilan (Rp)</label>
-                                <input type="number" class="form-control" id="prev_tpd_pajak" name="tpd_pajak">
-                            </div>
-                            <div class="col-md-4">
-                                <label class="form-label">Tunjangan Bersih (Rp)</label>
-                                <input type="number" class="form-control" id="prev_tpd_bersih" name="tpd_bersih">
-                            </div>
-                        </div>
-                        <div class="row g-3 mb-3">
-                            <div class="col-md-12">
-                                <label class="form-label">Terhitung s.d Bulan</label>
-                                <input type="text" class="form-control" id="prev_terhitung_bulan" name="terhitung_bulan" placeholder="Misal: Mei">
+                            <hr>
+                            <h6 class="fw-bold mb-3">Tembusan (Disampaikan kepada)</h6>
+                            <div class="row g-3 mb-3">
+                                <div class="col-md-6">
+                                    <label class="form-label">LLDIKTI Tujuan (Wilayah)</label>
+                                    <select class="form-select" id="prev_wilayah_lldikti" name="wilayah_lldikti">
+                                        <option value="">-- Pilih Wilayah --</option>
+                                        <option value="I">Wilayah I</option>
+                                        <option value="II">Wilayah II</option>
+                                        <option value="III">Wilayah III</option>
+                                        <option value="IV">Wilayah IV</option>
+                                        <option value="V">Wilayah V</option>
+                                        <option value="VI">Wilayah VI</option>
+                                        <option value="VII">Wilayah VII</option>
+                                        <option value="VIII">Wilayah VIII</option>
+                                        <option value="IX">Wilayah IX</option>
+                                        <option value="X">Wilayah X</option>
+                                        <option value="XI">Wilayah XI</option>
+                                        <option value="XII">Wilayah XII</option>
+                                        <option value="XIII">Wilayah XIII</option>
+                                        <option value="XIV">Wilayah XIV</option>
+                                        <option value="XV">Wilayah XV</option>
+                                        <option value="XVI">Wilayah XVI</option>
+                                        <option value="XVII">Wilayah XVII</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Kota LLDIKTI Tujuan</label>
+                                    <select class="form-select" id="prev_kota_lldikti" name="kota_lldikti">
+                                        <option value="">-- Pilih Kota --</option>
+                                        <option value="Medan">Medan</option>
+                                        <option value="Palembang">Palembang</option>
+                                        <option value="Jakarta">Jakarta</option>
+                                        <option value="Bandung">Bandung</option>
+                                        <option value="Yogyakarta">Yogyakarta</option>
+                                        <option value="Semarang">Semarang</option>
+                                        <option value="Surabaya">Surabaya</option>
+                                        <option value="Denpasar">Denpasar</option>
+                                        <option value="Makassar">Makassar</option>
+                                        <option value="Padang">Padang</option>
+                                        <option value="Banjarmasin">Banjarmasin</option>
+                                        <option value="Ambon">Ambon</option>
+                                        <option value="Banda Aceh">Banda Aceh</option>
+                                        <option value="Manokwari">Manokwari</option>
+                                        <option value="Kupang">Kupang</option>
+                                        <option value="Gorontalo">Gorontalo</option>
+                                        <option value="Pekanbaru">Pekanbaru</option>
+                                    </select>
+                                </div>
                             </div>
                         </div>
                         <hr>
-                        <h6 class="fw-bold mb-3">Tembusan (Disampaikan kepada)</h6>
+                        <h6 class="fw-bold mb-3">Penandatangan Surat</h6>
                         <div class="row g-3 mb-3">
-                            <div class="col-md-6">
-                                <label class="form-label">LLDIKTI Tujuan (Wilayah)</label>
-                                <select class="form-select" id="prev_wilayah_lldikti" name="wilayah_lldikti">
-                                    <option value="">-- Pilih Wilayah --</option>
-                                    <option value="I">Wilayah I</option>
-                                    <option value="II">Wilayah II</option>
-                                    <option value="III">Wilayah III</option>
-                                    <option value="IV">Wilayah IV</option>
-                                    <option value="V">Wilayah V</option>
-                                    <option value="VI">Wilayah VI</option>
-                                    <option value="VII">Wilayah VII</option>
-                                    <option value="VIII">Wilayah VIII</option>
-                                    <option value="IX">Wilayah IX</option>
-                                    <option value="X">Wilayah X</option>
-                                    <option value="XI">Wilayah XI</option>
-                                    <option value="XII">Wilayah XII</option>
-                                    <option value="XIII">Wilayah XIII</option>
-                                    <option value="XIV">Wilayah XIV</option>
-                                    <option value="XV">Wilayah XV</option>
-                                    <option value="XVI">Wilayah XVI</option>
-                                    <option value="XVII">Wilayah XVII</option>
-                                </select>
+                            <div class="col-md-4">
+                                <label class="form-label">Jabatan Penandatangan</label>
+                                <input type="text" class="form-control" id="prev_ttd_jabatan" name="ttd_jabatan" value="Kuasa Pengguna Anggaran,">
                             </div>
-                            <div class="col-md-6">
-                                <label class="form-label">Kota LLDIKTI Tujuan</label>
-                                <select class="form-select" id="prev_kota_lldikti" name="kota_lldikti">
-                                    <option value="">-- Pilih Kota --</option>
-                                    <option value="Medan">Medan</option>
-                                    <option value="Palembang">Palembang</option>
-                                    <option value="Jakarta">Jakarta</option>
-                                    <option value="Bandung">Bandung</option>
-                                    <option value="Yogyakarta">Yogyakarta</option>
-                                    <option value="Semarang">Semarang</option>
-                                    <option value="Surabaya">Surabaya</option>
-                                    <option value="Denpasar">Denpasar</option>
-                                    <option value="Makassar">Makassar</option>
-                                    <option value="Padang">Padang</option>
-                                    <option value="Banjarmasin">Banjarmasin</option>
-                                    <option value="Ambon">Ambon</option>
-                                    <option value="Banda Aceh">Banda Aceh</option>
-                                    <option value="Manokwari">Manokwari</option>
-                                    <option value="Kupang">Kupang</option>
-                                    <option value="Gorontalo">Gorontalo</option>
-                                    <option value="Pekanbaru">Pekanbaru</option>
-                                </select>
+                            <div class="col-md-4">
+                                <label class="form-label">Nama Penandatangan</label>
+                                <input type="text" class="form-control" id="prev_ttd_nama" name="ttd_nama" value="Dr. Lukman, S.T., M.Hum.">
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">NIP Penandatangan</label>
+                                <input type="text" class="form-control" id="prev_ttd_nip" name="ttd_nip" value="197805112003121002">
                             </div>
                         </div>
                         <div class="d-flex justify-content-end gap-2 mt-4">
@@ -693,6 +715,12 @@ document.addEventListener('DOMContentLoaded', function() {
             document.getElementById('prev_wilayah_lldikti').value = 'VI';
             document.getElementById('prev_kota_lldikti').value = 'Semarang';
 
+            // Show/hide fields based on jenis surat
+            const isKeterangan = (jenisSurat === 'Surat Keterangan');
+            document.getElementById('skppOnlyFields').style.display = isKeterangan ? 'none' : 'block';
+            document.getElementById('skppOnlyFields2').style.display = isKeterangan ? 'none' : 'block';
+            document.getElementById('skppStep3Title').innerHTML = '<i class="bx bx-edit me-1"></i> Preview & Lengkapi Data ' + (isKeterangan ? 'Surat Keterangan' : 'SKPP');
+
             // Hide step 2, show step 3
             document.getElementById('skppStep2').style.display = 'none';
             document.getElementById('skppStep3').style.display = 'block';
@@ -734,15 +762,28 @@ document.addEventListener('DOMContentLoaded', function() {
             golongan: document.getElementById('prev_golongan').value,
             wilayah_lldikti: document.getElementById('prev_wilayah_lldikti').value,
             kota_lldikti: document.getElementById('prev_kota_lldikti').value,
+            ttd_jabatan: document.getElementById('prev_ttd_jabatan').value,
+            ttd_nama: document.getElementById('prev_ttd_nama').value,
+            ttd_nip: document.getElementById('prev_ttd_nip').value,
         };
 
-        const requiredFields = [
-            'nomor_skpp', 'nama_surat_pts', 'nomor_surat_pts', 'tanggal_surat_pts',
-            'nomor_surat_lolos_butuh', 'tanggal_surat_lolos_butuh',
-            'tpd_kotor', 'tpd_pajak', 'tpd_bersih', 'terhitung_bulan',
-            'pangkat', 'teks_tambahan_1', 'teks_tambahan_2', 'golongan',
-            'wilayah_lldikti', 'kota_lldikti'
-        ];
+        // Required fields berbeda untuk Surat Keterangan vs Surat SKPP
+        let requiredFields;
+        if (jenisSurat === 'Surat Keterangan') {
+            requiredFields = [
+                'nomor_skpp', 'nama_surat_pts', 'nomor_surat_pts', 'tanggal_surat_pts',
+                'ttd_jabatan', 'ttd_nama', 'ttd_nip'
+            ];
+        } else {
+            requiredFields = [
+                'nomor_skpp', 'nama_surat_pts', 'nomor_surat_pts', 'tanggal_surat_pts',
+                'nomor_surat_lolos_butuh', 'tanggal_surat_lolos_butuh',
+                'tpd_kotor', 'tpd_pajak', 'tpd_bersih', 'terhitung_bulan',
+                'pangkat', 'teks_tambahan_1', 'teks_tambahan_2', 'golongan',
+                'wilayah_lldikti', 'kota_lldikti',
+                'ttd_jabatan', 'ttd_nama', 'ttd_nip'
+            ];
+        }
 
         let isValid = true;
         for (let field of requiredFields) {

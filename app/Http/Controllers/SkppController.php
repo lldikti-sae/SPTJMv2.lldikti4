@@ -366,6 +366,9 @@ class SkppController extends Controller
             'golongan' => 'nullable|string',
             'wilayah_lldikti' => 'nullable|string',
             'kota_lldikti' => 'nullable|string',
+            'ttd_jabatan' => 'nullable|string',
+            'ttd_nama' => 'nullable|string',
+            'ttd_nip' => 'nullable|string',
         ]);
 
         // Cek kembali di sisi server agar tidak ada duplikasi jika tombol di-klik dua kali atau by-pass
@@ -412,6 +415,9 @@ class SkppController extends Controller
             $pesanData['pangkat_golongan'] = $pangkatGolongan;
             $pesanData['wilayah_lldikti'] = $request->wilayah_lldikti;
             $pesanData['kota_lldikti'] = $request->kota_lldikti;
+            $pesanData['ttd_jabatan'] = $request->ttd_jabatan;
+            $pesanData['ttd_nama'] = $request->ttd_nama;
+            $pesanData['ttd_nip'] = $request->ttd_nip;
 
             $pesanJson = json_encode($pesanData);
 

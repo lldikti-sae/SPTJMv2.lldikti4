@@ -177,10 +177,10 @@
         <div class="clearfix">
             <div class="signature-area">
                 Bandung, {{ \Carbon\Carbon::now()->isoFormat('D MMMM Y') }}<br>
-                Kuasa Pengguna Anggaran,<br>
+                {{ $detail['ttd_jabatan'] ?? 'Kuasa Pengguna Anggaran,' }}<br>
                 <br><br><br><br><br>
-                <span class="fw-bold" style="text-decoration: underline;">Dr. Lukman, S.T., M.Hum.</span><br>
-                NIP 197805112003121002
+                <span class="fw-bold" style="text-decoration: underline;">{{ $detail['ttd_nama'] ?? 'Dr. Lukman, S.T., M.Hum.' }}</span><br>
+                NIP. {{ $detail['ttd_nip'] ?? '197805112003121002' }}
             </div>
         </div>
 
