@@ -562,18 +562,26 @@ class SkppController extends Controller
                 'nama' => $detail['nama'] ?? '-',
                 'pts' => $detail['pts'] ?? '-',
                 'kode_pt' => $skpp->kode_pts,
-                'aktif' => '1',
+                'aktif' => '0',
                 'keterangan' => 'Penerbitan ' . $skpp->jenis_pengajuan,
                 'pengguna' => auth()->user() ? auth()->user()->name : 'Admin',
                 'no_dokumen_ubah' => $detail['nomor_skpp'] ?? '',
                 'tgl_dokumen_ubah' => now()->format('Y-m-d'),
-                'alasan_perubahan' => 'Penerbitan ' . $skpp->jenis_pengajuan . ' Selesai',
+                'alasan_perubahan' => 'Penerbitan ' . $skpp->jenis_pengajuan . ' Selesai, Dosen dinonaktifkan',
                 'dokumen' => $filename,
                 'created_at' => now(),
                 'updated_at' => now(),
             ]);
 
-            return response()->json(['success' => true, 'message' => 'PDF berhasil diupload dan dicatat di Histori Dosen.']);
+            // Buat dosen menjadi tidak aktif secara otomatis di s_transaksi_2
+            DB::table('s_transaksi_2')
+                ->where(function ($q) use ($skpp) {
+                    if (!empty($skpp->nidn)) $q->where('NIDN', $skpp->nidn);
+                    if (!empty($skpp->nuptk)) $q->orWhere('NUPTK', $skpp->nuptk);
+                })
+                ->update(['Aktif' => '0']);
+
+            return response()->json(['success' => true, 'message' => 'PDF berhasil diupload, dicatat di Histori, dan dosen otomatis dinonaktifkan.']);
         }
 
         return response()->json(['success' => false, 'message' => 'File PDF tidak ditemukan.']);
@@ -594,6 +602,14 @@ class SkppController extends Controller
         if (!empty($skpp->lampiran)) {
             // Hapus dari histori dosen
             DB::table('j_histori_dosen')->where('dokumen', $skpp->lampiran)->delete();
+
+            // Kembalikan status dosen menjadi aktif kembali
+            DB::table('s_transaksi_2')
+                ->where(function ($q) use ($skpp) {
+                    if (!empty($skpp->nidn)) $q->where('NIDN', $skpp->nidn);
+                    if (!empty($skpp->nuptk)) $q->orWhere('NUPTK', $skpp->nuptk);
+                })
+                ->update(['Aktif' => '1']);
 
             // Hapus file fisik
             $filePath = public_path('storage/Dokumen_Histori_Dosen2/' . $skpp->lampiran);
