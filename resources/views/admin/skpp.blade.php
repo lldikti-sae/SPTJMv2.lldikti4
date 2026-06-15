@@ -712,8 +712,8 @@ document.addEventListener('DOMContentLoaded', function() {
             document.getElementById('prev_tpd_pajak').value = data.tpd_pajak || 0;
             document.getElementById('prev_tpd_bersih').value = data.tpd_bersih || 0;
             document.getElementById('prev_terhitung_bulan').value = data.bulan_terakhir_nama || '';
-            document.getElementById('prev_wilayah_lldikti').value = 'VI';
-            document.getElementById('prev_kota_lldikti').value = 'Semarang';
+            document.getElementById('prev_wilayah_lldikti').value = '';
+            document.getElementById('prev_kota_lldikti').value = '';
 
             // Show/hide fields based on jenis surat
             const isKeterangan = (jenisSurat === 'Surat Keterangan');
@@ -779,7 +779,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 'nomor_skpp', 'nama_surat_pts', 'nomor_surat_pts', 'tanggal_surat_pts',
                 'nomor_surat_lolos_butuh', 'tanggal_surat_lolos_butuh',
                 'tpd_kotor', 'tpd_pajak', 'tpd_bersih', 'terhitung_bulan',
-                'pangkat', 'teks_tambahan_1', 'teks_tambahan_2', 'golongan',
+                'pangkat', 'golongan',
                 'wilayah_lldikti', 'kota_lldikti',
                 'ttd_jabatan', 'ttd_nama', 'ttd_nip'
             ];
