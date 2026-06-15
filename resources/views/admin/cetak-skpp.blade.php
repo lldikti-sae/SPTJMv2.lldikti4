@@ -6,7 +6,7 @@
     <style>
         @page {
             size: A4 portrait;
-            margin: 1cm 1.5cm 1cm 1.5cm;
+            margin: 4.5cm 1.5cm 1cm 1.5cm;
         }
         body {
             font-family: 'Times New Roman', Times, serif;
@@ -95,7 +95,7 @@
 
     <div class="mt-4">
         <p style="text-align: justify;">
-            Kepala Satker/atas nama Kuasa Pengguna Anggaran Lembaga Layanan Pendidikan Tinggi Wilayah IV Bandung menerangkan bahwa kepada
+            Kepala Satker/atas nama {{ rtrim($detail['ttd_jabatan'] ?? 'Kuasa Pengguna Anggaran', ', ') }} Lembaga Layanan Pendidikan Tinggi Wilayah IV Bandung menerangkan bahwa kepada
         </p>
 
         <table class="info-table" style="margin-left: 10px; margin-bottom: 20px;">

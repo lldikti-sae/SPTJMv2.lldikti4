@@ -6,7 +6,7 @@
     <style>
         @page {
             size: A4 portrait;
-            margin: 2.5cm 2.5cm 2cm 2.5cm;
+            margin: 4.5cm 2.5cm 2cm 2.5cm;
         }
         body {
             font-family: 'Times New Roman', Times, serif;
@@ -72,7 +72,7 @@
     <p>
         Berdasarkan Surat dari {{ $detail['nama_surat_pts'] ?? ($dosen->PTS ?? '-') }} Nomor: {{ $detail['nomor_surat_pts'] ?? '..........' }}
         tanggal {{ $detail['tanggal_surat_pts'] ?? '..........' }} perihal Permohonan Surat Keterangan Pemberhentian Pembayaran (SKPP)
-        Dosen a.n. {{ $dosen->Nama ?? '-' }}, Kuasa Pengguna Anggaran Lembaga Layanan Pendidikan Tinggi Wilayah IV dengan ini menerangkan bahwa nama tersebut di bawah ini:
+        Dosen a.n. {{ $dosen->Nama ?? '-' }}, {{ rtrim($detail['ttd_jabatan'] ?? 'Kuasa Pengguna Anggaran', ', ') }} Lembaga Layanan Pendidikan Tinggi Wilayah IV dengan ini menerangkan bahwa nama tersebut di bawah ini:
     </p>
 
     {{-- Data Dosen (dalam kotak) --}}
