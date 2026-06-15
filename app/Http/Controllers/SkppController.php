@@ -140,7 +140,7 @@ class SkppController extends Controller
         }
 
         $tahunList = $query->distinct()
-            ->orderBy('Tahun_Versi', 'desc')
+            ->orderBy('Tahun_Versi', 'asc')
             ->pluck('Tahun_Versi')
             ->all();
 
