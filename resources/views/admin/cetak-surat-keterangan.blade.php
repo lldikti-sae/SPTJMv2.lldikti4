@@ -6,12 +6,12 @@
     <style>
         @page {
             size: A4 portrait;
-            margin: 4.5cm 2.5cm 2cm 2.5cm;
+            margin: 4.5cm 2.5cm 1.5cm 2.5cm;
         }
         body {
             font-family: 'Times New Roman', Times, serif;
             font-size: 12pt;
-            line-height: 1.6;
+            line-height: 1.5;
             color: #000;
         }
         .text-center {
@@ -27,25 +27,25 @@
         }
         .nomor {
             text-align: center;
-            margin-bottom: 30px;
+            margin-bottom: 25px;
         }
         .data-box {
-            padding: 10px 15px;
-            margin: 15px 40px 15px 40px;
+            padding: 8px 15px;
+            margin: 12px 40px 12px 40px;
         }
         .data-box table {
             border-collapse: collapse;
             width: 100%;
         }
         .data-box table td {
-            padding: 2px 0;
+            padding: 1px 0;
             vertical-align: top;
         }
         .signature-area {
             width: 300px;
             float: right;
-            margin-top: 30px;
-            line-height: 1.4;
+            margin-top: 20px;
+            line-height: 1.3;
         }
         .clearfix::after {
             content: "";
@@ -54,14 +54,14 @@
         }
         p {
             text-align: justify;
-            margin: 8px 0;
+            margin: 6px 0;
         }
     </style>
 </head>
 <body>
 
     {{-- Judul Surat --}}
-    <div class="text-center" style="margin-top: 20px;">
+    <div class="text-center" style="margin-top: 15px;">
         <span class="title-underline">SURAT KETERANGAN</span>
     </div>
     <div class="nomor">
@@ -70,8 +70,11 @@
 
     {{-- Paragraf Pembuka --}}
     <p>
+        @php
+            $tanggalSuratPts = $detail['tanggal_surat_pts'] ?? '..........';
+        @endphp
         Berdasarkan Surat dari {{ $detail['nama_surat_pts'] ?? ($dosen->PTS ?? '-') }} Nomor: {{ $detail['nomor_surat_pts'] ?? '..........' }}
-        tanggal {{ $detail['tanggal_surat_pts'] ?? '..........' }} perihal Permohonan Surat Keterangan Pemberhentian Pembayaran (SKPP)
+        tanggal {{ $tanggalSuratPts }} perihal Permohonan Surat Keterangan Pemberhentian Pembayaran (SKPP)
         Dosen a.n. {{ $dosen->Nama ?? '-' }}, {{ rtrim($detail['ttd_jabatan'] ?? 'Kuasa Pengguna Anggaran', ', ') }} Lembaga Layanan Pendidikan Tinggi Wilayah IV dengan ini menerangkan bahwa nama tersebut di bawah ini:
     </p>
 
@@ -102,14 +105,17 @@
     </p>
 
     {{-- Paragraf Penutup --}}
-    <p style="margin-top: 15px;">
+    <p style="margin-top: 12px;">
         Demikian surat keterangan ini kami buat untuk dapat dipergunakan sebagaimana mestinya.
     </p>
 
     {{-- Tanda Tangan --}}
     <div class="clearfix">
         <div class="signature-area">
-            Bandung, {{ \Carbon\Carbon::now()->isoFormat('D MMMM Y') }}<br>
+            @php
+                $tanggalSurat = \Carbon\Carbon::now()->locale('id')->translatedFormat('d F Y');
+            @endphp
+            Bandung, {{ $tanggalSurat }}<br>
             {{ $detail['ttd_jabatan'] ?? 'Kuasa Pengguna Anggaran,' }}<br>
             <br><br><br><br><br>
             <span class="fw-bold" style="text-decoration: underline;">{{ $detail['ttd_nama'] ?? 'Dr. Lukman, S.T., M.Hum.' }}</span><br>
