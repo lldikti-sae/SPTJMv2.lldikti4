@@ -289,6 +289,11 @@ class SkppController extends Controller
             'IV/e' => 'Pembina Utama',
         ];
 
+        $tkgb_kotor = 0;
+        $tkgb_pajak = 0;
+        $tkgb_bersih = 0;
+        $is_guru_besar = false;
+
         if ($dosen) {
             $gol = $dosen->Gol12 ?? ($dosen->Gol1 ?? '');
             
@@ -297,12 +302,20 @@ class SkppController extends Controller
                 $golongan = $gol;
             }
 
+            // Deteksi apakah dosen Guru Besar/Profesor (TKGB)
+            $jabatanDosen = strtolower(trim($dosen->Jabatan12 ?? ($dosen->Jabatan1 ?? '')));
+            $is_guru_besar = (strpos($jabatanDosen, 'guru besar') !== false || strpos($jabatanDosen, 'profesor') !== false);
+
             for ($i = 12; $i >= 1; $i--) {
                 $tpd_val = $dosen->{'TPD' . $i} ?? 0;
                 if ($tpd_val > 0) {
                     $tpd_kotor = $tpd_val;
                     $tpd_pajak = $dosen->{'nilaiPajakTPD' . $i} ?? 0;
                     $tpd_bersih = $dosen->{'bersihTPD' . $i} ?? 0;
+                    // Ambil TKGB dari bulan yang sama
+                    $tkgb_kotor = $dosen->{'TKGB' . $i} ?? 0;
+                    $tkgb_pajak = $dosen->{'nilaiPajakTKGB' . $i} ?? 0;
+                    $tkgb_bersih = $dosen->{'bersihTKGB' . $i} ?? 0;
                     $bulan_terakhir = $i;
                     break;
                 }
@@ -317,17 +330,16 @@ class SkppController extends Controller
         ];
 
         $tahunSekarang = date('Y');
-        $count = DB::table('i_complain')
-            ->whereIn('jenis_pengajuan', ['Surat Keterangan', 'Surat SKPP'])
-            ->whereYear('created_at', $tahunSekarang)
-            ->count();
-        $nextNumber = $count + 1;
-        $nomor_skpp_auto = $nextNumber . '/LL4/PR/' . $tahunSekarang;
+        $nomor_skpp_auto = ''; // Dikosongkan sesuai permintaan user
 
         return response()->json([
             'tpd_kotor' => $tpd_kotor,
             'tpd_pajak' => $tpd_pajak,
             'tpd_bersih' => $tpd_bersih,
+            'tkgb_kotor' => $tkgb_kotor,
+            'tkgb_pajak' => $tkgb_pajak,
+            'tkgb_bersih' => $tkgb_bersih,
+            'is_guru_besar' => $is_guru_besar,
             'bulan_terakhir_nama' => $bulanIndonesia[$bulan_terakhir] ?? '',
             'nomor_skpp' => $nomor_skpp_auto,
             'pangkat' => $pangkat,
@@ -359,12 +371,17 @@ class SkppController extends Controller
             'tpd_kotor' => 'nullable|numeric',
             'tpd_pajak' => 'nullable|numeric',
             'tpd_bersih' => 'nullable|numeric',
+            'tkgb_kotor' => 'nullable|numeric',
+            'tkgb_pajak' => 'nullable|numeric',
+            'tkgb_bersih' => 'nullable|numeric',
+            'is_guru_besar' => 'nullable',
             'terhitung_bulan' => 'nullable|string',
             'pangkat' => 'nullable|string',
             'teks_tambahan_1' => 'nullable|string',
             'teks_tambahan_2' => 'nullable|string',
             'golongan' => 'nullable|string',
             'wilayah_lldikti' => 'nullable|string',
+            'wilayah_lldikti_custom' => 'nullable|string',
             'kota_lldikti' => 'nullable|string',
             'ttd_jabatan' => 'nullable|string',
             'ttd_nama' => 'nullable|string',
@@ -401,6 +418,10 @@ class SkppController extends Controller
             'tpd_kotor' => $request->tpd_kotor,
             'tpd_pajak' => $request->tpd_pajak,
             'tpd_bersih' => $request->tpd_bersih,
+            'tkgb_kotor' => $request->tkgb_kotor,
+            'tkgb_pajak' => $request->tkgb_pajak,
+            'tkgb_bersih' => $request->tkgb_bersih,
+            'is_guru_besar' => filter_var($request->is_guru_besar, FILTER_VALIDATE_BOOLEAN),
             'terhitung_bulan' => $request->terhitung_bulan,
         ];
             $teks1 = trim($request->teks_tambahan_1);
@@ -414,6 +435,7 @@ class SkppController extends Controller
             }
             $pesanData['pangkat_golongan'] = $pangkatGolongan;
             $pesanData['wilayah_lldikti'] = $request->wilayah_lldikti;
+            $pesanData['wilayah_lldikti_custom'] = $request->wilayah_lldikti_custom;
             $pesanData['kota_lldikti'] = $request->kota_lldikti;
             $pesanData['ttd_jabatan'] = $request->ttd_jabatan;
             $pesanData['ttd_nama'] = $request->ttd_nama;
@@ -480,6 +502,10 @@ class SkppController extends Controller
         $tpd_kotor = $detail['tpd_kotor'] ?? 0;
         $tpd_pajak = $detail['tpd_pajak'] ?? 0;
         $tpd_bersih = $detail['tpd_bersih'] ?? 0;
+        $tkgb_kotor = $detail['tkgb_kotor'] ?? 0;
+        $tkgb_pajak = $detail['tkgb_pajak'] ?? 0;
+        $tkgb_bersih = $detail['tkgb_bersih'] ?? 0;
+        $is_guru_besar = $detail['is_guru_besar'] ?? false;
         $bulan_terakhir_nama = $detail['terhitung_bulan'] ?? '';
 
         if (empty($tpd_kotor)) {
@@ -490,6 +516,9 @@ class SkppController extends Controller
                     $tpd_kotor = $tpd_val;
                     $tpd_pajak = $dosen->{'nilaiPajakTPD' . $i} ?? 0;
                     $tpd_bersih = $dosen->{'bersihTPD' . $i} ?? 0;
+                    $tkgb_kotor = $dosen->{'TKGB' . $i} ?? 0;
+                    $tkgb_pajak = $dosen->{'nilaiPajakTKGB' . $i} ?? 0;
+                    $tkgb_bersih = $dosen->{'bersihTKGB' . $i} ?? 0;
                     $bulan_terakhir = $i;
                     break;
                 }
@@ -503,6 +532,12 @@ class SkppController extends Controller
             $bulan_terakhir_nama = $bulanIndonesia[$bulan_terakhir] ?? '';
         }
 
+        // Deteksi Guru Besar/Profesor jika belum ada di detail
+        if (!$is_guru_besar) {
+            $jabatanDosen = strtolower(trim($dosen->Jabatan12 ?? ($dosen->Jabatan1 ?? '')));
+            $is_guru_besar = (strpos($jabatanDosen, 'guru besar') !== false || strpos($jabatanDosen, 'profesor') !== false);
+        }
+
         $data = [
             'skpp' => $skpp,
             'dosen' => $dosen,
@@ -511,6 +546,10 @@ class SkppController extends Controller
             'tpd_kotor' => $tpd_kotor,
             'tpd_pajak' => $tpd_pajak,
             'tpd_bersih' => $tpd_bersih,
+            'tkgb_kotor' => $tkgb_kotor,
+            'tkgb_pajak' => $tkgb_pajak,
+            'tkgb_bersih' => $tkgb_bersih,
+            'is_guru_besar' => $is_guru_besar,
         ];
 
         $viewName = ($skpp->jenis_pengajuan === 'Surat Keterangan') ? 'admin.cetak-surat-keterangan' : 'admin.cetak-skpp';
@@ -598,29 +637,14 @@ class SkppController extends Controller
             return response()->json(['success' => false, 'message' => 'Data tidak ditemukan.'], 404);
         }
 
-        // Jika SKPP ini sudah memiliki lampiran (selesai), hapus file dan histori dosen
-        if (!empty($skpp->lampiran)) {
-            // Hapus dari histori dosen
-            DB::table('j_histori_dosen')->where('dokumen', $skpp->lampiran)->delete();
-
-            // Kembalikan status dosen menjadi aktif kembali
-            DB::table('s_transaksi_2')
-                ->where(function ($q) use ($skpp) {
-                    if (!empty($skpp->nidn)) $q->where('NIDN', $skpp->nidn);
-                    if (!empty($skpp->nuptk)) $q->orWhere('NUPTK', $skpp->nuptk);
-                })
-                ->update(['Aktif' => '1']);
-
-            // Hapus file fisik
-            $filePath = public_path('storage/Dokumen_Histori_Dosen2/' . $skpp->lampiran);
-            if (file_exists($filePath)) {
-                unlink($filePath);
-            }
+        // Cegah penghapusan jika status sudah selesai (setuju) - data riwayat harus tetap ada
+        if ($skpp->status === 'setuju') {
+            return response()->json(['success' => false, 'message' => 'Surat yang sudah berstatus Selesai tidak dapat dihapus. Data riwayat surat harus tetap tersimpan.']);
         }
 
-        // Hapus dari tabel pengajuan
+        // Hapus dari tabel pengajuan (hanya yang belum selesai)
         DB::table('i_complain')->where('id', $id)->delete();
 
-        return response()->json(['success' => true, 'message' => 'Data pengajuan dan histori (jika ada) berhasil dihapus.']);
+        return response()->json(['success' => true, 'message' => 'Data pengajuan berhasil dihapus.']);
     }
 }

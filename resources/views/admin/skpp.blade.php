@@ -85,9 +85,11 @@
                                 </a>
                                 @endif
                             @endif
+                            @if($skpp->status !== 'setuju')
                             <button type="button" class="btn btn-sm btn-outline-danger" onclick="hapusSkpp({{ $skpp->id }})" title="Hapus Surat">
                                 <i class="bx bx-trash"></i>
                             </button>
+                            @endif
                         </div>
                     </td>
                 </tr>
@@ -252,7 +254,7 @@ input[type=number] {
                     <form id="formSkppPreview">
                         <div class="row g-3 mb-3">
                             <div class="col-md-12">
-                                <label class="form-label">Nomor Surat SKPP / Keterangan</label>
+                                <label class="form-label">Nomor Surat SKPP / Keterangan <small class="text-muted">(opsional)</small></label>
                                 <input type="text" class="form-control" id="prev_nomor_skpp" name="nomor_skpp" placeholder="Misal: 3137/LL4/PR/2026">
                             </div>
                         </div>
@@ -307,16 +309,36 @@ input[type=number] {
                             </div>
                             <div class="row g-3 mb-3">
                                 <div class="col-md-4">
-                                    <label class="form-label">Tunjangan Kotor (Rp)</label>
+                                    <label class="form-label">Tunjangan Profesi Kotor (Rp)</label>
                                     <input type="number" class="form-control" id="prev_tpd_kotor" name="tpd_kotor">
                                 </div>
                                 <div class="col-md-4">
-                                    <label class="form-label">Pajak Penghasilan (Rp)</label>
+                                    <label class="form-label">PPh. 21 TPD (Rp)</label>
                                     <input type="number" class="form-control" id="prev_tpd_pajak" name="tpd_pajak">
                                 </div>
                                 <div class="col-md-4">
-                                    <label class="form-label">Tunjangan Bersih (Rp)</label>
+                                    <label class="form-label">Tunjangan Profesi Bersih (Rp)</label>
                                     <input type="number" class="form-control" id="prev_tpd_bersih" name="tpd_bersih">
+                                </div>
+                            </div>
+                            {{-- TKGB Fields (Tunjangan Kehormatan) - Hanya untuk Guru Besar --}}
+                            <div id="tkgbFields" style="display: none;">
+                                <div class="alert alert-info py-2 mb-2">
+                                    <i class="bx bx-info-circle me-1"></i> Dosen ini terdeteksi sebagai <strong>Guru Besar</strong>, memiliki Tunjangan Kehormatan.
+                                </div>
+                                <div class="row g-3 mb-3">
+                                    <div class="col-md-4">
+                                        <label class="form-label">Tunjangan Kehormatan Kotor (Rp)</label>
+                                        <input type="number" class="form-control" id="prev_tkgb_kotor" name="tkgb_kotor">
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label class="form-label">PPh. 21 TKGB (Rp)</label>
+                                        <input type="number" class="form-control" id="prev_tkgb_pajak" name="tkgb_pajak">
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label class="form-label">Tunjangan Kehormatan Bersih (Rp)</label>
+                                        <input type="number" class="form-control" id="prev_tkgb_bersih" name="tkgb_bersih">
+                                    </div>
                                 </div>
                             </div>
                             <div class="row g-3 mb-3">
@@ -349,9 +371,10 @@ input[type=number] {
                                         <option value="XV">Wilayah XV</option>
                                         <option value="XVI">Wilayah XVI</option>
                                         <option value="XVII">Wilayah XVII</option>
+                                        <option value="Lainnya">Lainnya (Universitas/Instansi)</option>
                                     </select>
                                 </div>
-                                <div class="col-md-6">
+                                <div class="col-md-6" id="kotaLldiktiContainer">
                                     <label class="form-label">Kota LLDIKTI Tujuan</label>
                                     <select class="form-select" id="prev_kota_lldikti" name="kota_lldikti">
                                         <option value="">-- Pilih Kota --</option>
@@ -373,6 +396,10 @@ input[type=number] {
                                         <option value="Gorontalo">Gorontalo</option>
                                         <option value="Pekanbaru">Pekanbaru</option>
                                     </select>
+                                </div>
+                                <div class="col-md-6" id="wilayahCustomContainer" style="display: none;">
+                                    <label class="form-label">Tujuan Surat (Nama Instansi/Universitas)</label>
+                                    <input type="text" class="form-control" id="prev_wilayah_lldikti_custom" name="wilayah_lldikti_custom" placeholder="Misal: Universitas Padjadjaran">
                                 </div>
                             </div>
                         </div>
@@ -454,6 +481,7 @@ document.addEventListener('DOMContentLoaded', function() {
     let currentBulanKosong = [];
     let currentDosenExistingSkpp = false;
     let currentDosenExistingMessage = '';
+    let currentIsGuruBesar = false;
 
     // Reset modal on close
     const modalEl = document.getElementById('modalSkpp');
@@ -477,6 +505,7 @@ document.addEventListener('DOMContentLoaded', function() {
         currentJenisSurat = '';
         currentDosenExistingSkpp = false;
         currentDosenExistingMessage = '';
+        currentIsGuruBesar = false;
     }
 
     // Search Dosen
@@ -715,11 +744,22 @@ document.addEventListener('DOMContentLoaded', function() {
             document.getElementById('prev_wilayah_lldikti').value = '';
             document.getElementById('prev_kota_lldikti').value = '';
 
+            // TKGB fields (Tunjangan Kehormatan)
+            currentIsGuruBesar = data.is_guru_besar || false;
+            document.getElementById('prev_tkgb_kotor').value = data.tkgb_kotor || 0;
+            document.getElementById('prev_tkgb_pajak').value = data.tkgb_pajak || 0;
+            document.getElementById('prev_tkgb_bersih').value = data.tkgb_bersih || 0;
+            document.getElementById('tkgbFields').style.display = currentIsGuruBesar ? 'block' : 'none';
+
             // Show/hide fields based on jenis surat
             const isKeterangan = (jenisSurat === 'Surat Keterangan');
             document.getElementById('skppOnlyFields').style.display = isKeterangan ? 'none' : 'block';
             document.getElementById('skppOnlyFields2').style.display = isKeterangan ? 'none' : 'block';
             document.getElementById('skppStep3Title').innerHTML = '<i class="bx bx-edit me-1"></i> Preview & Lengkapi Data ' + (isKeterangan ? 'Surat Keterangan' : 'SKPP');
+
+            // Reset wilayah containers
+            document.getElementById('kotaLldiktiContainer').style.display = 'block';
+            document.getElementById('wilayahCustomContainer').style.display = 'none';
 
             // Hide step 2, show step 3
             document.getElementById('skppStep2').style.display = 'none';
@@ -755,12 +795,17 @@ document.addEventListener('DOMContentLoaded', function() {
             tpd_kotor: document.getElementById('prev_tpd_kotor').value,
             tpd_pajak: document.getElementById('prev_tpd_pajak').value,
             tpd_bersih: document.getElementById('prev_tpd_bersih').value,
+            tkgb_kotor: document.getElementById('prev_tkgb_kotor').value,
+            tkgb_pajak: document.getElementById('prev_tkgb_pajak').value,
+            tkgb_bersih: document.getElementById('prev_tkgb_bersih').value,
+            is_guru_besar: currentIsGuruBesar,
             terhitung_bulan: document.getElementById('prev_terhitung_bulan').value,
             pangkat: document.getElementById('prev_pangkat').value,
             teks_tambahan_1: document.getElementById('prev_teks_tambahan_1').value,
             teks_tambahan_2: document.getElementById('prev_teks_tambahan_2').value,
             golongan: document.getElementById('prev_golongan').value,
             wilayah_lldikti: document.getElementById('prev_wilayah_lldikti').value,
+            wilayah_lldikti_custom: document.getElementById('prev_wilayah_lldikti_custom').value,
             kota_lldikti: document.getElementById('prev_kota_lldikti').value,
             ttd_jabatan: document.getElementById('prev_ttd_jabatan').value,
             ttd_nama: document.getElementById('prev_ttd_nama').value,
@@ -771,18 +816,38 @@ document.addEventListener('DOMContentLoaded', function() {
         let requiredFields;
         if (jenisSurat === 'Surat Keterangan') {
             requiredFields = [
-                'nomor_skpp', 'nama_surat_pts', 'nomor_surat_pts', 'tanggal_surat_pts',
+                'nama_surat_pts', 'nomor_surat_pts', 'tanggal_surat_pts',
                 'ttd_jabatan', 'ttd_nama', 'ttd_nip'
             ];
         } else {
             requiredFields = [
-                'nomor_skpp', 'nama_surat_pts', 'nomor_surat_pts', 'tanggal_surat_pts',
+                'nama_surat_pts', 'nomor_surat_pts', 'tanggal_surat_pts',
                 'nomor_surat_lolos_butuh', 'tanggal_surat_lolos_butuh',
                 'tpd_kotor', 'tpd_pajak', 'tpd_bersih', 'terhitung_bulan',
                 'pangkat', 'golongan',
-                'wilayah_lldikti', 'kota_lldikti',
                 'ttd_jabatan', 'ttd_nama', 'ttd_nip'
             ];
+        }
+
+        // Validasi wilayah: jika Lainnya, custom field wajib diisi
+        if (jenisSurat !== 'Surat Keterangan') {
+            const wilayahVal = document.getElementById('prev_wilayah_lldikti').value;
+            if (!wilayahVal) {
+                Swal.fire('Perhatian', 'Harap pilih wilayah/tujuan surat terlebih dahulu.', 'warning');
+                return;
+            }
+            if (wilayahVal === 'Lainnya') {
+                const customVal = document.getElementById('prev_wilayah_lldikti_custom').value.trim();
+                if (!customVal) {
+                    Swal.fire('Perhatian', 'Harap isi nama instansi/universitas tujuan surat.', 'warning');
+                    return;
+                }
+            } else {
+                if (!document.getElementById('prev_kota_lldikti').value) {
+                    Swal.fire('Perhatian', 'Harap pilih kota LLDIKTI tujuan.', 'warning');
+                    return;
+                }
+            }
         }
 
         let isValid = true;
@@ -1000,8 +1065,21 @@ const kotaMap = {
 
 document.getElementById('prev_wilayah_lldikti').addEventListener('change', function() {
     const wil = this.value;
-    if (kotaMap[wil]) {
-        document.getElementById('prev_kota_lldikti').value = kotaMap[wil];
+    if (wil === 'Lainnya') {
+        // Tampilkan input custom, sembunyikan kota dropdown
+        document.getElementById('kotaLldiktiContainer').style.display = 'none';
+        document.getElementById('wilayahCustomContainer').style.display = 'block';
+        document.getElementById('prev_kota_lldikti').value = '';
+        document.getElementById('prev_wilayah_lldikti_custom').value = '';
+        document.getElementById('prev_wilayah_lldikti_custom').focus();
+    } else {
+        // Tampilkan kota dropdown, sembunyikan custom
+        document.getElementById('kotaLldiktiContainer').style.display = 'block';
+        document.getElementById('wilayahCustomContainer').style.display = 'none';
+        document.getElementById('prev_wilayah_lldikti_custom').value = '';
+        if (kotaMap[wil]) {
+            document.getElementById('prev_kota_lldikti').value = kotaMap[wil];
+        }
     }
 });
 </script>
