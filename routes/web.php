@@ -314,8 +314,12 @@ Route::post('/admin/skpp/get-tahun', [App\Http\Controllers\SkppController::class
 Route::post('/admin/skpp/get-detail-bulan', [App\Http\Controllers\SkppController::class, 'getDetailBulan'])->name('admin.skpp.get-detail-bulan');
 Route::post('/admin/skpp/get-preview-data', [App\Http\Controllers\SkppController::class, 'getPreviewData'])->name('admin.skpp.get-preview-data');
 Route::post('/admin/skpp/store', [App\Http\Controllers\SkppController::class, 'store'])->name('admin.skpp.store');
+Route::get('/admin/skpp/{id}/edit', [App\Http\Controllers\SkppController::class, 'edit'])->name('admin.skpp.edit');
+Route::put('/admin/skpp/{id}/update', [App\Http\Controllers\SkppController::class, 'update'])->name('admin.skpp.update');
 Route::get('/admin/skpp/{id}/cetak', [App\Http\Controllers\SkppController::class, 'cetak'])->name('admin.skpp.cetak');
 Route::post('/admin/skpp/upload-pdf', [App\Http\Controllers\SkppController::class, 'uploadPdf'])->name('admin.skpp.upload-pdf');
+Route::post('/admin/skpp/{id}/konfirmasi', [App\Http\Controllers\SkppController::class, 'konfirmasi'])->name('admin.skpp.konfirmasi');
+Route::post('/admin/skpp/{id}/tolak', [App\Http\Controllers\SkppController::class, 'tolak'])->name('admin.skpp.tolak');
 Route::delete('/admin/skpp/{id}', [App\Http\Controllers\SkppController::class, 'destroy'])->name('admin.skpp.destroy');
 
 // Route Data Sisternas Admin

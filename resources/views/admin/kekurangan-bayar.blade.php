@@ -133,6 +133,15 @@
                                 <form action="" method="GET" class="m-0 d-flex gap-2">
                                     @if(request('lebih_page')) <input type="hidden" name="lebih_page" value="{{ request('lebih_page') }}"> @endif
                                     @if(request('search_lebih')) <input type="hidden" name="search_lebih" value="{{ request('search_lebih') }}"> @endif
+                                    @if(request('selesai_page')) <input type="hidden" name="selesai_page" value="{{ request('selesai_page') }}"> @endif
+                                    @if(request('search_selesai')) <input type="hidden" name="search_selesai" value="{{ request('search_selesai') }}"> @endif
+                                    <select name="per_page" class="form-select form-select-sm" onchange="this.form.submit()" style="width: auto;">
+                                        <option value="50" {{ request('per_page', 50) == 50 ? 'selected' : '' }}>50</option>
+                                        <option value="100" {{ request('per_page') == 100 ? 'selected' : '' }}>100</option>
+                                        <option value="200" {{ request('per_page') == 200 ? 'selected' : '' }}>200</option>
+                                        <option value="500" {{ request('per_page') == 500 ? 'selected' : '' }}>500</option>
+                                        <option value="1000" {{ request('per_page') == 1000 ? 'selected' : '' }}>1000</option>
+                                    </select>
                                     <input type="text" name="search_kurang" class="form-control form-control-sm" placeholder="Cari NIDN / Nama..." value="{{ request('search_kurang') }}">
                                     <button type="submit" class="btn btn-sm btn-outline-primary"><i class="bx bx-search"></i></button>
                                 </form>
@@ -295,6 +304,15 @@
                                 <form action="" method="GET" class="m-0 d-flex gap-2">
                                     @if(request('kurang_page')) <input type="hidden" name="kurang_page" value="{{ request('kurang_page') }}"> @endif
                                     @if(request('search_kurang')) <input type="hidden" name="search_kurang" value="{{ request('search_kurang') }}"> @endif
+                                    @if(request('selesai_page')) <input type="hidden" name="selesai_page" value="{{ request('selesai_page') }}"> @endif
+                                    @if(request('search_selesai')) <input type="hidden" name="search_selesai" value="{{ request('search_selesai') }}"> @endif
+                                    <select name="per_page" class="form-select form-select-sm" onchange="this.form.submit()" style="width: auto;">
+                                        <option value="50" {{ request('per_page', 50) == 50 ? 'selected' : '' }}>50</option>
+                                        <option value="100" {{ request('per_page') == 100 ? 'selected' : '' }}>100</option>
+                                        <option value="200" {{ request('per_page') == 200 ? 'selected' : '' }}>200</option>
+                                        <option value="500" {{ request('per_page') == 500 ? 'selected' : '' }}>500</option>
+                                        <option value="1000" {{ request('per_page') == 1000 ? 'selected' : '' }}>1000</option>
+                                    </select>
                                     <input type="text" name="search_lebih" class="form-control form-control-sm" placeholder="Cari NIDN / Nama..." value="{{ request('search_lebih') }}">
                                     <button type="submit" class="btn btn-sm btn-outline-primary"><i class="bx bx-search"></i></button>
                                 </form>
@@ -465,8 +483,16 @@
                                     </button>
                                 </form>
                                 <form action="" method="GET" class="m-0 d-flex gap-2">
+                                    @if(request('kurang_page')) <input type="hidden" name="kurang_page" value="{{ request('kurang_page') }}"> @endif
+                                    @if(request('search_kurang')) <input type="hidden" name="search_kurang" value="{{ request('search_kurang') }}"> @endif
                                     @if(request('lebih_page')) <input type="hidden" name="lebih_page" value="{{ request('lebih_page') }}"> @endif
                                     @if(request('search_lebih')) <input type="hidden" name="search_lebih" value="{{ request('search_lebih') }}"> @endif
+                                    <select name="per_page" class="form-select form-select-sm" onchange="this.form.submit()" style="width: auto;">
+                                        <option value="50" {{ request('per_page', 50) == 50 ? 'selected' : '' }}>50</option>
+                                        <option value="100" {{ request('per_page') == 100 ? 'selected' : '' }}>100</option>
+                                        <option value="200" {{ request('per_page') == 200 ? 'selected' : '' }}>200</option>
+                                        <option value="500" {{ request('per_page') == 500 ? 'selected' : '' }}>500</option>
+                                    </select>
                                     <input type="text" name="search_selesai" class="form-control form-control-sm" placeholder="Cari NIDN / Nama..." value="{{ request('search_selesai') }}">
                                     <button type="submit" class="btn btn-sm btn-outline-primary"><i class="bx bx-search"></i></button>
                                 </form>

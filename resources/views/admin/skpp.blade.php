@@ -60,6 +60,8 @@
                     <td class="text-center">
                         @if($skpp->status === 'open')
                             <span class="badge bg-label-warning">Proses</span>
+                        @elseif($skpp->status === 'menunggu_konfirmasi')
+                            <span class="badge bg-label-info">Menunggu Konfirmasi</span>
                         @elseif($skpp->status === 'setuju')
                             <span class="badge bg-label-success">Selesai</span>
                         @elseif($skpp->status === 'tolak')
@@ -74,20 +76,31 @@
                             <a href="{{ route('admin.skpp.cetak', $skpp->id) }}" class="btn btn-sm btn-outline-info" target="_blank" title="Cetak Surat">
                                 <i class="bx bx-printer"></i>
                             </a>
-                            @if($skpp->status !== 'setuju')
-                            <button type="button" class="btn btn-sm btn-outline-success" onclick="uploadPdf({{ $skpp->id }})" title="Upload PDF (Selesai)">
+                            @if($skpp->status === 'open' || $skpp->status === 'tolak')
+                            <button type="button" class="btn btn-sm btn-outline-primary" onclick="editSkpp({{ $skpp->id }})" title="Edit Surat">
+                                <i class="bx bx-edit"></i>
+                            </button>
+                            <button type="button" class="btn btn-sm btn-outline-success" onclick="uploadPdf({{ $skpp->id }})" title="Upload PDF">
                                 <i class="bx bx-upload"></i>
                             </button>
-                            @else
+                            @elseif($skpp->status === 'menunggu_konfirmasi')
+                                @if(!empty($skpp->lampiran))
+                                <a href="{{ asset('storage/Dokumen_Histori_Dosen2/' . $skpp->lampiran) }}" class="btn btn-sm btn-info" target="_blank" title="Lihat PDF SKPP">
+                                    <i class="bx bx-file"></i>
+                                </a>
+                                @endif
+                            @elseif($skpp->status === 'setuju')
                                 @if(!empty($skpp->lampiran))
                                 <a href="{{ asset('storage/Dokumen_Histori_Dosen2/' . $skpp->lampiran) }}" class="btn btn-sm btn-success" target="_blank" title="Lihat PDF SKPP">
                                     <i class="bx bx-file"></i>
                                 </a>
                                 @endif
                             @endif
+                            @if($skpp->status !== 'setuju')
                             <button type="button" class="btn btn-sm btn-outline-danger" onclick="hapusSkpp({{ $skpp->id }})" title="Hapus Surat">
                                 <i class="bx bx-trash"></i>
                             </button>
+                            @endif
                         </div>
                     </td>
                 </tr>
@@ -151,8 +164,15 @@ input[type=number] {
                             </div>
                             <div class="mt-2">Mencari data dosen...</div>
                         </div>
-                        <div id="skppSearchNotFound" class="alert alert-warning" style="display: none;">
-                            <i class="bx bx-error-circle me-1"></i> Dosen tidak ditemukan. Periksa kembali NIDN/NUPTK yang dimasukkan.
+                        <div id="skppSearchNotFound" style="display: none;">
+                            <div class="alert alert-warning mb-2">
+                                <i class="bx bx-error-circle me-1"></i> Dosen tidak ditemukan. Periksa kembali NIDN/NUPTK yang dimasukkan.
+                            </div>
+                            <div class="text-center">
+                                <button type="button" class="btn btn-warning" id="btnManualSuratKeterangan">
+                                    <i class="bx bx-pencil me-1"></i> Buat Surat Keterangan Manual
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -250,6 +270,36 @@ input[type=number] {
                     <hr>
                     <h6 class="fw-bold mb-3" id="skppStep3Title"><i class="bx bx-edit me-1"></i> Preview & Lengkapi Data SKPP</h6>
                     <form id="formSkppPreview">
+                        <div id="skppManualDosenSection" class="border rounded p-3 mb-4" style="background-color: #f8f9fa;">
+                            <h6 class="fw-bold mb-3">Data Dosen & Tahun</h6>
+                            <div class="row g-3 mb-3">
+                                <div class="col-md-6">
+                                    <label class="form-label">NIDN</label>
+                                    <input type="text" class="form-control" id="prev_nidn" name="nidn" placeholder="Ketik NIDN...">
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">NUPTK</label>
+                                    <input type="text" class="form-control" id="prev_nuptk" name="nuptk" placeholder="Ketik NUPTK...">
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Nama Dosen <span class="text-danger">*</span></label>
+                                    <input type="text" class="form-control" id="prev_nama" name="nama" placeholder="Nama Lengkap beserta gelar..." required>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Jabatan / Status</label>
+                                    <input type="text" class="form-control" id="prev_jabatan_status" name="jabatan_status" placeholder="Misal: Lektor / DTY">
+                                </div>
+                                <div class="col-md-8">
+                                    <label class="form-label">Perguruan Tinggi (PTS)</label>
+                                    <input type="text" class="form-control" id="prev_pts" name="pts" placeholder="Ketik nama PTS...">
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label">Tahun Pengajuan <span class="text-danger">*</span></label>
+                                    <input type="number" class="form-control" id="prev_tahun" name="tahun" value="{{ date('Y') }}" required>
+                                </div>
+                            </div>
+                        </div>
+
                         <div class="row g-3 mb-3">
                             <div class="col-md-12">
                                 <label class="form-label">Nomor Surat SKPP / Keterangan</label>
@@ -259,19 +309,11 @@ input[type=number] {
                         {{-- Fields hanya untuk Surat SKPP --}}
                         <div id="skppOnlyFields">
                             <div class="row g-3 mb-3">
-                                <div class="col-md-3">
+                                <div class="col-md-6">
                                     <label class="form-label">Pangkat</label>
                                     <input type="text" class="form-control" id="prev_pangkat" name="pangkat" placeholder="Misal: Penata Muda">
                                 </div>
-                                <div class="col-md-3">
-                                    <label class="form-label">Teks Tambahan 1</label>
-                                    <input type="text" class="form-control" id="prev_teks_tambahan_1" name="teks_tambahan_1" placeholder="Misal: Tk.">
-                                </div>
-                                <div class="col-md-3">
-                                    <label class="form-label">Teks Tambahan 2</label>
-                                    <input type="text" class="form-control" id="prev_teks_tambahan_2" name="teks_tambahan_2" placeholder="Misal: I">
-                                </div>
-                                <div class="col-md-3">
+                                <div class="col-md-6">
                                     <label class="form-label">Golongan</label>
                                     <input type="text" class="form-control" id="prev_golongan" name="golongan" placeholder="Misal: III/b">
                                 </div>
@@ -454,6 +496,9 @@ document.addEventListener('DOMContentLoaded', function() {
     let currentBulanKosong = [];
     let currentDosenExistingSkpp = false;
     let currentDosenExistingMessage = '';
+    let isManualMode = false;
+    let editModeId = null;
+    let currentJenisSurat = '';
 
     // Reset modal on close
     const modalEl = document.getElementById('modalSkpp');
@@ -477,6 +522,9 @@ document.addEventListener('DOMContentLoaded', function() {
         currentJenisSurat = '';
         currentDosenExistingSkpp = false;
         currentDosenExistingMessage = '';
+        isManualMode = false;
+        editModeId = null;
+        document.getElementById('btnSimpanSkppFinal').innerHTML = '<i class="bx bx-save me-1"></i> Simpan & Buat Surat';
     }
 
     // Search Dosen
@@ -507,6 +555,10 @@ document.addEventListener('DOMContentLoaded', function() {
         .then(json => {
             document.getElementById('skppSearchLoading').style.display = 'none';
             if (!json.found) {
+                if (json.existing_skpp) {
+                    Swal.fire('Perhatian', json.existing_message, 'warning');
+                    return;
+                }
                 document.getElementById('skppSearchNotFound').style.display = 'block';
                 return;
             }
@@ -535,6 +587,49 @@ document.addEventListener('DOMContentLoaded', function() {
             document.getElementById('skppSearchLoading').style.display = 'none';
             document.getElementById('skppSearchNotFound').style.display = 'block';
         });
+    });
+
+    // Buat Surat Keterangan Manual (bila dosen tidak ditemukan)
+    document.getElementById('btnManualSuratKeterangan').addEventListener('click', function() {
+        isManualMode = true;
+        currentJenisSurat = 'Surat Keterangan';
+        currentDosen = null;
+        currentTahun = new Date().getFullYear();
+        currentBulanKosong = [];
+        
+        document.getElementById('skppSearchResult').style.display = 'none';
+        document.getElementById('skppStep3').style.display = 'block';
+        document.getElementById('skppStep3Title').innerHTML = '<i class="bx bx-edit me-1"></i> Buat Surat Keterangan Manual';
+        
+        document.getElementById('skppOnlyFields').style.display = 'none';
+        document.getElementById('skppOnlyFields2').style.display = 'none';
+        
+        document.getElementById('prev_nidn').readOnly = false;
+        document.getElementById('prev_nuptk').readOnly = false;
+        document.getElementById('prev_nama').readOnly = false;
+        document.getElementById('prev_jabatan_status').readOnly = false;
+        document.getElementById('prev_pts').readOnly = false;
+        document.getElementById('prev_tahun').readOnly = false;
+        
+        const searchInput = document.getElementById('skppSearchInput').value.trim();
+        document.getElementById('prev_nidn').value = '';
+        document.getElementById('prev_nuptk').value = '';
+        if (searchInput.length === 16) {
+            document.getElementById('prev_nuptk').value = searchInput;
+        } else {
+            document.getElementById('prev_nidn').value = searchInput;
+        }
+        
+        document.getElementById('prev_tahun').value = currentTahun;
+        document.getElementById('prev_nama').value = '';
+        document.getElementById('prev_jabatan_status').value = '';
+        document.getElementById('prev_pts').value = '';
+        document.getElementById('prev_nomor_skpp').value = '';
+        
+        // Reset ttd fields
+        document.getElementById('prev_ttd_jabatan').value = 'Kuasa Pengguna Anggaran,';
+        document.getElementById('prev_ttd_nama').value = 'Dr. Lukman, S.T., M.Hum.';
+        document.getElementById('prev_ttd_nip').value = '197805112003121002';
     });
 
     // Allow Enter key on search
@@ -677,6 +772,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
         currentJenisSurat = jenisSurat;
 
+        isManualMode = false;
+
         Swal.fire({
             title: 'Memuat Data...',
             allowOutsideClick: false,
@@ -702,11 +799,23 @@ document.addEventListener('DOMContentLoaded', function() {
         .then(data => {
             Swal.close();
             // Populate form
+            document.getElementById('prev_nidn').readOnly = true;
+            document.getElementById('prev_nuptk').readOnly = true;
+            document.getElementById('prev_nama').readOnly = true;
+            document.getElementById('prev_jabatan_status').readOnly = true;
+            document.getElementById('prev_pts').readOnly = true;
+            document.getElementById('prev_tahun').readOnly = true;
+
+            document.getElementById('prev_nidn').value = currentDosen.nidn || '';
+            document.getElementById('prev_nuptk').value = currentDosen.nuptk || '';
+            document.getElementById('prev_nama').value = currentDosen.nama || '';
+            document.getElementById('prev_jabatan_status').value = currentDosen.jabatan_status || '';
+            document.getElementById('prev_pts').value = currentDosen.pts || '';
+            document.getElementById('prev_tahun').value = currentTahun || '';
+
             document.getElementById('prev_nomor_skpp').value = data.nomor_skpp || '';
             document.getElementById('prev_nama_surat_pts').value = '';
             document.getElementById('prev_pangkat').value = data.pangkat || '';
-            document.getElementById('prev_teks_tambahan_1').value = '';
-            document.getElementById('prev_teks_tambahan_2').value = '';
             document.getElementById('prev_golongan').value = data.golongan || '';
             document.getElementById('prev_tpd_kotor').value = data.tpd_kotor || 0;
             document.getElementById('prev_tpd_pajak').value = data.tpd_pajak || 0;
@@ -736,16 +845,24 @@ document.addEventListener('DOMContentLoaded', function() {
         const jenisSurat = currentJenisSurat;
         const bulanStr = currentBulanKosong.map(b => b.kode + ' (' + b.bulan + ' ' + b.tahun + '): ' + b.status).join(', ');
 
+        const nama = document.getElementById('prev_nama').value.trim();
+        const tahun = document.getElementById('prev_tahun').value;
+
+        if (!nama) {
+            Swal.fire('Perhatian', 'Nama Dosen wajib diisi.', 'warning');
+            return;
+        }
+
         const payload = {
-            nidn: currentDosen.nidn || '',
-            nuptk: currentDosen.nuptk || '',
-            nama: currentDosen.nama,
-            jabatan_status: currentDosen.jabatan_status,
-            kode_pt: currentDosen.kode_pt,
-            pts: currentDosen.pts,
+            nidn: document.getElementById('prev_nidn').value.trim(),
+            nuptk: document.getElementById('prev_nuptk').value.trim(),
+            nama: nama,
+            jabatan_status: document.getElementById('prev_jabatan_status').value.trim(),
+            kode_pt: currentDosen ? (currentDosen.kode_pt || '') : '',
+            pts: document.getElementById('prev_pts').value.trim(),
             nama_surat_pts: document.getElementById('prev_nama_surat_pts').value,
-            tahun: currentTahun,
-            bulan_belum_usulan: bulanStr,
+            tahun: tahun,
+            bulan_belum_usulan: isManualMode ? '' : bulanStr,
             jenis_surat: jenisSurat,
             nomor_skpp: document.getElementById('prev_nomor_skpp').value,
             nomor_surat_pts: document.getElementById('prev_nomor_surat_pts').value,
@@ -757,8 +874,6 @@ document.addEventListener('DOMContentLoaded', function() {
             tpd_bersih: document.getElementById('prev_tpd_bersih').value,
             terhitung_bulan: document.getElementById('prev_terhitung_bulan').value,
             pangkat: document.getElementById('prev_pangkat').value,
-            teks_tambahan_1: document.getElementById('prev_teks_tambahan_1').value,
-            teks_tambahan_2: document.getElementById('prev_teks_tambahan_2').value,
             golongan: document.getElementById('prev_golongan').value,
             wilayah_lldikti: document.getElementById('prev_wilayah_lldikti').value,
             kota_lldikti: document.getElementById('prev_kota_lldikti').value,
@@ -822,8 +937,16 @@ document.addEventListener('DOMContentLoaded', function() {
                 allowOutsideClick: false
             });
 
-            fetch("{{ route('admin.skpp.store') }}", {
-                method: 'POST',
+            let fetchUrl = "{{ route('admin.skpp.store') }}";
+            let fetchMethod = "POST";
+
+            if (editModeId) {
+                fetchUrl = `/admin/skpp/${editModeId}/update`;
+                fetchMethod = "PUT";
+            }
+
+            fetch(fetchUrl, {
+                method: fetchMethod,
                 headers: {
                     'Content-Type': 'application/json',
                     'Accept': 'application/json',
@@ -862,6 +985,94 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 });
+
+function editSkpp(id) {
+    Swal.fire({
+        title: 'Memuat Data...',
+        allowOutsideClick: false,
+        didOpen: () => {
+            Swal.showLoading();
+        }
+    });
+
+    fetch(`/admin/skpp/${id}/edit`, {
+        headers: {
+            'Accept': 'application/json',
+            'X-Requested-With': 'XMLHttpRequest'
+        }
+    })
+    .then(r => r.json())
+    .then(data => {
+        Swal.close();
+        if (!data.success) {
+            Swal.fire('Error', data.message || 'Gagal memuat data', 'error');
+            return;
+        }
+
+        const skpp = data.skpp;
+        const detail = data.detail;
+
+        editModeId = skpp.id;
+        currentJenisSurat = skpp.jenis_pengajuan;
+        isManualMode = false; // We can just treat it as editable if we want, but unlocking inputs is better
+
+        // Cek jika dosen manual (tidak ada NIDN/NUPTK di transaksi) 
+        // Sebenarnya karena kita edit, kita bisa buka saja data dosennya agar bisa diperbaiki
+        document.getElementById('prev_nidn').readOnly = false;
+        document.getElementById('prev_nuptk').readOnly = false;
+        document.getElementById('prev_nama').readOnly = false;
+        document.getElementById('prev_jabatan_status').readOnly = false;
+        document.getElementById('prev_pts').readOnly = false;
+        document.getElementById('prev_tahun').readOnly = false;
+
+        document.getElementById('prev_nidn').value = detail.nidn || skpp.nidn || '';
+        document.getElementById('prev_nuptk').value = detail.nuptk || skpp.nuptk || '';
+        document.getElementById('prev_nama').value = detail.nama || '';
+        document.getElementById('prev_jabatan_status').value = detail.jabatan_status || '';
+        document.getElementById('prev_pts').value = detail.pts || '';
+        document.getElementById('prev_tahun').value = detail.tahun || '';
+
+        document.getElementById('prev_nomor_skpp').value = detail.nomor_skpp || '';
+        document.getElementById('prev_nama_surat_pts').value = detail.nama_surat_pts || '';
+        document.getElementById('prev_nomor_surat_pts').value = detail.nomor_surat_pts || '';
+        document.getElementById('prev_tanggal_surat_pts').value = detail.tanggal_surat_pts || '';
+        document.getElementById('prev_pangkat').value = detail.pangkat || '';
+        document.getElementById('prev_golongan').value = detail.golongan || '';
+        document.getElementById('prev_tpd_kotor').value = detail.tpd_kotor || 0;
+        document.getElementById('prev_tpd_pajak').value = detail.tpd_pajak || 0;
+        document.getElementById('prev_tpd_bersih').value = detail.tpd_bersih || 0;
+        document.getElementById('prev_terhitung_bulan').value = detail.terhitung_bulan || '';
+        document.getElementById('prev_wilayah_lldikti').value = detail.wilayah_lldikti || '';
+        document.getElementById('prev_kota_lldikti').value = detail.kota_lldikti || '';
+        document.getElementById('prev_nomor_surat_lolos_butuh').value = detail.nomor_surat_lolos_butuh || '';
+        document.getElementById('prev_tanggal_surat_lolos_butuh').value = detail.tanggal_surat_lolos_butuh || '';
+        document.getElementById('prev_ttd_jabatan').value = detail.ttd_jabatan || '';
+        document.getElementById('prev_ttd_nama').value = detail.ttd_nama || '';
+        document.getElementById('prev_ttd_nip').value = detail.ttd_nip || '';
+
+        const isKeterangan = (currentJenisSurat === 'Surat Keterangan');
+        document.getElementById('skppOnlyFields').style.display = isKeterangan ? 'none' : 'block';
+        document.getElementById('skppOnlyFields2').style.display = isKeterangan ? 'none' : 'block';
+        document.getElementById('skppStep3Title').innerHTML = '<i class="bx bx-edit me-1"></i> Edit Data ' + (isKeterangan ? 'Surat Keterangan' : 'SKPP');
+
+        document.getElementById('btnSimpanSkppFinal').innerHTML = '<i class="bx bx-save me-1"></i> Update & Buat Surat';
+
+        document.getElementById('skppStep2').style.display = 'none';
+        document.getElementById('skppSearchResult').style.display = 'none';
+        document.getElementById('skppSearchLoading').style.display = 'none';
+        document.getElementById('skppSearchNotFound').style.display = 'none';
+        document.getElementById('skppDetailBulan').style.display = 'none';
+        document.getElementById('skppButtonArea').style.display = 'none';
+        document.getElementById('skppStep3').style.display = 'block';
+
+        const modal = new bootstrap.Modal(document.getElementById('modalSkpp'));
+        modal.show();
+    })
+    .catch(err => {
+        console.error(err);
+        Swal.fire('Error', 'Gagal memuat data', 'error');
+    });
+}
 
 function hapusSkpp(id) {
     Swal.fire({
@@ -926,14 +1137,14 @@ function hapusSkpp(id) {
 function uploadPdf(id) {
     Swal.fire({
         title: 'Upload PDF SKPP',
-        text: 'Upload file PDF SKPP yang sudah ditandatangani. Status pengajuan ini akan otomatis menjadi "Selesai".',
+        text: 'Upload file PDF SKPP yang sudah ditandatangani. Status pengajuan ini akan berubah menjadi "Menunggu Konfirmasi".',
         input: 'file',
         inputAttributes: {
             'accept': 'application/pdf',
             'aria-label': 'Pilih File PDF'
         },
         showCancelButton: true,
-        confirmButtonText: 'Upload & Selesai',
+        confirmButtonText: 'Upload',
         cancelButtonText: 'Batal',
         customClass: {
             confirmButton: 'btn btn-success me-2',
@@ -984,6 +1195,134 @@ function uploadPdf(id) {
             .catch(err => {
                 console.error(err);
                 Swal.fire('Error', 'Gagal mengunggah file.', 'error');
+            });
+        }
+    });
+}
+
+function konfirmasiSkpp(id) {
+    Swal.fire({
+        title: 'Konfirmasi Penonaktifan?',
+        text: "Dengan melakukan konfirmasi, dosen ini akan dinonaktifkan secara otomatis dan tercatat dalam histori.",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Ya, Konfirmasi!',
+        cancelButtonText: 'Batal',
+        customClass: {
+            confirmButton: 'btn btn-primary me-2',
+            cancelButton: 'btn btn-secondary'
+        },
+        buttonsStyling: false,
+        allowOutsideClick: false
+    }).then((result) => {
+        if (result.isConfirmed) {
+            Swal.fire({
+                title: 'Mohon Tunggu...',
+                html: '<div class="spinner-border text-primary" role="status"></div><div class="mt-2">Memproses konfirmasi...</div>',
+                showConfirmButton: false,
+                allowOutsideClick: false
+            });
+
+            fetch(`/admin/skpp/${id}/konfirmasi`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                }
+            })
+            .then(async r => {
+                if (!r.ok) throw new Error(await r.text());
+                return r.json();
+            })
+            .then(json => {
+                if (json.success) {
+                    Swal.fire({
+                        title: 'Berhasil!',
+                        text: json.message || 'Dosen berhasil dinonaktifkan.',
+                        icon: 'success',
+                        customClass: { confirmButton: 'btn btn-primary' },
+                        buttonsStyling: false
+                    }).then(() => {
+                        window.location.reload();
+                    });
+                } else {
+                    Swal.fire('Gagal', json.message || 'Terjadi kesalahan.', 'error');
+                }
+            })
+            .catch(err => {
+                console.error(err);
+                Swal.fire('Error', 'Gagal melakukan konfirmasi.', 'error');
+            });
+        }
+    });
+}
+
+function tolakSkpp(id) {
+    Swal.fire({
+        title: 'Tolak Pengajuan SKPP?',
+        text: 'Silakan masukkan alasan penolakan:',
+        input: 'textarea',
+        inputPlaceholder: 'Alasan penolakan...',
+        showCancelButton: true,
+        confirmButtonColor: '#d33',
+        cancelButtonColor: '#3085d6',
+        confirmButtonText: 'Ya, Tolak!',
+        cancelButtonText: 'Batal',
+        customClass: {
+            confirmButton: 'btn btn-danger me-2',
+            cancelButton: 'btn btn-secondary'
+        },
+        buttonsStyling: false,
+        allowOutsideClick: false,
+        preConfirm: (alasan) => {
+            if (!alasan) {
+                Swal.showValidationMessage('Alasan penolakan wajib diisi!');
+            }
+            return alasan;
+        }
+    }).then((result) => {
+        if (result.isConfirmed) {
+            Swal.fire({
+                title: 'Mohon Tunggu...',
+                html: '<div class="spinner-border text-primary" role="status"></div><div class="mt-2">Memproses penolakan...</div>',
+                showConfirmButton: false,
+                allowOutsideClick: false
+            });
+
+            fetch(`/admin/skpp/${id}/tolak`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                },
+                body: JSON.stringify({ alasan: result.value })
+            })
+            .then(async r => {
+                if (!r.ok) throw new Error(await r.text());
+                return r.json();
+            })
+            .then(json => {
+                if (json.success) {
+                    Swal.fire({
+                        title: 'Berhasil!',
+                        text: json.message || 'Pengajuan ditolak.',
+                        icon: 'success',
+                        customClass: { confirmButton: 'btn btn-primary' },
+                        buttonsStyling: false
+                    }).then(() => {
+                        window.location.reload();
+                    });
+                } else {
+                    Swal.fire('Gagal', json.message || 'Terjadi kesalahan.', 'error');
+                }
+            })
+            .catch(err => {
+                console.error(err);
+                Swal.fire('Error', 'Gagal melakukan penolakan.', 'error');
             });
         }
     });

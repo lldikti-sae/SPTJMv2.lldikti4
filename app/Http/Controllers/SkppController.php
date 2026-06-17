@@ -78,15 +78,6 @@ class SkppController extends Controller
             })
             ->first();
 
-        if (!$dosen) {
-            return response()->json(['found' => false, 'message' => 'Dosen tidak ditemukan.']);
-        }
-
-        // Gabungkan jabatan dan status
-        $jabatanDisplay = $dosen->jabatan ?? '-';
-        $statusDisplay = (in_array($dosen->Aktif, ['1', 1, 'YA', 'Ya', 'ya', 'Y'], true)) ? 'Aktif' : 'Tidak Aktif';
-        $jabatanStatus = $jabatanDisplay . ' - ' . $statusDisplay;
-
         // Cek apakah dosen sudah memiliki SKPP / Surat Keterangan yang open atau setuju
         $existing = DB::table('i_complain')
             ->where('pelapor_tipe', 'admin')
@@ -105,6 +96,20 @@ class SkppController extends Controller
             $statusStr = $existing->status === 'setuju' ? 'Selesai' : 'Proses';
             $existing_message = 'Dosen ini sudah memiliki ' . $existing->jenis_pengajuan . ' (Status: ' . $statusStr . '). Tidak dapat membuat pengajuan baru.';
         }
+
+        if (!$dosen) {
+            return response()->json([
+                'found' => false, 
+                'message' => 'Dosen tidak ditemukan.',
+                'existing_skpp' => $existing_skpp,
+                'existing_message' => $existing_message,
+            ]);
+        }
+
+        // Gabungkan jabatan dan status
+        $jabatanDisplay = $dosen->jabatan ?? '-';
+        $statusDisplay = (in_array($dosen->Aktif, ['1', 1, 'YA', 'Ya', 'ya', 'Y'], true)) ? 'Aktif' : 'Tidak Aktif';
+        $jabatanStatus = $jabatanDisplay . ' - ' . $statusDisplay;
 
         return response()->json([
             'found' => true,
@@ -403,17 +408,13 @@ class SkppController extends Controller
             'tpd_bersih' => $request->tpd_bersih,
             'terhitung_bulan' => $request->terhitung_bulan,
         ];
-            $teks1 = trim($request->teks_tambahan_1);
-            if (!empty($teks1) && substr($teks1, -1) !== '.') {
-                $teks1 .= '.';
-            }
-            $pangkatPart = trim($request->pangkat . ' ' . $teks1 . ' ' . $request->teks_tambahan_2);
-            $pangkatGolongan = $pangkatPart;
-            if (!empty($request->golongan)) {
-                $pangkatGolongan = $pangkatPart . ($pangkatPart ? ', ' : '') . $request->golongan;
-            }
-            $pesanData['pangkat_golongan'] = $pangkatGolongan;
-            $pesanData['wilayah_lldikti'] = $request->wilayah_lldikti;
+        
+        $pangkatGolongan = trim($request->pangkat);
+        if (!empty($request->golongan)) {
+            $pangkatGolongan = $pangkatGolongan . ($pangkatGolongan ? ', ' : '') . $request->golongan;
+        }
+        $pesanData['pangkat_golongan'] = $pangkatGolongan;
+        $pesanData['wilayah_lldikti'] = $request->wilayah_lldikti;
             $pesanData['kota_lldikti'] = $request->kota_lldikti;
             $pesanData['ttd_jabatan'] = $request->ttd_jabatan;
             $pesanData['ttd_nama'] = $request->ttd_nama;
@@ -435,6 +436,94 @@ class SkppController extends Controller
         ]);
 
         return response()->json(['success' => true, 'message' => 'SKPP berhasil dibuat.']);
+    }
+
+    /**
+     * Mengambil data SKPP untuk di-edit.
+     */
+    public function edit($id)
+    {
+        $skpp = DB::table('i_complain')->where('id', $id)->first();
+        if (!$skpp || in_array($skpp->status, ['setuju'])) {
+            return response()->json(['success' => false, 'message' => 'Data tidak ditemukan atau sudah disetujui.']);
+        }
+
+        return response()->json([
+            'success' => true,
+            'skpp' => $skpp,
+            'detail' => json_decode($skpp->pesan, true) ?? [],
+        ]);
+    }
+
+    /**
+     * Memperbarui SKPP.
+     */
+    public function update(Request $request, $id)
+    {
+        $skpp = DB::table('i_complain')->where('id', $id)->first();
+        if (!$skpp || in_array($skpp->status, ['setuju'])) {
+            return response()->json(['success' => false, 'message' => 'Data tidak ditemukan atau sudah disetujui.'], 403);
+        }
+
+        // Validasi sama seperti store
+        $validator = Validator::make($request->all(), [
+            'nidn' => 'nullable',
+            'nuptk' => 'nullable',
+            'kode_pt' => 'required',
+            'jenis_surat' => 'required',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['success' => false, 'errors' => $validator->errors()]);
+        }
+
+        $pesanData = [
+            'nama' => $request->nama,
+            'pts' => $request->pts,
+            'tahun' => $request->tahun,
+            'bulan_belum_usulan' => $request->bulan_belum_usulan,
+            'pangkat' => $request->pangkat,
+            'golongan' => $request->golongan,
+            'teks_tambahan_1' => $request->teks_tambahan_1,
+            'teks_tambahan_2' => $request->teks_tambahan_2,
+            'nomor_skpp' => $request->nomor_skpp,
+            'tanggal_skpp' => $request->tanggal_skpp,
+            'nama_surat_pts' => $request->nama_surat_pts,
+            'nomor_surat_pts' => $request->nomor_surat_pts,
+            'tanggal_surat_pts' => $request->tanggal_surat_pts,
+            'nomor_surat_lolos_butuh' => $request->nomor_surat_lolos_butuh,
+            'tanggal_surat_lolos_butuh' => $request->tanggal_surat_lolos_butuh,
+            'tpd_kotor' => $request->tpd_kotor,
+            'tpd_pajak' => $request->tpd_pajak,
+            'tpd_bersih' => $request->tpd_bersih,
+            'terhitung_bulan' => $request->terhitung_bulan,
+        ];
+        
+        $pangkatGolongan = trim($request->pangkat);
+        if (!empty($request->golongan)) {
+            $pangkatGolongan = $pangkatGolongan . ($pangkatGolongan ? ', ' : '') . $request->golongan;
+        }
+        $pesanData['pangkat_golongan'] = $pangkatGolongan;
+        $pesanData['wilayah_lldikti'] = $request->wilayah_lldikti;
+        $pesanData['kota_lldikti'] = $request->kota_lldikti;
+        $pesanData['ttd_jabatan'] = $request->ttd_jabatan;
+        $pesanData['ttd_nama'] = $request->ttd_nama;
+        $pesanData['ttd_nip'] = $request->ttd_nip;
+
+        $pesanJson = json_encode($pesanData);
+
+        DB::table('i_complain')->where('id', $id)->update([
+            'kode_pts' => $request->kode_pt,
+            'nidn' => $request->nidn,
+            'nuptk' => $request->nuptk,
+            'judul' => 'Pengajuan ' . $request->jenis_surat,
+            'pesan' => $pesanJson,
+            'jenis_pengajuan' => $request->jenis_surat,
+            'status' => 'open', // Reset to open if it was rejected
+            'updated_at' => now(),
+        ]);
+
+        return response()->json(['success' => true, 'message' => 'SKPP berhasil diupdate.']);
     }
 
     /**
@@ -473,7 +562,15 @@ class SkppController extends Controller
         }
 
         if (!$dosen) {
-            return redirect()->back()->with('error', 'Data Dosen tidak ditemukan di transaksi.');
+            // Jika tetap tidak ditemukan (pembuatan manual), gunakan data dari payload JSON
+            $dosen = (object) [
+                'Nama' => $detail['nama'] ?? '-',
+                'NIDN' => $nidn,
+                'NUPTK' => $nuptk,
+                'PTS' => $detail['pts'] ?? '-',
+                'Gelar_Depan' => '',
+                'Gelar_Belakang' => '',
+            ];
         }
 
         // Cari bulan terakhir yang TPD/TKGB-nya ada isinya untuk mendapatkan besaran jika kosong di JSON
@@ -525,7 +622,7 @@ class SkppController extends Controller
     }
 
     /**
-     * Upload PDF and mark SKPP as Selesai (setuju).
+     * Upload PDF and mark SKPP as menunggu_konfirmasi.
      */
     public function uploadPdf(Request $request)
     {
@@ -546,45 +643,127 @@ class SkppController extends Controller
             // Simpan ke storage/app/public/Dokumen_Histori_Dosen2
             $file->storeAs('public/Dokumen_Histori_Dosen2', $filename);
 
-            DB::table('i_complain')->where('id', $request->skpp_id)->update([
-                'lampiran' => $filename,
-                'status' => 'setuju',
-                'handled_by' => auth()->user() ? auth()->user()->name : 'Admin',
-                'handled_at' => now(),
-                'updated_at' => now(),
-            ]);
+            $dosenExists = false;
+            if ($skpp->nidn || $skpp->nuptk) {
+                $dosenExists = DB::table('s_transaksi_2')
+                    ->where(function ($q) use ($skpp) {
+                        if ($skpp->nidn) $q->where('NIDN', $skpp->nidn);
+                        if ($skpp->nuptk) $q->orWhere('NUPTK', $skpp->nuptk);
+                    })->exists();
+            }
 
-            // Catat ke histori dosen
-            $detail = json_decode($skpp->pesan, true) ?? [];
-            DB::table('j_histori_dosen')->insert([
-                'nidn' => $skpp->nidn,
-                'nuptk' => $skpp->nuptk,
-                'nama' => $detail['nama'] ?? '-',
-                'pts' => $detail['pts'] ?? '-',
-                'kode_pt' => $skpp->kode_pts,
-                'aktif' => '0',
-                'keterangan' => 'Penerbitan ' . $skpp->jenis_pengajuan,
-                'pengguna' => auth()->user() ? auth()->user()->name : 'Admin',
-                'no_dokumen_ubah' => $detail['nomor_skpp'] ?? '',
-                'tgl_dokumen_ubah' => now()->format('Y-m-d'),
-                'alasan_perubahan' => 'Penerbitan ' . $skpp->jenis_pengajuan . ' Selesai, Dosen dinonaktifkan',
-                'dokumen' => $filename,
-                'created_at' => now(),
-                'updated_at' => now(),
-            ]);
+            if (!$dosenExists) {
+                // Langsung selesai dan masuk ke histori
+                DB::table('i_complain')->where('id', $request->skpp_id)->update([
+                    'lampiran' => $filename,
+                    'status' => 'setuju',
+                    'handled_by' => auth()->user() ? auth()->user()->name : 'Admin',
+                    'handled_at' => now(),
+                    'updated_at' => now(),
+                ]);
 
-            // Buat dosen menjadi tidak aktif secara otomatis di s_transaksi_2
-            DB::table('s_transaksi_2')
-                ->where(function ($q) use ($skpp) {
-                    if (!empty($skpp->nidn)) $q->where('NIDN', $skpp->nidn);
-                    if (!empty($skpp->nuptk)) $q->orWhere('NUPTK', $skpp->nuptk);
-                })
-                ->update(['Aktif' => '0']);
+                $detail = json_decode($skpp->pesan, true) ?? [];
+                DB::table('j_histori_dosen')->insert([
+                    'nidn' => $skpp->nidn,
+                    'nuptk' => $skpp->nuptk,
+                    'nama' => $detail['nama'] ?? '-',
+                    'pts' => $detail['pts'] ?? '-',
+                    'kode_pt' => $skpp->kode_pts,
+                    'aktif' => '0',
+                    'keterangan' => 'Penerbitan ' . $skpp->jenis_pengajuan,
+                    'pengguna' => auth()->user() ? auth()->user()->name : 'Admin',
+                    'no_dokumen_ubah' => $detail['nomor_skpp'] ?? '',
+                    'tgl_dokumen_ubah' => now()->format('Y-m-d'),
+                    'alasan_perubahan' => 'Penerbitan ' . $skpp->jenis_pengajuan . ' Selesai (Manual)',
+                    'dokumen' => $filename,
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ]);
 
-            return response()->json(['success' => true, 'message' => 'PDF berhasil diupload, dicatat di Histori, dan dosen otomatis dinonaktifkan.']);
+                return response()->json(['success' => true, 'message' => 'PDF berhasil diupload. Karena data dosen tidak ada di database, pengajuan langsung disetujui dan masuk histori.']);
+            } else {
+                DB::table('i_complain')->where('id', $request->skpp_id)->update([
+                    'lampiran' => $filename,
+                    'status' => 'menunggu_konfirmasi',
+                    'handled_by' => auth()->user() ? auth()->user()->name : 'Admin',
+                    'handled_at' => now(),
+                    'updated_at' => now(),
+                ]);
+
+                return response()->json(['success' => true, 'message' => 'PDF berhasil diupload. Menunggu konfirmasi PIC untuk menonaktifkan dosen.']);
+            }
         }
 
         return response()->json(['success' => false, 'message' => 'File PDF tidak ditemukan.']);
+    }
+
+    /**
+     * Konfirmasi SKPP, nonaktifkan dosen dan catat histori.
+     */
+    public function konfirmasi($id)
+    {
+        $skpp = DB::table('i_complain')->where('id', $id)->first();
+        
+        if (!$skpp || $skpp->status !== 'menunggu_konfirmasi') {
+            return response()->json(['success' => false, 'message' => 'Data tidak valid atau belum diupload.'], 400);
+        }
+
+        // Catat ke histori dosen
+        $detail = json_decode($skpp->pesan, true) ?? [];
+        DB::table('j_histori_dosen')->insert([
+            'nidn' => $skpp->nidn,
+            'nuptk' => $skpp->nuptk,
+            'nama' => $detail['nama'] ?? '-',
+            'pts' => $detail['pts'] ?? '-',
+            'kode_pt' => $skpp->kode_pts,
+            'aktif' => '0',
+            'keterangan' => 'Penerbitan ' . $skpp->jenis_pengajuan,
+            'pengguna' => auth()->user() ? auth()->user()->name : 'Admin',
+            'no_dokumen_ubah' => $detail['nomor_skpp'] ?? '',
+            'tgl_dokumen_ubah' => now()->format('Y-m-d'),
+            'alasan_perubahan' => 'Penerbitan ' . $skpp->jenis_pengajuan . ' Selesai, Dosen dinonaktifkan',
+            'dokumen' => $skpp->lampiran,
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+
+        // Buat dosen menjadi tidak aktif secara otomatis di s_transaksi_2
+        DB::table('s_transaksi_2')
+            ->where(function ($q) use ($skpp) {
+                if (!empty($skpp->nidn)) $q->where('NIDN', $skpp->nidn);
+                if (!empty($skpp->nuptk)) $q->orWhere('NUPTK', $skpp->nuptk);
+            })
+            ->update(['Aktif' => '0']);
+
+        // Update status i_complain menjadi setuju
+        DB::table('i_complain')->where('id', $id)->update([
+            'status' => 'setuju',
+            'updated_at' => now(),
+        ]);
+
+        return response()->json(['success' => true, 'message' => 'Konfirmasi berhasil. Dosen dinonaktifkan dan histori dicatat.']);
+    }
+
+    /**
+     * Tolak SKPP.
+     */
+    public function tolak(Request $request, $id)
+    {
+        $skpp = DB::table('i_complain')->where('id', $id)->first();
+        
+        if (!$skpp || $skpp->status !== 'menunggu_konfirmasi') {
+            return response()->json(['success' => false, 'message' => 'Data tidak valid atau belum diupload.'], 400);
+        }
+
+        DB::table('i_complain')->where('id', $id)->update([
+            'status' => 'tolak',
+            'admin_balasan' => $request->input('alasan', 'Ditolak oleh Admin/PIC'),
+            'handled_by' => auth()->user() ? auth()->user()->name : 'Admin',
+            'handled_at' => now(),
+            'updated_at' => now(),
+        ]);
+
+        return response()->json(['success' => true, 'message' => 'SKPP berhasil ditolak.']);
     }
 
     /**
@@ -598,7 +777,11 @@ class SkppController extends Controller
             return response()->json(['success' => false, 'message' => 'Data tidak ditemukan.'], 404);
         }
 
-        // Jika SKPP ini sudah memiliki lampiran (selesai), hapus file dan histori dosen
+        if ($skpp->status === 'setuju') {
+            return response()->json(['success' => false, 'message' => 'Data yang sudah selesai (disetujui) tidak dapat dihapus.'], 403);
+        }
+
+        // Jika SKPP ini sudah memiliki lampiran, hapus file
         if (!empty($skpp->lampiran)) {
             // Hapus dari histori dosen
             DB::table('j_histori_dosen')->where('dokumen', $skpp->lampiran)->delete();

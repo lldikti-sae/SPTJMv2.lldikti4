@@ -84,7 +84,7 @@
         toolbar: [],
         removePlugins: 'elementspath',
         resize_enabled: false,
-        height: 180,
+        height: 400,
         allowedContent: true,
         extraAllowedContent: 'style;*[class];*[style];*(*);*{*}'
       });

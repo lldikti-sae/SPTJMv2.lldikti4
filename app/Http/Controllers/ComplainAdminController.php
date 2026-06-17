@@ -480,7 +480,7 @@ class ComplainAdminController extends Controller
                 // Apply status filter if provided
                 $statusFilter = (string) $request->input('status', '');
                 if ($statusFilter !== '') {
-                    $allowed = ['open', 'setuju', 'tolak'];
+                    $allowed = ['open', 'setuju', 'tolak', 'menunggu_konfirmasi'];
                     if (in_array($statusFilter, $allowed, true)) {
                         $baseQuery->where('c.status', $statusFilter);
                     }
@@ -509,7 +509,7 @@ class ComplainAdminController extends Controller
                 }
                 $statusFilter = (string) $request->input('status', '');
                 if ($statusFilter !== '') {
-                    $allowed = ['open', 'setuju', 'tolak'];
+                    $allowed = ['open', 'setuju', 'tolak', 'menunggu_konfirmasi'];
                     if (in_array($statusFilter, $allowed, true)) {
                         $filteredCountQuery->where('c.status', $statusFilter);
                     }
@@ -528,6 +528,7 @@ class ComplainAdminController extends Controller
                     $badge = 'bg-label-secondary';
                     // Make 'open' orange, 'setuju' green, 'tolak' red
                     if ($status === 'open') $badge = 'bg-label-warning';
+                    if ($status === 'menunggu_konfirmasi') $badge = 'bg-label-info';
                     if ($status === 'setuju') $badge = 'bg-label-success';
                     if ($status === 'tolak') $badge = 'bg-label-danger';
 
@@ -607,9 +608,17 @@ class ComplainAdminController extends Controller
                 return response()->json(['success' => false, 'message' => 'Data tidak ditemukan.'], 404);
             }
 
-            // If pesan is JSON perubahan_data_dosen, return a human-friendly summary
+            // If pesan is JSON, return a human-friendly summary
             try {
-                $formatted = ComplainMessageFormatter::formatPerubahanDataDosenHtml($row);
+                $formatted = null;
+                $jenis = (string) ($row->jenis_pengajuan ?? '');
+                
+                if ($jenis === 'perubahan_data_dosen') {
+                    $formatted = ComplainMessageFormatter::formatPerubahanDataDosenHtml($row);
+                } elseif (in_array($jenis, ['Surat Keterangan', 'Surat SKPP'], true)) {
+                    $formatted = ComplainMessageFormatter::formatSkppHtml($row);
+                }
+
                 if (!empty($formatted)) {
                     $row->pesan_raw = $row->pesan;
                     $row->pesan = $formatted;
@@ -639,7 +648,7 @@ class ComplainAdminController extends Controller
     public function update(Request $request, $id)
     {
         $validated = $request->validate([
-            'status' => 'required|in:open,setuju,tolak',
+            'status' => 'required|in:open,setuju,tolak,menunggu_konfirmasi',
             'admin_balasan' => 'nullable|string',
         ]);
 
@@ -718,6 +727,33 @@ class ComplainAdminController extends Controller
 
                 // Apply the approved changes to s_transaksi_2 (same canonical source used by perubahan-data-dosen).
                 $this->applyPerubahanDataDosenApproval($payload, $row, $admin);
+            }
+
+            // Jika pengajuan adalah SKPP dan disetujui
+            if ($newStatus === 'setuju' && (string) ($row->status ?? '') === 'menunggu_konfirmasi' && in_array((string) ($row->jenis_pengajuan ?? ''), ['Surat Keterangan', 'Surat SKPP'], true)) {
+                $detail = json_decode($row->pesan, true) ?? [];
+                // Catat histori dosen
+                HistoriDosen::create([
+                    'nidn' => $row->nidn ?? null,
+                    'nuptk' => $row->nuptk ?? null,
+                    'nama' => $detail['nama'] ?? '-',
+                    'pts' => $detail['pts'] ?? '-',
+                    'kode_pt' => $row->kode_pts,
+                    'aktif' => '0',
+                    'keterangan' => 'Penerbitan ' . $row->jenis_pengajuan,
+                    'pengguna' => $admin ? ($admin->name ?? 'Admin') : 'PIC',
+                    'no_dokumen_ubah' => $detail['nomor_skpp'] ?? '',
+                    'tgl_dokumen_ubah' => now()->format('Y-m-d'),
+                    'alasan_perubahan' => 'Penerbitan ' . $row->jenis_pengajuan . ' Selesai, Dosen dinonaktifkan',
+                    'dokumen' => $row->lampiran,
+                    'tanggal_update_terbaru' => now(),
+                ]);
+
+                // Nonaktifkan dosen di s_transaksi_2
+                Transaksi::where(function ($q) use ($row) {
+                    if (!empty($row->nidn)) $q->where('NIDN', $row->nidn);
+                    if (!empty($row->nuptk)) $q->orWhere('NUPTK', $row->nuptk);
+                })->update(['Aktif' => '0']);
             }
 
             $affected = DB::table('i_complain')->where('id', $id)->update([

@@ -168,4 +168,94 @@ class ComplainMessageFormatter
 
         return $html;
     }
+
+    /**
+     * Formats i_complain.pesan into readable HTML for SKPP.
+     * Returns null when not applicable.
+     */
+    public static function formatSkppHtml(object $complainRow): ?string
+    {
+        $raw = (string) ($complainRow->pesan ?? '');
+        $payload = json_decode($raw, true);
+        if (!is_array($payload)) return null;
+
+        $nidn = self::esc($complainRow->nidn ?? '-');
+        $nuptk = self::esc($complainRow->nuptk ?? '-');
+
+        $dosen = null;
+        if (!empty($complainRow->nidn) || !empty($complainRow->nuptk)) {
+            $dosen = \DB::table('s_transaksi_2')
+                ->where(function($q) use ($complainRow) {
+                    if (!empty($complainRow->nidn)) $q->where('NIDN', $complainRow->nidn);
+                    if (!empty($complainRow->nuptk)) $q->orWhere('NUPTK', $complainRow->nuptk);
+                })
+                ->first(['Tanggal_Lahir']);
+        }
+
+        $tanggalLahir = '-';
+        if ($dosen && $dosen->Tanggal_Lahir) {
+            try {
+                $tanggalLahir = \Carbon\Carbon::parse(str_replace('/', '-', $dosen->Tanggal_Lahir))->isoFormat('D MMMM Y');
+            } catch (\Exception $e) {
+                $tanggalLahir = $dosen->Tanggal_Lahir;
+            }
+        }
+
+        $info = [];
+        $info[] = '<div><strong>Jenis Pengajuan:</strong> ' . self::esc($complainRow->jenis_pengajuan ?? 'Surat SKPP') . '</div>';
+        $identifier = trim((string) ($complainRow->nidn ?? ''));
+        if ($identifier === '') {
+            $identifier = trim((string) ($complainRow->nuptk ?? ''));
+        }
+        if ($identifier !== '') $info[] = '<div><strong>Identifier:</strong> ' . self::esc($identifier) . '</div>';
+        if (!empty($payload['nomor_skpp'])) $info[] = '<div><strong>No SKPP:</strong> ' . self::esc($payload['nomor_skpp']) . '</div>';
+
+        $html = '<div class="p-2">' . implode('', $info) . '</div>';
+
+        $html .= '<hr />';
+        $html .= '<div class="p-2"><strong>Detail Data:</strong></div>';
+
+        $labels = [
+            'nama' => 'Nama Dosen',
+            'pts' => 'PTS Tujuan',
+            'nama_surat_pts' => 'Surat Pengantar',
+            'jabatan_status' => 'Jabatan / Status',
+            'pangkat_golongan' => 'Pangkat / Golongan',
+            'tahun' => 'Tahun',
+            'bulan_belum_usulan' => 'Bulan Belum Usulan',
+            'nomor_surat_pts' => 'Nomor Surat PTS',
+            'tanggal_surat_pts' => 'Tanggal Surat PTS',
+            'nomor_surat_lolos_butuh' => 'Nomor Surat Lolos Butuh',
+            'tanggal_surat_lolos_butuh' => 'Tanggal Surat Lolos Butuh',
+            'tpd_kotor' => 'Tunjangan Kotor',
+            'tpd_pajak' => 'Pajak',
+            'tpd_bersih' => 'Tunjangan Bersih',
+            'terhitung_bulan' => 'Terhitung Bulan',
+            'wilayah_lldikti' => 'Wilayah LLDIKTI',
+            'kota_lldikti' => 'Kota LLDIKTI',
+            'ttd_jabatan' => 'Jabatan Penandatangan',
+            'ttd_nama' => 'Nama Penandatangan',
+            'ttd_nip' => 'NIP Penandatangan',
+        ];
+
+        $html .= '<div class="table-responsive">';
+        $html .= '<table class="table table-sm table-bordered">';
+        $html .= '<thead style="background-color:#f1f1f1;"><tr><th style="width:30%">Field</th><th>Nilai</th></tr></thead><tbody>';
+        
+        $html .= '<tr><td>Tanggal Lahir</td><td>' . self::esc($tanggalLahir) . '</td></tr>';
+
+        foreach ($labels as $key => $label) {
+            if (array_key_exists($key, $payload)) {
+                $val = self::esc($payload[$key]);
+                if (in_array($key, ['tpd_kotor', 'tpd_pajak', 'tpd_bersih'], true) && is_numeric($payload[$key])) {
+                    $val = 'Rp ' . number_format((float)$payload[$key], 0, ',', '.');
+                }
+                $html .= '<tr><td>' . self::esc($label) . '</td><td>' . $val . '</td></tr>';
+            }
+        }
+        
+        $html .= '</tbody></table></div>';
+
+        return $html;
+    }
 }

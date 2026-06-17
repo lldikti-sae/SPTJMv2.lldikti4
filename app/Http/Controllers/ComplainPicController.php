@@ -149,7 +149,13 @@ class ComplainPicController extends ComplainAdminController
                         'c.created_at',
                         DB::raw('COALESCE(d.nama_dosen, p.nama_pts) as nama_pelapor'),
                     ])
-                    ->whereIn('c.pelapor_tipe', ['pts', 'dosen'])
+                    ->where(function ($q) {
+                        $q->whereIn('c.pelapor_tipe', ['pts', 'dosen'])
+                          ->orWhere(function ($subq) {
+                              $subq->where('c.pelapor_tipe', 'admin')
+                                   ->whereIn('c.jenis_pengajuan', ['Surat Keterangan', 'Surat SKPP']);
+                          });
+                    })
                     ->selectRaw('? as pic', [$email]);
 
                 // Enforce PIC scope via joined identifier lists
@@ -177,7 +183,7 @@ class ComplainPicController extends ComplainAdminController
                 }
 
                 if ($statusFilter !== '') {
-                    $allowed = ['open', 'setuju', 'tolak'];
+                    $allowed = ['open', 'setuju', 'tolak', 'menunggu_konfirmasi'];
                     if (in_array($statusFilter, $allowed, true)) {
                         $baseQuery->where('c.status', $statusFilter);
                     }
@@ -194,7 +200,13 @@ class ComplainPicController extends ComplainAdminController
                     ->where(function ($q) {
                         $q->whereNotNull('an.nidn')->orWhereNotNull('au.nuptk');
                     })
-                    ->whereIn('c.pelapor_tipe', ['pts', 'dosen']);
+                    ->where(function ($q) {
+                        $q->whereIn('c.pelapor_tipe', ['pts', 'dosen'])
+                          ->orWhere(function ($subq) {
+                              $subq->where('c.pelapor_tipe', 'admin')
+                                   ->whereIn('c.jenis_pengajuan', ['Surat Keterangan', 'Surat SKPP']);
+                          });
+                    });
                 if ($startOfYear && $startOfNextYear) {
                     $recordsTotalQuery->where('c.created_at', '>=', $startOfYear)
                         ->where('c.created_at', '<', $startOfNextYear);
@@ -212,7 +224,13 @@ class ComplainPicController extends ComplainAdminController
                     ->where(function ($q) {
                         $q->whereNotNull('an.nidn')->orWhereNotNull('au.nuptk');
                     })
-                    ->whereIn('c.pelapor_tipe', ['pts', 'dosen']);
+                    ->where(function ($q) {
+                        $q->whereIn('c.pelapor_tipe', ['pts', 'dosen'])
+                          ->orWhere(function ($subq) {
+                              $subq->where('c.pelapor_tipe', 'admin')
+                                   ->whereIn('c.jenis_pengajuan', ['Surat Keterangan', 'Surat SKPP']);
+                          });
+                    });
                 if (trim($searchValue) !== '') {
                     $filteredCountQuery->leftJoin('a_dosen as d', 'c.dosen_id', '=', 'd.id')
                         ->leftJoin('a_pts as p', 'c.pts_id', '=', 'p.id');
@@ -235,7 +253,7 @@ class ComplainPicController extends ComplainAdminController
                     });
                 }
                 if ($statusFilter !== '') {
-                    $allowed = ['open', 'setuju', 'tolak'];
+                    $allowed = ['open', 'setuju', 'tolak', 'menunggu_konfirmasi'];
                     if (in_array($statusFilter, $allowed, true)) {
                         $filteredCountQuery->where('c.status', $statusFilter);
                     }
@@ -253,6 +271,7 @@ class ComplainPicController extends ComplainAdminController
                     $status = (string) ($r->status ?? 'open');
                     $badge = 'bg-label-secondary';
                     if ($status === 'open') $badge = 'bg-label-warning';
+                    if ($status === 'menunggu_konfirmasi') $badge = 'bg-label-info';
                     if ($status === 'setuju') $badge = 'bg-label-success';
                     if ($status === 'tolak') $badge = 'bg-label-danger';
 

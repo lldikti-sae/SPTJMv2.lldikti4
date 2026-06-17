@@ -951,7 +951,8 @@ class KekuranganBayarController extends Controller
               ->orWhere('k.Nama', 'like', '%' . $searchKurang . '%');
         });
     }
-    $queryKurang = $queryKurangBase->paginate(50, ['*'], 'kurang_page')->appends(request()->query());
+    $perPage = request()->input('per_page', 50);
+    $queryKurang = $queryKurangBase->paginate($perPage, ['*'], 'kurang_page')->appends(request()->query());
 
     $searchLebih = request('search_lebih');
     $queryLebihBase = $buildBaseQuery($k2_sub_raw);
@@ -978,7 +979,7 @@ class KekuranganBayarController extends Controller
               ->orWhere('k.Nama', 'like', '%' . $searchLebih . '%');
         });
     }
-    $queryLebih = $queryLebihBase->paginate(50, ['*'], 'lebih_page')->appends(request()->query());
+    $queryLebih = $queryLebihBase->paginate($perPage, ['*'], 'lebih_page')->appends(request()->query());
 
     $searchSelesai = request('search_selesai');
     $k2_sub_selesai = clone $k2_sub_raw;
@@ -996,7 +997,7 @@ class KekuranganBayarController extends Controller
               ->orWhere('k.Nama', 'like', '%' . $searchSelesai . '%');
         });
     }
-    $querySelesai = $querySelesaiBase->paginate(50, ['*'], 'selesai_page')->appends(request()->query());
+    $querySelesai = $querySelesaiBase->paginate($perPage, ['*'], 'selesai_page')->appends(request()->query());
 
     // tarifMap has been loaded at the top of the function
 
