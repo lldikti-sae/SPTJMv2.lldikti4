@@ -68,6 +68,7 @@ class SkppController extends Controller
                 's_transaksi_2.Kode_PT',
                 's_transaksi_2.PTS',
                 's_transaksi_2.Aktif',
+                's_transaksi_2.Pemegang_Wilayah',
                 DB::raw("$jabatan AS jabatan"),
                 DB::raw("$golongan AS gol")
             )
@@ -122,6 +123,7 @@ class SkppController extends Controller
                 'jabatan_status' => $jabatanStatus,
                 'kode_pt' => $dosen->Kode_PT,
                 'pts' => $dosen->PTS,
+                'pic' => $dosen->Pemegang_Wilayah ?? '-',
             ],
         ]);
     }

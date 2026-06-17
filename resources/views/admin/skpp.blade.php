@@ -196,14 +196,19 @@ input[type=number] {
                         </div>
                     </div>
                     <div class="row g-3 mb-3">
-                        <div class="col-md-6">
+                        <div class="col-md-4">
                             <label class="form-label">Jabatan - Status</label>
                             <input type="text" class="form-control" id="skppDosenJabatanStatus" readonly
                                 style="background-color: #eceef1;">
                         </div>
-                        <div class="col-md-6">
+                        <div class="col-md-4">
                             <label class="form-label">Kode PT - Perguruan Tinggi</label>
                             <input type="text" class="form-control" id="skppDosenKodePt" readonly
+                                style="background-color: #eceef1;">
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">Nama PIC</label>
+                            <input type="text" class="form-control" id="skppDosenPic" readonly
                                 style="background-color: #eceef1;">
                         </div>
                     </div>
@@ -289,7 +294,7 @@ input[type=number] {
                                 </div>
                                 <div class="col-md-6">
                                     <label class="form-label">Jabatan / Status</label>
-                                    <input type="text" class="form-control" id="prev_jabatan_status" name="jabatan_status" placeholder="Misal: Lektor / DTY">
+                                    <input type="text" class="form-control" id="prev_jabatan_status" name="jabatan_status" placeholder="Misal: Lektor - Aktif">
                                 </div>
                                 <div class="col-md-8">
                                     <label class="form-label">Perguruan Tinggi (PTS)</label>
@@ -393,7 +398,7 @@ input[type=number] {
                             <h6 class="fw-bold mb-3">Tembusan (Disampaikan kepada)</h6>
                             <div class="row g-3 mb-3">
                                 <div class="col-md-6">
-                                    <label class="form-label">LLDIKTI Tujuan (Wilayah)</label>
+                                    <label class="form-label">Tujuan (Wilayah)</label>
                                     <select class="form-select" id="prev_wilayah_lldikti" name="wilayah_lldikti">
                                         <option value="">-- Pilih Wilayah --</option>
                                         <option value="I">Wilayah I</option>
@@ -417,7 +422,7 @@ input[type=number] {
                                     </select>
                                 </div>
                                 <div class="col-md-6" id="kotaLldiktiContainer">
-                                    <label class="form-label">Kota LLDIKTI Tujuan</label>
+                                    <label class="form-label">Kota Tujuan</label>
                                     <select class="form-select" id="prev_kota_lldikti" name="kota_lldikti">
                                         <option value="">-- Pilih Kota --</option>
                                         <option value="Medan">Medan</option>
@@ -605,6 +610,7 @@ document.addEventListener('DOMContentLoaded', function() {
             document.getElementById('skppDosenNama').value = d.nama || '-';
             document.getElementById('skppDosenJabatanStatus').value = d.jabatan_status || '-';
             document.getElementById('skppDosenKodePt').value = (d.kode_pt || '-') + ' - ' + (d.pts || '-');
+            document.getElementById('skppDosenPic').value = d.pic || '-';
 
             document.getElementById('skppSearchResult').style.display = 'none';
             document.getElementById('skppStep2').style.display = 'block';
