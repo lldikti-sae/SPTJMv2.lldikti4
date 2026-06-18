@@ -634,6 +634,7 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('btnManualSuratKeterangan').addEventListener('click', function() {
         isManualMode = true;
         currentJenisSurat = 'Surat Keterangan';
+        document.getElementById('prev_jenis_surat').value = currentJenisSurat;
         currentDosen = null;
         currentTahun = new Date().getFullYear();
         currentBulanKosong = [];
@@ -1053,9 +1054,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         customClass: { confirmButton: 'btn btn-primary' },
                         buttonsStyling: false
                     }).then(() => {
-                        const modal = bootstrap.Modal.getInstance(modalEl);
-                        if (modal) modal.hide();
-                        window.location.reload();
+                        window.location.href = window.location.href;
                     });
                 } else {
                     Swal.fire('Gagal', json.message || 'Terjadi kesalahan.', 'error');
@@ -1283,7 +1282,7 @@ function hapusSkpp(id) {
                         customClass: { confirmButton: 'btn btn-primary' },
                         buttonsStyling: false
                     }).then(() => {
-                        window.location.reload();
+                        window.location.href = window.location.href;
                     });
                 } else {
                     Swal.fire('Gagal', json.message || 'Terjadi kesalahan.', 'error');
@@ -1349,7 +1348,7 @@ function uploadPdf(id) {
                         customClass: { confirmButton: 'btn btn-primary' },
                         buttonsStyling: false
                     }).then(() => {
-                        window.location.reload();
+                        window.location.href = window.location.href;
                     });
                 } else {
                     Swal.fire('Gagal', json.message || 'Terjadi kesalahan.', 'error');
@@ -1409,7 +1408,7 @@ function konfirmasiSkpp(id) {
                         customClass: { confirmButton: 'btn btn-primary' },
                         buttonsStyling: false
                     }).then(() => {
-                        window.location.reload();
+                        window.location.href = window.location.href;
                     });
                 } else {
                     Swal.fire('Gagal', json.message || 'Terjadi kesalahan.', 'error');
@@ -1477,7 +1476,7 @@ function tolakSkpp(id) {
                         customClass: { confirmButton: 'btn btn-primary' },
                         buttonsStyling: false
                     }).then(() => {
-                        window.location.reload();
+                        window.location.href = window.location.href;
                     });
                 } else {
                     Swal.fire('Gagal', json.message || 'Terjadi kesalahan.', 'error');

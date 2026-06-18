@@ -730,24 +730,26 @@ class ComplainAdminController extends Controller
             }
 
             // Jika pengajuan adalah SKPP dan disetujui
-            if ($newStatus === 'setuju' && (string) ($row->status ?? '') === 'menunggu_konfirmasi' && in_array((string) ($row->jenis_pengajuan ?? ''), ['Surat Keterangan', 'Surat SKPP'], true)) {
+            if ($newStatus === 'setuju' && in_array((string) ($row->status ?? ''), ['menunggu_konfirmasi', 'open'], true) && in_array((string) ($row->jenis_pengajuan ?? ''), ['Surat Keterangan', 'Surat SKPP'], true)) {
                 $detail = json_decode($row->pesan, true) ?? [];
                 // Catat histori dosen
-                HistoriDosen::create([
-                    'nidn' => $row->nidn ?? null,
-                    'nuptk' => $row->nuptk ?? null,
-                    'nama' => $detail['nama'] ?? '-',
-                    'pts' => $detail['pts'] ?? '-',
-                    'kode_pt' => $row->kode_pts,
-                    'aktif' => '0',
-                    'keterangan' => 'Penerbitan ' . $row->jenis_pengajuan,
-                    'pengguna' => $admin ? ($admin->name ?? 'Admin') : 'PIC',
-                    'no_dokumen_ubah' => $detail['nomor_skpp'] ?? '',
-                    'tgl_dokumen_ubah' => now()->format('Y-m-d'),
-                    'alasan_perubahan' => 'Penerbitan ' . $row->jenis_pengajuan . ' Selesai, Dosen dinonaktifkan',
-                    'dokumen' => $row->lampiran,
-                    'tanggal_update_terbaru' => now(),
-                ]);
+                HistoriDosen::updateOrCreate(
+                    ['dokumen' => $row->lampiran],
+                    [
+                        'nidn' => $row->nidn ?? null,
+                        'nuptk' => $row->nuptk ?? null,
+                        'nama' => $detail['nama'] ?? '-',
+                        'pts' => $detail['pts'] ?? '-',
+                        'kode_pt' => $row->kode_pts,
+                        'aktif' => '0',
+                        'keterangan' => 'Penerbitan ' . $row->jenis_pengajuan,
+                        'pengguna' => $admin ? ($admin->name ?? 'Admin') : 'PIC',
+                        'no_dokumen_ubah' => $detail['nomor_skpp'] ?? '',
+                        'tgl_dokumen_ubah' => now()->format('Y-m-d'),
+                        'alasan_perubahan' => 'Penerbitan ' . $row->jenis_pengajuan . ' Selesai, Dosen dinonaktifkan',
+                        'tanggal_update_terbaru' => now(),
+                    ]
+                );
 
                 // Nonaktifkan dosen di s_transaksi_2
                 Transaksi::where(function ($q) use ($row) {

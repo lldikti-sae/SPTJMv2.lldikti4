@@ -847,7 +847,18 @@ class SkppController extends Controller
             return response()->json(['success' => false, 'message' => 'Surat yang sudah berstatus Selesai tidak dapat dihapus. Data riwayat surat harus tetap tersimpan.']);
         }
 
-        // Hapus dari tabel pengajuan (hanya yang belum selesai)
+        // Hapus file fisik jika ada
+        if (!empty($skpp->lampiran)) {
+            $filePath = storage_path('app/public/Dokumen_Histori_Dosen2/' . $skpp->lampiran);
+            if (file_exists($filePath)) {
+                @unlink($filePath);
+            }
+            
+            // Hapus data dari tabel histori
+            DB::table('j_histori_dosen')->where('dokumen', $skpp->lampiran)->delete();
+        }
+
+        // Hapus dari tabel pengajuan
         DB::table('i_complain')->where('id', $id)->delete();
 
         return response()->json(['success' => true, 'message' => 'Data pengajuan berhasil dihapus.']);
