@@ -51,14 +51,7 @@ class MonitoringPembayaranDosenController extends Controller
 
   public function index(Request $request)
   {
-    $years = $this->getAvailableYears();
-
-    $defaultYear = $this->getDefaultYear();
-    $startYear = $request->input('start_year') ?? $defaultYear;
-    $endYear = $request->input('end_year') ?? $defaultYear;
-    $selectedYear = $request->input('tahun_versi') ?? $defaultYear;
-
-    return $this->renderMonitoring($years, $startYear, $endYear, $selectedYear);
+    return $this->renderMonitoring($request);
   }
 
   public function cari(Request $request)
@@ -69,39 +62,23 @@ class MonitoringPembayaranDosenController extends Controller
       'tahun_versi' => ['nullable'],
     ]);
 
-    $years = $this->getAvailableYears();
-
-    $defaultYear = $this->getDefaultYear();
-    $startYear = $request->input('start_year') ?? $defaultYear;
-    $endYear = $request->input('end_year') ?? $defaultYear;
-    $selectedYear = $request->input('tahun_versi') ?? $defaultYear;
-
-    return $this->renderMonitoring($years, $startYear, $endYear, $selectedYear);
+    return $this->renderMonitoring($request);
   }
 
-  public function table(Request $request)
+  public function data(Request $request)
   {
-    $request->validate([
-      'start_year' => ['nullable'],
-      'end_year' => ['nullable'],
-      'tahun_versi' => ['required'],
+    $dosen = Auth::guard('dosen')->user();
+    $identifier = $this->resolveDosenIdentifier($dosen);
+
+    if ($identifier === '') {
+      return response()->json(['success' => false, 'message' => 'Akun dosen tidak memiliki NIDN/NUPTK.']);
+    }
+
+    $request->merge([
+      'nidn' => $identifier
     ]);
 
-    $years = $this->getAvailableYears();
-
-    $data = $this->buildMonitoringData(
-      $years,
-      $request->input('start_year'),
-      $request->input('end_year'),
-      $request->input('tahun_versi')
-    );
-
-    $html = view('dosen.partials.monitoring-pembayaran-table', $data)->render();
-    return response()->json([
-      'html' => $html,
-      'selectedYear' => $data['selectedYear'] ?? null,
-      'errorMessage' => $data['errorMessage'] ?? null,
-    ]);
+    return app(AdminMonitoringPembayaranController::class)->data($request);
   }
 
   public function exportExcel(Request $request)
@@ -330,165 +307,48 @@ class MonitoringPembayaranDosenController extends Controller
     return $nuptk;
   }
 
-  private function renderMonitoring(array $years, $startYear, $endYear, $selectedYear)
+  private function renderMonitoring(Request $request)
   {
-    $data = $this->buildMonitoringData($years, $startYear, $endYear, $selectedYear);
-    return view('dosen.monitoring-pembayaran', $data);
-  }
+    $response = $this->data($request);
+    $responseData = json_decode($response->getContent());
 
-  private function buildMonitoringData(array $years, $startYear, $endYear, $selectedYear): array
-  {
+    if (!isset($responseData->success) || !$responseData->success) {
+      $errorMessage = $responseData->message ?? 'Data tidak ditemukan.';
+    }
+
+    $dataView = (array) $responseData;
+    $dataView['transaksi'] = $dataView['header'] ?? null;
     $dosen = Auth::guard('dosen')->user();
-    $nidnOrNuptk = $this->resolveDosenIdentifier($dosen);
+    $dataView['dosen'] = $dosen;
+    $dataView['errorMessage'] = $errorMessage ?? null;
+    
+    $years = $this->getAvailableYears();
+    $dataView['years'] = $years;
 
-    if (empty($years)) {
-      return [
-        'years' => [],
-        'errorMessage' => 'Data tahun tidak tersedia.',
-        'dosen' => $dosen,
-      ];
+    $dataView['startYear'] = $request->input('start_year') ?? ($years[0] ?? null);
+    $dataView['endYear'] = $request->input('end_year') ?? (end($years) ?? null);
+    $dataView['selectedYear'] = $request->input('tahun_versi') ?? $dataView['endYear'];
+    $dataView['nidn'] = $this->resolveDosenIdentifier($dosen);
+
+    if ($dataView['startYear'] > $dataView['endYear']) {
+      $tmp = $dataView['startYear'];
+      $dataView['startYear'] = $dataView['endYear'];
+      $dataView['endYear'] = $tmp;
     }
 
-    if ($nidnOrNuptk === '') {
-      return [
-        'years' => $years,
-        'errorMessage' => 'Akun dosen tidak memiliki NIDN/NUPTK.',
-        'dosen' => $dosen,
-      ];
+    $yearsForNidn = [];
+    for ($y = (int)$dataView['startYear']; $y <= (int)$dataView['endYear']; $y++) {
+      $yearsForNidn[] = (string) $y;
     }
+    $dataView['yearsForNidn'] = $yearsForNidn;
 
-    if (empty($startYear)) {
-      $startYear = $years[0];
-    }
-    if (empty($endYear)) {
-      $endYear = end($years);
-    }
+    // Convert objects to arrays for blade array access
+    $dataView['summary'] = (array) ($dataView['summary'] ?? []);
+    $dataView['summaryRekap'] = (array) ($dataView['summaryRekap'] ?? []);
+    $dataView['summaryOriginal'] = (array) ($dataView['summaryOriginal'] ?? []);
+    $dataView['selisihTotals'] = (array) ($dataView['selisihTotals'] ?? []);
+    $dataView['totals'] = (array) ($dataView['totals'] ?? []);
 
-    // Normalize start/end year and build the available filter options for the selected range.
-    $years = array_map('strval', $years);
-    $startYear = (string) $startYear;
-    $endYear = (string) $endYear;
-
-    // Ensure start <= end
-    $startInt = (int) $startYear;
-    $endInt = (int) $endYear;
-    if ($startInt > 0 && $endInt > 0 && $startInt > $endInt) {
-      [$startYear, $endYear] = [$endYear, $startYear];
-      [$startInt, $endInt] = [$endInt, $startInt];
-    }
-
-    $yearsForRange = array_values(array_filter($years, function ($y) use ($startInt, $endInt) {
-      $yi = (int) $y;
-      if ($yi <= 0) {
-        return false;
-      }
-      if ($startInt > 0 && $yi < $startInt) {
-        return false;
-      }
-      if ($endInt > 0 && $yi > $endInt) {
-        return false;
-      }
-      return true;
-    }));
-
-    // If range produces no options (bad inputs), fall back to all active years.
-    $yearsForNidn = !empty($yearsForRange) ? $yearsForRange : $years;
-
-    // Default selected year to endYear (latest in range) for better UX.
-    $selectedYear = trim((string) ($selectedYear ?: $endYear));
-    if (!in_array($selectedYear, $yearsForNidn, true)) {
-      $selectedYear = end($yearsForNidn);
-    }
-
-    $yearColumn = $this->getTransaksiYearColumn();
-
-    $transaksi = DB::table('s_transaksi_2')
-      ->where(function ($q) use ($nidnOrNuptk) {
-        $q->whereRaw('TRIM(`NIDN`) = ?', [$nidnOrNuptk])
-          ->orWhereRaw('TRIM(`NUPTK`) = ?', [$nidnOrNuptk]);
-      })
-      ->where($yearColumn, $selectedYear)
-      ->first();
-
-    if (!$transaksi) {
-      return [
-        'years' => $years,
-        'startYear' => $startYear,
-        'endYear' => $endYear,
-        'selectedYear' => $selectedYear,
-        'dosen' => $dosen,
-        'nidn' => $nidnOrNuptk,
-        'errorMessage' => 'Data pembayaran tidak ditemukan untuk akun dosen ini pada tahun yang dipilih.',
-      ];
-    }
-
-    $transaksiTahun = $transaksi;
-
-    $selisihTotals = SelisihBayar::computeFromTransaksi($transaksiTahun);
-
-    $golonganBulanan = [];
-    $gajiBulanan = [];
-    $tahunBulanan = [];
-    $jabatanBulanan = [];
-    $kotorTpd = [];
-    $kotorTkgb = [];
-    $pajakTpd = [];
-    $pajakTkgb = [];
-    $bersihTpd = [];
-    $bersihTkgb = [];
-    $noSp2d = [];
-    $tglSp2d = [];
-    $kodeUsulanBulanan = [];
-
-    for ($i = 1; $i <= 12; $i++) {
-      $golonganBulanan[] = $transaksiTahun ? ($transaksiTahun->{'Gol' . $i} ?? '-') : '-';
-      $gajiBulanan[] = $transaksiTahun ? (float) ($transaksiTahun->{'Gaji' . $i} ?? 0) : 0;
-      $tahunBulanan[] = $transaksiTahun ? ($transaksiTahun->{'Tahun' . $i} ?? '-') : '-';
-      $jabatanBulanan[] = $transaksiTahun ? ($transaksiTahun->{'Jabatan' . $i} ?? '-') : '-';
-      $kotorTpd[] = $transaksiTahun ? (float) ($transaksiTahun->{'TPD' . $i} ?? 0) : 0;
-      $kotorTkgb[] = $transaksiTahun ? (float) ($transaksiTahun->{'TKGB' . $i} ?? 0) : 0;
-      $pajakTpd[] = $transaksiTahun ? (float) ($transaksiTahun->{'nilaiPajakTPD' . $i} ?? 0) : 0;
-      $pajakTkgb[] = $transaksiTahun ? (float) ($transaksiTahun->{'nilaiPajakTKGB' . $i} ?? 0) : 0;
-      $bersihTpd[] = $transaksiTahun ? (float) ($transaksiTahun->{'bersihTPD' . $i} ?? 0) : 0;
-      $bersihTkgb[] = $transaksiTahun ? (float) ($transaksiTahun->{'bersihTKGB' . $i} ?? 0) : 0;
-      $noSp2d[] = $transaksiTahun ? ($transaksiTahun->{'No_sp2d_' . $i} ?? '-') : '-';
-      $tglSp2d[] = $transaksiTahun ? ($transaksiTahun->{'Tgl_sp2d_' . $i} ?? '-') : '-';
-
-      $kodeUsulanBulanan[] = $transaksiTahun ? ($transaksiTahun->{'KodeUsulan' . $i} ?? null) : null;
-    }
-
-    $bulanSession = (int) session('bulan') ?: 12;
-    if ($bulanSession < 1 || $bulanSession > 12) {
-      $bulanSession = 12;
-    }
-    $jabatanField = 'Jabatan' . $bulanSession;
-    if ($transaksi) {
-      $transaksi->JabatanSelected = $transaksi->{$jabatanField} ?? $transaksi->Jabatan12 ?? null;
-    }
-
-    return [
-      'years' => $years,
-      'yearsForNidn' => $yearsForNidn,
-      'startYear' => $startYear,
-      'endYear' => $endYear,
-      'selectedYear' => $selectedYear,
-      'transaksi' => $transaksi,
-      'nidn' => $nidnOrNuptk,
-      'kodeUsulanBulanan' => $kodeUsulanBulanan,
-      'jabatanBulanan' => $jabatanBulanan,
-      'noSp2d' => $noSp2d,
-      'tglSp2d' => $tglSp2d,
-      'kotorTpd' => $kotorTpd,
-      'kotorTkgb' => $kotorTkgb,
-      'pajakTpd' => $pajakTpd,
-      'pajakTkgb' => $pajakTkgb,
-      'bersihTpd' => $bersihTpd,
-      'bersihTkgb' => $bersihTkgb,
-      'golonganBulanan' => $golonganBulanan,
-      'gajiBulanan' => $gajiBulanan,
-      'tahunBulanan' => $tahunBulanan,
-      'selisihTotals' => $selisihTotals,
-      'dosen' => $dosen,
-    ];
+    return view('dosen.monitoring-pembayaran', $dataView);
   }
 }

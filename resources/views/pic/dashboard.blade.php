@@ -2,6 +2,19 @@
 
 @section('title', 'SPTJM Online')
 @section('content')
+
+@if(isset($pendingComplainCount) && $pendingComplainCount > 0)
+<div class="alert alert-danger alert-dismissible fade show mb-4" role="alert">
+    <div class="d-flex align-items-center">
+        <i class="bx bx-error-circle bx-md me-2"></i>
+        <div>
+            <strong>Perhatian!</strong> Terdapat <strong>{{ $pendingComplainCount }}</strong> pengajuan yang harus segera Anda periksa di menu <a href="{{ route('pic.complain.index') }}" class="alert-link">Complain</a>.
+        </div>
+    </div>
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+</div>
+@endif
+
 <div class="row g-3 mb-3">
     <div class="col-12 col-md-4">
         <div class="card">

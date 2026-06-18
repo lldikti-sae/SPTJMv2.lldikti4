@@ -153,7 +153,8 @@ class ComplainPicController extends ComplainAdminController
                         $q->whereIn('c.pelapor_tipe', ['pts', 'dosen'])
                           ->orWhere(function ($subq) {
                               $subq->where('c.pelapor_tipe', 'admin')
-                                   ->whereIn('c.jenis_pengajuan', ['Surat Keterangan', 'Surat SKPP']);
+                                   ->whereIn('c.jenis_pengajuan', ['Surat Keterangan', 'Surat SKPP'])
+                                   ->whereNotNull('c.lampiran');
                           });
                     })
                     ->selectRaw('? as pic', [$email]);
@@ -185,7 +186,11 @@ class ComplainPicController extends ComplainAdminController
                 if ($statusFilter !== '') {
                     $allowed = ['open', 'setuju', 'tolak', 'menunggu_konfirmasi'];
                     if (in_array($statusFilter, $allowed, true)) {
-                        $baseQuery->where('c.status', $statusFilter);
+                        if ($statusFilter === 'open') {
+                            $baseQuery->whereIn('c.status', ['open', 'menunggu_konfirmasi']);
+                        } else {
+                            $baseQuery->where('c.status', $statusFilter);
+                        }
                     }
                 }
 
@@ -204,7 +209,8 @@ class ComplainPicController extends ComplainAdminController
                         $q->whereIn('c.pelapor_tipe', ['pts', 'dosen'])
                           ->orWhere(function ($subq) {
                               $subq->where('c.pelapor_tipe', 'admin')
-                                   ->whereIn('c.jenis_pengajuan', ['Surat Keterangan', 'Surat SKPP']);
+                                   ->whereIn('c.jenis_pengajuan', ['Surat Keterangan', 'Surat SKPP'])
+                                   ->whereNotNull('c.lampiran');
                           });
                     });
                 if ($startOfYear && $startOfNextYear) {
@@ -228,7 +234,8 @@ class ComplainPicController extends ComplainAdminController
                         $q->whereIn('c.pelapor_tipe', ['pts', 'dosen'])
                           ->orWhere(function ($subq) {
                               $subq->where('c.pelapor_tipe', 'admin')
-                                   ->whereIn('c.jenis_pengajuan', ['Surat Keterangan', 'Surat SKPP']);
+                                   ->whereIn('c.jenis_pengajuan', ['Surat Keterangan', 'Surat SKPP'])
+                                   ->whereNotNull('c.lampiran');
                           });
                     });
                 if (trim($searchValue) !== '') {
@@ -255,7 +262,11 @@ class ComplainPicController extends ComplainAdminController
                 if ($statusFilter !== '') {
                     $allowed = ['open', 'setuju', 'tolak', 'menunggu_konfirmasi'];
                     if (in_array($statusFilter, $allowed, true)) {
-                        $filteredCountQuery->where('c.status', $statusFilter);
+                        if ($statusFilter === 'open') {
+                            $filteredCountQuery->whereIn('c.status', ['open', 'menunggu_konfirmasi']);
+                        } else {
+                            $filteredCountQuery->where('c.status', $statusFilter);
+                        }
                     }
                 }
                 $recordsFiltered = (int) $filteredCountQuery->distinct('c.id')->count('c.id');
@@ -314,10 +325,36 @@ class ComplainPicController extends ComplainAdminController
                     ];
                 });
 
+                $pendingCountQuery = DB::table('i_complain as c')
+                    ->leftJoinSub($allowedNidn, 'an', function ($join) {
+                        $join->on('an.nidn', '=', 'c.nidn');
+                    })
+                    ->leftJoinSub($allowedNuptk, 'au', function ($join) {
+                        $join->on('au.nuptk', '=', 'c.nuptk');
+                    })
+                    ->where(function ($q) {
+                        $q->whereNotNull('an.nidn')->orWhereNotNull('au.nuptk');
+                    })
+                    ->where(function ($q) {
+                        $q->whereIn('c.pelapor_tipe', ['pts', 'dosen'])
+                          ->orWhere(function ($subq) {
+                              $subq->where('c.pelapor_tipe', 'admin')
+                                   ->whereIn('c.jenis_pengajuan', ['Surat Keterangan', 'Surat SKPP'])
+                                   ->whereNotNull('c.lampiran');
+                          });
+                    })
+                    ->whereIn('c.status', ['open', 'menunggu_konfirmasi']);
+                if ($startOfYear && $startOfNextYear) {
+                    $pendingCountQuery->where('c.created_at', '>=', $startOfYear)
+                        ->where('c.created_at', '<', $startOfNextYear);
+                }
+                $pendingCount = (int) $pendingCountQuery->distinct('c.id')->count('c.id');
+
                 return response()->json([
                     'draw' => $draw,
                     'recordsTotal' => $recordsTotal,
                     'recordsFiltered' => $recordsFiltered,
+                    'pendingCount' => $pendingCount,
                     'data' => $data,
                 ]);
             } catch (\Throwable $e) {
@@ -336,6 +373,13 @@ class ComplainPicController extends ComplainAdminController
     public function show($id)
     {
         $this->assertPicCanAccessComplain((int) $id);
+        
+        // Ubah status menjadi 'open' secara otomatis jika PIC membuka detail pengaduan SKPP
+        $complain = DB::table('i_complain')->where('id', $id)->first();
+        if ($complain && in_array($complain->jenis_pengajuan, ['Surat Keterangan', 'Surat SKPP']) && $complain->status === 'menunggu_konfirmasi') {
+            DB::table('i_complain')->where('id', $id)->update(['status' => 'open']);
+        }
+
         return parent::show($id);
     }
 

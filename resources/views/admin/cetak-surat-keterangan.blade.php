@@ -75,7 +75,7 @@
         @endphp
         Berdasarkan Surat dari {{ $detail['nama_surat_pts'] ?? ($dosen->PTS ?? '-') }} Nomor: {{ $detail['nomor_surat_pts'] ?? '..........' }}
         tanggal {{ $tanggalSuratPts }} perihal Permohonan Surat Keterangan Pemberhentian Pembayaran (SKPP)
-        Dosen a.n. {{ $dosen->Nama ?? '-' }}, {{ rtrim($detail['ttd_jabatan'] ?? 'Kuasa Pengguna Anggaran', ', ') }} Lembaga Layanan Pendidikan Tinggi Wilayah IV dengan ini menerangkan bahwa nama tersebut di bawah ini:
+        Dosen {{ $dosen->Nama ?? '-' }}, {{ rtrim($detail['ttd_jabatan'] ?? 'Kuasa Pengguna Anggaran', ', ') }} Lembaga Layanan Pendidikan Tinggi Wilayah IV dengan ini menerangkan bahwa nama tersebut di bawah ini:
     </p>
 
     {{-- Data Dosen (dalam kotak) --}}
@@ -113,7 +113,7 @@
     <div class="clearfix">
         <div class="signature-area">
             @php
-                $tanggalSurat = \Carbon\Carbon::now()->locale('id')->translatedFormat('d F Y');
+                $tanggalSurat = !empty($detail['tanggal_cetak']) ? $detail['tanggal_cetak'] : \Carbon\Carbon::now()->locale('id')->translatedFormat('d F Y');
             @endphp
             Bandung, {{ $tanggalSurat }}<br>
             {{ $detail['ttd_jabatan'] ?? 'Kuasa Pengguna Anggaran,' }}<br>

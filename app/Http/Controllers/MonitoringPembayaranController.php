@@ -657,12 +657,6 @@ class MonitoringPembayaranController extends Controller
       $endYear = $tmp;
     }
 
-    // default selectedYear to startYear if not provided
-    if (empty($selectedYear)) {
-      $selectedYear = $startYear;
-    }
-    $versi = $selectedYear;
-
     // get profile transaksi (latest in range)
     $transaksi = DB::table('s_transaksi_2')
       ->where(function ($q) use ($nidn) {
@@ -676,6 +670,12 @@ class MonitoringPembayaranController extends Controller
     if (!$transaksi) {
       return response()->json(['success' => false, 'message' => 'Data profil tidak ditemukan untuk rentang tahun.']);
     }
+
+    // default selectedYear to the latest transaction year if not provided
+    if (empty($selectedYear)) {
+      $selectedYear = $transaksi->tahun_versi ?? $transaksi->Tahun_Versi ?? $transaksi->Tahun_versi ?? $startYear;
+    }
+    $versi = $selectedYear;
 
     $transaksiTahun = DB::table('s_transaksi_2')
       ->where(function ($q) use ($nidn) {
@@ -1015,17 +1015,20 @@ class MonitoringPembayaranController extends Controller
           $parts = explode('_', $item->jenis_pembayaran);
           $item->bulan = isset($parts[1]) ? (int) $parts[1] : 0;
           
-          // Calculate pajak and bersih based on globalTarif
           $nominalAsli = (float) $item->selisih;
           $item->nominal = $nominalAsli;
           $item->pajak = abs($nominalAsli) * $globalTarif;
           $item->bersih = abs($nominalAsli) - $item->pajak;
           
-          // Adjust signs if it was a negative nominal (Kelebihan)
           if ($nominalAsli < 0) {
               $item->pajak = -$item->pajak;
               $item->bersih = -$item->bersih;
           }
+          
+          // Uraian pembayaran should strictly match keterangan in database as requested by the user
+          $item->uraian_pembayaran = $item->keterangan;
+          $item->nomor = $item->kode_bayar_k;
+          $item->tanggal = $item->tgl_bayar_k;
           
           return $item;
       })->sortBy('bulan')->values();

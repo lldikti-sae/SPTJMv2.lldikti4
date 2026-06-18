@@ -180,7 +180,15 @@
               paths = [d.lampiran];
             }
             if (paths.length) {
-              lampiranEl.innerHTML = paths.map(p => `<div><a href="${base}${p}" target="_blank" rel="noopener">${p}</a></div>`).join('');
+              lampiranEl.innerHTML = paths.map(p => {
+                let url = `${base}${p}`;
+                if (d.jenis_pengajuan === 'Surat Keterangan' || d.jenis_pengajuan === 'Surat SKPP') {
+                    if (!p.includes('/')) {
+                        url = `${base}Dokumen_Histori_Dosen2/${p}`;
+                    }
+                }
+                return `<div><a href="${url}" target="_blank" rel="noopener">${p}</a></div>`;
+              }).join('');
             }
           }
         } catch (e) {

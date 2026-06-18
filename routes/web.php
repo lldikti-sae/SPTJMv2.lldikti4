@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\authentications\LoginBasic;
@@ -131,7 +131,7 @@ Route::middleware(['auth:dosen'])->prefix('dosen')->name('dosen.')->group(functi
 
   Route::get('/monitoring-pembayaran', [MonitoringPembayaranDosenController::class, 'index'])->name('monitoring-pembayaran');
   Route::post('/monitoring-pembayaran/cari', [MonitoringPembayaranDosenController::class, 'cari'])->name('monitoring-pembayaran.cari');
-  Route::post('/monitoring-pembayaran/table', [MonitoringPembayaranDosenController::class, 'table'])->name('monitoring-pembayaran.table');
+  Route::post('/monitoring-pembayaran/data', [MonitoringPembayaranDosenController::class, 'data'])->name('monitoring-pembayaran.data');
   Route::post('/monitoring-pembayaran/export-excel', [MonitoringPembayaranDosenController::class, 'exportExcel'])->name('monitoring-pembayaran.export-excel');
   Route::post('/monitoring-pembayaran/cetak-spt', [MonitoringPembayaranDosenController::class, 'cetakSpt'])->name('monitoring-pembayaran.cetak-spt');
 
@@ -616,7 +616,7 @@ Route::middleware(['auth:pts'])->group(function () {
   Route::get('/pts/update-data-dosen/{nidn}', [PicUpdateDataDosenController::class, 'updateDataDosenPic'])->name('pts.update-data-dosen');
   Route::put('/pts/update-data-dosen/{nidn}', [PicUpdateDataDosenController::class, 'updateDataPic'])->name('pts.update-data');
 
-  // Sinkronisasi routes for PTS (mirror PIC/Admin endpoints) — used by the shared sinkronisasi JS
+  // Sinkronisasi routes for PTS (mirror PIC/Admin endpoints) â€” used by the shared sinkronisasi JS
   Route::get('/pts/sinkronisasi', [SinkronisasiController::class, 'index'])->name('pts.sinkronisasi');
   Route::post('/pts/sinkronisasi/process', [SinkronisasiController::class, 'process'])->name('pts.sinkronisasi.process');
   Route::post('/pts/sinkronisasi/check-mismatch', [SinkronisasiController::class, 'checkMismatch'])->name('pts.sinkronisasi.checkMismatch');
@@ -680,7 +680,7 @@ Route::middleware(['auth:pts'])->group(function () {
   // Monitoring Pembayaran (PTS) - mirip Dosen, dibatasi Kode_PT
   Route::get('/pts/monitoring-pembayaran', [MonitoringPembayaranPtsController::class, 'index'])->name('pts.monitoring-pembayaran');
   Route::post('/pts/monitoring-pembayaran/cari', [MonitoringPembayaranPtsController::class, 'cari'])->name('pts.monitoring-pembayaran.cari');
-  Route::post('/pts/monitoring-pembayaran/table', [MonitoringPembayaranPtsController::class, 'table'])->name('pts.monitoring-pembayaran.table');
+  Route::post('/pts/monitoring-pembayaran/data', [MonitoringPembayaranPtsController::class, 'data'])->name('pts.monitoring-pembayaran.data');
   Route::post('/pts/monitoring-pembayaran/export-excel', [MonitoringPembayaranPtsController::class, 'exportExcel'])->name('pts.monitoring-pembayaran.export-excel');
   Route::post('/pts/monitoring-pembayaran/cetak-spt', [MonitoringPembayaranPtsController::class, 'cetakSpt'])->name('pts.monitoring-pembayaran.cetak-spt');
 
@@ -704,3 +704,4 @@ Route::middleware(['auth:pts'])->group(function () {
 
   Route::get('/auto-login', function() { \Illuminate\Support\Facades\Auth::loginUsingId(1); return redirect('/admin/monitoring-pembayaran'); });
 });
+

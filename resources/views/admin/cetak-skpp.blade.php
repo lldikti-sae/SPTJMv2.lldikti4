@@ -197,7 +197,7 @@
         <table class="payment-table" style="margin-left: 10px; width: 95%;">
             <thead>
                 <tr>
-                    <th colspan="2" style="border: none;"></th>
+                    <th style="border: 1px solid #000;">Uraian</th>
                     <th style="border: 1px solid #000;">Tunjangan Profesi</th>
                     <th style="border: 1px solid #000;">Tunjangan Kehormatan</th>
                 </tr>
@@ -205,7 +205,6 @@
             <tbody>
                 <tr>
                     <td style="width: 35%; border: 1px solid #000;">Tunjangan Perbulan</td>
-                    <td style="width: 5%; border: 1px solid #000;" class="text-center">:</td>
                     <td style="width: 30%; padding-left: 15px; border: 1px solid #000;">Rp. {{ number_format($tpd_kotor, 0, ',', '.') }}</td>
                     <td style="width: 30%; padding-left: 15px; border: 1px solid #000;">
                         @if($is_guru_besar)
@@ -217,7 +216,6 @@
                 </tr>
                 <tr>
                     <td style="border: 1px solid #000;">PPh. 21</td>
-                    <td style="border: 1px solid #000;" class="text-center">:</td>
                     <td style="padding-left: 15px; border: 1px solid #000;">Rp. {{ number_format($tpd_pajak, 0, ',', '.') }}</td>
                     <td style="padding-left: 15px; border: 1px solid #000;">
                         @if($is_guru_besar)
@@ -229,7 +227,6 @@
                 </tr>
                 <tr>
                     <td style="border: 1px solid #000;">Tunjangan Bersih Perbulan</td>
-                    <td style="border: 1px solid #000;" class="text-center">:</td>
                     <td style="padding-left: 15px; border: 1px solid #000;">Rp. {{ number_format($tpd_bersih, 0, ',', '.') }}</td>
                     <td style="padding-left: 15px; border: 1px solid #000;">
                         @if($is_guru_besar)
@@ -252,7 +249,7 @@
         <div class="clearfix">
             <div class="signature-area">
                 @php
-                    $tanggalSurat = \Carbon\Carbon::now()->locale('id')->translatedFormat('d F Y');
+                    $tanggalSurat = !empty($detail['tanggal_cetak']) ? $detail['tanggal_cetak'] : \Carbon\Carbon::now()->locale('id')->translatedFormat('d F Y');
                 @endphp
                 Bandung, {{ $tanggalSurat }}<br>
                 An. {{ $detail['ttd_jabatan'] ?? 'Kuasa Pengguna Anggaran,' }}<br>
@@ -270,7 +267,7 @@
                 @if(!empty($detail['wilayah_lldikti']) && $detail['wilayah_lldikti'] !== 'Lainnya')
                 2. Bendahara Pengeluaran/PPABP LLDIKTI Wilayah {{ $detail['wilayah_lldikti'] }} {{ $detail['kota_lldikti'] ?? '' }}<br>
                 @elseif(!empty($detail['wilayah_lldikti']) && $detail['wilayah_lldikti'] === 'Lainnya')
-                2. {{ $detail['wilayah_lldikti_custom'] ?? '-' }}<br>
+                2. Bendahara Pengeluaran/PPABP {{ $detail['wilayah_lldikti_custom'] ?? '-' }}<br>
                 @else
                 2. {{ $detail['nama_surat_pts'] ?? ($dosen->PTS ?? '-') }}<br>
                 @endif

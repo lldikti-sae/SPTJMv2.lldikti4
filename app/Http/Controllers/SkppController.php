@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Validator;
 use Carbon\Carbon;
 
 class SkppController extends Controller
@@ -35,8 +36,9 @@ class SkppController extends Controller
         }
 
         $skppList = $query->paginate($perPage)->appends($request->query());
+        $pejabat = DB::table('v_pejabat')->first();
 
-        return view('admin.skpp', compact('skppList'));
+        return view('admin.skpp', compact('skppList', 'pejabat'));
     }
 
     /**
@@ -87,7 +89,7 @@ class SkppController extends Controller
                 $q->where('nidn', $identifier)
                   ->orWhere('nuptk', $identifier);
             })
-            ->whereIn('status', ['open', 'setuju'])
+            ->whereIn('status', ['open', 'setuju', 'menunggu_konfirmasi'])
             ->first();
 
         $existing_skpp = false;
@@ -403,7 +405,7 @@ class SkppController extends Controller
                 if ($request->nidn) $q->where('nidn', $request->nidn);
                 if ($request->nuptk) $q->orWhere('nuptk', $request->nuptk);
             })
-            ->whereIn('status', ['open', 'setuju'])
+            ->whereIn('status', ['open', 'setuju', 'menunggu_konfirmasi'])
             ->first();
 
         if ($existing) {
@@ -430,18 +432,22 @@ class SkppController extends Controller
             'tkgb_bersih' => $request->tkgb_bersih,
             'is_guru_besar' => filter_var($request->is_guru_besar, FILTER_VALIDATE_BOOLEAN),
             'terhitung_bulan' => $request->terhitung_bulan,
+            'pangkat' => $request->pangkat,
+            'golongan' => $request->golongan,
+            'wilayah_lldikti' => $request->wilayah_lldikti,
+            'wilayah_lldikti_custom' => $request->wilayah_lldikti_custom,
+            'kota_lldikti' => $request->kota_lldikti,
+            'ttd_jabatan' => $request->ttd_jabatan,
+            'ttd_nama' => $request->ttd_nama,
+            'ttd_nip' => $request->ttd_nip,
+            'tanggal_cetak' => $request->tanggal_cetak,
         ];
         
-        $pangkatGolongan = trim($request->pangkat);
+        $pangkatGolongan = trim((string)$request->pangkat);
         if (!empty($request->golongan)) {
             $pangkatGolongan = $pangkatGolongan . ($pangkatGolongan ? ', ' : '') . $request->golongan;
         }
         $pesanData['pangkat_golongan'] = $pangkatGolongan;
-        $pesanData['wilayah_lldikti'] = $request->wilayah_lldikti;
-            $pesanData['kota_lldikti'] = $request->kota_lldikti;
-            $pesanData['ttd_jabatan'] = $request->ttd_jabatan;
-            $pesanData['ttd_nama'] = $request->ttd_nama;
-            $pesanData['ttd_nip'] = $request->ttd_nip;
 
             $pesanJson = json_encode($pesanData);
 
@@ -503,15 +509,11 @@ class SkppController extends Controller
         $pesanData = [
             'nama' => $request->nama,
             'pts' => $request->pts,
+            'nama_surat_pts' => $request->nama_surat_pts,
+            'jabatan_status' => $request->jabatan_status,
             'tahun' => $request->tahun,
             'bulan_belum_usulan' => $request->bulan_belum_usulan,
-            'pangkat' => $request->pangkat,
-            'golongan' => $request->golongan,
-            'teks_tambahan_1' => $request->teks_tambahan_1,
-            'teks_tambahan_2' => $request->teks_tambahan_2,
             'nomor_skpp' => $request->nomor_skpp,
-            'tanggal_skpp' => $request->tanggal_skpp,
-            'nama_surat_pts' => $request->nama_surat_pts,
             'nomor_surat_pts' => $request->nomor_surat_pts,
             'tanggal_surat_pts' => $request->tanggal_surat_pts,
             'nomor_surat_lolos_butuh' => $request->nomor_surat_lolos_butuh,
@@ -519,19 +521,27 @@ class SkppController extends Controller
             'tpd_kotor' => $request->tpd_kotor,
             'tpd_pajak' => $request->tpd_pajak,
             'tpd_bersih' => $request->tpd_bersih,
+            'tkgb_kotor' => $request->tkgb_kotor,
+            'tkgb_pajak' => $request->tkgb_pajak,
+            'tkgb_bersih' => $request->tkgb_bersih,
+            'is_guru_besar' => filter_var($request->is_guru_besar, FILTER_VALIDATE_BOOLEAN),
             'terhitung_bulan' => $request->terhitung_bulan,
+            'pangkat' => $request->pangkat,
+            'golongan' => $request->golongan,
+            'wilayah_lldikti' => $request->wilayah_lldikti,
+            'wilayah_lldikti_custom' => $request->wilayah_lldikti_custom,
+            'kota_lldikti' => $request->kota_lldikti,
+            'ttd_jabatan' => $request->ttd_jabatan,
+            'ttd_nama' => $request->ttd_nama,
+            'ttd_nip' => $request->ttd_nip,
+            'tanggal_cetak' => $request->tanggal_cetak,
         ];
         
-        $pangkatGolongan = trim($request->pangkat);
+        $pangkatGolongan = trim((string)$request->pangkat);
         if (!empty($request->golongan)) {
             $pangkatGolongan = $pangkatGolongan . ($pangkatGolongan ? ', ' : '') . $request->golongan;
         }
         $pesanData['pangkat_golongan'] = $pangkatGolongan;
-        $pesanData['wilayah_lldikti'] = $request->wilayah_lldikti;
-        $pesanData['kota_lldikti'] = $request->kota_lldikti;
-        $pesanData['ttd_jabatan'] = $request->ttd_jabatan;
-        $pesanData['ttd_nama'] = $request->ttd_nama;
-        $pesanData['ttd_nip'] = $request->ttd_nip;
 
         $pesanJson = json_encode($pesanData);
 
@@ -680,7 +690,22 @@ class SkppController extends Controller
             $file = $request->file('pdf_file');
             $filename = time() . '_SKPP_' . ($skpp->nidn ?: $skpp->nuptk) . '.' . $file->getClientOriginalExtension();
             
-            // Simpan ke storage/app/public/Dokumen_Histori_Dosen2
+            // Hapus file lama jika ada agar memori server tidak penuh
+            $oldLampiran = $skpp->lampiran;
+            if (!empty($oldLampiran)) {
+                $oldPath = storage_path('app/public/Dokumen_Histori_Dosen2/' . $oldLampiran);
+                if (file_exists($oldPath)) {
+                    @unlink($oldPath);
+                }
+                
+                // Perbarui histori lama agar menunjuk ke file revisi yang baru
+                // Ini mencegah terbentuknya dua baris histori ganda ketika PIC menyetujui ulang
+                DB::table('j_histori_dosen')
+                    ->where('dokumen', $oldLampiran)
+                    ->update(['dokumen' => $filename, 'updated_at' => now()]);
+            }
+
+            // Simpan file baru ke storage/app/public/Dokumen_Histori_Dosen2
             $file->storeAs('public/Dokumen_Histori_Dosen2', $filename);
 
             $dosenExists = false;
