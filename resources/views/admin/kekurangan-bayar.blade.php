@@ -142,6 +142,7 @@
                                             <option value="100" {{ request('per_page') == 100 ? 'selected' : '' }}>100</option>
                                             <option value="200" {{ request('per_page') == 200 ? 'selected' : '' }}>200</option>
                                             <option value="500" {{ request('per_page') == 500 ? 'selected' : '' }}>500</option>
+                                            <option value="1000" {{ request('per_page') == 1000 ? 'selected' : '' }}>1000</option>
                                         </select>
                                         <span class="text-nowrap">entries</span>
                                     </div>
@@ -316,6 +317,7 @@
                                             <option value="100" {{ request('per_page') == 100 ? 'selected' : '' }}>100</option>
                                             <option value="200" {{ request('per_page') == 200 ? 'selected' : '' }}>200</option>
                                             <option value="500" {{ request('per_page') == 500 ? 'selected' : '' }}>500</option>
+                                            <option value="1000" {{ request('per_page') == 1000 ? 'selected' : '' }}>1000</option>
                                         </select>
                                         <span class="text-nowrap">entries</span>
                                     </div>
@@ -494,6 +496,7 @@
                                             <option value="100" {{ request('per_page') == 100 ? 'selected' : '' }}>100</option>
                                             <option value="200" {{ request('per_page') == 200 ? 'selected' : '' }}>200</option>
                                             <option value="500" {{ request('per_page') == 500 ? 'selected' : '' }}>500</option>
+                                            <option value="1000" {{ request('per_page') == 1000 ? 'selected' : '' }}>1000</option>
                                         </select>
                                         <span class="text-nowrap">entries</span>
                                     </div>
