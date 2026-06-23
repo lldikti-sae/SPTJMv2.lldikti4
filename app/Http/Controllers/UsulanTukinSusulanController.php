@@ -27,7 +27,6 @@ class UsulanTukinSusulanController extends Controller
 
         $dosenList = collect();
         $dosenListPNS = collect();
-        $dosenListNonPNS = collect();
 
         if ($bulan) {
             try {
@@ -145,18 +144,11 @@ class UsulanTukinSusulanController extends Controller
                 // }
             }
 
-            // Split untuk tampilan 2 tabel (PNS vs NON PNS)
+            // Tukin hanya untuk dosen PNS
             $dosenListPNS = $dosenList
                 ->filter(function ($row) {
                     $jenis = isset($row->jenis) ? trim((string) $row->jenis) : '';
                     return strtoupper($jenis) === 'PNS';
-                })
-                ->values();
-
-            $dosenListNonPNS = $dosenList
-                ->filter(function ($row) {
-                    $jenis = isset($row->jenis) ? trim((string) $row->jenis) : '';
-                    return strtoupper($jenis) !== 'PNS';
                 })
                 ->values();
 
@@ -167,7 +159,6 @@ class UsulanTukinSusulanController extends Controller
                 'tahun' => $tahun,
                 'count_total' => $dosenList->count(),
                 'count_pns' => $dosenListPNS->count(),
-                'count_non_pns' => $dosenListNonPNS->count(),
             ]);
             } catch (\Throwable $e) {
                 $alias = ErrorAlias::fromThrowable($e, 'PTS-TUKIN-SUSULAN');
@@ -182,13 +173,12 @@ class UsulanTukinSusulanController extends Controller
 
                 $dosenList = collect();
                 $dosenListPNS = collect();
-                $dosenListNonPNS = collect();
-                return view('pts.usulan-tukin-susulan', compact('dosenList', 'dosenListPNS', 'dosenListNonPNS', 'bulan'))
+                return view('pts.usulan-tukin-susulan', compact('dosenList', 'dosenListPNS', 'bulan'))
                     ->with('internal_error', $alias['message']);
             }
         }
 
-        return view('pts.usulan-tukin-susulan', compact('dosenList', 'dosenListPNS', 'dosenListNonPNS', 'bulan'));
+        return view('pts.usulan-tukin-susulan', compact('dosenList', 'dosenListPNS', 'bulan'));
     }
 
     public function usulkan(Request $request)

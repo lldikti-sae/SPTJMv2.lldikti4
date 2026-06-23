@@ -70,13 +70,10 @@
 				@endif
 				@php
 					$listPns = $dosenListPNS ?? collect();
-					$listNonPns = $dosenListNonPNS ?? collect();
 					$countPns = $listPns->count();
-					$countNonPns = $listNonPns->count();
-					$countTotal = $countPns + $countNonPns;
 				@endphp
 
-				<span class="fw-semibold">Jumlah Dosen: <span id="jumlahDosen">{{ $countTotal }}</span></span>
+				<span class="fw-semibold">Jumlah Dosen PNS: <span id="jumlahDosen">{{ $countPns }}</span></span>
 
 				<h6 class="mt-3 mb-2">Daftar Nama Dosen PNS ({{ $countPns }})</h6>
 				<div class="table-responsive text-nowrap">
@@ -141,68 +138,6 @@
 					</table>
 				</div>
 
-				<h6 class="mt-4 mb-2">Daftar Nama Dosen NON PNS ({{ $countNonPns }})</h6>
-				<div class="table-responsive text-nowrap">
-					<table class="table table-sm table-hover mt-1" id="dosenTableNonPns">
-						<thead style="background-color: #dbdee0;">
-							<tr>
-								<th>No</th>
-								<th>NUPTK</th>
-								<th>NIDN</th>
-								<th>Nama Dosen</th>
-								<th>Jabatan</th>
-								<th>Kelas Jabatan</th>
-								<th>Nilai Tukin Kelas Jabatan</th>
-								<th>Sertifikat</th>
-								<th>KD</th>
-								<th>KP</th>
-								<th>PP</th>
-								<th>Status</th>
-								<th>Ket. Status</th>
-							</tr>
-						</thead>
-						<tbody>
-							@php $no = 1; @endphp
-							@forelse ($listNonPns as $d)
-							@php
-								$kelas = '-'; $nilai = '-';
-								$jab = $d->jabatan;
-								if ($jab === 'Guru Besar') { $kelas = '15'; $nilai = 'Rp. 19.280.000'; }
-								elseif ($jab === 'Lektor Kepala') { $kelas = '13'; $nilai = 'Rp. 10.936.000'; }
-								elseif ($jab === 'Lektor') { $kelas = '11'; $nilai = 'Rp. 8.757.600'; }
-								elseif ($jab === 'Asisten Ahli') { $kelas = '9'; $nilai = 'Rp. 5.079.200'; }
-								elseif ($jab === 'Tanpa Jabatan') { $kelas = '8'; $nilai = 'Rp. 4.595.150'; }
-								elseif ($jab === 'CPNS') { $kelas = '7'; $nilai = 'Rp. 3.915.950'; }
-							@endphp
-							<tr>
-								<td>{{ $no++ }}</td>
-								<td class="text-center">{{ $d->nuptk ?? '-' }}</td>
-								<td class="text-center"><strong>{{ $d->nidn }}</strong></td>
-								<td>{{ $d->nama }}</td>
-								<td class="text-center">{{ $d->jabatan ?? '-' }}</td>
-								<td class="text-center">{{ $kelas }}</td>
-								<td class="text-center">{{ $nilai }}</td>
-								<td>{{ $d->sertifikat_dosen ?? '-' }}</td>
-								<td class="text-center">{{ $d->kd ?? '-' }}</td>
-								<td class="text-center">{{ $d->kp ?? '-' }}</td>
-								<td class="text-center">{{ $d->pp ?? '-' }}</td>
-								<td class="text-center">
-									@if(($d->aktif ?? 0) == 1)
-										<span class="badge bg-label-primary">Aktif</span>
-									@else
-										<span class="badge bg-label-danger">Tidak Aktif</span>
-									@endif
-								</td>
-								<td class="text-center"><strong>{{ $d->keterangan ?? '-' }}</strong></td>
-							</tr>
-							@empty
-							<tr>
-								<td colspan="13" class="text-center">Tidak ada data dosen.</td>
-							</tr>
-							@endforelse
-						</tbody>
-					</table>
-				</div>
 
 				<!-- TOMBOL DI BAWAH TABEL -->
 				<div class="d-flex flex-wrap align-items-center justify-content-center gap-2 mt-4">
