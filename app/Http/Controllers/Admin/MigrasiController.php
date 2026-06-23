@@ -754,7 +754,7 @@ class MigrasiController extends Controller
         $validator = Validator::make($request->all(), [
             'dataset_koreksi' => 'required|in:s_transaksi_2,q_sptjm',
             'file' => 'required|file|mimes:csv,txt|max:1048576',
-            'koreksi_key' => 'nullable|in:nidn,nuptk',
+            'koreksi_key' => 'nullable|in:nidn,nuptk,id_usulan',
         ]);
 
         if ($validator->fails()) {
@@ -851,6 +851,20 @@ class MigrasiController extends Controller
                         ->withInput();
                 }
             }
+        } elseif ($dataset === 'q_sptjm') {
+            if ($keyType === 'id_usulan') {
+                if ($idUsulanIndex === null || $idUsulanColumn === null) {
+                    fclose($handle);
+                    return back()->with('error', 'File CSV koreksi harus memiliki kolom ID Usulan/id_usulan yang sesuai dengan tabel ketika pilihan kunci adalah ID Usulan.')
+                        ->withInput();
+                }
+            } else { // default to nidn for q_sptjm
+                if ($nidnIndex === null || $nidnColumn === null) {
+                    fclose($handle);
+                    return back()->with('error', 'File CSV koreksi harus memiliki kolom NIDN/nidn yang sesuai dengan tabel.')
+                        ->withInput();
+                }
+            }
         } elseif ($nidnIndex === null || $nidnColumn === null) {
             fclose($handle);
             return back()->with('error', 'File CSV koreksi harus memiliki kolom NIDN/nidn yang sesuai dengan tabel.')
@@ -871,11 +885,14 @@ class MigrasiController extends Controller
                     if ($nuptkIndex !== null && $idx === $nuptkIndex) return false;
                 }
             } else {
-                // q_sptjm: exclude nidn, id_usulan and possibly bulan when appropriate
-                if ($nidnIndex !== null && $idx === $nidnIndex) return false;
-                if ($idUsulanIndex !== null && $idx === $idUsulanIndex) return false;
-                if ($bulanIndex !== null && $idx === $bulanIndex) {
-                    if ($idUsulanIndex === null) return false;
+                // q_sptjm
+                if ($keyType === 'id_usulan') {
+                    if ($idUsulanIndex !== null && $idx === $idUsulanIndex) return false;
+                } else {
+                    if ($nidnIndex !== null && $idx === $nidnIndex) return false;
+                    if ($bulanIndex !== null && $idx === $bulanIndex) {
+                        if ($idUsulanIndex === null) return false;
+                    }
                 }
             }
             return true;

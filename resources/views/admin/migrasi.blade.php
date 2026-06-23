@@ -165,8 +165,7 @@
             <div class="mb-3">
               <label class="form-label">Kunci Koreksi</label>
               <select class="form-select" name="koreksi_key" id="koreksi_key">
-                <option value="nidn" {{ old('koreksi_key', 'nidn') === 'nidn' ? 'selected' : '' }}>NIDN (default)</option>
-                <option value="nuptk" {{ old('koreksi_key') === 'nuptk' ? 'selected' : '' }}>NUPTK</option>
+                <!-- Options populated by JS -->
               </select>
               <div class="form-text small">Pilih kolom kunci yang akan digunakan untuk mencari baris pada tabel saat melakukan koreksi.</div>
             </div>
@@ -483,6 +482,41 @@
             }
           }
         });
+      }
+      
+      // Dynamic Koreksi Key options based on selected dataset
+      var datasetKoreksi = document.getElementById('dataset_koreksi');
+      var koreksiKey = document.getElementById('koreksi_key');
+      var oldKoreksiKey = '{{ old("koreksi_key", "nidn") }}';
+      
+      if (datasetKoreksi && koreksiKey) {
+        var updateKoreksiKeyOptions = function() {
+          var dataset = datasetKoreksi.value;
+          koreksiKey.innerHTML = ''; // clear options
+          
+          if (dataset === 'q_sptjm') {
+            var opt = document.createElement('option');
+            opt.value = 'id_usulan';
+            opt.text = 'ID Usulan';
+            opt.selected = true; // For q_sptjm, only id_usulan is valid as per request
+            koreksiKey.appendChild(opt);
+          } else { // s_transaksi_2
+            var opt1 = document.createElement('option');
+            opt1.value = 'nidn';
+            opt1.text = 'NIDN (default)';
+            opt1.selected = (oldKoreksiKey === 'nidn');
+            koreksiKey.appendChild(opt1);
+            
+            var opt2 = document.createElement('option');
+            opt2.value = 'nuptk';
+            opt2.text = 'NUPTK';
+            opt2.selected = (oldKoreksiKey === 'nuptk');
+            koreksiKey.appendChild(opt2);
+          }
+        };
+        
+        datasetKoreksi.addEventListener('change', updateKoreksiKeyOptions);
+        updateKoreksiKeyOptions(); // initial load
       }
     });
   </script>
