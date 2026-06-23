@@ -98,14 +98,16 @@
             <label class="col-form-label"><strong style="font-size: 10px;">TKGB</strong></label>
             <input type="number" class="form-control" id="tkgb" name="tkgb" value="{{ $result->tkgb }}" />
           </div>
+          <!--
           <div class="col-sm-3">
             <label class="col-form-label"><strong style="font-size: 10px;">Selisih TPD</strong></label>
-            <input type="number" class="form-control" id="tpd_sel" name="tpd_sel" value="{{ $result->tpd_sel }}" />
+            <input type="number" class="form-control" id="tpd_sel" name="tpd_sel" value="{{ $result->tpd_sel ?? '' }}" />
           </div>
           <div class="col-sm-3">
             <label class="col-form-label"><strong style="font-size: 10px;">Selisih TKGB</strong></label>
-            <input type="number" class="form-control" id="tkgb_sel" name="tkgb_sel" value="{{ $result->tkgb_sel }}" />
+            <input type="number" class="form-control" id="tkgb_sel" name="tkgb_sel" value="{{ $result->tkgb_sel ?? '' }}" />
           </div>
+          -->
         </div>
 
         <div class="d-flex justify-content-center">
@@ -251,7 +253,7 @@
       });
     });
 
-    const inputsToValidate = ['gaji', 'tpd', 'tkgb', 'tpd_sel', 'tkgb_sel'];
+    const inputsToValidate = ['gaji', 'tpd', 'tkgb'];
     inputsToValidate.forEach((id) => {
       const el = document.getElementById(id);
       if (el) {

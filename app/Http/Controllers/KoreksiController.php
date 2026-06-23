@@ -140,12 +140,14 @@ class KoreksiController extends Controller
         $update[$KCField] = $payload['kodecair'] ?? null;
         $update['TPD' . $bulan] = (int)($payload['tpd'] ?? 0);
         $update['TKGB' . $bulan] = (int)($payload['tkgb'] ?? 0);
+        /*
         if (array_key_exists('tpd_sel', $payload)) {
             $update['JmlTPD_Selisih'] = (int)$payload['tpd_sel'];
         }
         if (array_key_exists('tkgb_sel', $payload)) {
             $update['JmlTKGB_Selisih'] = (int)$payload['tkgb_sel'];
         }
+        */
 
         try {
             $affected = DB::table($table)
@@ -202,8 +204,8 @@ class KoreksiController extends Controller
             ($this->bulanKeCair()[$bulan] ?? 'Jan') . ' as kode_cair',
             'TPD' . $bulan . ' as tpd',
             'TKGB' . $bulan . ' as tkgb',
-            'JmlTPD_Selisih as tpd_sel',
-            'JmlTKGB_Selisih as tkgb_sel',
+            // 'JmlTPD_Selisih as tpd_sel',
+            // 'JmlTKGB_Selisih as tkgb_sel',
         ];
 
         try {
