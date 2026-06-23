@@ -265,10 +265,14 @@ class MonitoringPembayaranController extends Controller
     }
 
     $kodeUsulanBulanan = [];
+    $kodeCairMapping = [1=>'Jan', 2=>'Feb', 3=>'Mar', 4=>'Apr', 5=>'May', 6=>'Jun', 7=>'Jul', 8=>'Ags', 9=>'Sep', 10=>'Okt', 11=>'Nov', 12=>'Des'];
+    $kodeCairBulanan = [];
 
     for ($i = 1; $i <= 12; $i++) {
       $kode = $transaksiTahun ? ($transaksiTahun->{'KodeUsulan' . $i} ?? null) : null;
       $kodeUsulanBulanan[] = $kode;
+      $kcCol = $kodeCairMapping[$i];
+      $kodeCairBulanan[] = $transaksiTahun ? ($transaksiTahun->{$kcCol} ?? null) : null;
     }
 
     // --- Per-month selisih & status computation ---
@@ -406,26 +410,27 @@ class MonitoringPembayaranController extends Controller
           $remainingKurangNet += $net;
       }
 
+      $kc = $kodeCairBulanan[$i] ?? null;
+      $hasKodeCair = ($kc !== null && trim((string)$kc) !== '' && trim((string)$kc) !== '-');
+
       // Status logic — use origHasSp2d for original status, hasSp2d for resolved display
       $isResolved = (abs($originalSelisihBulan) > 0.01 && abs($selisihBulan) < 0.01) || isset($resolvedMonths[$bulanNum]);
-      if ($isResolved && $hasData && abs($selisihBulan) < 0.01) {
-        $statusBulanan[] = 'selesai';
-      } elseif (!$hasData && !$kode) {
+      
+      if (!$hasData && !$kode && !$hasKodeCair) {
         $statusBulanan[] = null;
-      } elseif ($hasData && !$origHasSp2d && !$isResolved) {
-        $statusBulanan[] = 'usulan';
-      } elseif ($origHasSp2d && $bersih == 0 && $kotor > 0) {
+      } elseif ($isResolved && $hasData && abs($selisihBulan) < 0.01) {
+        $statusBulanan[] = 'selesai';
+      } elseif ($origHasSp2d) { // SP2D is present -> it's evaluating selisih immediately
+        if (abs($selisihBulan) <= 0.01) {
+          $statusBulanan[] = 'selesai';
+        } elseif ($selisihBulan < -0.01) {
+          $statusBulanan[] = 'kurang';
+        } elseif ($selisihBulan > 0.01) {
+          $statusBulanan[] = 'lebih';
+        }
+      } elseif ($hasKodeCair && !$origHasSp2d) { // Has kode cair but no SP2D -> Proses
         $statusBulanan[] = 'proses';
-      } elseif ($origHasSp2d && $selisihBulan < -0.01) { // Kurang Bayar (Aktual < Hak)
-        $statusBulanan[] = 'kurang';
-      } elseif ($origHasSp2d && $selisihBulan > 0.01) { // Lebih Bayar (Aktual > Hak)
-        $statusBulanan[] = 'lebih';
-      } elseif ($origHasSp2d && $selisihBulan == 0 && $bersih > 0) {
-        $statusBulanan[] = 'selesai';
-      } elseif ($isResolved && $hasData) {
-        // Month was resolved via rekap payment but didn't originally have SP2D
-        $statusBulanan[] = 'selesai';
-      } elseif ($kode && !$hasData) {
+      } elseif (!$hasKodeCair && ($hasData || $kode)) { // No kode cair -> Usulan
         $statusBulanan[] = 'usulan';
       } else {
         $statusBulanan[] = null;
@@ -694,7 +699,9 @@ class MonitoringPembayaranController extends Controller
 
     // prepare monthly arrays
     $months = ['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'];
+    $kodeCairMapping = [1=>'Jan', 2=>'Feb', 3=>'Mar', 4=>'Apr', 5=>'May', 6=>'Jun', 7=>'Jul', 8=>'Ags', 9=>'Sep', 10=>'Okt', 11=>'Nov', 12=>'Des'];
     $kodeUsulanBulanan = [];
+    $kodeCairBulanan = [];
     $golonganBulanan = [];
     $gajiBulanan = [];
     $tahunBulanan = [];
@@ -710,6 +717,8 @@ class MonitoringPembayaranController extends Controller
     for ($i = 1; $i <= 12; $i++) {
       $s = $i;
       $kodeUsulanBulanan[] = $transaksiTahun ? ($transaksiTahun->{'KodeUsulan' . $s} ?? null) : null;
+      $kcCol = $kodeCairMapping[$i];
+      $kodeCairBulanan[] = $transaksiTahun ? ($transaksiTahun->{$kcCol} ?? null) : null;
       $golonganBulanan[] = $transaksiTahun ? ($transaksiTahun->{'Gol' . $s} ?? '-') : '-';
       $gajiBulanan[] = $transaksiTahun ? (float) ($transaksiTahun->{'Gaji' . $s} ?? 0) : 0;
       $tahunBulanan[] = $transaksiTahun ? ($transaksiTahun->{'Tahun' . $s} ?? '-') : '-';
@@ -886,26 +895,27 @@ class MonitoringPembayaranController extends Controller
           $remainingKurangNet += $net;
       }
 
+      $kc = $kodeCairBulanan[$i] ?? null;
+      $hasKodeCair = ($kc !== null && trim((string)$kc) !== '' && trim((string)$kc) !== '-');
+
       // Status logic — use origHasSp2d for original status, hasSp2d for resolved display
       $isResolved = (abs($originalSelisihBulan) > 0.01 && abs($selisihBulan) < 0.01) || isset($resolvedMonths[$bulanNum]);
-      if ($isResolved && $hasData && abs($selisihBulan) < 0.01) {
-        $statusBulanan[] = 'selesai';
-      } elseif (!$hasData && !$kode) {
+      
+      if (!$hasData && !$kode && !$hasKodeCair) {
         $statusBulanan[] = null;
-      } elseif ($hasData && !$origHasSp2d && !$isResolved) {
-        $statusBulanan[] = 'usulan';
-      } elseif ($origHasSp2d && $bersih == 0 && $kotor > 0) {
+      } elseif ($isResolved && $hasData && abs($selisihBulan) < 0.01) {
+        $statusBulanan[] = 'selesai';
+      } elseif ($origHasSp2d) { // SP2D is present -> it's evaluating selisih immediately
+        if (abs($selisihBulan) <= 0.01) {
+          $statusBulanan[] = 'selesai';
+        } elseif ($selisihBulan < -0.01) {
+          $statusBulanan[] = 'kurang';
+        } elseif ($selisihBulan > 0.01) {
+          $statusBulanan[] = 'lebih';
+        }
+      } elseif ($hasKodeCair && !$origHasSp2d) { // Has kode cair but no SP2D -> Proses
         $statusBulanan[] = 'proses';
-      } elseif ($origHasSp2d && $selisihBulan < -0.01) { // Kurang Bayar (Aktual < Hak)
-        $statusBulanan[] = 'kurang';
-      } elseif ($origHasSp2d && $selisihBulan > 0.01) { // Lebih Bayar (Aktual > Hak)
-        $statusBulanan[] = 'lebih';
-      } elseif ($origHasSp2d && $selisihBulan == 0 && $bersih > 0) {
-        $statusBulanan[] = 'selesai';
-      } elseif ($isResolved && $hasData) {
-        // Month was resolved via rekap payment but didn't originally have SP2D
-        $statusBulanan[] = 'selesai';
-      } elseif ($kode && !$hasData) {
+      } elseif (!$hasKodeCair && ($hasData || $kode)) { // No kode cair -> Usulan
         $statusBulanan[] = 'usulan';
       } else {
         $statusBulanan[] = null;

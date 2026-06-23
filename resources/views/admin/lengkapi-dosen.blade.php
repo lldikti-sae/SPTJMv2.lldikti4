@@ -60,21 +60,21 @@
             <div class="row mb-3">
                 <label class="col-sm-2 col-form-label">Kode PTS</label>
                 <div class="col-sm-10">
-                    <input type="text" class="form-control" name="kode_pt" value="{{ old('kode_pt', $dosen->kode_pt ?? '') }}">
+                    <input type="text" class="form-control" name="kode_pt" readonly style="background-color: #eceef1;" value="{{ old('kode_pt', $dosen->kode_pt ?? '') }}">
                 </div>
             </div>
 
             <div class="row mb-3">
                 <label class="col-sm-2 col-form-label">PTS</label>
                 <div class="col-sm-10">
-                    <input type="text" class="form-control" name="pts" value="{{ old('pts', $dosen->pts ?? '') }}">
+                    <input type="text" class="form-control" name="pts" readonly style="background-color: #eceef1;" value="{{ old('pts', $dosen->pts ?? '') }}">
                 </div>
             </div>
 
             <div class="row mb-3">
                 <label class="col-sm-2 col-form-label">Jenis</label>
                 <div class="col-sm-10">
-                    <select class="form-select" name="jenis">
+                    <select class="form-select" name="jenis" style="pointer-events: none; background-color: #eceef1;" readonly>
                         <option value="NON PNS" {{ old('jenis', $dosen->jenis ?? '') == 'NON PNS' ? 'selected' : '' }}>NON PNS</option>
                         <option value="PNS" {{ old('jenis', $dosen->jenis ?? '') == 'PNS' ? 'selected' : '' }}>PNS</option>
                     </select>
@@ -84,14 +84,14 @@
             <div class="row mb-3">
                 <label class="col-sm-2 col-form-label">Jabatan</label>
                 <div class="col-sm-10">
-                    <input type="text" class="form-control" name="jabatan" value="{{ old('jabatan', $dosen->jabatan ?? '') }}">
+                    <input type="text" class="form-control" name="jabatan" readonly style="background-color: #eceef1;" value="{{ old('jabatan', $dosen->jabatan ?? '') }}">
                 </div>
             </div>
 
             <div class="row mb-3">
                 <label class="col-sm-2 col-form-label">Golongan</label>
                 <div class="col-sm-10">
-                    <select class="form-select" name="gol" id="golongan" required>
+                    <select class="form-select" name="gol" id="golongan" required style="pointer-events: none; background-color: #eceef1;" readonly>
                         @foreach (['III/a', 'III/b', 'III/c', 'III/d', 'IV/a', 'IV/b', 'IV/c'] as $gol)
                             <option value="{{ $gol }}" {{ old('gol', $dosen->gol ?? '') == $gol ? 'selected' : '' }}>
                                 {{ $gol }}</option>
@@ -104,7 +104,7 @@
                 <label class="col-sm-2 col-form-label">Masa Kerja (tahun)</label>
                 <div class="col-sm-10">
                     <input type="number" class="form-control" name="tahun" value="{{ old('tahun', $dosen->tahun ?? '') }}"
-                        min="0" placeholder="Masukkan masa kerja">
+                        min="0" placeholder="Masukkan masa kerja" readonly style="background-color: #eceef1;">
                 </div>
             </div>
 
@@ -157,7 +157,7 @@
             <div class="row mb-3">
                 <label class="col-sm-2 col-form-label">Pemegang Wilayah</label>
                 <div class="col-sm-10">
-                    <input type="text" class="form-control" name="pemegang_wilayah"
+                    <input type="text" class="form-control" name="pemegang_wilayah" readonly style="background-color: #eceef1;"
                         value="{{ old('pemegang_wilayah', $dosen->pemegang_wilayah ?? '') }}">
                 </div>
             </div>
@@ -165,7 +165,7 @@
             <div class="row mb-3">
                 <label class="col-sm-2 col-form-label">Eligible Span</label>
                 <div class="col-sm-10">
-                    <select class="form-select" name="eligible_span" readonly>
+                    <select class="form-select" name="eligible_span" style="pointer-events: none; background-color: #eceef1;" readonly>
                         <option value="YA" {{ old('eligible_span', $dosen->eligible_span ?? '') == 'YA' ? 'selected' : '' }}>YA</option>
                         <option value="TIDAK" {{ old('eligible_span', $dosen->eligible_span ?? '') == 'TIDAK' ? 'selected' : '' }}>TIDAK</option>
                     </select>
