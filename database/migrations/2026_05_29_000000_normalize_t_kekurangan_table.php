@@ -9,6 +9,7 @@ class NormalizeTKekuranganTable extends Migration
 {
     public function up()
     {
+        if (!Schema::hasTable('t_kekurangan')) {
         // Drop the old tables
         Schema::dropIfExists('t_uraian_pembayaran');
         Schema::dropIfExists('t_kekurangan');
@@ -31,7 +32,10 @@ class NormalizeTKekuranganTable extends Migration
             $table->index(['nidn', 'tahun']);
             $table->index('rekap_id');
         });
+        }
+
     }
+
 
     public function down()
     {

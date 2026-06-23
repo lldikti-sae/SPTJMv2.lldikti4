@@ -44,6 +44,8 @@ class MigrasiController extends Controller
           $trimmed = trim($value, " \t\n\r\0\x0B\"'");
           if ($trimmed === '') return null;
           if (strcasecmp($trimmed, 'NULL') === 0) return null;
+          // Fix invalid UTF-8 characters (like Windows-1252 smart quotes from Excel)
+          $trimmed = mb_convert_encoding($trimmed, 'UTF-8', 'UTF-8, Windows-1252, ISO-8859-1');
           return $trimmed;
       }
       return $value;
@@ -1558,7 +1560,7 @@ class MigrasiController extends Controller
                 'excel_chunk' => 1000,
                 'excel_batch' => 500,
                 'columns' => [
-                    'id_usulan','tanggal_usulan','kode_pts','nama_pts','bulan','tahun','nidn','nama','jabatan','kota','nomor_surat','alamat_pts','wilayah','password','aktif','file','status','alasan_penolakan','created_at','updated_at'
+                    'id_usulan','tanggal_usulan','kode_pts','nama_pts','bulan','tahun','nidn','nuptk','nama','jabatan','kota','nomor_surat','alamat_pts','wilayah','password','aktif','file','status','alasan_penolakan','created_at','updated_at'
                 ],
             ],
         ];

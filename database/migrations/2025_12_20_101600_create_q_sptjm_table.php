@@ -14,6 +14,7 @@ class CreateQSptjmTable extends Migration
      */
     public function up()
     {
+        if (!Schema::hasTable('q_sptjm')) {
         Schema::create('q_sptjm', function (Blueprint $table) {
             $table->bigIncrements('no');
             $table->string('id_usulan', 30)->nullable();
@@ -45,7 +46,10 @@ class CreateQSptjmTable extends Migration
 
         // Optional: set AUTO_INCREMENT starting value to 56117 to match original SQL
         DB::statement("ALTER TABLE `q_sptjm` AUTO_INCREMENT = 56117;");
+        }
+
     }
+
 
     /**
      * Reverse the migrations.

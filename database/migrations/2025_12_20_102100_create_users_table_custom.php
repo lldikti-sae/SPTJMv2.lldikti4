@@ -14,6 +14,7 @@ class CreateUsersTableCustom extends Migration
      */
     public function up()
     {
+        if (!Schema::hasTable('users')) {
         Schema::create('users', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->string('email', 255)->unique();
@@ -31,7 +32,10 @@ class CreateUsersTableCustom extends Migration
 
         // Optional: set AUTO_INCREMENT start value to 16 to match provided SQL
         DB::statement("ALTER TABLE `users` AUTO_INCREMENT = 16;");
+        }
+
     }
+
 
     /**
      * Reverse the migrations.

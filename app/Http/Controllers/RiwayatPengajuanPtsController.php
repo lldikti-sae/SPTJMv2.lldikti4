@@ -28,6 +28,7 @@ class RiwayatPengajuanPtsController extends Controller
     $query = DB::table('q_sptjm')
       ->where('kode_pts', $kodePtsLogin)
       ->where('tahun', $tahun)
+      ->orderByRaw("FIELD(bulan, 'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember') DESC")
       ->orderBy('no', 'desc');
 
     // Jika request dari DataTables (AJAX), kembalikan JSON untuk server-side processing

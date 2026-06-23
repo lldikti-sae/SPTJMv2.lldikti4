@@ -14,6 +14,7 @@ class CreateJHistoriDosenTable extends Migration
      */
     public function up()
     {
+        if (!Schema::hasTable('j_histori_dosen')) {
         Schema::create('j_histori_dosen', function (Blueprint $table) {
             $table->bigIncrements('no');
             $table->string('nidn', 50)->nullable();
@@ -41,7 +42,10 @@ class CreateJHistoriDosenTable extends Migration
 
         // Optional: set AUTO_INCREMENT starting value to 4423 to match original SQL
         DB::statement("ALTER TABLE `j_histori_dosen` AUTO_INCREMENT = 4423;");
+        }
+
     }
+
 
     /**
      * Reverse the migrations.

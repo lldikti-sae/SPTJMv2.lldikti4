@@ -14,6 +14,7 @@ class CreateKDataSisterTable extends Migration
      */
     public function up()
     {
+        if (!Schema::hasTable('k_data_sister')) {
         Schema::create('k_data_sister', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->string('tahun', 255);
@@ -31,7 +32,10 @@ class CreateKDataSisterTable extends Migration
 
         // Optional: set AUTO_INCREMENT starting value to 43 to match original SQL
         DB::statement("ALTER TABLE `k_data_sister` AUTO_INCREMENT = 43;");
+        }
+
     }
+
 
     /**
      * Reverse the migrations.

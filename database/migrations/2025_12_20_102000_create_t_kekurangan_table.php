@@ -13,6 +13,7 @@ class CreateTKekuranganTable extends Migration
      */
     public function up()
     {
+        if (!Schema::hasTable('t_kekurangan')) {
         Schema::create('t_kekurangan', function (Blueprint $table) {
             $table->string('id', 50);
             $table->string('nidn', 50)->nullable();
@@ -46,7 +47,10 @@ class CreateTKekuranganTable extends Migration
             $table->charset = 'utf8mb4';
             $table->collation = 'utf8mb4_unicode_ci';
         });
+        }
+
     }
+
 
     /**
      * Reverse the migrations.

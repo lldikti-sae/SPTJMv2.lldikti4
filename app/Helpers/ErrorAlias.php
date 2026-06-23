@@ -17,9 +17,16 @@ class ErrorAlias
         $uuid = str_replace('-', '', (string) Str::uuid());
         $code = $scope . '-' . strtoupper(substr($uuid, 0, 10));
 
+        $debugMsg = $e->getMessage() . " | " . $e->getFile() . ":" . $e->getLine();
+
+        \Illuminate\Support\Facades\Log::error('ErrorAlias generated: ' . $code, [
+            'message' => $e->getMessage(),
+            'trace' => $e->getTraceAsString(),
+        ]);
+
         return [
             'code' => $code,
-            'message' => 'Terjadi kesalahan sistem. Silakan coba lagi. (Kode: ' . $code . ')',
+            'message' => 'Terjadi kesalahan sistem. Silakan coba lagi. (Kode: ' . $code . ') DETAIL: ' . $debugMsg,
         ];
     }
 }

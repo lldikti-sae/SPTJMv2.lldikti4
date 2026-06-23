@@ -22,7 +22,11 @@
         <div class="layout-container">
 
             @if ($isMenu)
-                @include('layouts/sections/menu/verticalMenu')
+                @if (Auth::check() && Auth::user()->role === 'pic')
+                    @include('layouts/sections/menu/verticalMenuPic')
+                @else
+                    @include('layouts/sections/menu/verticalMenu')
+                @endif
             @endif
 
 
@@ -30,7 +34,11 @@
             <div class="layout-page">
                 <!-- BEGIN: Navbar-->
                 @if ($isNavbar)
-                    @include('layouts/sections/navbar/navbar')
+                    @if (Auth::check() && Auth::user()->role === 'pic')
+                        @include('layouts/sections/navbar/navbarPic')
+                    @else
+                        @include('layouts/sections/navbar/navbar')
+                    @endif
                 @endif
                 <!-- END: Navbar-->
 

@@ -14,6 +14,7 @@ class CreateSTunjanganKinerjaTable extends Migration
      */
     public function up()
     {
+        if (!Schema::hasTable('s_tunjangan_kinerja')) {
         Schema::create('s_tunjangan_kinerja', function (Blueprint $table) {
             $table->bigIncrements('NO');
             $table->string('NUPTK', 50);
@@ -54,7 +55,10 @@ class CreateSTunjanganKinerjaTable extends Migration
 
         // Optional: set AUTO_INCREMENT to match original SQL
         DB::statement("ALTER TABLE `s_tunjangan_kinerja` AUTO_INCREMENT = 2221;");
+        }
+
     }
+
 
     /**
      * Reverse the migrations.

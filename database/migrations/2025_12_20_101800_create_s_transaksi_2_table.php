@@ -7,8 +7,9 @@ class CreateSTransaksi2Table extends Migration
 {
     public function up()
     {
-        DB::statement('DROP TABLE IF EXISTS `s_transaksi_2`');
-        DB::statement(<<<SQL
+        // Pencegahan agar tidak drop table jika sudah ada
+        if (!Schema::hasTable('s_transaksi_2')) {
+            DB::statement(<<<SQL
 CREATE TABLE `s_transaksi_2` (
   `No` bigint NOT NULL AUTO_INCREMENT,
   `NIDN` varchar(50) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
@@ -251,6 +252,7 @@ CREATE TABLE `s_transaksi_2` (
 ) ENGINE=MyISAM AUTO_INCREMENT=135692 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=COMPRESSED
 SQL
         );
+        }
     }
 
     public function down()

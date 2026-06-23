@@ -13,6 +13,7 @@ class CreateVPejabatTable extends Migration
      */
     public function up()
     {
+        if (!Schema::hasTable('v_pejabat')) {
         Schema::create('v_pejabat', function (Blueprint $table) {
             $table->integer('id');
             $table->string('pejabat1', 100)->nullable();
@@ -29,7 +30,10 @@ class CreateVPejabatTable extends Migration
             $table->charset = 'latin1';
             $table->collation = 'latin1_swedish_ci';
         });
+        }
+
     }
+
 
     /**
      * Reverse the migrations.

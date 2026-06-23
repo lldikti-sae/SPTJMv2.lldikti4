@@ -13,6 +13,7 @@ class CreateBBankTable extends Migration
      */
     public function up()
     {
+        if (!Schema::hasTable('b_bank')) {
         Schema::create('b_bank', function (Blueprint $table) {
             $table->string('kode_bank', 40);
             $table->string('nama_bank', 15)->nullable();
@@ -25,7 +26,10 @@ class CreateBBankTable extends Migration
             $table->charset = 'utf8mb4';
             $table->collation = 'utf8mb4_unicode_ci';
         });
+        }
+
     }
+
 
     /**
      * Reverse the migrations.

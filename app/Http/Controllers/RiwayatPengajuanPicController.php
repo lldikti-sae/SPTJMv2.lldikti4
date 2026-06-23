@@ -31,6 +31,7 @@ class RiwayatPengajuanPicController extends Controller
       ->where('wilayah', $pemegangWilayah)
       ->where('tahun', $tahunActive)
       ->groupBy('id_usulan', 'tanggal_usulan', 'bulan', 'nama_pts', 'status', 'alasan_penolakan', 'wilayah', 'tahun')
+      ->orderByRaw("FIELD(bulan, 'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember') DESC")
       ->orderBy('tanggal_usulan', 'desc');
 
     // Remove hard limit to return all matching records for the selected wilayah and year

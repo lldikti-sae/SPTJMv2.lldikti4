@@ -13,6 +13,7 @@ class CreateFKeaktifanTable extends Migration
      */
     public function up()
     {
+        if (!Schema::hasTable('f_keaktifan')) {
         Schema::create('f_keaktifan', function (Blueprint $table) {
             $table->char('kode', 1);
             $table->string('aktif', 100)->nullable();
@@ -25,7 +26,10 @@ class CreateFKeaktifanTable extends Migration
             $table->charset = 'utf8mb4';
             $table->collation = 'utf8mb4_unicode_ci';
         });
+        }
+
     }
+
 
     /**
      * Reverse the migrations.

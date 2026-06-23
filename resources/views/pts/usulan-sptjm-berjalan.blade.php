@@ -67,8 +67,8 @@
     <div class="card mb-4">
       <h5 class="card-header">Tabel Usulan SPTJM Berjalan</h5>
       <div class="card-body">
-        @if (session('info'))
-        <div class="alert alert-warning" role="alert">{{ session('info') }}</div>
+        @if (isset($info) || session('info'))
+        <div class="alert alert-warning" role="alert">{{ $info ?? session('info') }}</div>
         @endif
         @php
           $listPns = $dosenListPNS ?? collect();

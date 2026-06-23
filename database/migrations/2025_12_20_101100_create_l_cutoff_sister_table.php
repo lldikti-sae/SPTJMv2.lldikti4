@@ -13,6 +13,7 @@ class CreateLCutoffSisterTable extends Migration
      */
     public function up()
     {
+        if (!Schema::hasTable('l_cutoff_sister')) {
         Schema::create('l_cutoff_sister', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->string('pelaporan', 255)->nullable();
@@ -26,7 +27,10 @@ class CreateLCutoffSisterTable extends Migration
             $table->charset = 'utf8mb4';
             $table->collation = 'utf8mb4_unicode_ci';
         });
+        }
+
     }
+
 
     /**
      * Reverse the migrations.

@@ -47,7 +47,8 @@
                             <td>
                                 <button class="btn btn-sm btn-warning edit-pengguna" data-id="{{ $user->id }}"
                                     data-email="{{ $user->email }}" data-role="{{ $user->role }}"
-                                    data-active="{{ $user->active }}" data-cp="{{ $user->cp }}" data-bs-toggle="modal"
+                                    data-active="{{ $user->active }}" data-cp="{{ $user->cp }}" 
+                                    data-bs-toggle="modal"
                                     data-bs-target="#modalPenggunaForm">
                                     <i class="bx bx-edit"></i>
                                 </button>
@@ -88,13 +89,14 @@
                             <input type="text" class="form-control" name="email" id="email" required>
                         </div>
                         <div class="mb-3">
-                            <label>Password</label>
+                            <label>Password <span id="passwordRequiredStar" class="text-danger">*</span></label>
                             <div class="input-group">
-                                <input type="password" class="form-control" name="password" id="password" required>
+                                <input type="password" class="form-control" name="password" id="password">
                                 <span class="input-group-text" id="togglePassword" role="button" style="cursor: pointer;">
                                     <i class="bx bx-show" id="togglePasswordIcon"></i>
                                 </span>
                             </div>
+                            <small class="text-muted d-none" id="passwordHelpText">Kosongkan jika tidak ingin mengubah password.</small>
                         </div>
                         <div class="mb-3">
                             <label>Role</label>
@@ -208,6 +210,11 @@
                 document.getElementById('penggunaForm').setAttribute('action',
                     "{{ route('admin.pengguna-akun.store') }}");
                 document.getElementById('penggunaForm').reset();
+                
+                // Password wajib saat tambah
+                document.getElementById('password').required = true;
+                document.getElementById('passwordRequiredStar').classList.remove('d-none');
+                document.getElementById('passwordHelpText').classList.add('d-none');
             });
 
             // Edit Data
@@ -216,7 +223,6 @@
                 if (editBtn) {
                     let id = editBtn.dataset.id;
                     let email = editBtn.dataset.email;
-                    let password = editBtn.dataset.password;
                     let role = editBtn.dataset.role;
                     let active = editBtn.dataset.active;
                     let cp = editBtn.dataset.cp;
@@ -234,7 +240,13 @@
                     // Isi Data
                     document.getElementById('penggunaId').value = id;
                     document.getElementById('email').value = email;
-                    document.getElementById('password').value = password;
+                    
+                    let pwdInput = document.getElementById('password');
+                    pwdInput.value = ''; // Kosongkan password saat edit
+                    pwdInput.required = false;
+                    document.getElementById('passwordRequiredStar').classList.add('d-none');
+                    document.getElementById('passwordHelpText').classList.remove('d-none');
+                    
                     document.getElementById('role').value = role;
                     document.getElementById('active').value = active;
                     document.getElementById('cp').value = cp;

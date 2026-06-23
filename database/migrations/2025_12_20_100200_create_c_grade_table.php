@@ -13,6 +13,7 @@ class CreateCGradeTable extends Migration
      */
     public function up()
     {
+        if (!Schema::hasTable('c_grade')) {
         Schema::create('c_grade', function (Blueprint $table) {
             $table->string('kode', 5);
             $table->string('gol', 5)->nullable();
@@ -27,7 +28,10 @@ class CreateCGradeTable extends Migration
             $table->charset = 'utf8mb4';
             $table->collation = 'utf8mb4_unicode_ci';
         });
+        }
+
     }
+
 
     /**
      * Reverse the migrations.

@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\authentications\LoginBasic;
@@ -13,6 +13,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\PicController;
 use App\Http\Controllers\PtsController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\HakAksesPicController;
 
 // Dosen
 use App\Http\Controllers\Dosen\DashboardDosenController;
@@ -446,6 +447,9 @@ Route::get('/admin/pengguna-akun', [UserController::class, 'index'])->name('admi
 Route::post('/admin/pengguna-akun', [UserController::class, 'store'])->name('admin.pengguna-akun.store');
 Route::put('/admin/pengguna-akun/{id}', [UserController::class, 'update'])->name('admin.pengguna-akun.update');
 Route::delete('/admin/pengguna-akun/{id}', [UserController::class, 'destroy'])->name('admin.pengguna-akun.destroy');
+
+Route::get('/admin/hak-akses-pic', [HakAksesPicController::class, 'index'])->name('admin.hak-akses-pic');
+Route::put('/admin/hak-akses-pic/{id}', [HakAksesPicController::class, 'update'])->name('admin.hak-akses-pic.update');
 Route::get('/admin/perbaikan', [PerbaikanController::class, 'index'])->name('admin.perbaikan');
 Route::get('/admin/versi', [TambahVersiController::class, 'index'])->name('admin.versi');
 Route::get('/admin/tambah-versi', [TambahVersiController::class, 'index'])->name('admin.tambah-versi');

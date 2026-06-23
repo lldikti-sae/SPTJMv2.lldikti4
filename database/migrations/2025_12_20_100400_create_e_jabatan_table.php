@@ -13,6 +13,7 @@ class CreateEJabatanTable extends Migration
      */
     public function up()
     {
+        if (!Schema::hasTable('e_jabatan')) {
         Schema::create('e_jabatan', function (Blueprint $table) {
             $table->string('kode', 50);
             $table->string('jabatan', 50)->nullable();
@@ -26,7 +27,10 @@ class CreateEJabatanTable extends Migration
             $table->charset = 'utf8mb4';
             $table->collation = 'utf8mb4_unicode_ci';
         });
+        }
+
     }
+
 
     /**
      * Reverse the migrations.

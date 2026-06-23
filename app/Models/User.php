@@ -17,9 +17,13 @@ class User extends Authenticatable
    *
    * @var array<int, string>
    */
-  protected $fillable = ['email', 'password', 'role', 'active', 'cp'];
+  protected $fillable = ['email', 'password', 'role', 'active', 'cp', 'admin_permissions'];
 
   protected $hidden = ['password', 'remember_token'];
+
+  protected $casts = [
+      'admin_permissions' => 'array',
+  ];
 
   public function isAdmin()
   {
@@ -34,5 +38,19 @@ class User extends Authenticatable
   public function isPTS()
   {
     return $this->role === 'pts';
+  }
+
+  public function hasAdminPermission($permission)
+  {
+      if ($this->isAdmin()) {
+          return true;
+      }
+      
+      if ($this->isPIC()) {
+          $permissions = $this->admin_permissions ?? [];
+          return in_array($permission, $permissions);
+      }
+      
+      return false;
   }
 }

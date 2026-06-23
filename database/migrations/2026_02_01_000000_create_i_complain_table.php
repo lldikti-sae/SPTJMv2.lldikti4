@@ -13,6 +13,7 @@ class CreateTComplainTable extends Migration
      */
     public function up()
     {
+        if (!Schema::hasTable('i_complain')) {
         Schema::create('i_complain', function (Blueprint $table) {
             $table->id();
 
@@ -50,7 +51,10 @@ class CreateTComplainTable extends Migration
             $table->charset = 'utf8mb4';
             $table->collation = 'utf8mb4_unicode_ci';
         });
+        }
+
     }
+
 
     /**
      * Reverse the migrations.

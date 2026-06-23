@@ -13,6 +13,7 @@ class CreateGPegawaiTable extends Migration
      */
     public function up()
     {
+        if (!Schema::hasTable('g_pegawai')) {
         Schema::create('g_pegawai', function (Blueprint $table) {
             $table->string('kode', 10);
             $table->string('jenis', 10)->nullable();
@@ -25,7 +26,10 @@ class CreateGPegawaiTable extends Migration
             $table->charset = 'utf8mb4';
             $table->collation = 'utf8mb4_unicode_ci';
         });
+        }
+
     }
+
 
     /**
      * Reverse the migrations.

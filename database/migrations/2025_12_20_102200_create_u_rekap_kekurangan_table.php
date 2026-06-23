@@ -13,6 +13,7 @@ class CreateURekapKekuranganTable extends Migration
      */
     public function up()
     {
+        if (!Schema::hasTable('u_rekap_kekurangan')) {
         Schema::create('u_rekap_kekurangan', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->string('periode', 50)->nullable();
@@ -31,7 +32,10 @@ class CreateURekapKekuranganTable extends Migration
             $table->charset = 'utf8mb4';
             $table->collation = 'utf8mb4_unicode_ci';
         });
+        }
+
     }
+
 
     /**
      * Reverse the migrations.

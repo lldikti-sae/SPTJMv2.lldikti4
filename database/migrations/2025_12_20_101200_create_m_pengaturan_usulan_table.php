@@ -14,6 +14,7 @@ class CreateMPengaturanUsulanTable extends Migration
      */
     public function up()
     {
+        if (!Schema::hasTable('m_pengaturan_usulan')) {
         Schema::create('m_pengaturan_usulan', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->string('jenis_usulan', 50)->nullable();
@@ -33,7 +34,10 @@ class CreateMPengaturanUsulanTable extends Migration
 
         // Optional: set AUTO_INCREMENT to 35 to match provided SQL
         DB::statement("ALTER TABLE `m_pengaturan_usulan` AUTO_INCREMENT = 35;");
+        }
+
     }
+
 
     /**
      * Reverse the migrations.

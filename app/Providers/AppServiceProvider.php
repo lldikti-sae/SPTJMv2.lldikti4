@@ -42,6 +42,55 @@ class AppServiceProvider extends ServiceProvider
       $jsonContent = file_get_contents($jsonPath);
       $menuData = json_decode($jsonContent);
 
+      $user = auth()->user();
+      if ($user && $user->isPIC() && !empty($user->admin_permissions)) {
+          $adminMenuPath = resource_path('menu/verticalMenu.json');
+          if (file_exists($adminMenuPath)) {
+              $adminMenuData = json_decode(file_get_contents($adminMenuPath));
+              
+              $permUrlMap = [
+                  'data-dosen' => ['admin/data-dosen', 'admin/master-dosen'],
+                  'skpp' => ['admin/skpp'],
+                  'kekurangan-bayar' => ['admin/kekurangan-bayar'],
+                  'rekap-pencairan' => ['admin/rekap-pencairan'],
+                  'sinkronisasi' => ['admin/sinkronisasi']
+              ];
+              
+              $allowedUrls = [];
+              foreach ($user->admin_permissions as $perm) {
+                  if (isset($permUrlMap[$perm])) {
+                      foreach ($permUrlMap[$perm] as $url) {
+                          $allowedUrls[] = $url;
+                      }
+                  }
+              }
+              
+              $additionalMenus = [];
+              $findMenus = function($items) use (&$findMenus, $allowedUrls, &$additionalMenus) {
+                  foreach ($items as $item) {
+                      if (isset($item->url) && in_array($item->url, $allowedUrls)) {
+                          // Change icon or use original
+                          $additionalMenus[] = $item;
+                      }
+                      if (isset($item->submenu)) {
+                          $findMenus($item->submenu);
+                      }
+                  }
+              };
+              
+              if (isset($adminMenuData->menu)) {
+                  $findMenus($adminMenuData->menu);
+              }
+              
+              if (count($additionalMenus) > 0) {
+                  $menuData[0]->menu[] = (object) ['menuHeader' => 'Akses Modul Admin'];
+                  foreach ($additionalMenus as $am) {
+                      $menuData[0]->menu[] = $am;
+                  }
+              }
+          }
+      }
+
       $view->with('menuData', $menuData);
     });
 

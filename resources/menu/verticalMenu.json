@@ -193,6 +193,11 @@
           "slug": "pengaturan-akun"
         },
         {
+          "url": "admin/hak-akses-pic",
+          "name": "Hak Akses PIC",
+          "slug": "admin.hak-akses-pic"
+        },
+        {
           "url": "admin/tambah-versi",
           "name": "Tambah Versi",
           "slug": "pengaturan-versi"

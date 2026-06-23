@@ -13,6 +13,7 @@ class CreateOSisterGenapTlTable extends Migration
      */
     public function up()
     {
+        if (!Schema::hasTable('o_sister_genap_tl')) {
         Schema::create('o_sister_genap_tl', function (Blueprint $table) {
             $table->string('nidn', 50);
             $table->string('nuptk', 50);
@@ -35,7 +36,10 @@ class CreateOSisterGenapTlTable extends Migration
             $table->charset = 'utf8mb4';
             $table->collation = 'utf8mb4_unicode_ci';
         });
+        }
+
     }
+
 
     /**
      * Reverse the migrations.

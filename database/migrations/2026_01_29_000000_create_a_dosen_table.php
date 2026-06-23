@@ -14,6 +14,7 @@ class CreateUserDosenTable extends Migration
      */
     public function up()
     {
+        if (!Schema::hasTable('a_dosen')) {
         Schema::create('a_dosen', function (Blueprint $table) {
             $table->id();
             $table->string('nidn', 100)->nullable();
@@ -37,7 +38,10 @@ class CreateUserDosenTable extends Migration
         // If you want to set the AUTO_INCREMENT start value to 390 (as in the original SQL),
         // uncomment the following line. It's optional and may be skipped.
         DB::statement("ALTER TABLE `a_dosen` AUTO_INCREMENT = 390;");
+        }
+
     }
+
 
     /**
      * Reverse the migrations.

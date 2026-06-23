@@ -14,6 +14,7 @@ class CreateDPajakTable extends Migration
      */
     public function up()
     {
+        if (!Schema::hasTable('d_pajak')) {
         Schema::create('d_pajak', function (Blueprint $table) {
             $table->bigIncrements('no');
             $table->string('status', 255)->nullable();
@@ -29,7 +30,10 @@ class CreateDPajakTable extends Migration
 
         // Optional: set AUTO_INCREMENT starting value to 29 to match the original SQL
         DB::statement("ALTER TABLE `d_pajak` AUTO_INCREMENT = 29;");
+        }
+
     }
+
 
     /**
      * Reverse the migrations.

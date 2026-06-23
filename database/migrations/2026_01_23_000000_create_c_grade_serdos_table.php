@@ -13,6 +13,7 @@ class CreateCGradeSerdosTable extends Migration
      */
     public function up()
     {
+        if (!Schema::hasTable('c_grade_serdos')) {
         Schema::create('c_grade_serdos', function (Blueprint $table) {
             $table->engine = 'InnoDB';
             $table->collation = 'armscii8_bin';
@@ -24,7 +25,10 @@ class CreateCGradeSerdosTable extends Migration
             $table->string('golongan', 10)->nullable()->collation('armscii8_bin');
             $table->timestamps();
         });
+        }
+
     }
+
 
     /**
      * Reverse the migrations.

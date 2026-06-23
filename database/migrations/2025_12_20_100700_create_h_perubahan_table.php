@@ -13,6 +13,7 @@ class CreateHPerubahanTable extends Migration
      */
     public function up()
     {
+        if (!Schema::hasTable('h_perubahan')) {
         Schema::create('h_perubahan', function (Blueprint $table) {
             $table->unsignedBigInteger('kode');
             $table->string('status_perubahan', 30);
@@ -25,7 +26,10 @@ class CreateHPerubahanTable extends Migration
             $table->charset = 'utf8mb4';
             $table->collation = 'utf8mb4_unicode_ci';
         });
+        }
+
     }
+
 
     /**
      * Reverse the migrations.

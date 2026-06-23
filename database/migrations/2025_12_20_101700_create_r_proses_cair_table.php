@@ -14,6 +14,7 @@ class CreateRProsesCairTable extends Migration
      */
     public function up()
     {
+        if (!Schema::hasTable('r_proses_cair')) {
         Schema::create('r_proses_cair', function (Blueprint $table) {
             $table->bigIncrements('no');
             $table->integer('tahun')->nullable();
@@ -37,7 +38,10 @@ class CreateRProsesCairTable extends Migration
 
         // Optional: set AUTO_INCREMENT starting value to 14 to match original SQL
         DB::statement("ALTER TABLE `r_proses_cair` AUTO_INCREMENT = 14;");
+        }
+
     }
+
 
     /**
      * Reverse the migrations.
