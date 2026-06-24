@@ -111,8 +111,17 @@ class UsulanSusulanSptjmPtsController extends Controller
       $dosenList = DB::table('s_transaksi_2 as d')
         ->leftJoin($joinTable['table'], function ($join) use ($joinTable) {
           $alias = $joinTable['alias'];
-          $join->on('d.nidn', '=', $alias . '.nidn')
-            ->orOn('d.nuptk', '=', $alias . '.nuptk');
+          $join->on(function ($on) use ($alias) {
+            $on->where(function ($q) use ($alias) {
+              $q->whereColumn('d.nidn', '=', $alias . '.nidn')
+                ->whereRaw("TRIM(d.nidn) != ''")
+                ->whereRaw("TRIM(d.nidn) != '-'");
+            })->orWhere(function ($q) use ($alias) {
+              $q->whereColumn('d.nuptk', '=', $alias . '.nuptk')
+                ->whereRaw("TRIM(d.nuptk) != ''")
+                ->whereRaw("TRIM(d.nuptk) != '-'");
+            });
+          });
         })
         ->select(
           'd.nama',
@@ -123,7 +132,7 @@ class UsulanSusulanSptjmPtsController extends Controller
           "d.tahun{$bulan} as tahun",
           "d.jabatan{$bulan} as jabatan",
           'd.aktif',
-          DB::raw($bkdColumn . ' as kesimpulan_bkd'),
+          DB::raw("MAX($bkdColumn) as kesimpulan_bkd"),
           'd.keterangan'
         )
         ->where('d.kode_pt', $kodePts)
@@ -142,6 +151,7 @@ class UsulanSusulanSptjmPtsController extends Controller
         ->whereNotNull(DB::raw($bkdColumn))
         // Hanya tampilkan yang BKD-nya 'M'
         ->where(DB::raw("TRIM($bkdColumn)"), '=', 'M')
+        ->groupBy('d.nidn', 'd.nuptk', 'd.nama', 'd.jenis', "d.gol{$bulan}", "d.tahun{$bulan}", "d.jabatan{$bulan}", 'd.aktif', 'd.keterangan')
         ->orderBy('d.nama')
         ->get();
 
@@ -275,8 +285,17 @@ class UsulanSusulanSptjmPtsController extends Controller
     $dosenList = DB::table('s_transaksi_2 as d')
       ->leftJoin($joinTable['table'], function ($join) use ($joinTable) {
         $alias = $joinTable['alias'];
-        $join->on('d.nidn', '=', $alias . '.nidn')
-          ->orOn('d.nuptk', '=', $alias . '.nuptk');
+        $join->on(function ($on) use ($alias) {
+          $on->where(function ($q) use ($alias) {
+            $q->whereColumn('d.nidn', '=', $alias . '.nidn')
+              ->whereRaw("TRIM(d.nidn) != ''")
+              ->whereRaw("TRIM(d.nidn) != '-'");
+          })->orWhere(function ($q) use ($alias) {
+            $q->whereColumn('d.nuptk', '=', $alias . '.nuptk')
+              ->whereRaw("TRIM(d.nuptk) != ''")
+              ->whereRaw("TRIM(d.nuptk) != '-'");
+          });
+        });
       })
       ->select(
         'd.nama',
@@ -287,7 +306,7 @@ class UsulanSusulanSptjmPtsController extends Controller
         DB::raw('d.jabatan' . $bulan . ' as jabatan'),
         'd.aktif',
         'd.jenis',
-        DB::raw($bkdColumn . ' as kesimpulan_bkd'),
+        DB::raw("MAX($bkdColumn) as kesimpulan_bkd"),
         'd.keterangan'
       )
       ->where('d.kode_pt', $kodePts)
@@ -308,6 +327,7 @@ class UsulanSusulanSptjmPtsController extends Controller
       ->where('d.jenis', 'PNS')
       ->whereNotNull(DB::raw($bkdColumn))
       ->where(DB::raw("TRIM($bkdColumn)"), '=', 'M')
+      ->groupBy('d.nidn', 'd.nuptk', 'd.nama', 'd.jenis', 'd.gol' . $bulan, 'd.tahun' . $bulan, 'd.jabatan' . $bulan, 'd.aktif', 'd.keterangan')
       ->orderBy('d.nama')
       ->get();
 
@@ -315,6 +335,7 @@ class UsulanSusulanSptjmPtsController extends Controller
       ->where('d.jenis', 'NON PNS')
       ->whereNotNull(DB::raw($bkdColumn))
       ->where(DB::raw("TRIM($bkdColumn)"), '=', 'M')
+      ->groupBy('d.nidn', 'd.nuptk', 'd.nama', 'd.jenis', 'd.gol' . $bulan, 'd.tahun' . $bulan, 'd.jabatan' . $bulan, 'd.aktif', 'd.keterangan')
       ->orderBy('d.nama')
       ->get();
 
@@ -520,10 +541,19 @@ class UsulanSusulanSptjmPtsController extends Controller
     $dosenIdentifierRows = DB::table('s_transaksi_2 as d')
       ->leftJoin($joinTable['table'], function ($join) use ($joinTable) {
         $alias = $joinTable['alias'];
-        $join->on('d.nidn', '=', $alias . '.nidn')
-          ->orOn('d.nuptk', '=', $alias . '.nuptk');
+        $join->on(function ($on) use ($alias) {
+          $on->where(function ($q) use ($alias) {
+            $q->whereColumn('d.nidn', '=', $alias . '.nidn')
+              ->whereRaw("TRIM(d.nidn) != ''")
+              ->whereRaw("TRIM(d.nidn) != '-'");
+          })->orWhere(function ($q) use ($alias) {
+            $q->whereColumn('d.nuptk', '=', $alias . '.nuptk')
+              ->whereRaw("TRIM(d.nuptk) != ''")
+              ->whereRaw("TRIM(d.nuptk) != '-'");
+          });
+        });
       })
-      ->select('d.nidn', 'd.nuptk', DB::raw($bkdColumn . ' as kesimpulan_bkd'))
+      ->select('d.nidn', 'd.nuptk', DB::raw("MAX($bkdColumn) as kesimpulan_bkd"))
       ->where('d.kode_pt', $kodePts)
       ->where('d.tahun_versi', $tahun)
       ->where($ptsColumn, $kodePts)
@@ -535,6 +565,7 @@ class UsulanSusulanSptjmPtsController extends Controller
       ->whereNotNull(DB::raw($bkdColumn))
       // Pastikan hanya dosen dengan BKD = 'M' yang akan di-update KodeUsulan-nya
       ->where(DB::raw("TRIM($bkdColumn)"), '=', 'M')
+      ->groupBy('d.nidn', 'd.nuptk')
       ->get();
 
     // Batch update using identifiers (nidn and nuptk) to avoid per-row queries

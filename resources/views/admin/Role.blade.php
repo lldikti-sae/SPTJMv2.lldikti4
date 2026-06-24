@@ -118,6 +118,13 @@
                                     <small class="d-block text-muted">Akses ke Sinkronisasi Data (Pajak, dll)</small>
                                 </span>
                             </label>
+                            <label class="list-group-item d-flex gap-2">
+                                <input class="form-check-input flex-shrink-0 admin-permission-cb" type="checkbox" name="admin_permissions[]" value="data-sisternas">
+                                <span>
+                                    <strong>Data Sisternas</strong>
+                                    <small class="d-block text-muted">Akses ke Data Sisternas yang sudah di-input</small>
+                                </span>
+                            </label>
                         </div>
                     </div>
 

@@ -46,8 +46,17 @@ class UsulanTukinBerjalanController extends Controller
 
 			$dosenList = DB::table('s_transaksi_2 as d')
 				->leftJoin($joinTable['table'], function ($join) {
-					$join->on('d.NIDN', '=', 'b.nidn')
-						->orOn('d.NUPTK', '=', 'b.nuptk');
+					$join->on(function ($on) {
+						$on->where(function ($q) {
+							$q->whereColumn('d.NIDN', '=', 'b.nidn')
+								->whereRaw("TRIM(d.NIDN) != ''")
+								->whereRaw("TRIM(d.NIDN) != '-'");
+						})->orWhere(function ($q) {
+							$q->whereColumn('d.NUPTK', '=', 'b.nuptk')
+								->whereRaw("TRIM(d.NUPTK) != ''")
+								->whereRaw("TRIM(d.NUPTK) != '-'");
+						});
+					});
 				})
 				->select(
 					DB::raw('d.Nama as nama'),
@@ -60,11 +69,11 @@ class UsulanTukinBerjalanController extends Controller
 					DB::raw('d.Jenis as jenis'),
 					DB::raw('d.Sertifikat_Dosen as sertifikat_dosen'),
 					DB::raw('d.KodeUsulan' . $bulan . ' as kode_usulan'),
-					DB::raw('b.kesimpulan_bkd as kesimpulan_bkd'),
-					DB::raw('b.kd as kd'),
-					DB::raw('b.kp as kp'),
-					DB::raw('b.potongan_periodik as pp'),
-					DB::raw('b.nuptk as nuptk'),
+					DB::raw('MAX(b.kesimpulan_bkd) as kesimpulan_bkd'),
+					DB::raw('MAX(b.kd) as kd'),
+					DB::raw('MAX(b.kp) as kp'),
+					DB::raw('MAX(b.potongan_periodik) as pp'),
+					DB::raw('MAX(b.nuptk) as nuptk'),
 					DB::raw('d.Keterangan as keterangan')
 				)
 				->where('d.Kode_PT', $kodePts)
@@ -88,6 +97,7 @@ class UsulanTukinBerjalanController extends Controller
 								->whereRaw("TRIM($kodeCol) != '-'");
 						});
 				})
+				->groupBy('d.NIDN', 'd.NUPTK', 'd.Nama', 'd.Jabatan' . $bulan, 'd.Gol' . $bulan, 'd.Tahun' . $bulan, 'd.Aktif', 'd.Jenis', 'd.Sertifikat_Dosen', 'd.KodeUsulan' . $bulan, 'd.Keterangan')
 				->orderBy('d.Nama')
 				->get();
 
@@ -239,8 +249,17 @@ class UsulanTukinBerjalanController extends Controller
 		// Ambil list dosen sesuai tampilan index
 		$dosenList = DB::table('s_transaksi_2 as d')
 			->leftJoin($joinTable['table'], function ($join) {
-				$join->on('d.NIDN', '=', 'b.nidn')
-					->orOn('d.NUPTK', '=', 'b.nuptk');
+				$join->on(function ($on) {
+					$on->where(function ($q) {
+						$q->whereColumn('d.NIDN', '=', 'b.nidn')
+							->whereRaw("TRIM(d.NIDN) != ''")
+							->whereRaw("TRIM(d.NIDN) != '-'");
+					})->orWhere(function ($q) {
+						$q->whereColumn('d.NUPTK', '=', 'b.nuptk')
+							->whereRaw("TRIM(d.NUPTK) != ''")
+							->whereRaw("TRIM(d.NUPTK) != '-'");
+					});
+				});
 			})
 			->select(
 				DB::raw('d.Nama as nama'),
@@ -254,11 +273,11 @@ class UsulanTukinBerjalanController extends Controller
 				DB::raw('d.Sertifikat_Dosen as sertifikat_dosen'),
 				DB::raw('d.Keterangan as keterangan'),
 				DB::raw('d.KodeUsulan' . $bulan . ' as kode_usulan'),
-				DB::raw('b.kesimpulan_bkd as kesimpulan_bkd'),
-				DB::raw('b.kd as kd'),
-				DB::raw('b.kp as kp'),
-				DB::raw('b.potongan_periodik as pp'),
-				DB::raw('b.nuptk as nuptk')
+				DB::raw('MAX(b.kesimpulan_bkd) as kesimpulan_bkd'),
+				DB::raw('MAX(b.kd) as kd'),
+				DB::raw('MAX(b.kp) as kp'),
+				DB::raw('MAX(b.potongan_periodik) as pp'),
+				DB::raw('MAX(b.nuptk) as nuptk')
 			)
 			->where('d.Kode_PT', $kodePts)
 			->where('b.kode_pt', $kodePts)
@@ -279,6 +298,7 @@ class UsulanTukinBerjalanController extends Controller
 							->whereRaw("TRIM($kodeCol) != '-'");
 					});
 			})
+			->groupBy('d.NIDN', 'd.NUPTK', 'd.Nama', 'd.Jabatan' . $bulan, 'd.Gol' . $bulan, 'd.Tahun' . $bulan, 'd.Aktif', 'd.Jenis', 'd.Sertifikat_Dosen', 'd.Keterangan', 'd.KodeUsulan' . $bulan)
 			->orderBy('d.Nama')
 			->get();
 
@@ -554,8 +574,17 @@ class UsulanTukinBerjalanController extends Controller
 
 		$dosenList = DB::table('s_transaksi_2 as d')
 			->leftJoin($joinTable['table'], function ($join) {
-				$join->on('d.NIDN', '=', 'b.nidn')
-					->orOn('d.NUPTK', '=', 'b.nuptk');
+				$join->on(function ($on) {
+					$on->where(function ($q) {
+						$q->whereColumn('d.NIDN', '=', 'b.nidn')
+							->whereRaw("TRIM(d.NIDN) != ''")
+							->whereRaw("TRIM(d.NIDN) != '-'");
+					})->orWhere(function ($q) {
+						$q->whereColumn('d.NUPTK', '=', 'b.nuptk')
+							->whereRaw("TRIM(d.NUPTK) != ''")
+							->whereRaw("TRIM(d.NUPTK) != '-'");
+					});
+				});
 			})
 			->select(
 				DB::raw('d.Nama as nama'),
@@ -567,11 +596,11 @@ class UsulanTukinBerjalanController extends Controller
 				DB::raw('d.Aktif as aktif'),
 				DB::raw('d.Jenis as jenis'),
 				DB::raw('d.Sertifikat_Dosen as sertifikat_dosen'),
-				DB::raw('b.kesimpulan_bkd as kesimpulan_bkd'),
-				DB::raw('b.kd as kd'),
-				DB::raw('b.kp as kp'),
-				DB::raw('b.potongan_periodik as pp'),
-				DB::raw('b.nuptk as nuptk'),
+				DB::raw('MAX(b.kesimpulan_bkd) as kesimpulan_bkd'),
+				DB::raw('MAX(b.kd) as kd'),
+				DB::raw('MAX(b.kp) as kp'),
+				DB::raw('MAX(b.potongan_periodik) as pp'),
+				DB::raw('MAX(b.nuptk) as nuptk'),
 				DB::raw('d.Keterangan as keterangan')
 			)
 			->where('d.Kode_PT', $kodePts)
@@ -593,6 +622,7 @@ class UsulanTukinBerjalanController extends Controller
 							->whereRaw("TRIM($kodeCol) != '-'");
 					});
 			})
+			->groupBy('d.NIDN', 'd.NUPTK', 'd.Nama', 'd.Jabatan' . $bulan, 'd.Gol' . $bulan, 'd.Tahun' . $bulan, 'd.Aktif', 'd.Jenis', 'd.Sertifikat_Dosen', 'd.Keterangan')
 			->orderBy('d.Nama')
 			->get();
 

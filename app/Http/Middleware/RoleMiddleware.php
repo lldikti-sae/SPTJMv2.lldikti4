@@ -50,6 +50,8 @@ class RoleMiddleware
               'admin/perubahan-data-dosen' => 'data-dosen',
               'admin/rekap-pencairan' => 'rekap-pencairan',
               'admin/sinkronisasi' => 'sinkronisasi',
+              'admin/data-sisternas' => 'data-sisternas',
+              'admin/cutoff-sisternas' => 'data-sisternas',
           ];
 
           foreach ($permissionMap as $routePrefix => $requiredPermission) {

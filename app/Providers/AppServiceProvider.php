@@ -53,7 +53,8 @@ class AppServiceProvider extends ServiceProvider
                   'skpp' => ['admin/skpp'],
                   'kekurangan-bayar' => ['admin/kekurangan-bayar'],
                   'rekap-pencairan' => ['admin/rekap-pencairan'],
-                  'sinkronisasi' => ['admin/sinkronisasi']
+                  'sinkronisasi' => ['admin/sinkronisasi'],
+                  'data-sisternas' => ['admin/data-sisternas', 'admin/cutoff-sisternas']
               ];
               
               $allowedUrls = [];
