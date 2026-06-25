@@ -1,4 +1,12 @@
-@extends('layouts/contentNavbarLayout')
+@php
+    $layout = 'layouts/contentNavbarLayout';
+    if(auth()->user() instanceof \App\Models\APts) {
+        $layout = 'layouts/contentNavbarLayoutPts';
+    } elseif(auth()->user() instanceof \App\Models\User && auth()->user()->isPIC()) {
+        $layout = 'layouts/contentNavbarLayoutPic';
+    }
+@endphp
+@extends($layout)
 
 @section('title', 'SPTJM Online')
 
@@ -9,6 +17,7 @@
 <div class="card" style="width: 100%; padding: 10px;">
     <h5 class="card-header text-start p-2">Data Sisternas</h5>
     <hr>
+    @if(auth()->user() instanceof \App\Models\User && auth()->user()->isAdmin())
     <form id="uploadForm" action="{{ route('admin.data-sisternas.store') }}" method="POST"
         enctype="multipart/form-data">
         @csrf
@@ -65,6 +74,7 @@
     </form>
 
     <hr>
+    @endif
 
     {{-- Tabel --}}
     <div class="table-responsive text-nowrap mt-4">
@@ -77,7 +87,9 @@
                     <th>Bulan</th>
                     <th>Periode</th>
                     <th>Dokumen</th>
+                    @if(auth()->user() instanceof \App\Models\User && auth()->user()->isAdmin())
                     <th>Aksi</th>
+                    @endif
                 </tr>
             </thead>
             <tbody>
@@ -92,6 +104,7 @@
                         <a href="{{ asset('storage/File_Data_Sisternas2/' . $item->dokumen) }}" target="_blank">
                             <i class="bx bx-file"></i> Lihat Dokumen</a>
                     </td>
+                    @if(auth()->user() instanceof \App\Models\User && auth()->user()->isAdmin())
                     <td>
                         <form action="{{ route('data-sisternas.destroy', $item->id) }}" method="POST"
                             class="delete-form" onsubmit="return false;">
@@ -102,6 +115,7 @@
                             </button>
                         </form>
                     </td>
+                    @endif
                 </tr>
                 @endforeach
             </tbody>

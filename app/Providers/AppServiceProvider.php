@@ -54,7 +54,7 @@ class AppServiceProvider extends ServiceProvider
                   'kekurangan-bayar' => ['admin/kekurangan-bayar'],
                   'rekap-pencairan' => ['admin/rekap-pencairan'],
                   'sinkronisasi' => ['admin/sinkronisasi'],
-                  'data-sisternas' => ['admin/data-sisternas', 'admin/cutoff-sisternas']
+                  'data-sisternas' => ['admin/data-sisternas']
               ];
               
               $allowedUrls = [];

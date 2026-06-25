@@ -609,6 +609,9 @@ Route::middleware(['auth:pts'])->group(function () {
 
   // Route Data Dosen PTS
   Route::get('/pts/lihat-data-dosen', [LihatDataDosenPtsController::class, 'index'])->name('pts.lihat-data-dosen');
+  
+  // Route Data Sisternas PTS
+  Route::get('/pts/data-sisternas', [App\Http\Controllers\DataSisternasController::class, 'index'])->name('pts.data-sisternas');
   // Backward-compatible alias: some views expect route name `pts.data-dosen`
   Route::get('/pts/data-dosen', [LihatDataDosenPtsController::class, 'index'])->name('pts.data-dosen');
   // Alias for edit page expected by shared blades
