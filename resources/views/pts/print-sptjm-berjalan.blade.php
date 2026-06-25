@@ -125,47 +125,6 @@
     Laporan Bulan: {{ $namaBulan[$bulanSekarang] }} {{ $tahunSekarang }}<br />
   </div>
 
-  <h4>Daftar Nama Dosen PNS:</h4>
-  <table>
-    <colgroup>
-      <col style="width: 5%">
-      <col style="width: 10%">
-      <col style="width: 10%">
-      <col style="width: 25%">
-      <col style="width: 12%">
-      <col style="width: 12%">
-      <col style="width: 13%">
-      <col style="width: 13%">
-    </colgroup>
-    <thead>
-      <tr>
-        <th>No</th>
-        <th>NIDN</th>
-        <th>NUPTK</th>
-        <th>Nama Dosen</th>
-        <th>Golongan</th>
-        <th>Masa Kerja</th>
-        <th>Jabatan</th>
-        <th>BKD</th>
-      </tr>
-    </thead>
-    <tbody>
-      @php $no = 1; @endphp
-      @foreach ($dosenListPNS as $dosen)
-      <tr>
-        <td>{{ $no++ }}</td>
-        <td>{{ $dosen->nidn }}</td>
-        <td>{{ $dosen->nuptk ?? '-' }}</td>
-        <td>{{ $dosen->nama }}</td>
-        <td>{{ $dosen->gol ?? '-' }}</td>
-        <td>{{ $dosen->tahun ?? '-' }}</td>
-        <td>{{ $dosen->jabatan ?? '-' }}</td>
-        <td>{{ $dosen->kesimpulan_bkd ?? '-' }}</td>
-      </tr>
-      @endforeach
-    </tbody>
-  </table>
-
   <h4>Daftar Nama Dosen NON PNS:</h4>
   <table>
     <colgroup>
