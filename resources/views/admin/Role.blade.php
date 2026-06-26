@@ -149,10 +149,7 @@
                                 <div id="collapseProsesPembayaran" class="accordion-collapse collapse" aria-labelledby="headingProsesPembayaran" data-bs-parent="#accordionHakAkses">
                                     <div class="accordion-body p-0">
                                         <div class="list-group list-group-flush">
-                                            <label class="list-group-item d-flex gap-2 bg-lighter ps-4">
-                                                <input class="form-check-input flex-shrink-0 admin-permission-cb" type="checkbox" name="admin_permissions[]" value="proses-pengaturan">
-                                                <span>Pengaturan Usulan</span>
-                                            </label>
+
                                             <label class="list-group-item d-flex gap-2 bg-lighter ps-4">
                                                 <input class="form-check-input flex-shrink-0 admin-permission-cb" type="checkbox" name="admin_permissions[]" value="proses-monitoring-usulan">
                                                 <span>Monitoring Usulan</span>
