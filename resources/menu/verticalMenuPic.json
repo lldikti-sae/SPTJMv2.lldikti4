@@ -71,12 +71,6 @@
         ]
       },
       {
-        "url": "pic/complain",
-        "name": "Complain",
-        "icon": "menu-icon tf-icons bx bx-message-square-dots",
-        "slug": "pic.complain"
-      },
-      {
         "url": "pic/sinkronisasi",
         "name": "Sinkronisasi",
         "icon": "menu-icon tf-icons bx bx-sync",

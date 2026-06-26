@@ -7,63 +7,6 @@
       "slug": "dashboard"
     },
     {
-      "name": "Master Data",
-      "icon": "menu-icon tf-icons bx bx-data",
-      "slug": "master",
-      "submenu": [
-        {
-          "url": "admin/daftar-pt",
-          "name": "Data Perguruan Tinggi",
-          "slug": "master-pt"
-        },
-        {
-          "url": "admin/master-dosen",
-          "name": "Data Akun Dosen",
-          "slug": "admin.master-dosen"
-        },
-        {
-          "url": "admin/data-bank",
-          "name": "Data Bank",
-          "slug": "master-bank"
-        },
-        {
-          "url": "admin/data-grade",
-          "name": "Data Grade",
-          "slug": "master-grade"
-        },
-        {
-          "url": "admin/grade-serdos",
-          "name": "Data Grade Serdos",
-          "slug": "master-grade-serdos"
-        },
-        {
-          "url": "admin/data-pajak",
-          "name": "Data Pajak",
-          "slug": "master-pajak"
-        },
-        {
-          "url": "admin/jabatan",
-          "name": "Data Jabatan",
-          "slug": "master-jabatan"
-        },
-        {
-          "url": "admin/status-keaktifan",
-          "name": "Status Keaktifan",
-          "slug": "master-aktif"
-        },
-        {
-          "url": "admin/status-pegawai",
-          "name": "Status Pegawai",
-          "slug": "master-pegawai"
-        },
-        {
-          "url": "admin/status-perubahan",
-          "name": "Status Perubahan",
-          "slug": "master-perubahan"
-        }
-      ]
-    },
-    {
       "name": "Data Dosen",
       "icon": "menu-icon tf-icons bx bx-id-card",
       "slug": "data",
@@ -100,11 +43,6 @@
       "icon": "menu-icon tf-icons bx bx-windows",
       "slug": "sisternas",
       "submenu": [
-        {
-          "url": "admin/data-sisternas",
-          "name": "Data Sisternas",
-          "slug": "sisternas-data"
-        },
         {
           "url": "admin/cutoff-sisternas",
           "name": "Cut Off Data Sisternas",
@@ -181,44 +119,6 @@
           "slug": "monitoring-sinkronisasi"
         }
       ]
-    },
-    {
-      "name": "Pengaturan",
-      "icon": "menu-icon tf-icons bx bx-cog",
-      "slug": "pengaturan",
-      "submenu": [
-        {
-          "url": "admin/pengguna-akun",
-          "name": "Daftar Pengguna Akun",
-          "slug": "pengaturan-akun"
-        },
-        {
-          "url": "admin/hak-akses-pic",
-          "name": "Hak Akses PIC",
-          "slug": "admin.hak-akses-pic"
-        },
-        {
-          "url": "admin/tambah-versi",
-          "name": "Tambah Versi",
-          "slug": "pengaturan-versi"
-        },
-        {
-          "url": "admin/migrasi",
-          "name": "Migrasi Data",
-          "slug": "admin.migrasi"
-        },
-        {
-          "url": "admin/background",
-          "name": "Background",
-          "slug": "admin.background.index"
-        }
-      ]
-    },
-    {
-      "url": "admin/complain",
-      "name": "Complain",
-      "icon": "menu-icon tf-icons bx bx-message-square-dots",
-      "slug": "admin.complain"
     }
   ]
 }
