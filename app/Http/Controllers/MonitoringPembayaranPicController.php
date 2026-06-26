@@ -118,6 +118,8 @@ class MonitoringPembayaranPicController extends Controller
 
   public function exportExcel(Request $request)
   {
+    set_time_limit(0);
+    ini_set('memory_limit', '2048M');
     $email = $this->picEmail();
     if ($email === '') {
       abort(403);

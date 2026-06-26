@@ -350,6 +350,8 @@ class CutOffSisternasController extends Controller
    */
   public function export(Request $request)
   {
+    set_time_limit(0);
+    ini_set('memory_limit', '2048M');
     $table = $request->query('table');
     $allowedTables = ['n_sister_genap_bj', 'o_sister_genap_tl', 'p_sister_ganjil_tl'];
 

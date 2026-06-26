@@ -68,6 +68,8 @@ class MonitoringUsulanDosenPicController extends Controller
 
   public function exportExcelMonitoringDosenUsulan(Request $request)
   {
+    set_time_limit(0);
+    ini_set('memory_limit', '2048M');
     $tgl = Carbon::now()->format('Ymd_His');
     $export =  Excel::download(new MonitoringUsulanDosenExport($request), 'monitoring-belum-usulan-' . $tgl . '.xlsx');
     return $export;

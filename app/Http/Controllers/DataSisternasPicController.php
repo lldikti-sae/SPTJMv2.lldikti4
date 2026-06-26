@@ -35,6 +35,8 @@ class DataSisternasPicController extends Controller
   }
   public function exportData(Request $request)
   {
+    set_time_limit(0);
+    ini_set('memory_limit', '2048M');
     //ambil dari req->query
     $sisternas = request()->query('sisternas');
     $name = [
