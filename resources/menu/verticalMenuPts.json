@@ -24,12 +24,7 @@
           }
         ] 
       },
-      {
-        "url": "pts/data-sisternas",
-        "name": "Data Sisternas",
-        "icon": "menu-icon tf-icons bx bx-data",
-        "slug": "data-sisternas"
-      },
+
       {
         "name": "Usulan Pembayaran",
         "icon": "menu-icon tf-icons bx bx-credit-card-front",
