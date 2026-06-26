@@ -722,7 +722,7 @@ class SkppController extends Controller
                 DB::table('i_complain')->where('id', $request->skpp_id)->update([
                     'lampiran' => $filename,
                     'status' => 'setuju',
-                    'handled_by' => auth()->user() ? auth()->user()->name : 'Admin',
+                    'handled_by' => auth()->user() ? auth()->user()->email : 'Admin',
                     'handled_at' => now(),
                     'updated_at' => now(),
                 ]);
@@ -736,7 +736,7 @@ class SkppController extends Controller
                     'kode_pt' => $skpp->kode_pts,
                     'aktif' => '0',
                     'keterangan' => 'Penerbitan ' . $skpp->jenis_pengajuan,
-                    'pengguna' => auth()->user() ? auth()->user()->name : 'Admin',
+                    'pengguna' => auth()->user() ? auth()->user()->email : 'Admin',
                     'no_dokumen_ubah' => $detail['nomor_skpp'] ?? '',
                     'tgl_dokumen_ubah' => now()->format('Y-m-d'),
                     'alasan_perubahan' => 'Penerbitan ' . $skpp->jenis_pengajuan . ' Selesai (Manual)',
@@ -750,7 +750,7 @@ class SkppController extends Controller
                 DB::table('i_complain')->where('id', $request->skpp_id)->update([
                     'lampiran' => $filename,
                     'status' => 'menunggu_konfirmasi',
-                    'handled_by' => auth()->user() ? auth()->user()->name : 'Admin',
+                    'handled_by' => auth()->user() ? auth()->user()->email : 'Admin',
                     'handled_at' => now(),
                     'updated_at' => now(),
                 ]);
@@ -783,7 +783,7 @@ class SkppController extends Controller
             'kode_pt' => $skpp->kode_pts,
             'aktif' => '0',
             'keterangan' => 'Penerbitan ' . $skpp->jenis_pengajuan,
-            'pengguna' => auth()->user() ? auth()->user()->name : 'Admin',
+            'pengguna' => auth()->user() ? auth()->user()->email : 'Admin',
             'no_dokumen_ubah' => $detail['nomor_skpp'] ?? '',
             'tgl_dokumen_ubah' => now()->format('Y-m-d'),
             'alasan_perubahan' => 'Penerbitan ' . $skpp->jenis_pengajuan . ' Selesai, Dosen dinonaktifkan',
@@ -823,7 +823,7 @@ class SkppController extends Controller
         DB::table('i_complain')->where('id', $id)->update([
             'status' => 'tolak',
             'admin_balasan' => $request->input('alasan', 'Ditolak oleh Admin/PIC'),
-            'handled_by' => auth()->user() ? auth()->user()->name : 'Admin',
+            'handled_by' => auth()->user() ? auth()->user()->email : 'Admin',
             'handled_at' => now(),
             'updated_at' => now(),
         ]);

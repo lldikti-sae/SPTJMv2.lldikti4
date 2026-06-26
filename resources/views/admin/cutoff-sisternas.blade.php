@@ -8,6 +8,7 @@
 
 <div class="row">
     <div class="col-12">
+        @if(auth()->user()->role !== 'pic')
         <div class="card mb-4">
             <div class="card-body">
                 <h5 class="card-header text-start p-1 mb-3">Cut Off Data Sisternas</h5>
@@ -98,6 +99,7 @@
                 </div>
             </div>
         </div>
+        @endif
 
         <div class="col-lg-12 col-md-6 mb-3">
             <label class="form-label" for="selectTypeOpt">Pilih Data Sisternas</label>
@@ -116,9 +118,11 @@
                         Desember]</option>
                 </select>
 
+                @if(auth()->user()->role !== 'pic')
                 <button type="button" class="btn btn-primary ms-2" id="addDataBtn">
                     Tambah Data
                 </button>
+                @endif
 
             </div>
         </div>

@@ -4,7 +4,7 @@ namespace App\Exports;
 
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
-use Maatwebsite\Excel\Concerns\FromArray;
+use Maatwebsite\Excel\Concerns\FromGenerator;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 use Maatwebsite\Excel\Concerns\WithTitle;
 use Maatwebsite\Excel\Concerns\WithEvents;
@@ -13,7 +13,7 @@ use PhpOffice\PhpSpreadsheet\Style\Alignment;
 use PhpOffice\PhpSpreadsheet\Style\Border;
 use PhpOffice\PhpSpreadsheet\Cell\Coordinate;
 
-class LaporanKeuanganExport implements FromArray, WithHeadings, WithTitle, WithEvents
+class LaporanKeuanganExport implements FromGenerator, WithHeadings, WithTitle, WithEvents
 {
   protected $kode_pt;
   protected $tahun;
@@ -42,7 +42,7 @@ class LaporanKeuanganExport implements FromArray, WithHeadings, WithTitle, WithE
     $this->nidn = $nidn;
   }
 
-  public function array(): array
+  public function generator(): \Generator
   {
     // Use s_transaksi_2 as the canonical source for export
     $select = [
@@ -96,11 +96,9 @@ class LaporanKeuanganExport implements FromArray, WithHeadings, WithTitle, WithE
       'tahun_session' => session('tahun'),
     ]);
 
-    $data = $query->get();
-    Log::debug('LaporanKeuanganExport: matched_rows', ['count' => $data->count()]);
+    // Execute using cursor via generator for memory efficiency
 
     // Prepare accumulators for footer totals
-    $rows = [];
     $totalGajiPerMonth = array_fill(0, 12, 0.0);
     $totalTpdPerMonth = array_fill(0, 12, 0.0);
     $totalTkgbPerMonth = array_fill(0, 12, 0.0);
@@ -110,7 +108,8 @@ class LaporanKeuanganExport implements FromArray, WithHeadings, WithTitle, WithE
     $grandSelisihTPD = 0.0;
     $grandSelisihTKGB = 0.0;
 
-    foreach ($data as $d) {
+    // Use cursor() to keep memory usage low for large exports
+    foreach ($query->cursor() as $d) {
       $row = [
         $d->nidn,
         $d->nuptk ?? '-',
@@ -194,7 +193,7 @@ class LaporanKeuanganExport implements FromArray, WithHeadings, WithTitle, WithE
         // swallow logging errors to avoid breaking export
       }
 
-      $rows[] = $finalRow;
+      yield $finalRow;
     }
 
     // Build footer row matching headings count (66 columns)
@@ -223,9 +222,7 @@ class LaporanKeuanganExport implements FromArray, WithHeadings, WithTitle, WithE
     $footer[] = (float) $grandTotalTPD;
     $footer[] = (float) $grandTotalTKGB;
 
-    $rows[] = $footer;
-
-    return $rows;
+    yield $footer;
   }
 
   private function isGuruBesarAtauProfesor($jabatan): bool

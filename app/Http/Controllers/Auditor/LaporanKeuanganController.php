@@ -230,19 +230,12 @@ class LaporanKeuanganController extends Controller
         });
       }
 
-      $dosenList = $query->get();
+      // Do NOT load $dosenList via ->get() because it consumes too much memory (OOM) for 'Semua' (~45k records).
+      // DataTables handles the actual fetching via AJAX.
+      $dosenList = [];
 
-      if ($dosenList->isEmpty()) {
+      if (!$query->exists()) {
         session()->flash('error', 'Data dengan Kode PT atau identifier tersebut tidak ditemukan.');
-      }
-
-      $bulanSession = (int) session('bulan') ?: 12;
-      if ($bulanSession < 1 || $bulanSession > 12) {
-        $bulanSession = 12;
-      }
-      $jabatanField = 'Jabatan' . $bulanSession;
-      foreach ($dosenList as $d) {
-        $d->JabatanSelected = $d->{$jabatanField} ?? $d->Jabatan12 ?? null;
       }
     }
 

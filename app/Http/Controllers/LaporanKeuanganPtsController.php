@@ -208,7 +208,9 @@ class LaporanKeuanganPtsController extends Controller
           ->make(true);
       }
 
-      $dosenList = $query->get();
+      // Do NOT load $dosenList via ->get() because it consumes too much memory.
+      // DataTables handles the actual fetching via AJAX.
+      $dosenList = [];
 
     return view('pts.laporan-keuangan', [
       'dosenList' => $dosenList,

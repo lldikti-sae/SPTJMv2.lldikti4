@@ -639,6 +639,11 @@ class ValidasiUsulanPicController extends Controller
         "Desember" => 12
       ];
 
+      if (!isset($bulanAngka[$namaBulan])) {
+        return redirect('/pic/validasi-usulan')->with('error', 'Gagal memproses: Bulan usulan ("' . $namaBulan . '") tidak valid.');
+      }
+
+
       $nmBulanSingkat = [
         "Januari" => "Jan",
         "Februari" => "Feb",
@@ -803,9 +808,28 @@ class ValidasiUsulanPicController extends Controller
       $bulanNum = $bulanAngka[$namaBulan];
       $bulanShort = $nmBulanSingkat[$namaBulan];
 
+      // Pengecekan awal: Pastikan semua dosen memiliki nilai Gaji yang valid
+      $invalidGajiDosen = [];
+      foreach ($dataDosen as $d) {
+        $rawGaji = trim((string) $d->Gaji);
+        // Gaji tidak boleh kosong atau berisi huruf
+        if ($rawGaji === '' || !is_numeric($rawGaji)) {
+            $ident = isset($d->NIDN) && $d->NIDN !== '-' ? $d->NIDN : ($d->NUPTK ?? '');
+            $invalidGajiDosen[] = $d->Nama . ($ident ? " ($ident)" : "");
+        }
+      }
+
+      if (count($invalidGajiDosen) > 0) {
+          $names = implode(', ', array_slice($invalidGajiDosen, 0, 3));
+          if (count($invalidGajiDosen) > 3) {
+              $names .= " dan " . (count($invalidGajiDosen) - 3) . " lainnya";
+          }
+          return redirect('/pic/validasi-usulan')->with('error', 'Gagal memproses: Ditemukan isian Gaji kosong atau tidak valid pada dosen: ' . $names . '. Harap perbaiki master data terlebih dahulu.');
+      }
+
       foreach ($dataDosen as $d) {
         $isGuruBesar = strtolower(trim($d->Jabatan)) === 'guru besar';
-        $gajiDosen = $d->Gaji;
+        $gajiDosen = (float) $d->Gaji;
         $golKey = isset($d->Gol) ? trim((string) $d->Gol) : '';
         $pajak = (float) ($pajakMap[$golKey] ?? 0);
 

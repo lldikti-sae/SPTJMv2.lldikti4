@@ -42,22 +42,60 @@ class RoleMiddleware
           // Define route-to-permission mapping
           // Using prefixes, e.g., 'admin/skpp' matches all subroutes of skpp
           $permissionMap = [
+              // Master Data
+              'admin/daftar-pt' => 'master-pt',
+              'admin/master-dosen' => 'master-dosen',
+              'admin/data-bank' => 'master-bank',
+              'admin/data-grade' => 'master-grade',
+              'admin/grade-serdos' => 'master-grade-serdos',
+              'admin/data-pajak' => 'master-pajak',
+              'admin/jabatan' => 'master-jabatan',
+              'admin/status-keaktifan' => 'master-aktif',
+              'admin/status-pegawai' => 'master-pegawai',
+              'admin/status-perubahan' => 'master-perubahan',
+
+              // Data Dosen
+              'admin/data-dosen' => 'data-dosen-lihat',
+              'admin/ubah-data-dosen' => 'data-dosen-lihat',
+              'admin/perubahan-data-dosen' => 'data-dosen-lihat',
+              'admin/histori-dosen' => 'data-dosen-histori',
+              'admin/monitoring-usulan-dosen' => 'data-dosen-monitoring',
+              'admin/hapus-data-dosen-tidak-aktif' => 'data-dosen-hapus',
               'admin/skpp' => 'skpp',
+
+              // Data Sisternas
+              'admin/data-sisternas' => 'sisternas-data',
+              'admin/cutoff-sisternas' => 'sisternas-cutoff',
+
+              // Proses Pembayaran
+              'admin/pengaturan-usulan' => 'proses-pengaturan',
+              'admin/usulan-sptjm' => 'proses-monitoring-usulan',
+              'admin/rekap-usulan-eligible' => 'proses-rekap-eligible',
+              'admin/rekap-usulan-non-el' => 'proses-rekap-non-eligible',
+              'admin/rekap-pencairan' => 'rekap-pencairan', // backward compatible label
+              'admin/laporan-keuangan' => 'proses-laporan',
+
+              // Monitoring
+              'admin/monitoring-pembayaran' => 'monitoring-pembayaran',
               'admin/kekurangan-bayar' => 'kekurangan-bayar',
-              'admin/master-dosen' => 'data-dosen',
-              'admin/data-dosen' => 'data-dosen',
-              'admin/ubah-data-dosen' => 'data-dosen',
-              'admin/perubahan-data-dosen' => 'data-dosen',
-              'admin/rekap-pencairan' => 'rekap-pencairan',
+              'admin/koreksi' => 'monitoring-koreksi',
               'admin/sinkronisasi' => 'sinkronisasi',
-              'admin/data-sisternas' => 'data-sisternas',
-              'admin/cutoff-sisternas' => 'data-sisternas',
+
+              // Pengaturan
+              'admin/pengguna-akun' => 'pengaturan-akun',
+              'admin/hak-akses-pic' => 'pengaturan-hak-akses',
+              'admin/tambah-versi' => 'pengaturan-versi',
+              'admin/migrasi' => 'pengaturan-migrasi',
+              'admin/background' => 'pengaturan-background',
+              
+              // Complain
+              'admin/complain' => 'admin-complain',
           ];
 
+          // Legacy support untuk permission lama 'data-dosen' yang mungkin belum diupdate
           foreach ($permissionMap as $routePrefix => $requiredPermission) {
-              // Exact match or subroute match
               if ($path === $routePrefix || str_starts_with($path, $routePrefix . '/')) {
-                  if (in_array($requiredPermission, $permissions)) {
+                  if (in_array($requiredPermission, $permissions) || (str_starts_with($requiredPermission, 'data-dosen') && in_array('data-dosen', $permissions))) {
                       return $next($request);
                   }
               }

@@ -743,7 +743,7 @@ class ComplainAdminController extends Controller
                         'kode_pt' => $row->kode_pts,
                         'aktif' => '0',
                         'keterangan' => 'Penerbitan ' . $row->jenis_pengajuan,
-                        'pengguna' => $admin ? ($admin->name ?? 'Admin') : 'PIC',
+                        'pengguna' => $admin ? ($admin->email ?? 'Admin') : 'PIC',
                         'no_dokumen_ubah' => $detail['nomor_skpp'] ?? '',
                         'tgl_dokumen_ubah' => now()->format('Y-m-d'),
                         'alasan_perubahan' => 'Penerbitan ' . $row->jenis_pengajuan . ' Selesai, Dosen dinonaktifkan',

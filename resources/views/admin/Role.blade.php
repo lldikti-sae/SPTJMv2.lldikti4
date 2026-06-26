@@ -82,49 +82,135 @@
                     <div class="modal-body">
                         <p class="text-muted mb-4">Pilih modul Admin yang diizinkan untuk diakses oleh PIC ini.</p>
                         
-                        <div class="list-group">
-                            <label class="list-group-item d-flex gap-2">
-                                <input class="form-check-input flex-shrink-0 admin-permission-cb" type="checkbox" name="admin_permissions[]" value="data-dosen">
-                                <span>
-                                    <strong>Data Dosen</strong>
-                                    <small class="d-block text-muted">Melihat dan mengelola Data Dosen / Master Dosen</small>
-                                </span>
-                            </label>
-                            <label class="list-group-item d-flex gap-2">
-                                <input class="form-check-input flex-shrink-0 admin-permission-cb" type="checkbox" name="admin_permissions[]" value="skpp">
-                                <span>
-                                    <strong>SKPP</strong>
-                                    <small class="d-block text-muted">Melihat dan memproses data SKPP</small>
-                                </span>
-                            </label>
-                            <label class="list-group-item d-flex gap-2">
-                                <input class="form-check-input flex-shrink-0 admin-permission-cb" type="checkbox" name="admin_permissions[]" value="kekurangan-bayar">
-                                <span>
-                                    <strong>Kekurangan Bayar</strong>
-                                    <small class="d-block text-muted">Akses ke modul Kurang/Lebih Bayar</small>
-                                </span>
-                            </label>
-                            <label class="list-group-item d-flex gap-2">
-                                <input class="form-check-input flex-shrink-0 admin-permission-cb" type="checkbox" name="admin_permissions[]" value="rekap-pencairan">
-                                <span>
-                                    <strong>Rekap Pencairan</strong>
-                                    <small class="d-block text-muted">Melihat Rekapitulasi Pencairan</small>
-                                </span>
-                            </label>
-                            <label class="list-group-item d-flex gap-2">
-                                <input class="form-check-input flex-shrink-0 admin-permission-cb" type="checkbox" name="admin_permissions[]" value="sinkronisasi">
-                                <span>
-                                    <strong>Sinkronisasi</strong>
-                                    <small class="d-block text-muted">Akses ke Sinkronisasi Data (Pajak, dll)</small>
-                                </span>
-                            </label>
-                            <label class="list-group-item d-flex gap-2">
-                                <input class="form-check-input flex-shrink-0 admin-permission-cb" type="checkbox" name="admin_permissions[]" value="data-sisternas">
-                                <span>
-                                    <strong>Data Sisternas</strong>
-                                    <small class="d-block text-muted">Akses ke Data Sisternas yang sudah di-input</small>
-                                </span>
-                            </label>
+                        <div class="accordion" id="accordionHakAkses">
+                            
+
+                            <!-- Data Dosen -->
+                            <div class="accordion-item">
+                                <h2 class="accordion-header" id="headingDataDosen">
+                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseDataDosen" aria-expanded="false" aria-controls="collapseDataDosen">
+                                        <strong>Data Dosen</strong>
+                                    </button>
+                                </h2>
+                                <div id="collapseDataDosen" class="accordion-collapse collapse" aria-labelledby="headingDataDosen" data-bs-parent="#accordionHakAkses">
+                                    <div class="accordion-body p-0">
+                                        <div class="list-group list-group-flush">
+                                            <label class="list-group-item d-flex gap-2 bg-lighter ps-4">
+                                                <input class="form-check-input flex-shrink-0 admin-permission-cb" type="checkbox" name="admin_permissions[]" value="data-dosen-lihat">
+                                                <span>Lihat Data Dosen</span>
+                                            </label>
+                                            <label class="list-group-item d-flex gap-2 bg-lighter ps-4">
+                                                <input class="form-check-input flex-shrink-0 admin-permission-cb" type="checkbox" name="admin_permissions[]" value="data-dosen-histori">
+                                                <span>Histori Data Dosen</span>
+                                            </label>
+                                            <label class="list-group-item d-flex gap-2 bg-lighter ps-4">
+                                                <input class="form-check-input flex-shrink-0 admin-permission-cb" type="checkbox" name="admin_permissions[]" value="data-dosen-monitoring">
+                                                <span>Monitoring Usulan Dosen</span>
+                                            </label>
+                                            <label class="list-group-item d-flex gap-2 bg-lighter ps-4">
+                                                <input class="form-check-input flex-shrink-0 admin-permission-cb" type="checkbox" name="admin_permissions[]" value="data-dosen-hapus">
+                                                <span>Hapus Data Dosen Tidak Aktif</span>
+                                            </label>
+                                            <label class="list-group-item d-flex gap-2 bg-lighter ps-4">
+                                                <input class="form-check-input flex-shrink-0 admin-permission-cb" type="checkbox" name="admin_permissions[]" value="skpp">
+                                                <span>SKPP</span>
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Data Sisternas -->
+                            <div class="accordion-item">
+                                <h2 class="accordion-header" id="headingDataSisternas">
+                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseDataSisternas" aria-expanded="false" aria-controls="collapseDataSisternas">
+                                        <strong>Data Sisternas</strong>
+                                    </button>
+                                </h2>
+                                <div id="collapseDataSisternas" class="accordion-collapse collapse" aria-labelledby="headingDataSisternas" data-bs-parent="#accordionHakAkses">
+                                    <div class="accordion-body p-0">
+                                        <div class="list-group list-group-flush">
+                                            <label class="list-group-item d-flex gap-2 bg-lighter ps-4">
+                                                <input class="form-check-input flex-shrink-0 admin-permission-cb" type="checkbox" name="admin_permissions[]" value="sisternas-cutoff">
+                                                <span>Cut Off Data Sisternas</span>
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Proses Pembayaran -->
+                            <div class="accordion-item">
+                                <h2 class="accordion-header" id="headingProsesPembayaran">
+                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseProsesPembayaran" aria-expanded="false" aria-controls="collapseProsesPembayaran">
+                                        <strong>Proses Pembayaran</strong>
+                                    </button>
+                                </h2>
+                                <div id="collapseProsesPembayaran" class="accordion-collapse collapse" aria-labelledby="headingProsesPembayaran" data-bs-parent="#accordionHakAkses">
+                                    <div class="accordion-body p-0">
+                                        <div class="list-group list-group-flush">
+                                            <label class="list-group-item d-flex gap-2 bg-lighter ps-4">
+                                                <input class="form-check-input flex-shrink-0 admin-permission-cb" type="checkbox" name="admin_permissions[]" value="proses-pengaturan">
+                                                <span>Pengaturan Usulan</span>
+                                            </label>
+                                            <label class="list-group-item d-flex gap-2 bg-lighter ps-4">
+                                                <input class="form-check-input flex-shrink-0 admin-permission-cb" type="checkbox" name="admin_permissions[]" value="proses-monitoring-usulan">
+                                                <span>Monitoring Usulan</span>
+                                            </label>
+                                            <label class="list-group-item d-flex gap-2 bg-lighter ps-4">
+                                                <input class="form-check-input flex-shrink-0 admin-permission-cb" type="checkbox" name="admin_permissions[]" value="proses-rekap-eligible">
+                                                <span>Rekapitulasi Usulan - Eligible</span>
+                                            </label>
+                                            <label class="list-group-item d-flex gap-2 bg-lighter ps-4">
+                                                <input class="form-check-input flex-shrink-0 admin-permission-cb" type="checkbox" name="admin_permissions[]" value="proses-rekap-non-eligible">
+                                                <span>Rekapitulasi Usulan - Non Eligible</span>
+                                            </label>
+                                            <label class="list-group-item d-flex gap-2 bg-lighter ps-4">
+                                                <input class="form-check-input flex-shrink-0 admin-permission-cb" type="checkbox" name="admin_permissions[]" value="rekap-pencairan">
+                                                <span>Rekapitulasi Pencairan</span>
+                                            </label>
+                                            <label class="list-group-item d-flex gap-2 bg-lighter ps-4">
+                                                <input class="form-check-input flex-shrink-0 admin-permission-cb" type="checkbox" name="admin_permissions[]" value="proses-laporan">
+                                                <span>Laporan Keuangan</span>
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Monitoring -->
+                            <div class="accordion-item">
+                                <h2 class="accordion-header" id="headingMonitoring">
+                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseMonitoring" aria-expanded="false" aria-controls="collapseMonitoring">
+                                        <strong>Monitoring</strong>
+                                    </button>
+                                </h2>
+                                <div id="collapseMonitoring" class="accordion-collapse collapse" aria-labelledby="headingMonitoring" data-bs-parent="#accordionHakAkses">
+                                    <div class="accordion-body p-0">
+                                        <div class="list-group list-group-flush">
+                                            <label class="list-group-item d-flex gap-2 bg-lighter ps-4">
+                                                <input class="form-check-input flex-shrink-0 admin-permission-cb" type="checkbox" name="admin_permissions[]" value="monitoring-pembayaran">
+                                                <span>Monitoring Pembayaran</span>
+                                            </label>
+                                            <label class="list-group-item d-flex gap-2 bg-lighter ps-4">
+                                                <input class="form-check-input flex-shrink-0 admin-permission-cb" type="checkbox" name="admin_permissions[]" value="kekurangan-bayar">
+                                                <span>Kurang/Lebih Bayar</span>
+                                            </label>
+                                            <label class="list-group-item d-flex gap-2 bg-lighter ps-4">
+                                                <input class="form-check-input flex-shrink-0 admin-permission-cb" type="checkbox" name="admin_permissions[]" value="monitoring-koreksi">
+                                                <span>Koreksi Data</span>
+                                            </label>
+                                            <label class="list-group-item d-flex gap-2 bg-lighter ps-4">
+                                                <input class="form-check-input flex-shrink-0 admin-permission-cb" type="checkbox" name="admin_permissions[]" value="sinkronisasi">
+                                                <span>Sinkronisasi Data</span>
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+
+
                         </div>
                     </div>
 

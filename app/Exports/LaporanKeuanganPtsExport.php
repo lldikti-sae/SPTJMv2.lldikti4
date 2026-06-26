@@ -3,7 +3,7 @@
 namespace App\Exports;
 
 use Illuminate\Support\Facades\DB;
-use Maatwebsite\Excel\Concerns\FromArray;
+use Maatwebsite\Excel\Concerns\FromGenerator;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 use Maatwebsite\Excel\Concerns\WithCustomStartCell;
 use Maatwebsite\Excel\Concerns\WithTitle;
@@ -13,7 +13,7 @@ use PhpOffice\PhpSpreadsheet\Style\Alignment;
 use PhpOffice\PhpSpreadsheet\Style\Border;
 use PhpOffice\PhpSpreadsheet\Cell\Coordinate;
 
-class LaporanKeuanganPtsExport implements FromArray, WithHeadings, WithTitle, WithEvents, WithCustomStartCell
+class LaporanKeuanganPtsExport implements FromGenerator, WithHeadings, WithTitle, WithEvents, WithCustomStartCell
 {
   protected $search;
   protected $kode_pts;
@@ -42,7 +42,7 @@ class LaporanKeuanganPtsExport implements FromArray, WithHeadings, WithTitle, Wi
     $this->tahun = $tahun ?: date('Y');
   }
 
-  public function array(): array
+  public function generator(): \Generator
   {
     // Map DB month columns to lowercase aliases expected by export structure
     $bulanDbMap = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Ags','Sep','Okt','Nov','Des'];
@@ -100,8 +100,7 @@ class LaporanKeuanganPtsExport implements FromArray, WithHeadings, WithTitle, Wi
       });
     }
 
-    $data = $query->get();
-
+    // Execute using cursor via generator for memory efficiency
     // Prepare accumulators for footer totals
     $sumGajiPerMonth = array_fill(0, 12, 0);
     $sumTPDPerMonth = array_fill(0, 12, 0);
@@ -110,12 +109,10 @@ class LaporanKeuanganPtsExport implements FromArray, WithHeadings, WithTitle, Wi
     $totalTPDAll = 0;
     $totalTKGBAll = 0;
 
-    $rows = [];
-
     $sumSelisihTPDAll = 0;
     $sumSelisihTKGBAll = 0;
 
-    foreach ($data as $d) {
+    foreach ($query->cursor() as $d) {
       $row = [
         $d->nidn,
         $d->nuptk ?? '',
@@ -183,7 +180,7 @@ class LaporanKeuanganPtsExport implements FromArray, WithHeadings, WithTitle, Wi
       $selisihTPDPerDosen = (float) ($selisihTPDPerDosen ?? 0);
       $selisihTKGBPerDosen = (float) ($selisihTKGBPerDosen ?? 0);
 
-      $rows[] = array_merge($row, [
+      yield array_merge($row, [
         (int) round($totalGaji),
         (int) round($totalTPD),
         (int) round($totalTKGB),
@@ -226,9 +223,7 @@ class LaporanKeuanganPtsExport implements FromArray, WithHeadings, WithTitle, Wi
     ]);
 
     // Append footer as final row
-    $rows[] = $footer;
-
-    return $rows;
+    yield $footer;
   }
 
   private function isGuruBesarAtauProfesor($jabatan): bool
