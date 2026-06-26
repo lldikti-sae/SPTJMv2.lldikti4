@@ -71,11 +71,51 @@
         <div class="alert alert-warning" role="alert">{{ $info ?? session('info') }}</div>
         @endif
         @php
+          $listPns = $dosenListPNS ?? collect();
           $listNonPns = $dosenListNonPNS ?? collect();
+          $countPns = $listPns->count();
           $countNonPns = $listNonPns->count();
+          $countTotal = $countPns + $countNonPns;
         @endphp
 
-        <span class="fw-semibold">Jumlah Dosen: <span id="jumlahDosen">{{ $countNonPns }}</span></span>
+        <span class="fw-semibold">Jumlah Dosen: <span id="jumlahDosen">{{ $countTotal }}</span></span>
+
+        <h6 class="mt-3 mb-2">Daftar Nama Dosen PNS ({{ $countPns }})</h6>
+        <div class="table-responsive text-nowrap">
+          <table class="table table-sm table-hover mt-1" id="dosenTablePns">
+            <thead style="background-color: #dbdee0;">
+              <tr>
+                <th>No</th>
+                <th>NIDN</th>
+                <th>NUPTK</th>
+                <th>Nama Dosen</th>
+                <th>Golongan</th>
+                <th>Masa Kerja</th>
+                <th>Jabatan</th>
+                <th>BKD</th>
+              </tr>
+            </thead>
+            <tbody>
+              @php $no = 1; @endphp
+              @forelse ($listPns as $dosen)
+              <tr>
+                <td>{{ $no++ }}</td>
+                <td>{{ $dosen->nidn }}</td>
+                <td>{{ $dosen->nuptk ?? '-' }}</td>
+                <td>{{ $dosen->nama }}</td>
+                <td>{{ $dosen->gol ?? '-' }}</td>
+                <td>{{ $dosen->tahun ?? '-' }}</td>
+                <td>{{ $dosen->jabatan ?? '-' }}</td>
+                <td>{{ $dosen->kesimpulan_bkd ?? '-' }}</td>
+              </tr>
+              @empty
+              <tr>
+                <td colspan="8" class="text-center">Tidak ada data dosen.</td>
+              </tr>
+              @endforelse
+            </tbody>
+          </table>
+        </div>
 
         <h6 class="mt-4 mb-2">Daftar Nama Dosen NON PNS ({{ $countNonPns }})</h6>
         <div class="table-responsive text-nowrap">
