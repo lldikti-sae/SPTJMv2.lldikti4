@@ -2,43 +2,21 @@
 
 namespace App\Exports;
 
-use Illuminate\Support\Collection;
-use Maatwebsite\Excel\Concerns\FromCollection;
+use Maatwebsite\Excel\Concerns\FromQuery;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 
-class CutoffSisternasExport implements FromCollection, WithHeadings
+class CutoffSisternasExport implements FromQuery, WithHeadings
 {
-    protected $rows;
+    protected $table;
 
-    public function __construct($rows)
+    public function __construct($table)
     {
-        $this->rows = $rows;
+        $this->table = $table;
     }
 
-    public function collection()
+    public function query()
     {
-        $out = [];
-        foreach ($this->rows as $r) {
-            $arr = (array) $r;
-            // ensure consistent column order
-            $out[] = [
-                $arr['nidn'] ?? null,
-                $arr['nuptk'] ?? null,
-                $arr['no_sertifikat'] ?? null,
-                $arr['nama_dosen'] ?? null,
-                $arr['kode_pt'] ?? null,
-                $arr['pt'] ?? null,
-                $arr['prodi'] ?? null,
-                $arr['kesimpulan_bkd'] ?? null,
-                $arr['kewajiban_khusus'] ?? null,
-                $arr['kesimpulan'] ?? null,
-                $arr['kd'] ?? null,
-                $arr['kp'] ?? null,
-                $arr['potongan_periodik'] ?? null,
-            ];
-        }
-
-        return collect($out);
+        return \Illuminate\Support\Facades\DB::table($this->table)->orderBy('nidn');
     }
 
     public function headings(): array

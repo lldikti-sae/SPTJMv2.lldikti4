@@ -23,7 +23,8 @@ class DataSisternasPicController extends Controller
       $allowedTables = ['n_sister_genap_bj', 'o_sister_genap_tl', 'p_sister_ganjil_tl'];
 
       if (in_array($table, $allowedTables)) {
-        $data = DB::table($table)->get();
+        // No need to fetch data here, as the view does not render it and it consumes massive memory.
+        // Data is only used when exporting.
       } else {
         return redirect()
           ->route('pic.data-sisternas')

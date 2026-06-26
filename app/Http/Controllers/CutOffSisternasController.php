@@ -357,10 +357,8 @@ class CutOffSisternasController extends Controller
       return redirect()->back()->with('error', 'Tabel tidak valid untuk export.');
     }
 
-    $rows = DB::table($table)->get();
-
     $filename = "cutoff_{$table}_backup_" . date('Ymd_His') . ".ods";
 
-    return Excel::download(new CutoffSisternasExport($rows), $filename, \Maatwebsite\Excel\Excel::ODS);
+    return Excel::download(new CutoffSisternasExport($table), $filename, \Maatwebsite\Excel\Excel::ODS);
   }
 }

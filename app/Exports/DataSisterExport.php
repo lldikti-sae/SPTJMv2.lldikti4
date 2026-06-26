@@ -3,10 +3,10 @@
 namespace App\Exports;
 
 use Illuminate\Support\Facades\DB;
-use Maatwebsite\Excel\Concerns\FromCollection;
+use Maatwebsite\Excel\Concerns\FromQuery;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 
-class DataSisterExport implements FromCollection, WithHeadings
+class DataSisterExport implements FromQuery, WithHeadings
 {
   /**
    * @return \Illuminate\Support\Collection
@@ -17,12 +17,9 @@ class DataSisterExport implements FromCollection, WithHeadings
   {
     $this->sisternas = $sisternas;
   }
-  public function collection()
+  public function query()
   {
-    $query = DB::table($this->sisternas)
-      ->get();
-
-    return $query;
+    return DB::table($this->sisternas)->orderBy('NIDN');
   }
 
   public function headings(): array

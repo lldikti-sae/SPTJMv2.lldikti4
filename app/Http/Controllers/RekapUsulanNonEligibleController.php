@@ -113,7 +113,7 @@ class RekapUsulanNonEligibleController extends Controller
         });
       }
 
-      $data = $query->get();
+      $data = []; // Do not load all data into memory for the view
     }
 
     return view('admin.rekap-usulan-non-el', [

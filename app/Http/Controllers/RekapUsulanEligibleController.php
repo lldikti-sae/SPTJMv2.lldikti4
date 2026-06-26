@@ -185,8 +185,8 @@ class RekapUsulanEligibleController extends Controller
     // - If pencairan_ke = Semua => exclude any already processed (so they don't reappear).
     $this->applyExcludeProcessedToQuery($query, (string) $pencairan_ke, (string) $eligible_span);
 
-    $data = $query->get();
-    // dd($data);
+    $cursor = $query->cursor();
+    $data = []; // Do not pass the large dataset to the view
 
     // Build rekapitulasi grup untuk proses (sebelumnya dihitung di view)
     $rekap = [];
@@ -233,7 +233,7 @@ class RekapUsulanEligibleController extends Controller
       $rekap[$key][$index]['nidns'][] = $identifier;
     };
 
-    foreach ($data as $item) {
+    foreach ($cursor as $item) {
       $totalKotorTPD = 0;
       $totalKotorTKGB = 0;
       $totalPajakTPD = 0;
