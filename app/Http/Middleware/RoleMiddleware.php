@@ -37,7 +37,6 @@ class RoleMiddleware
       // UX: module role pic untuk akses ke modul admin
       if ($role === 'pic' && in_array('admin', $roles, true)) {
           $permissions = $user->admin_permissions ?? [];
-          $path = $request->path(); // e.g., 'admin/skpp'
 
           // Define route-to-permission mapping
           // Using prefixes, e.g., 'admin/skpp' matches all subroutes of skpp
@@ -94,7 +93,7 @@ class RoleMiddleware
 
           // Legacy support untuk permission lama 'data-dosen' yang mungkin belum diupdate
           foreach ($permissionMap as $routePrefix => $requiredPermission) {
-              if ($path === $routePrefix || str_starts_with($path, $routePrefix . '/')) {
+              if (str_contains($request->url(), '/' . $routePrefix)) {
                   if (in_array($requiredPermission, $permissions) || (str_starts_with($requiredPermission, 'data-dosen') && in_array('data-dosen', $permissions))) {
                       return $next($request);
                   }

@@ -347,6 +347,9 @@ class LaporanKeuanganController extends Controller
 
   public function export(Request $request)
   {
+    set_time_limit(0);
+    ini_set('memory_limit', '2048M');
+
     $kode_pt = trim((string) $request->input('kode_pt', ''));
     $nidn = trim((string) $request->input('nidn', ''));
     $tahun = $request->input('tahun') ?: date('Y');

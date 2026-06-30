@@ -303,6 +303,9 @@ class LaporanKeuanganPtsController extends Controller
 
   public function exportPts(Request $request)
   {
+    set_time_limit(0);
+    ini_set('memory_limit', '2048M');
+
     // Ambil parameter sesuai input pencarian di halaman (nidn)
     $search = $request->query('nidn');
     $kode_pts = Auth::guard('pts')->user()->kode_pts;

@@ -103,6 +103,20 @@ class RekapUsulanNonEligibleController extends Controller
             }
           }
         });
+      } else {
+        $bulanPendek = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Ags', 'Sep', 'Okt', 'Nov', 'Des'];
+        $query->where(function ($q) use ($pencairanKe, $bulanPendek) {
+          for ($i = 1; $i <= 12; $i++) {
+            $bln = $bulanPendek[$i - 1];
+            $q->orWhere(function ($sub) use ($bln, $pencairanKe, $i) {
+              $sub->where($bln, $pencairanKe)
+                  ->where(function ($s2) use ($i) {
+                    $s2->where('TPD' . $i, '>', 0)
+                       ->orWhere('TKGB' . $i, '>', 0);
+                  });
+            });
+          }
+        });
       }
 
       // Apply search filter on nidn or nuptk if provided
@@ -180,6 +194,20 @@ class RekapUsulanNonEligibleController extends Controller
           }
         }
       });
+    } else {
+      $bulanPendek = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Ags', 'Sep', 'Okt', 'Nov', 'Des'];
+      $query->where(function ($q) use ($pencairanKe, $bulanPendek) {
+        for ($i = 1; $i <= 12; $i++) {
+          $bln = $bulanPendek[$i - 1];
+          $q->orWhere(function ($sub) use ($bln, $pencairanKe, $i) {
+            $sub->where($bln, $pencairanKe)
+                ->where(function ($s2) use ($i) {
+                  $s2->where('TPD' . $i, '>', 0)
+                     ->orWhere('TKGB' . $i, '>', 0);
+                });
+          });
+        }
+      });
     }
 
     // DataTables global search
@@ -210,6 +238,20 @@ class RekapUsulanNonEligibleController extends Controller
             $q->orWhere('TPD' . $i, '>', 0)
               ->orWhere('TKGB' . $i, '>', 0);
           }
+        }
+      });
+    } else {
+      $bulanPendek = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Ags', 'Sep', 'Okt', 'Nov', 'Des'];
+      $recordsTotalQuery->where(function ($q) use ($pencairanKe, $bulanPendek) {
+        for ($i = 1; $i <= 12; $i++) {
+          $bln = $bulanPendek[$i - 1];
+          $q->orWhere(function ($sub) use ($bln, $pencairanKe, $i) {
+            $sub->where($bln, $pencairanKe)
+                ->where(function ($s2) use ($i) {
+                  $s2->where('TPD' . $i, '>', 0)
+                     ->orWhere('TKGB' . $i, '>', 0);
+                });
+          });
         }
       });
     }
