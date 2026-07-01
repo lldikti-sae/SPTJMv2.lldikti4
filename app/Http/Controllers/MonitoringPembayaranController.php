@@ -430,8 +430,15 @@ class MonitoringPembayaranController extends Controller
         }
       } elseif ($hasKodeCair && !$origHasSp2d) { // Has kode cair but no SP2D -> Proses
         $statusBulanan[] = 'proses';
-      } elseif (!$hasKodeCair && ($hasData || $kode)) { // No kode cair -> Usulan
-        $statusBulanan[] = 'usulan';
+      } elseif (!$hasKodeCair && ($hasData || $kode)) { // No kode cair
+        // Jika ada kode usulan tapi gaji null/0, status = nama kode usulan (misal: Tugas Belajar, Mutasi, dll)
+        // Jika ada kode usulan DAN gaji > 0, status tetap 'usulan'
+        $kodeStr = is_string($kode) ? trim($kode) : '';
+        if ($kodeStr !== '' && $kodeStr !== '-' && $gaji == 0) {
+          $statusBulanan[] = 'kode:' . $kodeStr;
+        } else {
+          $statusBulanan[] = 'usulan';
+        }
       } else {
         $statusBulanan[] = null;
       }
@@ -915,8 +922,15 @@ class MonitoringPembayaranController extends Controller
         }
       } elseif ($hasKodeCair && !$origHasSp2d) { // Has kode cair but no SP2D -> Proses
         $statusBulanan[] = 'proses';
-      } elseif (!$hasKodeCair && ($hasData || $kode)) { // No kode cair -> Usulan
-        $statusBulanan[] = 'usulan';
+      } elseif (!$hasKodeCair && ($hasData || $kode)) { // No kode cair
+        // Jika ada kode usulan tapi gaji null/0, status = nama kode usulan (misal: Tugas Belajar, Mutasi, dll)
+        // Jika ada kode usulan DAN gaji > 0, status tetap 'usulan'
+        $kodeStr = is_string($kode) ? trim($kode) : '';
+        if ($kodeStr !== '' && $kodeStr !== '-' && $gaji == 0) {
+          $statusBulanan[] = 'kode:' . $kodeStr;
+        } else {
+          $statusBulanan[] = 'usulan';
+        }
       } else {
         $statusBulanan[] = null;
       }
