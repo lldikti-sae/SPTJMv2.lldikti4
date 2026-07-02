@@ -49,10 +49,11 @@ class AppServiceProvider extends ServiceProvider
               $adminMenuData = json_decode(file_get_contents($adminMenuPath));
               
               $permUrlMap = [
-                  'data-dosen-lihat' => ['admin/data-dosen'],
-                  'data-dosen-histori' => ['admin/histori-dosen'],
-                  'data-dosen-monitoring' => ['admin/monitoring-usulan-dosen'],
-                  'data-dosen-hapus' => ['admin/hapus-data-dosen-tidak-aktif'],
+                  'data-perguruan-tinggi' => ['admin/daftar-pt'],
+                  'lihat-data-dosen' => ['admin/data-dosen'],
+                  'histori-data-dosen' => ['admin/histori-dosen'],
+                  'monitoring-data-dosen' => ['admin/monitoring-usulan-dosen'],
+                  'hapus-data-dosen' => ['admin/hapus-data-dosen-tidak-aktif'],
                   'skpp' => ['admin/skpp'],
                   'sisternas-cutoff' => ['admin/cutoff-sisternas'],
                   'proses-pengaturan' => ['admin/pengaturan-usulan'],

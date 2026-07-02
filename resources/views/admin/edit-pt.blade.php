@@ -47,13 +47,17 @@
       <div class="row mb-3">
         <label class="col-sm-2 col-form-label">Wilayah</label>
         <div class="col-sm-10">
-          <select class="form-select" name="wilayah">
-            @foreach ($users as $user)
-            <option value="{{ $user }}" {{ $data_pts->wilayah == $user ? 'selected' : '' }}>
-              {{ $user }}
-            </option>
-            @endforeach
-          </select>
+          @if(Auth::check() && Auth::user()->role === 'pic')
+              <input type="text" class="form-control" name="wilayah" value="{{ Auth::user()->email }}" readonly style="background-color: #eceef1;">
+          @else
+              <select class="form-select" name="wilayah">
+                @foreach ($users as $user)
+                <option value="{{ $user }}" {{ $data_pts->wilayah == $user ? 'selected' : '' }}>
+                  {{ $user }}
+                </option>
+                @endforeach
+              </select>
+          @endif
         </div>
       </div>
 

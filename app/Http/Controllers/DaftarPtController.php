@@ -11,15 +11,22 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\DB;
 use Yajra\DataTables\Facades\DataTables;
+use Illuminate\Support\Facades\Auth;
 
 class DaftarPtController extends Controller
 {
   public function index(Request $request)
   {
-    // $data_pts = Pts::all();
+    $user = Auth::user();
+
     if ($request->ajax()) {
-      $data_pts = Pts::select('*');
-      return DataTables::of($data_pts)
+      $query = Pts::select('*');
+      
+      if ($user && $user->role === 'pic') {
+          $query->where('wilayah', $user->email);
+      }
+
+      return DataTables::of($query)
         ->addColumn('aksi', function ($row) {
           return "<a href='" . route('admin.daftar-pt.edit', ['id' => $row->id]) . "'
                                     class='btn btn-sm btn-warning'>
@@ -34,15 +41,25 @@ class DaftarPtController extends Controller
         ->rawColumns(['aksi', 'aktif'])
         ->make(true);
     }
-    $kode_pts = Pts::all();
+    
+    if ($user && $user->role === 'pic') {
+        $kode_pts = Pts::where('wilayah', $user->email)->get();
+    } else {
+        $kode_pts = Pts::all();
+    }
+    
     $users = User::all();
-    // return view('admin.daftar-pt', compact('data_pts', 'kode_pts', 'users'));
     return view('admin.daftar-pt', compact('kode_pts', 'users'));
   }
 
   public function create()
   {
-    $kode_pts = Pts::all();
+    $user = Auth::user();
+    if ($user && $user->role === 'pic') {
+        $kode_pts = Pts::where('wilayah', $user->email)->get();
+    } else {
+        $kode_pts = Pts::all();
+    }
     $users = User::all();
     return view('admin.daftar-pt', compact('kode_pts', 'users'));
   }
@@ -62,13 +79,20 @@ class DaftarPtController extends Controller
     ]);
 
     try {
+      $user = Auth::user();
       $data_pts = new Pts();
       $data_pts->kode_pts = $request->kode_pts;
       $data_pts->nama_pts = $request->nama_pts;
       $data_pts->nama_pimpinan = $request->nama_pimpinan;
       $data_pts->jabatan_pimpinan = $request->jabatan_pimpinan;
       $data_pts->alamat_pt = $request->alamat_pt;
-      $data_pts->wilayah = $request->wilayah;
+      
+      // Jika PIC yang membuat, paksa wilayahnya sesuai dengan wilayah PIC tersebut
+      if ($user && $user->role === 'pic') {
+          $data_pts->wilayah = $user->email;
+      } else {
+          $data_pts->wilayah = $request->wilayah;
+      }
       $data_pts->password = $request->password;
       $data_pts->aktif = $request->aktif;
 
@@ -114,6 +138,12 @@ class DaftarPtController extends Controller
   public function edit($id)
   {
     $data_pts = Pts::findOrFail($id);
+    $user = Auth::user();
+    
+    if ($user && $user->role === 'pic' && $data_pts->wilayah !== $user->email) {
+        abort(403, 'Anda tidak memiliki akses ke Perguruan Tinggi di wilayah ini.');
+    }
+    
     $users = User::pluck('email');
     return view('admin.edit-pt', compact('data_pts', 'users'));
   }
@@ -121,6 +151,11 @@ class DaftarPtController extends Controller
   public function update(Request $request, $id)
   {
     $data_pts = Pts::findOrFail($id);
+    $user = Auth::user();
+    
+    if ($user && $user->role === 'pic' && $data_pts->wilayah !== $user->email) {
+        abort(403, 'Anda tidak memiliki akses untuk mengubah Perguruan Tinggi di wilayah ini.');
+    }
 
     $request->validate([
       'kode_pts' => [
@@ -144,7 +179,10 @@ class DaftarPtController extends Controller
     $data_pts->nama_pimpinan = $request->nama_pimpinan;
     $data_pts->jabatan_pimpinan = $request->jabatan_pimpinan;
     $data_pts->alamat_pt = $request->alamat_pt;
-    $data_pts->wilayah = $request->wilayah;
+    
+    if (!($user && $user->role === 'pic')) {
+        $data_pts->wilayah = $request->wilayah;
+    }
 
     if (!empty($request->password)) {
       $data_pts->password = $request->password;

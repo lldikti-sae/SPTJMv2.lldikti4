@@ -82,12 +82,16 @@
           </div>
           <div class="mb-3">
             <label class="form-label">Wilayah</label>
-            <select class="form-select" id="wilayah" name="wilayah" required>
-              <option value="">-- Pilih Wilayah --</option>
-              @foreach ($users as $user)
-              <option value="{{ $user->email }}">{{ $user->email }}</option>
-              @endforeach
-            </select>
+            @if(Auth::check() && Auth::user()->role === 'pic')
+                <input type="text" class="form-control" name="wilayah" value="{{ Auth::user()->email }}" readonly style="background-color: #eceef1;">
+            @else
+                <select class="form-select" id="wilayah" name="wilayah" required>
+                  <option value="">-- Pilih Wilayah --</option>
+                  @foreach ($users as $user)
+                  <option value="{{ $user->email }}">{{ $user->email }}</option>
+                  @endforeach
+                </select>
+            @endif
           </div>
           <div class="mb-3">
             <label class="form-label">Password</label>
@@ -145,12 +149,16 @@
           </div>
           <div class="mb-3">
             <label class="form-label">Pemegang Wilayah Baru</label>
-            <select name="pemegang_wilayah_baru" id="pemegang_wilayah_baru" class="form-control" required>
-              <option value="" selected>--PILIH--</option>
-              @foreach ($users as $user)
-              <option value="{{ $user->email }}">{{ $user->email }}</option>
-              @endforeach
-            </select>
+            @if(Auth::check() && Auth::user()->role === 'pic')
+                <input type="text" class="form-control" name="pemegang_wilayah_baru" value="{{ Auth::user()->email }}" readonly style="background-color: #eceef1;">
+            @else
+                <select name="pemegang_wilayah_baru" id="pemegang_wilayah_baru" class="form-control" required>
+                  <option value="" selected>--PILIH--</option>
+                  @foreach ($users as $user)
+                  <option value="{{ $user->email }}">{{ $user->email }}</option>
+                  @endforeach
+                </select>
+            @endif
           </div>
         </div>
         <div class="modal-footer">
