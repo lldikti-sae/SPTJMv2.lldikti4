@@ -323,3 +323,94 @@
 <!-- BEGIN: Page JS-->
 @yield('page-script')
 <!-- END: Page JS-->
+
+<!-- ================================================================
+     SPTJM: Desktop Sidebar Toggle Patch
+     Sneat free template's _setCollapsed() only handles mobile.
+     This script patches Helpers.toggleCollapsed for desktop screens.
+     ================================================================ -->
+<script>
+(function () {
+    'use strict';
+
+    var STORAGE_KEY = 'sptjm.sidebar.collapsed';
+
+    function isDesktop() {
+        return (window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth) >= 1200;
+    }
+
+    function isCollapsedDesktop() {
+        return document.documentElement.classList.contains('layout-menu-collapsed');
+    }
+
+    function collapseDesktop() {
+        document.documentElement.classList.add('layout-menu-collapsed');
+        try { localStorage.setItem(STORAGE_KEY, '1'); } catch(e) {}
+    }
+
+    function expandDesktop() {
+        document.documentElement.classList.remove('layout-menu-collapsed');
+        try { localStorage.removeItem(STORAGE_KEY); } catch(e) {}
+    }
+
+    function toggleDesktop() {
+        if (isCollapsedDesktop()) {
+            expandDesktop();
+        } else {
+            collapseDesktop();
+        }
+        // Trigger resize so layout recalculates
+        setTimeout(function() {
+            window.dispatchEvent(new Event('resize'));
+        }, 300);
+    }
+
+    // Restore previous state on page load
+    function restoreState() {
+        if (!isDesktop()) return;
+        try {
+            if (localStorage.getItem(STORAGE_KEY) === '1') {
+                document.documentElement.classList.add('layout-menu-collapsed');
+            }
+        } catch(e) {}
+    }
+
+    // Patch Helpers.toggleCollapsed to support desktop
+    function patchHelpers() {
+        if (window.Helpers && typeof window.Helpers.toggleCollapsed === 'function') {
+            var _original = window.Helpers.toggleCollapsed.bind(window.Helpers);
+            window.Helpers.toggleCollapsed = function(animate) {
+                if (isDesktop()) {
+                    toggleDesktop();
+                } else {
+                    _original(animate);
+                }
+            };
+        }
+    }
+
+    // Bind click events on all .layout-menu-toggle elements
+    function bindToggles() {
+        var togglers = document.querySelectorAll('.layout-menu-toggle');
+        togglers.forEach(function(toggler) {
+            toggler.addEventListener('click', function(e) {
+                e.preventDefault();
+                if (isDesktop()) {
+                    toggleDesktop();
+                } else {
+                    if (window.Helpers && typeof window.Helpers.toggleCollapsed === 'function') {
+                        window.Helpers.toggleCollapsed();
+                    }
+                }
+            });
+        });
+    }
+
+    // Run
+    restoreState();
+    document.addEventListener('DOMContentLoaded', function() {
+        patchHelpers();
+        bindToggles();
+    });
+})();
+</script>
