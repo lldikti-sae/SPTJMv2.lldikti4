@@ -3,378 +3,535 @@
 @section('title', 'SPTJM Online - Login')
 
 @section('page-style')
-<link rel="stylesheet" href="{{ asset('assets/vendor/css/pages/page-auth.css') }}">
 <style>
-    /* Custom Style untuk meniru desain referensi (ringkas/dikurangi ukuran) */
-    body, html {
+    /* ============================================================
+       SPTJM LOGIN PAGE — Figma Redesign Implementation
+       Hubungan: blankLayout → commonMaster → styles.blade.php
+       commonMaster inject: Bootstrap 5, Boxicons, jQuery
+       Semua form attribute (action, name, csrf) TIDAK diubah.
+    ============================================================ */
+
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+    *, *::before, *::after {
+        box-sizing: border-box;
+    }
+
+    html, body {
         height: 100%;
-        overflow-x: hidden;
+        margin: 0;
+        padding: 0;
+        font-family: 'Inter', 'Public Sans', sans-serif;
     }
 
-    .login-container {
+    /* ── Background Utama ── */
+    .sptjm-login-page {
         min-height: 100vh;
-        min-height: 100dvh; /* better on mobile browsers with dynamic address bar */
         width: 100%;
+        background: linear-gradient(135deg, #1565C0 0%, #1976D2 30%, #1E88E5 60%, #2196F3 100%);
         position: relative;
-        /* Menggunakan gambar background yang menyesuaikan layar */
-        background-image: url("{{ $loginBackgroundUrl ?? asset('background/background_login.png') }}");
-        background-size: cover;
-        background-position: center;
-        background-repeat: no-repeat;
-    }
-    /* Batasi lebar konten utama agar tidak melebar di monitor sangat besar */
-    .login-container .row {
-        max-width: 1200px;
-        margin: 0 auto; /* center */
-        width: 100%;
-        padding-left: 1rem;
-        padding-right: 1rem;
-        min-height: 100vh;
-        min-height: 100dvh;
-    }
-    @media (min-width: 1600px) {
-        .login-container .row { max-width: 1400px; }
-    }
-
-    /* Area Kiri (Putih di gambar) */
-    .left-section {
+        overflow: hidden;
         display: flex;
-        flex-direction: column;
-        justify-content: flex-start;
-        align-items: center;
-        padding: clamp(5.5rem, 11vh, 9.5rem) clamp(1rem, 3vw, 2rem);
-        color: #333; /* Warna teks gelap */
-        text-align: center;
+        align-items: stretch;
     }
 
-    /* Area Kanan (Biru di gambar) */
-    .right-section {
-        display: flex;
-        flex-direction: column;
-        justify-content: flex-start; /* letakkan konten dari atas sehingga padding-top menurunkan posisi */
-        padding: clamp(5.5rem, 11vh, 8.5rem) clamp(1rem, 3vw, 1.5rem) clamp(1rem, 3vh, 1.5rem);
-        color: #fff; /* Warna teks putih agar kontras dengan background biru */
-    }
-
-    /* Menghilangkan style Card bawaan template agar transparan menyatu dengan background */
-    .authentication-inner {
-        max-width: min(380px, 90vw) !important;
+    /* ── Wave Decoration (SVG) ── */
+    .sptjm-wave-bottom {
+        position: absolute;
+        bottom: 0;
+        left: 0;
         width: 100%;
+        pointer-events: none;
+        z-index: 0;
+    }
+
+    .sptjm-wave-mid {
+        position: absolute;
+        bottom: 60px;
+        left: 0;
+        width: 100%;
+        pointer-events: none;
+        z-index: 0;
+        opacity: 0.5;
+    }
+
+    /* ── Layout Container ── */
+    .sptjm-login-container {
+        position: relative;
+        z-index: 1;
+        width: 100%;
+        max-width: 1280px;
         margin: 0 auto;
-    }
-    .card {
-        background: transparent !important;
-        box-shadow: none !important;
-        border: 0;
-    }
-    .card-body {
-        padding: 1rem !important;
+        display: flex;
+        align-items: center;
+        min-height: 100vh;
+        padding: 2rem 3rem;
+        gap: 2rem;
     }
 
-    /* Styling Input agar lebih kecil (Pill) */
-    .form-control, .form-select, .input-group-text {
-        border-radius: 999px !important;
-        border: 1px solid #ced4da;
-        padding-left: 0.75rem;
-        padding-right: 0.75rem;
-        height: clamp(2.1rem, 2.4vw, 2.4rem);
-        font-size: clamp(0.85rem, 1.4vw, 0.95rem);
+    /* ── Kolom Kiri (Branding) ── */
+    .sptjm-left-col {
+        flex: 1.2;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: flex-start;
+        padding: 2rem 1rem 2rem 2rem;
     }
 
-    /* Ensure select (tahun) appears as a solid white control */
-    .right-section .form-select {
-        background: #fff !important;
-        color: #212529 !important; /* default input text black */
-        -webkit-appearance: none !important;
-        appearance: none !important;
-        background-image: none !important;
-        outline: none !important;
-        box-shadow: none !important;
-        border-radius: 999px !important;
-        height: clamp(2.1rem, 2.4vw, 2.4rem);
-        padding-left: 0.75rem;
+    /* Logo Row */
+    .sptjm-logo-row {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        margin-bottom: 2.5rem;
     }
 
-    /* Option styling (some browsers limit styling of <option>) */
-    .right-section .form-select option {
-        background: #fff;
-        color: #212529;
-    }
-
-    /* Remove native dropdown arrow in IE/Edge */
-    .right-section .form-select::-ms-expand {
-        display: none;
-    }
-
-    /* Remove focus outlines and shadows on select */
-    .right-section .form-select:focus {
-        outline: none;
-        box-shadow: none;
-    }
-
-    /* Khusus input group (password) */
-    .input-group .form-control {
-        border-top-right-radius: 0 !important;
-        border-bottom-right-radius: 0 !important;
-    }
-    .input-group .input-group-text {
-        border-top-left-radius: 0 !important;
-        border-bottom-left-radius: 0 !important;
-        background: #fff;
-        border-left: 0;
-        height: clamp(2.1rem, 2.4vw, 2.4rem);
-        padding: 0 0.5rem;
-        font-size: clamp(0.8rem, 1.3vw, 0.9rem);
-    }
-
-    /* Ensure username and password inputs have solid white background and dark text */
-    .right-section input#login,
-    .right-section input#password,
-    .right-section .form-control,
-    .right-section .form-select {
-        background: #fff !important;
-        color: #212529 !important; /* input text black */
-        -webkit-text-fill-color: #212529 !important;
-        opacity: 1 !important;
-    }
-
-    /* Placeholder color for inputs */
-    .right-section input::placeholder,
-    .right-section textarea::placeholder {
-        color: #9aa0a6 !important; /* lighter gray for placeholders */
-        opacity: 1 !important;
-    }
-    .right-section input::-webkit-input-placeholder { color: #9aa0a6 !important; }
-    .right-section input:-ms-input-placeholder { color: #9aa0a6 !important; }
-    .right-section input::-ms-input-placeholder { color: #9aa0a6 !important; }
-
-    /* Make the empty/default select option appear as placeholder (gray) */
-    .right-section .form-select option[value=""] { color: #9aa0a6; }
-
-    /* Tombol Login Hijau (lebih kecil) */
-    .btn-success-custom {
-        background-color: #4CD964; /* Hijau muda */
-        color: #ffffff !important;
-        border: none;
-        border-radius: 999px;
-        height: clamp(2.3rem, 2.7vw, 2.6rem);
-        font-weight: 700;
-        font-size: clamp(0.85rem, 1.5vw, 0.9rem);
-        padding: 0 clamp(0.9rem, 2.1vw, 1.2rem);
-    }
-    .btn-success-custom:hover {
-        background-color: #3AC455; /* sedikit lebih gelap saat hover */
-        color: #ffffff !important;
-    }
-
-    /* Teks Header (diperkecil) */
-    .welcome-text {
-        font-weight: 700;
-        color: #4a90e2; /* Biru muda sesuai teks WELCOME BACK */
-        font-size: clamp(1.35rem, 2.2vw, 1.7rem);
-    }
-    .sub-welcome {
-        color: #6c757d;
-        font-size: clamp(0.85rem, 1.5vw, 1rem);
-    }
-
-    .login-header {
-        font-weight: 700;
-        color: #fff;
-        font-size: clamp(1.1rem, 2vw, 1.35rem);
-        text-transform: uppercase;
-        text-align: center;
-        margin-bottom: 1rem;
-    }
-    .login-subheader {
-        color: #e0e0e0;
-        text-align: center;
-        margin-bottom: 0.8rem;
-        font-size: clamp(0.75rem, 1.3vw, 0.85rem);
-    }
-
-    /* Label form di sisi kanan dibuat putih */
-    .form-label {
-        color: #fff;
-        margin-left: 8px;
-        text-transform: none !important;
-        font-size: clamp(0.8rem, 1.4vw, 0.9rem);
-    }
-    
-    .text-link-white {
-        color: #fff !important;
-        text-decoration: underline;
-    }
-
-    /* Reduce vertical gaps between form fields on right side */
-    .right-section .mb-3,
-    .right-section .mb-4 {
-        margin-bottom: clamp(0.35rem, 0.9vh, 0.6rem) !important;
-    }
-    /* Increase gap between Tahun select (.mb-4) and the login button */
-    .right-section .mb-4 { margin-bottom: clamp(0.9rem, 1.8vh, 1.25rem) !important; }
-
-    /* Responsive adjustments */
-    @media (max-width: 1199px) {
-        .left-section {
-            padding: clamp(2.3rem, 6vh, 3.2rem) 1.5rem;
-        }
-        .right-section {
-            padding: clamp(2rem, 5vh, 3rem) 1.5rem 1.5rem;
-        }
-    }
-
-    @media (max-width: 991px) {
-        .login-container {
-            background-size: cover;
-            background-position: center;
-        }
-        .left-section { display: none; }
-
-        /* Mobile: hide all logos on login page */
-        .login-corner-logos,
-        .logo-row,
-        .sptjm-logo {
-            display: none !important;
-        }
-
-        .form-control, .form-select, .input-group-text {
-            height: clamp(2.4rem, 5vw, 2.7rem);
-            font-size: clamp(0.9rem, 2.8vw, 1rem);
-        }
-        .btn-success-custom {
-            height: clamp(2.5rem, 5.2vw, 2.8rem);
-            font-size: clamp(0.9rem, 2.8vw, 1rem);
-        }
-    }
-
-    /* Additional adjustments for tablet and monitor: push content further down */
-    @media (min-width: 768px) {
-        .left-section {
-            padding: clamp(6rem, 12vh, 10rem) clamp(1rem, 3vw, 2rem);
-        }
-        .right-section {
-            padding: clamp(6rem, 12vh, 9.5rem) clamp(1rem, 3vw, 1.5rem) clamp(1rem, 3vh, 1.5rem);
-        }
-    }
-
-    @media (min-width: 1200px) {
-        .left-section {
-            padding: clamp(6.5rem, 13vh, 11rem) clamp(1rem, 3vw, 2rem);
-        }
-        .right-section {
-            padding: clamp(6.5rem, 13vh, 10.5rem) clamp(1rem, 3vw, 1.5rem) clamp(1rem, 3vh, 1.5rem);
-        }
-    }
-
-    /* smaller logo helper */
-    .logo-small { height: clamp(40px, 6vh, 60px); }
-    /* SPTJM header logo on login */
-    /* Make SPTJM header logo span the same width as the username field */
-    .sptjm-logo {
-        display: block;
-        width: 90%;       /* match container width (same as input fields which are 100%) */
-        max-width: 90%;
-        height: auto;      /* preserve aspect ratio */
-        max-height: clamp(60px, 12vh, 140px); /* limit excessive height */
+    .sptjm-logo-row img {
+        height: 52px;
+        width: auto;
         object-fit: contain;
-        margin: 0 auto 0.6rem;
+        filter: drop-shadow(0 2px 8px rgba(0,0,0,0.2));
+    }
+
+    .sptjm-logo-divider {
+        width: 2px;
+        height: 40px;
+        background: rgba(255,255,255,0.4);
+        border-radius: 2px;
+    }
+
+    /* Welcome Text */
+    .sptjm-welcome-title {
+        font-size: clamp(2rem, 3.5vw, 2.8rem);
+        font-weight: 800;
+        color: #ffffff;
+        line-height: 1.2;
+        margin: 0 0 1rem 0;
+        text-shadow: 0 2px 12px rgba(0,0,0,0.15);
+        letter-spacing: -0.5px;
+    }
+
+    .sptjm-welcome-subtitle {
+        font-size: clamp(0.9rem, 1.4vw, 1.05rem);
+        font-weight: 400;
+        color: rgba(255,255,255,0.80);
+        margin: 0;
+        letter-spacing: 0.01em;
+    }
+
+    /* ── Kolom Kanan (Form Card) ── */
+    .sptjm-right-col {
+        flex: 0 0 420px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 2rem 1rem;
+    }
+
+    /* ── Glassmorphism Card ── */
+    .sptjm-card {
+        background: rgba(255, 255, 255, 0.18);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        border: 1px solid rgba(255, 255, 255, 0.28);
+        border-radius: 24px;
+        box-shadow:
+            0 8px 32px rgba(0, 0, 0, 0.18),
+            0 2px 8px rgba(0, 0, 0, 0.10),
+            inset 0 1px 0 rgba(255,255,255,0.35);
+        padding: 2.5rem 2.25rem 2rem;
+        width: 100%;
+        max-width: 400px;
+    }
+
+    /* ── Card Header ── */
+    .sptjm-card-header {
+        text-align: center;
+        margin-bottom: 1.75rem;
+    }
+
+    .sptjm-brand-title {
+        font-size: clamp(1.6rem, 2.5vw, 1.9rem);
+        font-weight: 800;
+        line-height: 1;
+        letter-spacing: 0.5px;
+        margin-bottom: 0.4rem;
+    }
+
+    .sptjm-brand-title .brand-sptjm {
+        color: #ffffff;
+        text-shadow: 0 2px 10px rgba(0,0,0,0.20);
+    }
+
+    .sptjm-brand-title .brand-online {
+        color: #FFB300;
+        text-shadow: 0 2px 10px rgba(255,179,0,0.30);
+    }
+
+    .sptjm-brand-subtitle {
+        font-size: 0.75rem;
+        font-weight: 400;
+        color: rgba(255, 255, 255, 0.75);
+        margin: 0;
+        letter-spacing: 0.02em;
+    }
+
+    /* ── Form Labels ── */
+    .sptjm-form-label {
+        display: block;
+        font-size: 0.7rem;
+        font-weight: 700;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: rgba(255, 255, 255, 0.85);
+        margin-bottom: 0.4rem;
+    }
+
+    /* ── Form Group Spacing ── */
+    .sptjm-form-group {
+        margin-bottom: 1.1rem;
+    }
+
+    /* ── Input Fields (Pill Glassmorphism) ── */
+    .sptjm-input-wrapper {
+        position: relative;
+        display: flex;
+        align-items: center;
+    }
+
+    .sptjm-input-icon {
+        position: absolute;
+        left: 14px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #6B7280;
+        font-size: 1rem;
+        z-index: 2;
+        pointer-events: none;
+    }
+
+    .sptjm-input-icon-right {
+        position: absolute;
+        right: 14px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #6B7280;
+        font-size: 1rem;
+        z-index: 2;
+        cursor: pointer;
+    }
+
+    .sptjm-input {
+        width: 100%;
+        height: 48px;
+        background: rgba(255, 255, 255, 0.92) !important;
+        border: 1.5px solid rgba(255, 255, 255, 0.6) !important;
+        border-radius: 12px !important;
+        padding: 0 42px 0 42px !important;
+        font-size: 0.875rem !important;
+        font-weight: 400 !important;
+        color: #374151 !important;
+        transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
+        -webkit-text-fill-color: #374151 !important;
+        outline: none;
+        box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+    }
+
+    .sptjm-input::placeholder {
+        color: #9CA3AF !important;
+        opacity: 1 !important;
+    }
+
+    .sptjm-input:focus {
+        background: rgba(255, 255, 255, 1) !important;
+        border-color: rgba(255, 255, 255, 0.9) !important;
+        box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.25), 0 1px 4px rgba(0,0,0,0.08) !important;
+        outline: none !important;
+    }
+
+    /* Select */
+    .sptjm-select {
+        width: 100%;
+        height: 48px;
+        background: rgba(255, 255, 255, 0.92) !important;
+        border: 1.5px solid rgba(255, 255, 255, 0.6) !important;
+        border-radius: 12px !important;
+        padding: 0 42px 0 42px !important;
+        font-size: 0.875rem !important;
+        font-weight: 400 !important;
+        color: #374151 !important;
+        transition: border-color 0.2s, box-shadow 0.2s;
+        -webkit-appearance: none;
+        appearance: none;
+        cursor: pointer;
+        outline: none;
+        box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+    }
+
+    .sptjm-select:focus {
+        background: rgba(255, 255, 255, 1) !important;
+        border-color: rgba(255, 255, 255, 0.9) !important;
+        box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.25), 0 1px 4px rgba(0,0,0,0.08) !important;
+        outline: none !important;
+    }
+
+    .sptjm-select option {
+        background: #ffffff;
+        color: #374151;
+    }
+
+    /* Password toggle */
+    .sptjm-input.with-right-icon {
+        padding-right: 42px !important;
+    }
+
+    /* ── Login Button ── */
+    .sptjm-btn-login {
+        width: 100%;
+        height: 48px;
+        background: #28C76F;
+        border: none;
+        border-radius: 12px;
+        color: #ffffff;
+        font-size: 0.95rem;
+        font-weight: 700;
+        letter-spacing: 0.03em;
+        cursor: pointer;
+        transition: background 0.2s, transform 0.15s, box-shadow 0.2s;
+        box-shadow: 0 4px 16px rgba(40, 199, 111, 0.40);
+        margin-top: 0.5rem;
+    }
+
+    .sptjm-btn-login:hover {
+        background: #22B164;
+        box-shadow: 0 6px 20px rgba(40, 199, 111, 0.55);
+        transform: translateY(-1px);
+    }
+
+    .sptjm-btn-login:active {
+        transform: translateY(0);
+        box-shadow: 0 2px 8px rgba(40, 199, 111, 0.35);
+    }
+
+    /* ── Alert Error ── */
+    .sptjm-alert-error {
+        background: rgba(255, 77, 79, 0.18);
+        border: 1px solid rgba(255, 77, 79, 0.4);
+        border-radius: 10px;
+        color: #FFD0D0;
+        padding: 0.65rem 1rem;
+        font-size: 0.82rem;
+        margin-bottom: 1rem;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    /* ── Card Footer ── */
+    .sptjm-card-footer {
+        text-align: center;
+        margin-top: 1.5rem;
+        font-size: 0.7rem;
+        color: rgba(255, 255, 255, 0.55);
+        letter-spacing: 0.01em;
+    }
+
+    /* ============================================================
+       RESPONSIVE
+    ============================================================ */
+    @media (max-width: 991px) {
+        .sptjm-login-container {
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem 1.5rem;
+            gap: 1.5rem;
+        }
+
+        .sptjm-left-col {
+            flex: none;
+            width: 100%;
+            max-width: 480px;
+            align-items: center;
+            text-align: center;
+            padding: 1rem 1rem 0;
+        }
+
+        .sptjm-logo-row {
+            justify-content: center;
+        }
+
+        .sptjm-right-col {
+            flex: none;
+            width: 100%;
+            max-width: 480px;
+            padding: 0 1rem 2rem;
+        }
+    }
+
+    @media (max-width: 576px) {
+        .sptjm-logo-row img {
+            height: 38px;
+        }
+
+        .sptjm-card {
+            padding: 2rem 1.5rem 1.75rem;
+            border-radius: 20px;
+        }
+
+        .sptjm-welcome-title {
+            font-size: 1.6rem;
+        }
+
+        .sptjm-left-col {
+            padding-top: 1.5rem;
+        }
     }
 </style>
 @endsection
 
 @section('content')
-<div class="login-container">
-    @php
-        $loginHeaderMode = $loginHeaderMode ?? 'default';
-    @endphp
+<div class="sptjm-login-page">
 
-    @if ($loginHeaderMode === 'corner')
-        <div class="login-corner-logos position-absolute top-0 start-0 p-3 d-flex align-items-center" style="z-index: 10;">
-            <img src="{{ asset('assets/img/favicon/logo-lldikti-4.png') }}" height="40" alt="Logo LLDikti" class="logo-small me-2">
-            <img src="{{ asset('logo_berdampak.png') }}" height="40" alt="Logo Berdampak" class="logo-small ms-2">
+    {{-- Wave Decorations --}}
+    <svg class="sptjm-wave-bottom" viewBox="0 0 1440 200" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M0,160 C360,220 1080,80 1440,160 L1440,200 L0,200 Z" fill="rgba(255,255,255,0.08)"/>
+    </svg>
+    <svg class="sptjm-wave-mid" viewBox="0 0 1440 200" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M0,120 C300,200 900,40 1440,120 L1440,200 L0,200 Z" fill="rgba(255,255,255,0.05)"/>
+    </svg>
+
+    <div class="sptjm-login-container">
+
+        {{-- ===== Kolom Kiri: Branding ===== --}}
+        <div class="sptjm-left-col">
+
+            {{-- Logo Row --}}
+            <div class="sptjm-logo-row">
+                <img src="{{ asset('assets/img/favicon/logo-lldikti-4.png') }}" alt="Logo LLDIKTI 4">
+                <div class="sptjm-logo-divider"></div>
+                <img src="{{ asset('logo_berdampak.png') }}" alt="Logo Berdampak DIKTISAINTEK">
+            </div>
+
+            {{-- Welcome Text --}}
+            <h1 class="sptjm-welcome-title">
+                Selamat Datang di<br>SPTJM Online
+            </h1>
+            <p class="sptjm-welcome-subtitle">
+                Silahkan Masuk untuk Memulai Aplikasi
+            </p>
+
         </div>
-    @endif
 
-    <div class="row h-100 g-0">
-        
-        <div class="col-lg-7 left-section">
-            @if ($loginHeaderMode === 'default')
-                <div class="d-flex justify-content-center align-items-center mb-3 w-100 logo-row">
-                    <img src="{{ asset('assets/img/favicon/logo-lldikti-4.png') }}" height="40" alt="Logo LLDikti" class="logo-small me-2">
-                    <img src="{{ asset('logo_berdampak.png') }}" height="40" alt="Logo Berdampak" class="logo-small ms-2">
-                </div>
+        {{-- ===== Kolom Kanan: Login Card ===== --}}
+        <div class="sptjm-right-col">
+            <div class="sptjm-card">
 
-                <div class="w-100 mt-1">
-                    <h1 class="welcome-text mb-1">Selamat Datang di SPTJM Online</h1>
-                    <p class="sub-welcome">Silahkan Masuk untuk Memulai Aplikasi</p>
-                </div>
-            @endif
-        </div>
-
-        <div class="col-lg-5 right-section">
-            <div class="authentication-inner">
-                <div class="card">
-                    <div class="card-body">
-                        
-                        <div class="text-center">
-                            <img src="{{ asset('sptjm_online.png') }}" alt="SPTJM Online" class="sptjm-logo">
-                        </div>
-
-                        @if (session('error'))
-                        <div class="alert alert-danger rounded-pill">
-                            <i class="bx bx-error-circle me-2"></i> {{ session('error') }}
-                        </div>
-                        @endif
-
-                        <form id="formAuthentication" action="{{ route('login') }}" method="POST" autocomplete="on">
-                            @csrf
-
-                            <div class="mb-3">
-                                <label for="login" class="form-label">Username</label>
-                                <input type="text" class="form-control" id="login" name="login"
-                                    placeholder="Username" required autocomplete="username" autocapitalize="none" spellcheck="false">
-                            </div>
-
-                            <div class="mb-3 form-password-toggle">
-                                <label class="form-label" for="password">Password</label>
-                                <div class="input-group input-group-merge">
-                                    <input type="password" id="password" class="form-control" name="password"
-                                        placeholder="Password" aria-describedby="password" required autocomplete="current-password" />
-                                    <span class="input-group-text cursor-pointer"><i class="bx bx-hide"></i></span>
-                                </div>
-                            </div>
-
-                            <div class="mb-4">
-                                <label for="tahun" class="form-label">Tahun</label>
-                                <select id="tahun" name="tahun" class="form-select" required>
-                                    <option value="">Pilih Tahun</option>
-                                    @foreach($tahun_versi as $th)
-                                        <option value="{{ $th }}">{{ $th }}</option>
-                                    @endforeach
-                                </select>
-                            </div>
-
-                            <div class="mb-3">
-                                <button class="btn btn-success-custom w-100" type="submit">
-                                    Login
-                                </button>
-                            </div>
-
-                            
-
-                        </form>
-                        
-                        
-
+                {{-- Card Header --}}
+                <div class="sptjm-card-header">
+                    <div class="sptjm-brand-title">
+                        <span class="brand-sptjm">SPTJM</span>&nbsp;<span class="brand-online">ONLINE</span>
                     </div>
+                    <p class="sptjm-brand-subtitle">Sistem Pernyataan Tanggung Jawab Mutlak</p>
                 </div>
+
+                {{-- Error Alert --}}
+                @if (session('error'))
+                <div class="sptjm-alert-error">
+                    <i class="bx bx-error-circle" style="font-size:1rem; flex-shrink:0;"></i>
+                    <span>{{ session('error') }}</span>
+                </div>
+                @endif
+
+                {{-- ===== FORM (semua attribute TIDAK berubah) ===== --}}
+                <form id="formAuthentication" action="{{ route('login') }}" method="POST" autocomplete="on">
+                    @csrf
+
+                    {{-- USERNAME --}}
+                    <div class="sptjm-form-group">
+                        <label class="sptjm-form-label" for="login">Username</label>
+                        <div class="sptjm-input-wrapper">
+                            <i class="bx bx-user sptjm-input-icon"></i>
+                            <input
+                                type="text"
+                                class="sptjm-input"
+                                id="login"
+                                name="login"
+                                placeholder="admin"
+                                required
+                                autocomplete="username"
+                                autocapitalize="none"
+                                spellcheck="false"
+                            >
+                        </div>
+                    </div>
+
+                    {{-- PASSWORD --}}
+                    <div class="sptjm-form-group">
+                        <label class="sptjm-form-label" for="password">Password</label>
+                        <div class="sptjm-input-wrapper">
+                            <i class="bx bx-lock-alt sptjm-input-icon"></i>
+                            <input
+                                type="password"
+                                id="password"
+                                class="sptjm-input with-right-icon"
+                                name="password"
+                                placeholder="password123"
+                                required
+                                autocomplete="current-password"
+                            >
+                            <i class="bx bx-hide sptjm-input-icon-right" id="togglePassword"></i>
+                        </div>
+                    </div>
+
+                    {{-- TAHUN --}}
+                    <div class="sptjm-form-group">
+                        <label class="sptjm-form-label" for="tahun">Tahun</label>
+                        <div class="sptjm-input-wrapper">
+                            <i class="bx bx-calendar sptjm-input-icon"></i>
+                            <select id="tahun" name="tahun" class="sptjm-select" required>
+                                <option value="">Pilih Tahun</option>
+                                @foreach($tahun_versi as $th)
+                                    <option value="{{ $th }}">{{ $th }}</option>
+                                @endforeach
+                            </select>
+                            <i class="bx bx-chevron-down sptjm-input-icon-right" style="pointer-events:none;"></i>
+                        </div>
+                    </div>
+
+                    {{-- LOGIN BUTTON --}}
+                    <button type="submit" class="sptjm-btn-login">
+                        Login
+                    </button>
+
+                </form>
+
+                {{-- Card Footer --}}
+                <div class="sptjm-card-footer">
+                    &copy; 2026 SPTJM Online &middot; LLDIKTI Wilayah IV
+                </div>
+
             </div>
         </div>
-        </div>
+
+    </div>
 </div>
 
 <script>
-// Opsi tahun versi diisi dari server (hanya tahun Aktif)
+document.addEventListener('DOMContentLoaded', function () {
+    // Toggle password visibility
+    const toggleBtn = document.getElementById('togglePassword');
+    const passwordInput = document.getElementById('password');
+
+    if (toggleBtn && passwordInput) {
+        toggleBtn.addEventListener('click', function () {
+            const isHidden = passwordInput.type === 'password';
+            passwordInput.type = isHidden ? 'text' : 'password';
+            this.classList.toggle('bx-hide', !isHidden);
+            this.classList.toggle('bx-show', isHidden);
+        });
+    }
+});
 </script>
 @endsection

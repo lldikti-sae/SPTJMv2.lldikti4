@@ -1,137 +1,120 @@
 @extends('layouts/contentNavbarLayout')
 
-@section('title', 'SPTJM Online')
+@section('title', 'SPTJM Online - Dashboard')
+
+@section('page-style')
+<style>
+    /* Specific styles for Dashboard page that might not be in demo.css */
+</style>
+@endsection
 
 @section('content')
-<div class="row g-3 mb-3">
-    <div class="col-12 col-md-4">
-        <div class="card ">
-            <div class="card-body">
-                <div class="d-flex align-items-start justify-content-between">
-                    <div class="content-left">
-                        <span class="text-heading">Jumlah Seluruh Dosen</span>
-                        <div class="d-flex align-items-center my-1">
-                            <h4 class="mb-0 me-2">{{ $totalDosen }}
-                            </h4>
-                        </div>
-                    </div>
-                    <div class="avatar">
-                        <span class="avatar-initial rounded bg-label-primary p-4">
-                            <i class="bx bx-group bx-lg"></i>
-                        </span>
-                    </div>
+<div class="row g-4 mb-4">
+    <!-- Jumlah Seluruh Dosen -->
+    <div class="col-12 col-md-6 col-lg-4">
+        <div class="sptjm-stat-card">
+            <div class="d-flex justify-content-between align-items-start">
+                <div>
+                    <div class="sptjm-stat-title">Jumlah Seluruh Dosen</div>
+                    <div class="sptjm-stat-value val-primary">{{ number_format($totalDosen, 0, ',', '.') }}</div>
+                </div>
+                <div class="sptjm-stat-icon-wrapper icon-bg-primary">
+                    <i class="bx bx-group"></i>
                 </div>
             </div>
         </div>
     </div>
-    <div class="col-12 col-md-4">
-        <div class="card">
-            <div class="card-body">
-                <div class="d-flex align-items-start justify-content-between">
-                    <div class="content-left">
-                        <span class="text-heading">Jumlah Dosen PNS Aktif</span>
-                        <div class="d-flex align-items-center my-1">
-                            <h4 class="mb-0 me-2">{{ $jumlahDosenPNSAktif }}</h4>
-                        </div>
-                    </div>
-                    <div class="avatar">
-                        <span class="avatar-initial rounded bg-label-success p-4">
-                            <i class="bx bx-user-check bx-lg"></i>
-                        </span>
-                    </div>
+
+    <!-- Dosen PNS Aktif -->
+    <div class="col-12 col-md-6 col-lg-4">
+        <div class="sptjm-stat-card">
+            <div class="d-flex justify-content-between align-items-start">
+                <div>
+                    <div class="sptjm-stat-title">Dosen PNS Aktif</div>
+                    <div class="sptjm-stat-value val-success">{{ number_format($jumlahDosenPNSAktif, 0, ',', '.') }}</div>
+                </div>
+                <div class="sptjm-stat-icon-wrapper icon-bg-success">
+                    <i class="bx bx-user-check"></i>
                 </div>
             </div>
         </div>
     </div>
-    <div class="col-12 col-md-4">
-        <div class="card">
-            <div class="card-body">
-                <div class="d-flex align-items-start justify-content-between">
-                    <div class="content-left">
-                        <span class="text-heading">Jumlah Dosen PNS Tidak Aktif</span>
-                        <div class="d-flex align-items-center my-1">
-                            <h4 class="mb-0 me-2">{{ $jumlahDosenPNSNon }}</h4>
-                        </div>
-                    </div>
-                    <div class="avatar">
-                        <span class="avatar-initial rounded bg-label-danger p-4">
-                            <i class="bx bx-user-x bx-lg"></i>
-                        </span>
-                    </div>
+
+    <!-- Dosen PNS Tidak Aktif -->
+    <div class="col-12 col-md-6 col-lg-4">
+        <div class="sptjm-stat-card">
+            <div class="d-flex justify-content-between align-items-start">
+                <div>
+                    <div class="sptjm-stat-title">Dosen PNS Tidak Aktif</div>
+                    <div class="sptjm-stat-value val-danger">{{ number_format($jumlahDosenPNSNon, 0, ',', '.') }}</div>
+                </div>
+                <div class="sptjm-stat-icon-wrapper icon-bg-danger">
+                    <i class="bx bx-user-x"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Perguruan Tinggi Swasta -->
+    <div class="col-12 col-md-6 col-lg-4">
+        <div class="sptjm-stat-card">
+            <div class="d-flex justify-content-between align-items-start">
+                <div>
+                    <div class="sptjm-stat-title">Perguruan Tinggi Swasta</div>
+                    <div class="sptjm-stat-value val-warning">{{ number_format($ptsCount, 0, ',', '.') }}</div>
+                </div>
+                <div class="sptjm-stat-icon-wrapper icon-bg-warning">
+                    <i class="bx bxs-graduation"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Dosen Non-PNS Aktif -->
+    <div class="col-12 col-md-6 col-lg-4">
+        <div class="sptjm-stat-card">
+            <div class="d-flex justify-content-between align-items-start">
+                <div>
+                    <div class="sptjm-stat-title">Dosen Non-PNS Aktif</div>
+                    <div class="sptjm-stat-value val-success">{{ number_format($jumlahDosenNonPNSAktif, 0, ',', '.') }}</div>
+                </div>
+                <div class="sptjm-stat-icon-wrapper icon-bg-success">
+                    <i class="bx bx-user-check"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Dosen Non-PNS Tidak Aktif -->
+    <div class="col-12 col-md-6 col-lg-4">
+        <div class="sptjm-stat-card">
+            <div class="d-flex justify-content-between align-items-start">
+                <div>
+                    <div class="sptjm-stat-title">Dosen Non-PNS Tidak Aktif</div>
+                    <div class="sptjm-stat-value val-danger">{{ number_format($jumlahDosenNonPNSNon, 0, ',', '.') }}</div>
+                </div>
+                <div class="sptjm-stat-icon-wrapper icon-bg-danger">
+                    <i class="bx bx-user-x"></i>
                 </div>
             </div>
         </div>
     </div>
 </div>
 
-<div class="row g-3 mb-3">
-    <div class="col-12 col-md-4">
-        <div class="card">
-            <div class="card-body">
-                <div class="d-flex align-items-start justify-content-between">
-                    <div class="content-left">
-                        <span class="text-heading">Jumlah Perguruan Tinggi Swasta</span>
-                        <div class="d-flex align-items-center my-1">
-                            <h4 class="mb-0 me-2">{{ $ptsCount }}</h4>
-                        </div>
-                    </div>
-                    <div class="avatar">
-                        <span class="avatar-initial rounded bg-label-primary p-4">
-                            <i class='bx bxs-graduation bx-lg'></i>
-                        </span>
-                    </div>
-                </div>
-            </div>
+<div class="sptjm-table-card">
+    <div class="sptjm-table-header">
+        <h5 class="sptjm-table-title">
+            <i class="bx bx-history text-primary"></i>
+            Data Dosen Pensiun Berjalan
+        </h5>
+        <div class="sptjm-table-actions">
+            <!-- Table actions can go here (search handled by datatables usually, but we could add custom) -->
         </div>
     </div>
-    <div class="col-12 col-md-4">
-        <div class="card">
-            <div class="card-body">
-                <div class="d-flex align-items-start justify-content-between">
-                    <div class="content-left">
-                        <span class="text-heading">Jumlah Dosen Non-PNS Aktif</span>
-                        <div class="d-flex align-items-center my-1">
-                            <h4 class="mb-0 me-2">{{ $jumlahDosenNonPNSAktif }}</h4>
-                        </div>
-                    </div>
-                    <div class="avatar">
-                        <span class="avatar-initial rounded bg-label-success p-4">
-                            <i class="bx bx-user-check bx-lg"></i>
-                        </span>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="col-12 col-md-4">
-        <div class="card">
-            <div class="card-body">
-                <div class="d-flex align-items-start justify-content-between">
-                    <div class="content-left">
-                        <span class="text-heading">Jumlah Dosen Non-PNS Tidak Aktif</span>
-                        <div class="d-flex align-items-center my-1">
-                            <h4 class="mb-0 me-2">{{ $jumlahDosenNonPNSNon }}</h4>
-                        </div>
-                    </div>
-                    <div class="avatar">
-                        <span class="avatar-initial rounded bg-label-danger p-4">
-                            <i class="bx bx-user-x bx-lg"></i>
-                        </span>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
-<hr class="my-4">
-
-<div class="card" style="width: 100%; padding: 10px;">
-    <h5 class="card-header">Data Dosen Pensiun Berjalan</h5>
 
     <div class="table-responsive text-nowrap">
-        <table class="table table-sm table-hover" id="dosenPensiunTable">
-            <thead style="background-color: #dbdee0;">
+        <table class="table table-hover" id="dosenPensiunTable">
+            <thead>
                 <tr>
                     <th>Nidn</th>
                     <th>NUPTK</th>
@@ -147,29 +130,64 @@
         </table>
     </div>
 </div>
+
+@endsection
+
+@section('page-script')
 <script>
 document.addEventListener('DOMContentLoaded', function () {
     $('#dosenPensiunTable').DataTable({
         processing: true,
         serverSide: true,
         paging: true,
-        pageLength: 100,
-        lengthChange: true,
+        pageLength: 10,
+        lengthChange: false, // hide length change
         scrollX: true,
         scrollCollapse: true,
-        lengthMenu: [[25, 50, 100], [25, 50, 100]],
         ajax: {
             url: '{{ route('admin.dashboard.dosen-pensiun.data') }}'
         },
         columns: [
-            { data: 'nidn', name: 'nidn' },
+            { 
+                data: 'nidn', 
+                name: 'nidn',
+                render: function(data, type, row) {
+                    return '<span class="fw-semibold text-primary">' + data + '</span>';
+                }
+            },
             { data: 'nuptk', name: 'nuptk' },
-            { data: 'nama', name: 'nama' },
-            { data: 'pts', name: 'pts' },
+            { 
+                data: 'nama', 
+                name: 'nama',
+                render: function(data, type, row) {
+                    return '<span class="fw-bold text-dark">' + data + '</span>';
+                }
+            },
+            { 
+                data: 'pts', 
+                name: 'pts',
+                render: function(data, type, row) {
+                    return '<span class="fw-semibold text-primary">' + data + '</span>';
+                }
+            },
             { data: 'tmt_pensiun', name: 'tmt_pensiun' },
             { data: 'usia', name: 'usia' },
-            { data: 'status', name: 'status', orderable: false, searchable: false },
-            { data: 'aksi', name: 'aksi', orderable: false, searchable: false }
+            { 
+                data: 'status', 
+                name: 'status', 
+                orderable: false, 
+                searchable: false,
+                render: function(data, type, row) {
+                    // Figma design uses active pill
+                    return '<span class="sptjm-badge-active">' + (data || 'AKTIF') + '</span>';
+                }
+            },
+            { 
+                data: 'aksi', 
+                name: 'aksi', 
+                orderable: false, 
+                searchable: false
+            }
         ],
         order: [[3, 'asc']],
         pagingType: 'simple_numbers',
@@ -182,9 +200,15 @@ document.addEventListener('DOMContentLoaded', function () {
             },
             zeroRecords: "Data tidak ditemukan",
             infoEmpty: "Tidak ada data tersedia",
+            info: "Menampilkan _START_ sampai _END_ dari _TOTAL_ entri",
             searchPlaceholder: "Cari data...",
-            search: "Cari Data:",
+            search: "", // Empty search label to match Figma
         },
+        dom: '<"row"<"col-sm-12 col-md-6"l><"col-sm-12 col-md-6 d-flex justify-content-end"f>>t<"row"<"col-sm-12 col-md-6"i><"col-sm-12 col-md-6 d-flex justify-content-end"p>>',
+        initComplete: function() {
+            // Add custom classes to search input
+            $('.dataTables_filter input').addClass('sptjm-search-input').removeClass('form-control-sm');
+        }
     });
 });
 </script>
