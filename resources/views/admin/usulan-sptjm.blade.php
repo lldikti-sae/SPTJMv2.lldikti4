@@ -6,85 +6,187 @@
 
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-<div class="card" style="width: 100%; padding: 10px;">
-    <h5 class="card-header text-start p-2">Usulan SPTJM</h5>
-    <hr>
+@php
+    $currentYear = session('tahun') ?? date('Y');
+    $countUsulan = DB::table('q_sptjm')->where('tahun', $currentYear)->where('status', 'Usulan')->count();
+    $countValidasi = DB::table('q_sptjm')->where('tahun', $currentYear)->where('status', 'Validasi')->count();
+    $countProses = DB::table('q_sptjm')->where('tahun', $currentYear)->where('status', 'Proses')->count();
+    $countSelesai = DB::table('q_sptjm')->where('tahun', $currentYear)->where('status', 'Selesai')->count();
+    $countTolak = DB::table('q_sptjm')->where('tahun', $currentYear)->where('status', 'Tolak')->count();
+@endphp
 
-    <form id="filterForm" method="POST">
-        @csrf
-        <div class="row align-items-center" style="padding: 20px;">
-            <!-- Pilih Tipe SPTJM -->
-            <div class="col-lg-3 col-md-4 mb-2 mb-md-0">
-                <label class="form-label" for="pilihsptjm">Pilih Tipe SPTJM</label>
-                <select id="pilihsptjm" class="form-select" name="pilihsptjm">
-                    <option value="SPTJM Berjalan">SPTJM Berjalan</option>
-                    <option value="SPTJM Susulan">SPTJM Susulan</option>
-                    <option value="TUKIN Berjalan">TUKIN Berjalan</option>
-                    <option value="TUKIN Susulan">TUKIN Susulan</option>
-                </select>
-            </div>
+<style>
+    .card-sptjm {
+        border: 1.5px solid #dbeafe !important;
+        box-shadow: 0 10px 30px rgba(26, 86, 219, 0.15) !important;
+        border-radius: 12px !important;
+        background: #ffffff !important;
+    }
+    .status-card:hover {
+        transform: translateY(-2px);
+        border-color: #1a56db !important;
+        box-shadow: 0 10px 25px rgba(26, 86, 219, 0.1) !important;
+    }
+</style>
 
-            <!-- Pilih Bulan -->
-            <div class="col-lg-2 col-md-3 mb-2 mb-md-0">
-                <label class="form-label" for="selectTypeOptBulan">Bulan</label>
-                <select name="bulan" id="selectTypeOptBulan" class="form-select">
-                    <option value="All">All</option>
-                    <option value="Januari">Januari</option>
-                    <option value="Februari">Februari</option>
-                    <option value="Maret">Maret</option>
-                    <option value="April">April</option>
-                    <option value="Mei">Mei</option>
-                    <option value="Juni">Juni</option>
-                    <option value="Juli">Juli</option>
-                    <option value="Agustus">Agustus</option>
-                    <option value="September">September</option>
-                    <option value="Oktober">Oktober</option>
-                    <option value="November">November</option>
-                    <option value="Desember">Desember</option>
-                </select>
-            </div>
+<div class="content-wrapper">
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h4 class="fw-bold text-dark mb-1" style="color: #0f2b5c !important; font-size: 1.5rem;">Usulan SPTJM</h4>
+            <p class="text-muted mb-0" style="font-size: 0.875rem;">Kelola dan pantau seluruh pengajuan SPTJM (Surat Pernyataan Tanggung Jawab Mutlak).</p>
+        </div>
+    </div>
 
-            <!-- Search -->
-            <div class="col-lg-7 col-md-5 d-flex justify-content-end mt-4">
-                <div class="input-group" style="max-width: 250px;">
-                    <span class="input-group-text"><i class="bx bx-search"></i></span>
-                    <input type="search" class="form-control" id="searchInput" placeholder="Search...">
+    <!-- Cards Stats & Status Buttons -->
+    <div class="row row-cols-1 row-cols-md-5 g-3 mb-4">
+        <!-- Card Usulan -->
+        <div class="col">
+            <div class="card status-card status-btn cursor-pointer p-3" data-status="Usulan" style="border-radius: 12px; border: 1.5px solid #dbeafe; box-shadow: 0 4px 12px rgba(26, 86, 219, 0.05); background: white; transition: all 0.25s ease;">
+                <div class="d-flex align-items-center gap-3">
+                    <div class="avatar flex-shrink-0 d-flex align-items-center justify-content-center" style="width: 44px; height: 44px; border-radius: 10px; background-color: #eef2f6;">
+                        <i class="bx bx-folder" style="font-size: 1.35rem; color: #475569;"></i>
+                    </div>
+                    <div>
+                        <span class="d-block mb-1 text-uppercase fw-bold text-muted" style="font-size: 0.65rem; letter-spacing: 0.05em;">Usulan</span>
+                        <h4 class="card-title mb-0 fw-bold" style="color: #0f2b5c;">{{ $countUsulan }}</h4>
+                    </div>
                 </div>
             </div>
         </div>
-
-
-        <!-- Button Filter Status -->
-        <div class="demo-inline-spacing mb-4"
-            style="display: flex; gap: 11px; justify-content: start; margin-left: 20px;">
-            <button type="button" class="btn btn-outline-dark status-btn" data-status="Usulan">Usulan</button>
-            <button type="button" class="btn btn-outline-primary status-btn" data-status="Validasi">Validasi</button>
-            <button type="button" class="btn btn-outline-warning status-btn" data-status="Proses">Proses</button>
-            <button type="button" class="btn btn-outline-success status-btn" data-status="Selesai">Selesai</button>
-            <button type="button" class="btn btn-outline-danger status-btn" data-status="Tolak">Tolak</button>
+        <!-- Card Validasi -->
+        <div class="col">
+            <div class="card status-card status-btn cursor-pointer p-3" data-status="Validasi" style="border-radius: 12px; border: 1.5px solid #dbeafe; box-shadow: 0 4px 12px rgba(26, 86, 219, 0.05); background: white; transition: all 0.25s ease;">
+                <div class="d-flex align-items-center gap-3">
+                    <div class="avatar flex-shrink-0 d-flex align-items-center justify-content-center" style="width: 44px; height: 44px; border-radius: 10px; background-color: #fff8eb;">
+                        <i class="bx bx-hourglass" style="font-size: 1.35rem; color: #f59e0b;"></i>
+                    </div>
+                    <div>
+                        <span class="d-block mb-1 text-uppercase fw-bold text-muted" style="font-size: 0.65rem; letter-spacing: 0.05em;">Validasi</span>
+                        <h4 class="card-title mb-0 fw-bold" style="color: #0f2b5c;">{{ $countValidasi }}</h4>
+                    </div>
+                </div>
+            </div>
         </div>
-    </form>
+        <!-- Card Proses -->
+        <div class="col">
+            <div class="card status-card status-btn cursor-pointer p-3" data-status="Proses" style="border-radius: 12px; border: 1.5px solid #dbeafe; box-shadow: 0 4px 12px rgba(26, 86, 219, 0.05); background: white; transition: all 0.25s ease;">
+                <div class="d-flex align-items-center gap-3">
+                    <div class="avatar flex-shrink-0 d-flex align-items-center justify-content-center" style="width: 44px; height: 44px; border-radius: 10px; background-color: #eff6ff;">
+                        <i class="bx bx-sync" style="font-size: 1.35rem; color: #3b82f6;"></i>
+                    </div>
+                    <div>
+                        <span class="d-block mb-1 text-uppercase fw-bold text-muted" style="font-size: 0.65rem; letter-spacing: 0.05em;">Proses</span>
+                        <h4 class="card-title mb-0 fw-bold" style="color: #0f2b5c;">{{ $countProses }}</h4>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Card Selesai -->
+        <div class="col">
+            <div class="card status-card status-btn cursor-pointer p-3" data-status="Selesai" style="border-radius: 12px; border: 1.5px solid #dbeafe; box-shadow: 0 4px 12px rgba(26, 86, 219, 0.05); background: white; transition: all 0.25s ease;">
+                <div class="d-flex align-items-center gap-3">
+                    <div class="avatar flex-shrink-0 d-flex align-items-center justify-content-center" style="width: 44px; height: 44px; border-radius: 10px; background-color: #ecfdf5;">
+                        <i class="bx bx-check-circle" style="font-size: 1.35rem; color: #10b981;"></i>
+                    </div>
+                    <div>
+                        <span class="d-block mb-1 text-uppercase fw-bold text-muted" style="font-size: 0.65rem; letter-spacing: 0.05em;">Selesai</span>
+                        <h4 class="card-title mb-0 fw-bold" style="color: #0f2b5c;">{{ $countSelesai }}</h4>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Card Tolak -->
+        <div class="col">
+            <div class="card status-card status-btn cursor-pointer p-3" data-status="Tolak" style="border-radius: 12px; border: 1.5px solid #dbeafe; box-shadow: 0 4px 12px rgba(26, 86, 219, 0.05); background: white; transition: all 0.25s ease;">
+                <div class="d-flex align-items-center gap-3">
+                    <div class="avatar flex-shrink-0 d-flex align-items-center justify-content-center" style="width: 44px; height: 44px; border-radius: 10px; background-color: #fef2f2;">
+                        <i class="bx bx-x-circle" style="font-size: 1.35rem; color: #ef4444;"></i>
+                    </div>
+                    <div>
+                        <span class="d-block mb-1 text-uppercase fw-bold text-muted" style="font-size: 0.65rem; letter-spacing: 0.05em;">Ditolak</span>
+                        <h4 class="card-title mb-0 fw-bold" style="color: #0f2b5c;">{{ $countTolak }}</h4>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
-    <hr>
+    <!-- Filters Card -->
+    <div class="card card-sptjm mb-4">
+        <div class="card-body p-4">
+            <form id="filterForm" method="POST">
+                @csrf
+                <div class="row align-items-end g-3">
+                    <!-- Pilih Tipe SPTJM -->
+                    <div class="col-lg-4 col-md-5">
+                        <label class="form-label fw-bold text-dark text-uppercase" style="font-size: 0.72rem; letter-spacing: 0.05em;" for="pilihsptjm">Pilih Tipe SPTJM</label>
+                        <select id="pilihsptjm" class="form-select" name="pilihsptjm" style="border-color: #cbd5e1;">
+                            <option value="SPTJM Berjalan">SPTJM Berjalan</option>
+                            <option value="SPTJM Susulan">SPTJM Susulan</option>
+                            <option value="TUKIN Berjalan">TUKIN Berjalan</option>
+                            <option value="TUKIN Susulan">TUKIN Susulan</option>
+                        </select>
+                    </div>
 
-    <div class="table-responsive text-nowrap mt-4">
-        <table class="table table-sm table-bordered table-hover" id="dataTable" style="width:100%">
-            <thead style="background-color: #dbdee0;">
-                <tr>
-                    <th>ID Usulan</th>
-                    <th>Tahun</th>
-                    <th>Kode PT</th>
-                    <th>Nama PT</th>
-                    <th>Bulan</th>
-                    <th>Nama Penandatangan</th>
-                    <th>Jabatan</th>
-                    <th>Wilayah</th>
-                    <th>File</th>
-                    <th>Keterangan</th>
-                </tr>
-            </thead>
-            <tbody></tbody>
-        </table>
+                    <!-- Pilih Bulan -->
+                    <div class="col-lg-3 col-md-4">
+                        <label class="form-label fw-bold text-dark text-uppercase" style="font-size: 0.72rem; letter-spacing: 0.05em;" for="selectTypeOptBulan">Bulan</label>
+                        <select name="bulan" id="selectTypeOptBulan" class="form-select" style="border-color: #cbd5e1;">
+                            <option value="All">All</option>
+                            <option value="Januari">Januari</option>
+                            <option value="Februari">Februari</option>
+                            <option value="Maret">Maret</option>
+                            <option value="April">April</option>
+                            <option value="Mei">Mei</option>
+                            <option value="Juni">Juni</option>
+                            <option value="Juli">Juli</option>
+                            <option value="Agustus">Agustus</option>
+                            <option value="September">September</option>
+                            <option value="Oktober">Oktober</option>
+                            <option value="November">November</option>
+                            <option value="Desember">Desember</option>
+                        </select>
+                    </div>
+
+                    <!-- Search -->
+                    <div class="col-lg-5 col-md-3 d-flex justify-content-md-end">
+                        <div class="w-100" style="max-width: 320px;">
+                            <label class="form-label fw-bold text-dark text-uppercase" style="font-size: 0.72rem; letter-spacing: 0.05em;">Search</label>
+                            <div class="input-group">
+                                <span class="input-group-text" style="border-color: #cbd5e1; background: #f8fafc;"><i class="bx bx-search"></i></span>
+                                <input type="search" class="form-control" id="searchInput" placeholder="Search..." style="border-color: #cbd5e1;">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Table Card -->
+    <div class="card card-sptjm mb-4">
+        <div class="card-body p-4">
+            <div class="table-responsive text-nowrap">
+                <table class="table table-hover md2-table" id="dataTable" style="width:100%; margin-bottom: 0 !important;">
+                    <thead>
+                        <tr>
+                            <th style="background-color: #f8fafc !important; color: #475569 !important; font-size: 0.75rem !important; letter-spacing: 0.05em !important; font-weight: 700 !important;">ID Usulan</th>
+                            <th style="background-color: #f8fafc !important; color: #475569 !important; font-size: 0.75rem !important; letter-spacing: 0.05em !important; font-weight: 700 !important;">Tahun</th>
+                            <th style="background-color: #f8fafc !important; color: #475569 !important; font-size: 0.75rem !important; letter-spacing: 0.05em !important; font-weight: 700 !important;">Kode PT</th>
+                            <th style="background-color: #f8fafc !important; color: #475569 !important; font-size: 0.75rem !important; letter-spacing: 0.05em !important; font-weight: 700 !important;">Nama PT</th>
+                            <th style="background-color: #f8fafc !important; color: #475569 !important; font-size: 0.75rem !important; letter-spacing: 0.05em !important; font-weight: 700 !important;">Bulan</th>
+                            <th style="background-color: #f8fafc !important; color: #475569 !important; font-size: 0.75rem !important; letter-spacing: 0.05em !important; font-weight: 700 !important;">Nama Penandatangan</th>
+                            <th style="background-color: #f8fafc !important; color: #475569 !important; font-size: 0.75rem !important; letter-spacing: 0.05em !important; font-weight: 700 !important;">Jabatan</th>
+                            <th style="background-color: #f8fafc !important; color: #475569 !important; font-size: 0.75rem !important; letter-spacing: 0.05em !important; font-weight: 700 !important;">Wilayah</th>
+                            <th style="background-color: #f8fafc !important; color: #475569 !important; font-size: 0.75rem !important; letter-spacing: 0.05em !important; font-weight: 700 !important;">File</th>
+                            <th style="background-color: #f8fafc !important; color: #475569 !important; font-size: 0.75rem !important; letter-spacing: 0.05em !important; font-weight: 700 !important;">Keterangan</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
     </div>
 </div>
 
@@ -161,33 +263,17 @@ document.addEventListener('DOMContentLoaded', function() {
             const tipeSptjm = pilihSptjm.value;
             const bulan = bulanSelect.value;
 
-            // ganti class button
+            // Reset all status cards styling
             statusButtons.forEach(btn => {
-                // reset semua ke outline
-                btn.classList.remove('btn-dark', 'btn-primary', 'btn-warning',
-                    'btn-success', 'btn-danger');
-                btn.classList.add(
-                    btn.dataset.status === "Usulan" ? 'btn-outline-dark' :
-                    btn.dataset.status === "Validasi" ? 'btn-outline-primary' :
-                    btn.dataset.status === "Proses" ? 'btn-outline-warning' :
-                    btn.dataset.status === "Selesai" ? 'btn-outline-success' :
-                    'btn-outline-danger'
-                );
+                btn.style.setProperty('border-color', '#dbeafe', 'important');
+                btn.style.setProperty('background-color', '#ffffff', 'important');
+                btn.style.setProperty('box-shadow', '0 4px 12px rgba(26, 86, 219, 0.05)', 'important');
             });
 
-            // ganti button yang diklik jadi solid
-            this.classList.remove(
-                'btn-outline-dark', 'btn-outline-primary', 'btn-outline-warning',
-                'btn-outline-success',
-                'btn-outline-danger'
-            );
-            this.classList.add(
-                this.dataset.status === "Usulan" ? 'btn-dark' : this.dataset.status ===
-                "Validasi" ? 'btn-primary' :
-                this.dataset.status === "Proses" ? 'btn-warning' :
-                this.dataset.status === "Selesai" ? 'btn-success' :
-                'btn-danger'
-            );
+            // Highlight selected card
+            this.style.setProperty('border-color', '#1a56db', 'important');
+            this.style.setProperty('background-color', '#f0f5ff', 'important');
+            this.style.setProperty('box-shadow', '0 10px 25px rgba(26, 86, 219, 0.15)', 'important');
 
             Swal.fire({
                 title: 'Mohon tunggu...',
@@ -242,6 +328,8 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById("searchInput").addEventListener("keyup", function() {
         $('#dataTable').DataTable().search(this.value).draw();
     });
+
+    // User clicks a status card to load data
 });
 </script>
 @endsection

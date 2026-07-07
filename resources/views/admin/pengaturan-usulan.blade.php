@@ -5,33 +5,44 @@
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 @section('content')
+<style>
+    .card-usulan {
+        border: 1.5px solid #dbeafe !important;
+        box-shadow: 0 10px 30px rgba(26, 86, 219, 0.15) !important;
+        border-radius: 12px !important;
+        background: #ffffff !important;
+    }
+</style>
+
 <div class="content-wrapper">
     <div class="row">
         <div class="col-12">
-            <div class="card mb-4">
-                <h5 class="card-header">Pengaturan Usulan SPTJM</h5>
-                <div class="card-body">
+            <div class="card card-usulan mb-4">
+                <div class="card-body p-4">
+                    <h5 class="fw-bold text-dark mb-4" style="color: #0f2b5c !important; font-size: 1.15rem; display: inline-flex; align-items: center; gap: 8px;">
+                        <i class="bx bx-edit-alt"></i> Pengaturan Usulan SPTJM
+                    </h5>
                     <form id="pengaturanUsulanForm" action="{{ route('pengaturan-usulan.store') }}" method="POST">
                         @csrf
-                        <div class="row">
+                        <div class="row g-3">
                             <div class="col-lg-3 col-md-6">
-                                <label class="form-label" for="tahun">Jenis Usulan</label>
-                                <select id="jenis_usulan" class="form-select" name="jenis_usulan" required>
-                                    <option value="" selected disabled>--PILIH--</option>
+                                <label class="form-label fw-bold text-dark text-uppercase" style="font-size: 0.72rem; letter-spacing: 0.05em;" for="jenis_usulan">Jenis Usulan</label>
+                                <select id="jenis_usulan" class="form-select" name="jenis_usulan" required style="border-color: #cbd5e1;">
+                                    <option value="" selected disabled>-- PILIH --</option>
                                     <option value="SPTJM">SPTJM</option>
                                     <option value="TUKIN">TUKIN</option>
                                 </select>
                             </div>
                             <div class="col-lg-3 col-md-6">
-                                <label class="form-label" for="tahun">Tahun</label>
-                                <select id="tahun" class="form-select" name="tahun" required>
+                                <label class="form-label fw-bold text-dark text-uppercase" style="font-size: 0.72rem; letter-spacing: 0.05em;" for="tahun">Tahun</label>
+                                <select id="tahun" class="form-select" name="tahun" required style="border-color: #cbd5e1;">
                                     <option value="{{ date('Y') }}" selected>{{ date('Y') }}</option>
                                 </select>
                             </div>
 
                             <div class="col-lg-3 col-md-6">
-                                <label class="form-label" for="bulan">Bulan</label>
-                                <select id="bulan" class="form-select" name="bulan" required>
+                                <label class="form-label fw-bold text-dark text-uppercase" style="font-size: 0.72rem; letter-spacing: 0.05em;" for="bulan">Bulan</label>
+                                <select id="bulan" class="form-select" name="bulan" required style="border-color: #cbd5e1;">
                                     @foreach (['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli',
                                     'Agustus', 'September', 'Oktober', 'November', 'Desember'] as $index => $bulan)
                                     <option value="{{ $bulan }}">
@@ -42,109 +53,115 @@
                             </div>
 
                             <div class="col-lg-3 col-md-6">
-                                <label class="form-label" for="pencairan_ke">Pencairan ke</label>
-                                <select id="pencairan_ke" class="form-select" name="pencairan_ke" required>
-                                    <option value="">-- Pilih pencairan --</option>
+                                <label class="form-label fw-bold text-dark text-uppercase" style="font-size: 0.72rem; letter-spacing: 0.05em;" for="pencairan_ke">Pencairan ke</label>
+                                <select id="pencairan_ke" class="form-select" name="pencairan_ke" required style="border-color: #cbd5e1;">
+                                    <option value="">Pilih Opsi</option>
                                 </select>
                             </div>
                         </div>
 
-                        <div class="row mt-4">
-                            <div class="col-lg-3">
-                                <label class="form-label" for="tanggal_mulai">Tanggal Mulai</label>
-                                <input class="form-control" type="date" name="tanggal_mulai" required>
+                        <div class="row align-items-end g-3 mt-1">
+                            <div class="col-lg-3 col-md-6">
+                                <label class="form-label fw-bold text-dark text-uppercase" style="font-size: 0.72rem; letter-spacing: 0.05em;" for="tanggal_mulai">Tanggal Mulai</label>
+                                <input class="form-control" type="date" name="tanggal_mulai" required style="border-color: #cbd5e1;">
                             </div>
 
-                            <div class="col-lg-3">
-                                <label class="form-label" for="tanggal_selesai">Tanggal Selesai</label>
-                                <input class="form-control" type="date" name="tanggal_selesai" required>
+                            <div class="col-lg-3 col-md-6">
+                                <label class="form-label fw-bold text-dark text-uppercase" style="font-size: 0.72rem; letter-spacing: 0.05em;" for="tanggal_selesai">Tanggal Selesai</label>
+                                <input class="form-control" type="date" name="tanggal_selesai" required style="border-color: #cbd5e1;">
                             </div>
 
-                            <div class="col-lg-3">
-                                <label class="form-label d-block">Status</label>
-                                <div class="form-check">
-                                    <input name="status" class="form-check-input" type="radio" value="Aktifkan"
-                                        id="status_aktif" checked>
-                                    <label class="form-check-label" for="status_aktif">Aktifkan</label>
+                            <div class="col-lg-3 col-md-6">
+                                <label class="form-label fw-bold text-dark text-uppercase" style="font-size: 0.72rem; letter-spacing: 0.05em;">Status</label>
+                                <div class="d-flex align-items-center gap-4 mt-2">
+                                    <div class="form-check d-flex align-items-center">
+                                        <input name="status" class="form-check-input" type="radio" value="Aktifkan"
+                                            id="status_aktif" checked style="width: 1.1rem; height: 1.1rem; margin-top: 0; margin-right: 6px;">
+                                        <label class="form-check-label fw-bold text-dark" for="status_aktif" style="font-size: 0.85rem;">Aktifkan</label>
+                                    </div>
+                                    <div class="form-check d-flex align-items-center">
+                                        <input name="status" class="form-check-input" type="radio" value="Nonaktifkan"
+                                            id="status_nonaktif" style="width: 1.1rem; height: 1.1rem; margin-top: 0; margin-right: 6px;">
+                                        <label class="form-check-label fw-bold text-dark" for="status_nonaktif" style="font-size: 0.85rem;">Nonaktifkan</label>
+                                    </div>
                                 </div>
-                                <div class="form-check">
-                                    <input name="status" class="form-check-input" type="radio" value="Nonaktifkan"
-                                        id="status_nonaktif">
-                                    <label class="form-check-label" for="status_nonaktif">Nonaktifkan</label>
-                                </div>
                             </div>
 
-                            <div class="col-lg-3 mt-4">
-                                <button type="submit" class="btn btn-success ml-5">Simpan</button>
+                            <div class="col-lg-3 col-md-6 d-flex justify-content-end">
+                                <button type="submit" class="btn btn-success px-4 py-2 fw-bold" style="background-color: #0f2b5c; border-color: #0f2b5c; font-size: 0.875rem; border-radius: 6px; display: inline-flex; align-items: center; gap: 8px; width: 100%; justify-content: center;">
+                                    <i class="bx bx-save" style="font-size: 1.15rem;"></i> Simpan
+                                </button>
                             </div>
                         </div>
                     </form>
                 </div>
             </div>
 
-            <hr class="my-4">
-
             <!-- TABEL & MODAL -->
-            <div class="card mb-4">
-                <div class="card-body">
+            <div class="card card-usulan mb-4">
+                <div class="card-body p-4">
                     <div class="table-responsive text-nowrap">
-                        <table id="pengaturanUsulanTable" class="table table-sm table-hover">
-                            <thead style="background-color: #dbdee0;">
+                        <table id="pengaturanUsulanTable" class="table table-hover md2-table" style="margin-bottom: 0 !important;">
+                            <thead>
                                 <tr>
-                                    <th>Jenis Usulan</th>
-                                    <th>Tahun</th>
-                                    <th>Bulan</th>
-                                    <th>Pencairan ke</th>
-                                    <th>Tanggal Mulai</th>
-                                    <th>Tanggal Selesai</th>
-                                    <th>Status</th>
-                                    <th>Aksi</th>
+                                    <th style="background-color: #f8fafc !important; color: #475569 !important; font-size: 0.75rem !important; letter-spacing: 0.05em !important; font-weight: 700 !important;">Jenis Usulan</th>
+                                    <th style="background-color: #f8fafc !important; color: #475569 !important; font-size: 0.75rem !important; letter-spacing: 0.05em !important; font-weight: 700 !important;">Tahun</th>
+                                    <th style="background-color: #f8fafc !important; color: #475569 !important; font-size: 0.75rem !important; letter-spacing: 0.05em !important; font-weight: 700 !important;">Bulan</th>
+                                    <th style="background-color: #f8fafc !important; color: #475569 !important; font-size: 0.75rem !important; letter-spacing: 0.05em !important; font-weight: 700 !important;">Pencairan ke</th>
+                                    <th style="background-color: #f8fafc !important; color: #475569 !important; font-size: 0.75rem !important; letter-spacing: 0.05em !important; font-weight: 700 !important;">Tanggal Mulai</th>
+                                    <th style="background-color: #f8fafc !important; color: #475569 !important; font-size: 0.75rem !important; letter-spacing: 0.05em !important; font-weight: 700 !important;">Tanggal Selesai</th>
+                                    <th style="background-color: #f8fafc !important; color: #475569 !important; font-size: 0.75rem !important; letter-spacing: 0.05em !important; font-weight: 700 !important; text-align: center;">Status</th>
+                                    <th style="background-color: #f8fafc !important; color: #475569 !important; font-size: 0.75rem !important; letter-spacing: 0.05em !important; font-weight: 700 !important; text-align: center;">Aksi</th>
                                 </tr>
                             </thead>
                             <tbody class="table-border-bottom-0">
                                 @foreach ($pengaturanUsulan as $data)
                                 <tr>
-                                    <td>{{ $data->jenis_usulan ?? '-' }}</td>
-                                    <td>{{ $data->tahun }}</td>
-                                    <td>{{ $data->bulan }}</td>
-                                    <td>{{ $data->pencairan_ke }}</td>
-                                    <td>{{ $data->tanggal_mulai }}</td>
-                                    <td>{{ $data->tanggal_selesai }}</td>
-                                    <td>{{ $data->status }}</td>
-                                    <td>
+                                    <td><span class="fw-bold text-primary">{{ $data->jenis_usulan ?? '-' }}</span></td>
+                                    <td><span class="fw-semibold text-dark">{{ $data->tahun }}</span></td>
+                                    <td><span class="fw-semibold text-dark">{{ $data->bulan }}</span></td>
+                                    <td><span class="fw-semibold text-dark">{{ $data->pencairan_ke }}</span></td>
+                                    <td><span class="text-dark">{{ $data->tanggal_mulai }}</span></td>
+                                    <td><span class="text-dark">{{ $data->tanggal_selesai }}</span></td>
+                                    <td style="text-align: center;">
+                                        @if(strtolower($data->status) === 'aktifkan')
+                                            <span class="badge" style="background-color: #d2f8e1 !important; color: #1f7a42 !important; font-weight: 700; font-size: 0.72rem; padding: 6px 12px; border-radius: 20px; text-transform: uppercase;">Aktifkan</span>
+                                        @else
+                                            <span class="badge" style="background-color: #fbe0e0 !important; color: #b92c2c !important; font-weight: 700; font-size: 0.72rem; padding: 6px 12px; border-radius: 20px; text-transform: uppercase;">Nonaktifkan</span>
+                                        @endif
+                                    </td>
+                                    <td style="text-align: center;">
                                         @php
                                             $isChecked = false;
                                             if (is_array($configAktif) && isset($configAktif[$data->jenis_usulan])) {
                                                 $entry = $configAktif[$data->jenis_usulan];
-                                                // Wajib match pencairan_ke DAN tahun.
-                                                // Tanpa cek tahun, jika ada pencairan_ke yang sama di tahun berbeda,
-                                                // maka keduanya bisa terlihat aktif saat balik ke halaman ini.
                                                 $isChecked = ((int) ($entry['pencairan_ke'] ?? 0) === (int) $data->pencairan_ke)
                                                   && ((string) ($entry['tahun'] ?? '') === (string) $data->tahun);
                                             }
                                         @endphp
-                                        <button type="button" class="btn btn-icon btn-sm btn-warning edit-usulan"
+                                        <button type="button" class="btn btn-icon btn-sm edit-usulan me-1"
                                             data-id="{{ $data->id }}" data-tahun="{{ $data->tahun }} "
                                             data-bulan="{{ $data->bulan }}"
                                             data-pencairan_ke="{{ $data->pencairan_ke }}"
                                             data-tanggal_mulai="{{ $data->tanggal_mulai }}"
                                             data-tanggal_selesai="{{ $data->tanggal_selesai }}"
                                             data-status="{{ $data->status }}" data-bs-toggle="modal"
-                                            data-bs-target="#modalUsulanForm">
-                                            <i class="bx bx-edit"></i>
+                                            data-bs-target="#modalUsulanForm"
+                                            style="background-color: #ff9f43 !important; border-color: #ff9f43 !important; color: white !important; border-radius: 6px !important; width: 32px; height: 32px; display: inline-flex; align-items: center; justify-content: center;">
+                                            <i class="bx bx-pencil" style="font-size: 1.1rem;"></i>
                                         </button>
 
                                         @if ($isChecked)
-                                            {{-- Aktif: tampil hijau ceklis, klik => noncek --}}
-                                            <button type="button" class="toggle-ceklist btn btn-icon btn-sm btn-success ms-1" title="Non-Ceklis"
-                                                data-action="noncek" data-id="{{ $data->id }}" data-jenis="{{ $data->jenis_usulan }}">
-                                                <i class="bx bx-check"></i>
+                                            <button type="button" class="toggle-ceklist btn btn-icon btn-sm" title="Non-Ceklis"
+                                                data-action="noncek" data-id="{{ $data->id }}" data-jenis="{{ $data->jenis_usulan }}"
+                                                style="background-color: #28c76f !important; border-color: #28c76f !important; color: white !important; border-radius: 6px !important; width: 32px; height: 32px; display: inline-flex; align-items: center; justify-content: center;">
+                                                <i class="bx bx-check" style="font-size: 1.1rem;"></i>
                                             </button>
                                         @else
-                                            {{-- Non-aktif: tampil ikon larangan merah, klik => cek --}}
-                                            <button type="button" class="toggle-ceklist btn btn-icon btn-sm btn-danger ms-1" title="Ceklis"
-                                                data-action="cek" data-id="{{ $data->id }}" data-jenis="{{ $data->jenis_usulan }}">
-                                                <i class="bx bx-block"></i>
+                                            <button type="button" class="toggle-ceklist btn btn-icon btn-sm" title="Ceklis"
+                                                data-action="cek" data-id="{{ $data->id }}" data-jenis="{{ $data->jenis_usulan }}"
+                                                style="background-color: #ea5455 !important; border-color: #ea5455 !important; color: white !important; border-radius: 6px !important; width: 32px; height: 32px; display: inline-flex; align-items: center; justify-content: center;">
+                                                <i class="bx bx-block" style="font-size: 1.1rem;"></i>
                                             </button>
                                         @endif
                                     </td>
