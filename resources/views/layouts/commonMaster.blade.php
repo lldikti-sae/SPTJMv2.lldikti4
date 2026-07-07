@@ -267,6 +267,34 @@
     {{-- Page-level scripts (from @push('scripts')) --}}
     @stack('scripts')
 
+    <!-- ─── GLOBAL TABLE COMPACT & BORDER OVERRIDE ─── -->
+    <style>
+        table.dataTable,
+        .table,
+        .md-table-wrap table {
+            border: 1px solid #E5E7EB !important;
+        }
+        table.dataTable thead th,
+        .table thead th,
+        .md-table-wrap table thead th {
+            border: 1px solid #E5E7EB !important;
+            padding: 6px 12px !important;
+            vertical-align: middle !important;
+        }
+        table.dataTable tbody td,
+        .table tbody td,
+        .md-table-wrap table tbody td {
+            border: 1px solid #E5E7EB !important;
+            padding: 6px 12px !important;
+            vertical-align: middle !important;
+        }
+        .dataTables_wrapper .dataTables_paginate .paginate_button {
+            border: 1px solid #E5E7EB !important;
+        }
+        .dataTables_wrapper .dataTables_paginate .paginate_button.current {
+            border-color: #0b3d91 !important;
+        }
+    </style>
 </body>
 
 </html>

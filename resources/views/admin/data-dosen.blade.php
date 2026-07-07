@@ -6,33 +6,302 @@
 
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-<div class="card" style="width: 100%; padding: 10px;">
-    <h5 class="card-header text-start p-2">Data Dosen</h5>
-    <hr>
-    <div class="d-flex justify-content-end align-items-center mb-3 px-3">
-        <button class="btn btn-sm btn-warning me-2" id="btnSinkronisasi" data-bs-toggle="modal" data-bs-target="#modalSinkronisasi">
-            <i class="bx bx-transfer-alt bx-sm me-1"></i> Sinkronisasi
+@section('page-style')
+<style>
+/* ── Page Header ── */
+.md-page-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-bottom: 24px;
+}
+.md-page-header .page-titles h4 {
+    font-size: 1.35rem;
+    font-weight: 700;
+    color: #2c3e50;
+    margin: 0 0 4px 0;
+    line-height: 1.2;
+}
+.md-page-header .breadcrumb {
+    margin: 0;
+    font-size: 0.8rem;
+    background: none;
+    padding: 0;
+}
+.md-page-header .breadcrumb-item a { color: #696cff; text-decoration: none; }
+.md-page-header .breadcrumb-item.active { color: #8592a3; }
+.md-page-header .breadcrumb-item + .breadcrumb-item::before { color: #8592a3; }
+
+/* ── Buttons ── */
+.btn-sinkron-md {
+    background-color: #d97706;
+    border-color: #d97706;
+    color: #fff;
+    font-weight: 600;
+    font-size: 0.82rem;
+    padding: 8px 18px;
+    border-radius: 20px;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    transition: all 0.2s;
+    white-space: nowrap;
+}
+.btn-sinkron-md:hover { background-color: #b45309; color: #fff; }
+
+.btn-tambah-md {
+    background-color: #0b3d91; /* Dark blue matching Figma */
+    border-color: #0b3d91;
+    color: #fff;
+    font-weight: 600;
+    font-size: 0.82rem;
+    padding: 8px 18px;
+    border-radius: 20px;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    transition: all 0.2s;
+    white-space: nowrap;
+}
+.btn-tambah-md:hover { background-color: #082f73; color: #fff; }
+
+/* ── Status Filters ── */
+.md-status-filters {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 24px;
+}
+.md-status-btn {
+    background-color: #fff;
+    border: 1px solid #e2e8f0;
+    color: #4a5568;
+    font-weight: 600;
+    font-size: 0.82rem;
+    padding: 6px 20px;
+    border-radius: 20px;
+    transition: all 0.2s;
+    cursor: pointer;
+}
+.md-status-btn.active {
+    background-color: #0b3d91;
+    border-color: #0b3d91;
+    color: #fff;
+}
+.md-status-btn:hover:not(.active) {
+    background-color: #f8fafc;
+}
+
+/* ── Card ── */
+.md-card {
+    background: #fff;
+    border-radius: 10px;
+    box-shadow: 0 2px 12px rgba(44,62,80,0.07);
+    overflow: hidden;
+}
+.md-card-inner { padding: 20px 24px 24px; }
+
+/* ── Toolbar ── */
+.md-toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-bottom: 16px;
+}
+.dataTables_length {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.84rem;
+    color: #4a5568;
+}
+.dataTables_length select {
+    border: 1px solid #e2e8f0;
+    border-radius: 6px;
+    padding: 5px 10px;
+    font-size: 0.84rem;
+    color: #4a5568;
+    background: #f8fafc;
+    cursor: pointer;
+    outline: none;
+}
+.dataTables_filter {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.dataTables_filter label {
+    font-size: 0.84rem;
+    color: #4a5568;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.dataTables_filter input {
+    border: 1px solid #e2e8f0;
+    border-radius: 6px;
+    padding: 6px 36px 6px 14px;
+    font-size: 0.84rem;
+    color: #2d3748;
+    background: #f8fafc url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' fill='%238592a3' viewBox='0 0 16 16'%3E%3Cpath d='M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398l3.85 3.85a1 1 0 0 0 1.415-1.415l-3.868-3.833zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z'/%3E%3C/svg%3E") no-repeat calc(100% - 10px) center;
+    min-width: 240px;
+    outline: none;
+    transition: border-color 0.2s;
+}
+.dataTables_filter input:focus { border-color: #0b3d91; background-color: #fff; }
+
+/* ── Table ── */
+.md-table-wrap table.dataTable { border-collapse: collapse !important; width: 100% !important; margin-top: 0 !important; }
+.md-table-wrap table.dataTable thead th {
+    background: #ffffff !important;
+    color: #64748b !important;
+    font-size: 0.72rem !important;
+    font-weight: 700 !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.05em !important;
+    border-bottom: 1px solid #e2e8f0 !important;
+    padding: 12px 14px !important;
+    white-space: nowrap;
+}
+.md-table-wrap table.dataTable tbody td {
+    font-size: 0.84rem;
+    color: #374151;
+    padding: 12px 14px !important;
+    vertical-align: middle;
+    border-bottom: 1px solid #f1f5f9 !important;
+}
+.md-table-wrap table.dataTable tbody tr:hover { background-color: #f8fafc !important; }
+
+/* DataTables overrides */
+.dataTables_wrapper .row { margin: 0; padding: 0; }
+.dataTables_wrapper .dataTables_paginate { margin-top: 16px; }
+.dataTables_wrapper .dataTables_paginate .paginate_button.current,
+.dataTables_wrapper .dataTables_paginate .paginate_button.current:hover {
+    background: #0b3d91 !important;
+    color: #fff !important;
+    border: 1px solid #0b3d91 !important;
+    border-radius: 4px !important;
+}
+.dataTables_wrapper .dataTables_paginate .paginate_button {
+    border: 1px solid #e2e8f0 !important;
+    border-radius: 4px !important;
+    padding: 5px 12px !important;
+    margin: 0 2px !important;
+}
+.dataTables_wrapper .dataTables_paginate .paginate_button:hover:not(.current):not(.disabled) {
+    background: #f1f5f9 !important;
+    color: #0b3d91 !important;
+    border-color: #e2e8f0 !important;
+}
+.dataTables_wrapper .dataTables_info { font-size: 0.82rem; color: #8592a3; padding-top: 20px; }
+
+/* ── Custom Elements ── */
+.text-link-nidn {
+    color: #0b3d91;
+    font-weight: 600;
+    text-decoration: none;
+}
+.text-link-nidn:hover {
+    text-decoration: underline;
+}
+
+.badge-ya {
+    background-color: #e0e7ff;
+    color: #3730a3;
+    font-weight: 700;
+    font-size: 0.72rem;
+    padding: 4px 12px;
+    border-radius: 20px;
+    display: inline-block;
+}
+.badge-tidak {
+    background-color: #fee2e2;
+    color: #b91c1c;
+    font-weight: 700;
+    font-size: 0.72rem;
+    padding: 4px 12px;
+    border-radius: 20px;
+    display: inline-block;
+}
+
+/* ── Aksi Circular Buttons ── */
+.btn-aksi-circle {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    color: #fff !important;
+    margin-right: 4px;
+    font-size: 0.9rem;
+    transition: transform 0.2s, opacity 0.2s;
+    text-decoration: none;
+}
+.btn-aksi-circle:hover { transform: scale(1.1); opacity: 0.9; }
+.btn-aksi-view { background: #1e3a8a; } /* dark blue */
+.btn-aksi-check { background: #166534; } /* dark green */
+.btn-aksi-block { background: #dc2626; } /* red */
+.btn-aksi-edit { background: #eab308; } /* yellow */
+</style>
+@endsection
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+{{-- Page Header --}}
+<div class="md-page-header">
+    <div class="page-titles">
+        <h4>Data Dosen</h4>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="#">Data Dosen</a></li>
+                <li class="breadcrumb-item active">Lihat Data Dosen</li>
+            </ol>
+        </nav>
+    </div>
+    <div class="d-flex align-items-center gap-2">
+        <button type="button" class="btn-sinkron-md" id="btnSinkronisasi" data-bs-toggle="modal" data-bs-target="#modalSinkronisasi">
+            <i class="bx bx-transfer-alt"></i> Sinkronisasi
         </button>
-        <button class="btn btn-sm btn-primary" id="addDosen" data-bs-toggle="modal" data-bs-target="#modalDosenForm">
-            <i class="bx bx-plus bx-sm me-1"></i> Tambah
+        <button type="button" class="btn-tambah-md" id="addDosen" data-bs-toggle="modal" data-bs-target="#modalDosenForm">
+            <i class="bx bx-plus"></i> Tambah Data
         </button>
     </div>
-    <div class="table-responsive text-nowrap">
+</div>
 
-        <table class="table table-sm table-hover" id="dosenTable">
-            <thead style="background-color: #dbdee0;">
-                <tr>
-                    <th>NIDN</th>
-                    <th>NUPTK</th>
-                    <th>Nama Dosen</th>
-                    <th>Kode PTS</th>
-                    <th>Nama PTS</th>
-                    <th>Eligible Span</th>
-                    <th>Aksi</th>
-                </tr>
-            </thead>
-            {{-- pake ajax datatables --}}
-        </table>
+{{-- Status Filters --}}
+<div class="md-status-filters">
+    <button type="button" class="md-status-btn active" data-status="Semua">Semua</button>
+    <button type="button" class="md-status-btn" data-status="Aktif">Aktif</button>
+    <button type="button" class="md-status-btn" data-status="Tidak Aktif">Tidak Aktif</button>
+</div>
+
+{{-- Main Card --}}
+<div class="md-card">
+    <div class="md-card-inner">
+        {{-- Toolbar --}}
+        <!-- DataTables will inject length menu and search filter here via DOM option -->
+
+        {{-- Table --}}
+        <div class="md-table-wrap table-responsive text-nowrap">
+            <table class="table table-hover" id="dosenTable" style="width: 100%;">
+                <thead>
+                    <tr>
+                        <th>NIDN</th>
+                        <th>NUPTK</th>
+                        <th>NAMA DOSEN</th>
+                        <th>KODE PTS</th>
+                        <th>NAMA PTS</th>
+                        <th>ELIGIBLE SPAN</th>
+                        <th>AKSI</th>
+                    </tr>
+                </thead>
+            </table>
+        </div>
     </div>
 </div>
 
@@ -458,13 +727,10 @@ document.addEventListener('DOMContentLoaded', function() {
         scrollCollapse: true,
         paging: true,
         deferRender: true,
-        pageLength: 25,
-        lengthChange: true,
-        scrollX: true,
-        scrollCollapse: true,
-        lengthMenu: [[25, 50, 100], [25, 50, 100]],
-        dom: "<'row align-items-center mb-3'<'col-sm-12 col-md-6'l><'col-sm-12 col-md-6 d-flex justify-content-md-end justify-content-start mt-2 mt-md-0'f>>" +
-            "rt<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
+        pageLength: 15,
+        lengthMenu: [[15, 25, 50, 100], [15, 25, 50, 100]],
+        dom: "<'md-toolbar'<'entries-wrap'l><'search-wrap'f>>" +
+             "rt<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
         ajax: {
             url: '{{ route("admin.data-dosen") }}'
         },
@@ -472,12 +738,16 @@ document.addEventListener('DOMContentLoaded', function() {
                 data: 'nidn',
                 name: 'nidn',
                 searchable: true,
-                className: 'text-start'
+                render: function(data, type, row) {
+                    if(data && data !== '-') {
+                        return '<a href="#" class="text-link-nidn">' + data + '</a>';
+                    }
+                    return data;
+                }
             },
             {
                 data: 'nuptk',
-                name: 'nuptk',
-                className: 'text-start'
+                name: 'nuptk'
             },
             {
                 data: 'nama',
@@ -493,19 +763,37 @@ document.addEventListener('DOMContentLoaded', function() {
             },
             {
                 data: 'eligible_span',
-                name: 'eligible_span'
+                name: 'eligible_span',
+                render: function(data, type, row) {
+                    const val = (data || '').toString().toUpperCase();
+                    if (val === 'YA' || val === 'Y' || val === '1') {
+                        return '<span class="badge-ya">YA</span>';
+                    } else if (val === 'TIDAK' || val === 'TDK' || val === 'N' || val === '0') {
+                        return '<span class="badge-tidak">TIDAK</span>';
+                    }
+                    return data;
+                }
             },
             {
                 data: 'aksi',
                 name: 'aksi',
                 orderable: false,
-                searchable: false
+                searchable: false,
+                render: function(data, type, row) {
+                    let modified = data;
+                    modified = modified.replace(/btn btn-icon btn-sm btn-primary/g, 'btn-aksi-circle btn-aksi-view');
+                    modified = modified.replace(/btn btn-icon btn-sm btn-success/g, 'btn-aksi-circle btn-aksi-check');
+                    modified = modified.replace(/btn btn-icon btn-sm btn-danger/g, 'btn-aksi-circle btn-aksi-block');
+                    modified = modified.replace(/btn btn-icon btn-sm btn-warning/g, 'btn-aksi-circle btn-aksi-edit');
+                    modified = modified.replace(/tf-icons /g, '');
+                    modified = modified.replace(/me-1/g, '');
+                    return modified;
+                }
             }
         ],
-        // Default ordering: first by Aktif (active first), then by Nama ascending
         order: [
             [4, 'desc'],
-            [1, 'asc']
+            [2, 'asc']
         ],
         responsive: true,
         pagingType: 'simple_numbers',
@@ -518,9 +806,34 @@ document.addEventListener('DOMContentLoaded', function() {
             },
             zeroRecords: "Data tidak ditemukan",
             infoEmpty: "Tidak ada data tersedia",
+            info: "Menampilkan _START_ - _END_ dari _TOTAL_ entri",
+            search: "Filter Data:",
             searchPlaceholder: "Cari data...",
-            search: "Cari Data:"
+            lengthMenu: "Show _MENU_ entries"
         },
+    });
+
+    // ── Status Filter Buttons (Semua / Aktif / Tidak Aktif) ──
+    // Filters by 'eligible_span' column (index 5) using regex exact match.
+    // eligible_span has NO editColumn on server, so Yajra applies
+    // SQL-level filtering directly — no controller changes needed.
+    $('.md-status-btn').on('click', function() {
+        $('.md-status-btn').removeClass('active');
+        $(this).addClass('active');
+
+        const status = $(this).data('status');
+        const eligibleColIdx = 5; // index of 'eligible_span' column
+
+        if (status === 'Aktif') {
+            // Standard search for 'YA' (will use LIKE '%YA%')
+            table.column(eligibleColIdx).search('YA').draw();
+        } else if (status === 'Tidak Aktif') {
+            // Standard search for 'TIDAK' (will use LIKE '%TIDAK%')
+            table.column(eligibleColIdx).search('TIDAK').draw();
+        } else {
+            // Semua — clear column filter
+            table.column(eligibleColIdx).search('').draw();
+        }
     });
 
     // --- Logika Sinkronisasi Dosen antar PTS ---
@@ -840,3 +1153,4 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 </script>
 @endsection
+
