@@ -103,6 +103,152 @@
                 line-height: 1.2;
             }
     </style>
+
+
+    <style>
+        /* ─── SIDEBAR BACKGROUND ─────────────────────── */
+        .bg-menu-theme {
+            background-color: #ffffff !important;
+            border-right: 1px solid #e2e8f0 !important;
+        }
+
+        /* ─── TOP-LEVEL: Parent aktif atau terbuka (open) ─── */
+        .menu-vertical .menu-inner > .menu-item.active > .menu-link,
+        .menu-vertical .menu-inner > .menu-item.open > .menu-link {
+            background-color: #eef2ff !important;
+            color: #1a56db !important;
+            font-weight: 600 !important;
+            border-radius: 8px !important;
+        }
+        .menu-vertical .menu-inner > .menu-item.active > .menu-link i,
+        .menu-vertical .menu-inner > .menu-item.open > .menu-link i {
+            color: #1a56db !important;
+        }
+
+        /* Hilangkan strip/bar default bawaan template di parent */
+        .bg-menu-theme .menu-inner > .menu-item.active::before {
+            display: none !important;
+        }
+
+        /* ─── TOP-LEVEL: Parent biasa (non-aktif, tidak terbuka) ─── */
+        .menu-vertical .menu-inner > .menu-item:not(.active):not(.open) > .menu-link {
+            color: #4a5568 !important;
+        }
+        .menu-vertical .menu-inner > .menu-item:not(.active):not(.open) > .menu-link i {
+            color: #6b7a8d !important;
+        }
+
+        /* ─── TOP-LEVEL: Hover ─── */
+        .menu-vertical .menu-inner > .menu-item > .menu-link:hover {
+            background-color: #f1f5f9 !important;
+            border-radius: 8px !important;
+        }
+
+        /* ─── APP BRAND AREA (Logo Horizontal) ─── */
+        .layout-menu .app-brand.demo {
+            height: auto !important;
+            min-height: 64px !important;
+            padding: 10px 16px !important;
+            overflow: hidden !important;
+            border-bottom: 1px solid #eef0f4 !important;
+            display: flex !important;
+            flex-direction: row !important;
+            align-items: center !important;
+            justify-content: flex-start !important;
+            width: 100% !important;
+            box-sizing: border-box !important;
+            position: relative !important;
+        }
+        .layout-menu .app-brand.demo .app-brand-link {
+            display: flex !important;
+            flex-direction: row !important;
+            align-items: center !important;
+            gap: 10px !important;
+            overflow: hidden !important;
+            flex: 1 !important;
+        }
+
+        /* ─── MENU INNER: Kurangi padding atas/bawah ─── */
+        .menu-vertical .menu-inner {
+            padding-top: 0.5rem !important;
+            padding-bottom: 0.5rem !important;
+        }
+        /* Kurangi tinggi setiap menu link parent ─── */
+        .menu-vertical .menu-inner > .menu-item > .menu-link {
+            padding-top: 0.5rem !important;
+            padding-bottom: 0.5rem !important;
+        }
+
+        /* ─── MENU ITEM ICONS (Parent Level) ─── */
+        .menu-vertical .menu-inner > .menu-item > .menu-link .menu-icon {
+            font-size: 1.25rem !important;
+            color: #6b7a8d !important;
+            margin-right: 0.6rem !important;
+        }
+        .menu-vertical .menu-inner > .menu-item.active > .menu-link .menu-icon,
+        .menu-vertical .menu-inner > .menu-item.open > .menu-link .menu-icon {
+            color: #1a56db !important;
+        }
+
+        /* ─── SUBMENU WRAPPER (Garis Vertikal Kiri) ─── */
+        .menu-vertical .menu-sub {
+            border-left: 1.5px solid #dbeafe !important; /* garis vertikal tipis biru/abu */
+            margin-left: 2.15rem !important; /* diposisikan tepat di bawah ikon induk */
+            padding-left: 0 !important;
+            position: relative !important;
+        }
+
+        /* Hapus total bullet dot default */
+        .menu-vertical .menu-sub > .menu-item > .menu-link::before {
+            display: none !important;
+            content: none !important;
+        }
+
+        /* ─── SUBMENU: Item biasa ─── */
+        .menu-vertical .menu-sub > .menu-item > .menu-link {
+            color: #4a5568 !important;
+            font-size: 0.84rem !important;
+            position: relative !important;
+            padding-left: 0.9rem !important; /* jarak teks ke garis vertikal kiri */
+            margin-left: 0 !important;
+        }
+
+        /* ─── SUBMENU: Item AKTIF (sesuai screenshot 2) ─── */
+        .menu-vertical .menu-sub > .menu-item.active > .menu-link {
+            background-color: #e8f0fe !important;
+            color: #1a56db !important;
+            font-weight: 700 !important;
+            /* Bar vertikal biru di kanan — sesuai screenshot */
+            border-right: 4px solid #1a56db !important;
+            border-radius: 4px 0 0 4px !important;
+            padding-left: 0.9rem !important;
+        }
+
+        /* ─── SUBMENU: Hover ─── */
+        .menu-vertical .menu-sub > .menu-item > .menu-link:hover {
+            background-color: #f8fafc !important;
+            border-radius: 4px !important;
+        }
+
+        /* ─── SECTION HEADER LABEL (misal "MASTER DATA") ─── */
+        .menu-inner > .menu-header > span {
+            color: #9ca3af !important;
+            font-size: 0.68rem !important;
+            font-weight: 700 !important;
+            letter-spacing: 0.08em !important;
+            text-transform: uppercase !important;
+        }
+
+        /* ─── STATUS BADGE: AKTIF (Green label) ─── */
+        .badge.bg-label-primary {
+            background-color: rgba(40, 199, 111, 0.12) !important;
+            color: #28c76f !important;
+            font-weight: 600 !important;
+            text-transform: uppercase !important;
+            letter-spacing: 0.03em !important;
+        }
+    </style>
+
     <!-- Include Scripts for customizer, helper, analytics, config -->
     @include('layouts/sections/scriptsIncludes')
 </head>

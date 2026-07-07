@@ -159,35 +159,89 @@ body:has(.sptjm-login-page) html {
   background-color: #F8FAFC !important;
 }
 
-/* Sidebar Navbar */
+/* ── Sidebar & Navbar Base ── */
 .bg-menu-theme {
   background-color: #ffffff !important;
-  border-right: 1px solid #E2E8F0;
+  border-right: 1px solid #e2e8f0;
 }
 
 .bg-navbar-theme {
   background-color: #ffffff !important;
-  border-bottom: 1px solid #E2E8F0;
+  border-bottom: 1px solid #e2e8f0;
 }
 
+/* ── Sidebar Active Item (top-level) ── */
 .menu-inner > .menu-item.active > .menu-link {
-  background-color: #F1F5F9 !important;
-  color: #1A56DB !important;
+  background-color: rgba(105, 108, 255, 0.1) !important;
+  color: #696cff !important;
   font-weight: 600;
-  border-right: 4px solid #1A56DB;
-  border-radius: 0;
+  border-radius: 6px;
+  position: relative;
 }
 
 .menu-inner > .menu-item.active > .menu-link i {
-  color: #1A56DB !important;
+  color: #696cff !important;
 }
 
+/* ── Sidebar Non-active Items ── */
 .menu-inner > .menu-item:not(.active) > .menu-link {
-  color: #64748B !important;
+  color: #566a7f !important;
 }
 
 .menu-inner > .menu-item:not(.active) > .menu-link i {
-  color: #94A3B8 !important;
+  color: #697a8d !important;
+}
+
+/* ── Sidebar Active marker bar (kanan) ── */
+.layout-wrapper:not(.layout-horizontal) .bg-menu-theme .menu-inner > .menu-item.active::before {
+  background: #696cff !important;
+  border-radius: 6px 0 0 6px !important;
+}
+
+/* ── Hover state ── */
+.bg-menu-theme .menu-inner .menu-item .menu-link:not(.active):hover {
+  background-color: rgba(67, 89, 113, 0.05) !important;
+  color: #333 !important;
+}
+
+/* ── Open (expanded parent) ── */
+.bg-menu-theme .menu-item.open:not(.menu-item-closing) > .menu-toggle {
+  color: #696cff !important;
+  background-color: rgba(105, 108, 255, 0.06) !important;
+}
+
+/* ── Submenu active item ── */
+.bg-menu-theme .menu-sub > .menu-item.active > .menu-link {
+  color: #696cff !important;
+  font-weight: 600;
+}
+
+/* ── Submenu active bullet ── */
+.bg-menu-theme .menu-sub > .menu-item.active > .menu-link:not(.menu-toggle)::before {
+  background-color: #696cff !important;
+  width: 0.5rem !important;
+  height: 0.5rem !important;
+  box-shadow: 0 0 0 2px rgba(105, 108, 255, 0.2) !important;
+}
+
+/* ── Submenu non-active bullet ── */
+.bg-menu-theme .menu-sub > .menu-item > .menu-link::before {
+  background-color: #c0c7d0 !important;
+}
+
+/* ── App Brand in sidebar ── */
+.menu .app-brand.demo {
+  border-bottom: 1px solid #e8eaed;
+  padding-bottom: 8px;
+}
+
+/* ── Menu header text ── */
+.bg-menu-theme .menu-header {
+  color: #a0aec0 !important;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
 }
 
 /* Dashboard Stat Cards */

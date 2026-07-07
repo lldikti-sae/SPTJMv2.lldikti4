@@ -1,53 +1,261 @@
 @extends('layouts/contentNavbarLayout')
 
-@section('title', 'SPTJM Online')
+@section('title', 'Data Akun Dosen - SPTJM Online')
 
-@section('content')
-
+@section('page-style')
 <style>
-  /* Bootstrap theme sometimes forces readonly bg to white; override it */
-  #modalDosenForm input.form-control[readonly] {
+/* ── Page Header ── */
+.md-page-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-bottom: 24px;
+}
+.md-page-header .page-titles h4 {
+    font-size: 1.35rem;
+    font-weight: 700;
+    color: #2c3e50;
+    margin: 0 0 4px 0;
+    line-height: 1.2;
+}
+.md-page-header .breadcrumb {
+    margin: 0;
+    font-size: 0.8rem;
+    background: none;
+    padding: 0;
+}
+.md-page-header .breadcrumb-item a { color: #696cff; text-decoration: none; }
+.md-page-header .breadcrumb-item.active { color: #8592a3; }
+.md-page-header .breadcrumb-item + .breadcrumb-item::before { color: #8592a3; }
+
+/* ── Tambah Button ── */
+.btn-tambah-md {
+    background-color: #1a56db;
+    border-color: #1a56db;
+    color: #fff;
+    font-weight: 600;
+    font-size: 0.82rem;
+    padding: 8px 18px;
+    border-radius: 6px;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    transition: background 0.2s, box-shadow 0.2s;
+    white-space: nowrap;
+}
+.btn-tambah-md:hover {
+    background-color: #1648c0;
+    border-color: #1648c0;
+    color: #fff;
+    box-shadow: 0 4px 12px rgba(26,86,219,0.35);
+}
+
+/* ── Card ── */
+.md-card {
+    background: #fff;
+    border-radius: 10px;
+    box-shadow: 0 2px 12px rgba(44,62,80,0.07);
+    overflow: hidden;
+}
+.md-card .md-card-inner { padding: 20px 24px 24px; }
+
+/* ── Toolbar ── */
+.md-toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-bottom: 16px;
+}
+.md-toolbar .entries-wrap {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.84rem;
+    color: #4a5568;
+}
+.md-toolbar .entries-wrap select {
+    border: 1px solid #e2e8f0;
+    border-radius: 6px;
+    padding: 5px 10px;
+    font-size: 0.84rem;
+    color: #4a5568;
+    background: #f8fafc;
+    cursor: pointer;
+    outline: none;
+}
+.md-toolbar .entries-wrap select:focus { border-color: #1a56db; }
+
+.md-toolbar .search-wrap {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.md-toolbar .search-wrap input {
+    border: 1px solid #e2e8f0;
+    border-radius: 6px;
+    padding: 6px 14px 6px 36px;
+    font-size: 0.84rem;
+    color: #2d3748;
+    background: #f8fafc url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' fill='%238592a3' viewBox='0 0 16 16'%3E%3Cpath d='M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398l3.85 3.85a1 1 0 0 0 1.415-1.415l-3.868-3.833zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z'/%3E%3C/svg%3E") no-repeat 10px center;
+    min-width: 210px;
+    outline: none;
+    transition: border-color 0.2s;
+}
+.md-toolbar .search-wrap input:focus { border-color: #1a56db; background-color: #fff; }
+
+/* ── Table ── */
+.md-table-wrap table.dataTable thead th {
+    background: #f1f3f5 !important;
+    color: #374151 !important;
+    font-size: 0.75rem !important;
+    font-weight: 700 !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.05em !important;
+    border-bottom: 2px solid #e5e7eb !important;
+    padding: 12px 14px !important;
+    white-space: nowrap;
+}
+.md-table-wrap table.dataTable tbody td {
+    font-size: 0.84rem;
+    color: #374151;
+    padding: 10px 14px !important;
+    vertical-align: middle;
+    border-bottom: 1px solid #f1f3f5;
+}
+.md-table-wrap table.dataTable tbody tr:hover { background-color: #f8fafc !important; }
+.md-table-wrap table.dataTable { border-collapse: collapse !important; }
+
+/* Badge status */
+.badge-aktif {
+    background-color: rgba(40,199,111,0.12);
+    color: #28c76f;
+    font-weight: 700;
+    font-size: 0.72rem;
+    padding: 4px 10px;
+    border-radius: 20px;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+    display: inline-block;
+}
+.badge-nonaktif {
+    background-color: rgba(234,84,85,0.12);
+    color: #ea5455;
+    font-weight: 700;
+    font-size: 0.72rem;
+    padding: 4px 10px;
+    border-radius: 20px;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+    display: inline-block;
+}
+
+/* Aksi buttons */
+.btn-aksi-edit   { background:#fd9f10; border:none; color:#fff; border-radius:6px; padding:5px 8px; font-size:0.82rem; }
+.btn-aksi-reset  { background:#0d6efd; border:none; color:#fff; border-radius:6px; padding:5px 8px; font-size:0.82rem; }
+.btn-aksi-delete { background:#dc3545; border:none; color:#fff; border-radius:6px; padding:5px 8px; font-size:0.82rem; }
+.btn-aksi-edit:hover   { background:#e68a00; color:#fff; }
+.btn-aksi-reset:hover  { background:#0b5ed7; color:#fff; }
+.btn-aksi-delete:hover { background:#bb2d3b; color:#fff; }
+
+/* Modal inputs readonly */
+#modalDosenForm input.form-control[readonly] {
     background-color: #eceef1 !important;
     cursor: not-allowed;
-  }
-  /* disabled select styling to look like readonly */
-  #modalDosenForm select.form-select:disabled {
+}
+#modalDosenForm select.form-select:disabled {
     background-color: #eceef1 !important;
     pointer-events: none;
     color: #495057;
-  }
+}
+
+/* DataTables overrides */
+.dataTables_wrapper .dataTables_paginate .paginate_button.current,
+.dataTables_wrapper .dataTables_paginate .paginate_button.current:hover {
+    background: #1a56db !important;
+    color: #fff !important;
+    border: none !important;
+    border-radius: 6px !important;
+}
+.dataTables_wrapper .dataTables_paginate .paginate_button:hover {
+    background: #eef2ff !important;
+    color: #1a56db !important;
+    border: none !important;
+    border-radius: 6px !important;
+}
+.dataTables_wrapper .dataTables_info { font-size: 0.82rem; color: #8592a3; }
 </style>
+@endsection
 
+@section('content')
 
-
-<div class="card" style="width: 100%; padding: 10px;">
-  <h5 class="card-header text-start p-2">Data Dosen</h5>
-  <hr>
-  <div class="table-responsive text-nowrap">
-    <div class="d-flex justify-content-end align-items-center mb-3 px-3">
-      <button class="btn btn-sm btn-primary" type="button" id="addDosenBtn" data-bs-toggle="modal"
-        data-bs-target="#modalDosenForm">
-        <i class="bx bx-plus bx-sm me-1"></i> Tambah
-      </button>
+{{-- Page Header --}}
+<div class="md-page-header">
+    <div class="page-titles">
+        <h4>Data Akun Dosen</h4>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="#">Master Data</a></li>
+                <li class="breadcrumb-item active">Data Akun Dosen</li>
+            </ol>
+        </nav>
     </div>
-
-    <table class="table table-sm table-hover" id="dosenTable">
-      <thead style="background-color: #dbdee0;">
-        <tr>
-          <th>NIDN</th>
-          <th>NUPTK</th>
-          <th>Kode PTS</th>
-          <th>Nama PTS</th>
-          <th>Nama Dosen</th>
-          <th>Aktif</th>
-          <th>Wilayah</th>
-          <th>Tanggal Update</th>
-          <th>Aksi</th>
-        </tr>
-      </thead>
-    </table>
-  </div>
 </div>
+
+{{-- Main Card --}}
+<div class="md-card">
+    <div class="md-card-inner">
+
+        {{-- Toolbar: entries kiri, search & Tambah kanan --}}
+        <div class="md-toolbar">
+            <div class="entries-wrap">
+                <span>Show</span>
+                <select id="md-length-select">
+                    <option value="10">10</option>
+                    <option value="25">25</option>
+                    <option value="50">50</option>
+                    <option value="100">100</option>
+                    <option value="500">500</option>
+                </select>
+                <span>entries</span>
+            </div>
+            <div class="d-flex align-items-center gap-3">
+                <div class="search-wrap">
+                    <input type="text" id="md-search-input" placeholder="Cari data dosen...">
+                </div>
+                <div class="d-flex align-items-center gap-2">
+                    <button class="btn-tambah-md" type="button" id="addDosenBtn" data-bs-toggle="modal" data-bs-target="#modalDosenForm">
+                        <i class="bx bx-plus"></i> Tambah
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        {{-- Table --}}
+        <div class="md-table-wrap table-responsive">
+            <table class="table table-hover" id="dosenTable" style="width:100%">
+                <thead>
+                    <tr>
+                        <th>NIDN</th>
+                        <th>NUPTK</th>
+                        <th>Kode PTS</th>
+                        <th>Nama PTS</th>
+                        <th>Nama Dosen</th>
+                        <th>Aktif</th>
+                        <th>Wilayah</th>
+                        <th>Tanggal Update</th>
+                        <th>Aksi</th>
+                    </tr>
+                </thead>
+            </table>
+        </div>
+
+    </div>
+</div>
+
 
 <!-- Modal Tambah/Edit Dosen -->
 <div class="modal fade" id="modalDosenForm" tabindex="-1" aria-labelledby="modalDosenFormLabel" aria-hidden="true">
@@ -278,17 +486,38 @@
       scrollX: true,
       scrollCollapse: true,
       pageLength: 10,
-      lengthMenu: [[10, 25, 50, 100, -1], [10, 25, 50, 100, 'All']],
+      dom: '<"d-none"l><"d-none"f>rtip', // sembunyikan length & search bawaan DT
+      lengthMenu: [[10, 25, 50, 100, 500, -1], [10, 25, 50, 100, 500, 'All']],
       ajax: {
         url: "{{ route('admin.master-dosen.index') }}"
       },
       columns: [
-        { data: 'nidn', name: 'nidn' },
+        { 
+          data: 'nidn', name: 'nidn',
+          render: function(data) { return '<span class="fw-semibold text-primary">' + (data || '-') + '</span>'; }
+        },
         { data: 'nuptk', name: 'nuptk' },
-        { data: 'kode_pts', name: 'kode_pts' },
-        { data: 'nama_pts', name: 'nama_pts' },
-        { data: 'nama_dosen', name: 'nama_dosen' },
-        { data: 'aktif', name: 'aktif' },
+        { 
+          data: 'kode_pts', name: 'kode_pts',
+          render: function(data) { return '<span class="fw-semibold text-primary">' + (data || '-') + '</span>'; }
+        },
+        { 
+          data: 'nama_pts', name: 'nama_pts',
+          render: function(data) { return '<span class="fw-semibold text-primary">' + (data || '-') + '</span>'; }
+        },
+        { 
+          data: 'nama_dosen', name: 'nama_dosen',
+          render: function(data) { return '<span class="fw-bold text-dark">' + (data || '-') + '</span>'; }
+        },
+        {
+          data: 'aktif', name: 'aktif',
+          render: function(data) {
+            if (data == 1 || data == '1') {
+              return '<span class="badge-aktif">Aktif</span>';
+            }
+            return '<span class="badge-nonaktif">Tidak Aktif</span>';
+          }
+        },
         { data: 'wilayah', name: 'wilayah' },
         { data: 'tanggal_update', name: 'tanggal_update' },
         { data: 'aksi', name: 'aksi', orderable: false, searchable: false }
@@ -302,10 +531,23 @@
         },
         zeroRecords: 'Data tidak ditemukan',
         infoEmpty: 'Tidak ada data tersedia',
-        searchPlaceholder: 'Cari data...',
-        search: 'Cari:'
+        info: 'Menampilkan _START_-_END_ dari _TOTAL_ entri',
       },
     });
+
+    // Hubungkan custom length select ke DataTable
+    document.getElementById('md-length-select')?.addEventListener('change', function() {
+      table.page.len(parseInt(this.value)).draw();
+    });
+
+    // Hubungkan custom search input ke DataTable (debounce 400ms)
+    let mdSearchTimer;
+    document.getElementById('md-search-input')?.addEventListener('input', function() {
+      clearTimeout(mdSearchTimer);
+      const val = this.value;
+      mdSearchTimer = setTimeout(() => { table.search(val).draw(); }, 400);
+    });
+
 
     // edit
     $('#dosenTable').on('click', '.edit-dosen', function() {
