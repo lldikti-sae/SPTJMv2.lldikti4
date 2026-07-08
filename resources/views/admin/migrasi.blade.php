@@ -3,183 +3,195 @@
 @section('title', 'Migrasi Data')
 
 @section('content')
-<div class="container-fluid">
-  <div class="row">
-    <div class="col-12 col-lg-12">
-      {{-- Notifikasi umum --}}
-      @if(session('success'))
-        <div class="alert alert-success">{{ session('success') }}</div>
-      @endif
-      @if(session('error'))
-        <div class="alert alert-danger">{{ session('error') }}</div>
-      @endif
-      @if($errors->any())
-        <div class="alert alert-danger">
-          <ul class="mb-0">
-            @foreach ($errors->all() as $error)
-              <li>{{ $error }}</li>
-            @endforeach
-          </ul>
+    {{-- Page Header --}}
+    <div class="md-page-header mb-4">
+        <div class="page-titles">
+            <h4 class="fw-bold mb-1" style="color: #0f2b5c;">Migrasi Data</h4>
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb mb-0">
+                    <li class="breadcrumb-item"><a href="#">Pengaturan</a></li>
+                    <li class="breadcrumb-item active">Migrasi Data</li>
+                </ol>
+            </nav>
         </div>
-      @endif
-
-      {{-- Log NIDN hasil koreksi --}}
-      @php($updatedNidn = session('koreksiUpdatedNidn', []))
-      @php($notUpdatedNidn = session('koreksiNotUpdatedNidn', []))
-      @php($notFoundNidn = session('koreksiNotFoundNidn', []))
-      @php($invalidCells = session('koreksiInvalidCells', []))
-      @if(!empty($updatedNidn) || !empty($notUpdatedNidn) || !empty($notFoundNidn))
-        <div class="card mb-3">
-          <div class="card-header">
-            <h5 class="mb-0">Log Koreksi NIDN</h5>
-          </div>
-          <div class="card-body">
-            @if(!empty($updatedNidn))
-              <p class="mb-1"><strong>NIDN yang datanya berhasil diperbarui ({{ count($updatedNidn) }}):</strong></p>
-              <div class="mb-2" style="max-height:220px; overflow-y:auto;">
-                @foreach($updatedNidn as $nidn)
-                  <span class="badge bg-label-success text-dark me-1 mb-1">{{ $nidn }}</span>
-                @endforeach
-              </div>
-            @endif
-            @if(!empty($notUpdatedNidn))
-              <p class="mb-1"><strong>NIDN yang ada di tabel tetapi tidak mengalami perubahan ({{ count($notUpdatedNidn) }}):</strong></p>
-              <div class="mb-2" style="max-height: 200px; overflow-y: auto;">
-                @foreach($notUpdatedNidn as $nidn)
-                  <span class="badge bg-label-secondary text-dark me-1 mb-1">{{ $nidn }}</span>
-                @endforeach
-              </div>
-            @endif
-            @if(!empty($notFoundNidn))
-              <p class="mb-1"><strong>NIDN yang tidak ditemukan di tabel ({{ count($notFoundNidn) }}):</strong></p>
-              <div style="max-height:220px; overflow-y:auto;">
-                @foreach($notFoundNidn as $nidn)
-                  <span class="badge bg-label-warning text-dark me-1 mb-1">{{ $nidn }}</span>
-                @endforeach
-              </div>
-            @endif
-
-            @if(!empty($invalidCells))
-              <hr>
-              <p class="mb-1"><strong>Contoh nilai yang tidak valid / terpotong (maks 20):</strong></p>
-              <div class="table-responsive" style="max-height: 250px; overflow-y: auto;">
-                <table class="table table-sm table-striped mb-0">
-                  <thead>
-                    <tr>
-                      <th style="width: 160px;">Key</th>
-                      <th style="width: 140px;">Kolom</th>
-                      <th>Nilai</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    @foreach($invalidCells as $it)
-                      <tr>
-                        <td>{{ $it['key'] ?? '-' }}</td>
-                        <td>{{ $it['column'] ?? '-' }}</td>
-                        <td class="text-muted">{{ $it['value'] ?? '-' }}</td>
-                      </tr>
-                    @endforeach
-                  </tbody>
-                </table>
-              </div>
-              <div class="form-text mt-2">
-                Nilai seperti <em>01/01/2019</em> pada kolom masa kerja (Tahun1..Tahun12) akan di-skip karena kolom tersebut hanya menerima angka.
-              </div>
-            @endif
-          </div>
-        </div>
-      @endif
-
-      {{-- Card Import Penuh --}}
-      <div class="card mb-3">
-        <div class="card-header d-flex justify-content-between align-items-center">
-          <h5 class="mb-0">Upload CSV ke Database</h5>
-        </div>
-        <div class="card-body">
-          <form action="{{ route('admin.migrasi.import') }}" method="POST" enctype="multipart/form-data">
-            @csrf
-            <div class="mb-3">
-              <label for="dataset" class="form-label">Pilih Dataset</label>
-              <select class="form-select" id="dataset" name="dataset" required>
-                @foreach($datasets as $key => $dataset)
-                  <option value="{{ $key }}" {{ old('dataset', 's_transaksi_2') === $key ? 'selected' : '' }}>
-                    {{ $dataset['label'] }} (tabel {{ $dataset['table'] }})
-                  </option>
-                @endforeach
-              </select>
-              <div class="form-text">
-                Pilih tabel tujuan migrasi. Pastikan header CSV sesuai dengan kolom tabel.
-              </div>
-            </div>
-            <div class="mb-2">
-              @foreach($datasets as $key => $dataset)
-                <div class="small text-muted dataset-hint" data-dataset="{{ $key }}" style="display: {{ old('dataset', 's_transaksi_2') === $key ? 'block' : 'none' }};">
-                  Total kolom: {{ $dataset['expectedCount'] }} &middot; Nama tabel: {{ $dataset['table'] }}
-                </div>
-              @endforeach
-            </div>
-            <div class="mb-3">
-              <label for="file" class="form-label">File CSV / Excel</label>
-              <input type="file" class="form-control" id="file" name="file" accept=".csv,.xlsx,.xls" required>
-              <div class="form-text">
-                Pastikan baris pertama adalah header yang sesuai dengan kolom tabel.
-                Format yang didukung: <strong>.csv</strong>, <strong>.xlsx</strong>, <strong>.xls</strong>.
-                Jika memakai CSV, pemisah "," atau ";" didukung.
-              </div>
-              <div class="alert alert-info mt-2 small">
-                <strong>Format yang didukung & tips:</strong>
-                <ul class="mb-0 mt-1">
-                  <li><strong>.csv</strong> — Disarankan menyimpan sebagai <em>CSV UTF-8 (Comma delimited)</em>; header harus persis sama dengan kolom tabel.</li>
-                  <li><strong>.xlsx / .xls</strong> — Aplikasi akan membaca worksheet pertama; header harus persis sama seperti nama kolom di tabel.</li>
-                  <li>Pemisah CSV yang didukung: koma (,) dan titik-koma (;). Nilai kosong akan dianggap <em>NULL</em>.</li>
-                </ul>
-              </div>
-            </div>
-            <button type="submit" class="btn btn-primary">Import</button>
-          </form>
-        </div>
-      </div>
-      {{-- Card Koreksi Data Berdasarkan NIDN --}}
-      <div class="card">
-        <div class="card-header d-flex justify-content-between align-items-center">
-          <h5 class="mb-0">Koreksi Data</h5>
-        </div>
-        <div class="card-body">
-          <form action="{{ route('admin.migrasi.koreksi') }}" method="POST" enctype="multipart/form-data">
-            @csrf
-            <div class="mb-3">
-              <label for="dataset_koreksi" class="form-label">Pilih Dataset</label>
-              <select class="form-select" id="dataset_koreksi" name="dataset_koreksi" required>
-                @foreach($datasets as $key => $dataset)
-                  <option value="{{ $key }}" {{ old('dataset_koreksi', 's_transaksi_2') === $key ? 'selected' : '' }}>
-                    {{ $dataset['label'] }} (tabel {{ $dataset['table'] }})
-                  </option>
-                @endforeach
-              </select>
-              <div class="form-text">
-                File CSV koreksi minimal harus memiliki kolom <strong>NIDN/nidn</strong> (atau <strong>NUPTK/nuptk</strong> untuk s_transaksi_2) dan kolom lain yang ingin diperbarui.
-                Hanya kolom yang dikenali di tabel yang akan di-update.
-                Untuk nilai kolom: <strong>BLANK</strong> = tidak diubah, <strong>NULL</strong> = di-set menjadi NULL.
-              </div>
-            </div>
-            <div class="mb-3">
-              <label class="form-label">Kunci Koreksi</label>
-              <select class="form-select" name="koreksi_key" id="koreksi_key">
-                <!-- Options populated by JS -->
-              </select>
-              <div class="form-text small">Pilih kolom kunci yang akan digunakan untuk mencari baris pada tabel saat melakukan koreksi.</div>
-            </div>
-            <div class="mb-3">
-              <label for="file_koreksi" class="form-label">File CSV Koreksi</label>
-              <input type="file" class="form-control" id="file_koreksi" name="file" accept=".csv" required>
-            </div>
-            <button type="submit" class="btn btn-warning">Proses</button>
-          </form>
-        </div>
-      </div>
     </div>
-  </div>
-</div>
+
+    <div class="row">
+        <div class="col-12 col-lg-12">
+            {{-- Notifikasi umum --}}
+            @if(session('success'))
+                <div class="alert alert-success alert-dismissible fade show mb-4">{{ session('success') }} <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button></div>
+            @endif
+            @if(session('error'))
+                <div class="alert alert-danger alert-dismissible fade show mb-4">{{ session('error') }} <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button></div>
+            @endif
+            @if($errors->any())
+                <div class="alert alert-danger alert-dismissible fade show mb-4">
+                    <ul class="mb-0">
+                        @foreach ($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            @endif
+
+            {{-- Log NIDN hasil koreksi --}}
+            @php($updatedNidn = session('koreksiUpdatedNidn', []))
+            @php($notUpdatedNidn = session('koreksiNotUpdatedNidn', []))
+            @php($notFoundNidn = session('koreksiNotFoundNidn', []))
+            @php($invalidCells = session('koreksiInvalidCells', []))
+            @if(!empty($updatedNidn) || !empty($notUpdatedNidn) || !empty($notFoundNidn))
+                <div class="md-card mb-4">
+                    <div class="md-card-inner">
+                        <h5 class="mb-3">Log Koreksi NIDN</h5>
+                        @if(!empty($updatedNidn))
+                            <p class="mb-1"><strong>NIDN yang datanya berhasil diperbarui ({{ count($updatedNidn) }}):</strong></p>
+                            <div class="mb-3" style="max-height:220px; overflow-y:auto;">
+                                @foreach($updatedNidn as $nidn)
+                                    <span class="badge bg-label-success text-dark me-1 mb-1">{{ $nidn }}</span>
+                                @endforeach
+                            </div>
+                        @endif
+                        @if(!empty($notUpdatedNidn))
+                            <p class="mb-1"><strong>NIDN yang ada di tabel tetapi tidak mengalami perubahan ({{ count($notUpdatedNidn) }}):</strong></p>
+                            <div class="mb-3" style="max-height: 200px; overflow-y: auto;">
+                                @foreach($notUpdatedNidn as $nidn)
+                                    <span class="badge bg-label-secondary text-dark me-1 mb-1">{{ $nidn }}</span>
+                                @endforeach
+                            </div>
+                        @endif
+                        @if(!empty($notFoundNidn))
+                            <p class="mb-1"><strong>NIDN yang tidak ditemukan di tabel ({{ count($notFoundNidn) }}):</strong></p>
+                            <div style="max-height:220px; overflow-y:auto;">
+                                @foreach($notFoundNidn as $nidn)
+                                    <span class="badge bg-label-warning text-dark me-1 mb-1">{{ $nidn }}</span>
+                                @endforeach
+                            </div>
+                        @endif
+
+                        @if(!empty($invalidCells))
+                            <hr>
+                            <p class="mb-1"><strong>Contoh nilai yang tidak valid / terpotong (maks 20):</strong></p>
+                            <div class="md-table-wrap table-responsive" style="max-height: 250px; overflow-y: auto;">
+                                <table class="table table-hover mb-0">
+                                    <thead>
+                                        <tr>
+                                            <th style="width: 160px;">Key</th>
+                                            <th style="width: 140px;">Kolom</th>
+                                            <th>Nilai</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach($invalidCells as $it)
+                                            <tr>
+                                                <td>{{ $it['key'] ?? '-' }}</td>
+                                                <td>{{ $it['column'] ?? '-' }}</td>
+                                                <td class="text-muted">{{ $it['value'] ?? '-' }}</td>
+                                            </tr>
+                                        @endforeach
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="form-text mt-2">
+                                Nilai seperti <em>01/01/2019</em> pada kolom masa kerja (Tahun1..Tahun12) akan di-skip karena kolom tersebut hanya menerima angka.
+                            </div>
+                        @endif
+                    </div>
+                </div>
+            @endif
+
+            <div class="row g-4 mt-2">
+                {{-- Card Import Penuh --}}
+                <div class="col-md-6">
+                    <div class="md-card h-100">
+                        <div class="md-card-inner">
+                            <h5 class="mb-4">Upload CSV ke Database</h5>
+                            <form action="{{ route('admin.migrasi.import') }}" method="POST" enctype="multipart/form-data">
+                                @csrf
+                                <div class="mb-3">
+                                    <label for="dataset" class="text-uppercase fw-semibold text-secondary mb-1" style="font-size: 0.75rem;">Pilih Dataset</label>
+                                    <select class="form-select" id="dataset" name="dataset" required>
+                                        @foreach($datasets as $key => $dataset)
+                                            <option value="{{ $key }}" {{ old('dataset', 's_transaksi_2') === $key ? 'selected' : '' }}>
+                                                {{ $dataset['label'] }} (tabel {{ $dataset['table'] }})
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                    <div class="form-text">
+                                        Pilih tabel tujuan migrasi. Pastikan header CSV sesuai dengan kolom tabel.
+                                    </div>
+                                </div>
+                                <div class="mb-2">
+                                    @foreach($datasets as $key => $dataset)
+                                        <div class="small text-muted dataset-hint" data-dataset="{{ $key }}" style="display: {{ old('dataset', 's_transaksi_2') === $key ? 'block' : 'none' }};">
+                                            Total kolom: {{ $dataset['expectedCount'] }} &middot; Nama tabel: {{ $dataset['table'] }}
+                                        </div>
+                                    @endforeach
+                                </div>
+                                <div class="mb-4">
+                                    <label for="file" class="text-uppercase fw-semibold text-secondary mb-1" style="font-size: 0.75rem;">File CSV / Excel</label>
+                                    <input type="file" class="form-control" id="file" name="file" accept=".csv,.xlsx,.xls" required>
+                                    <div class="form-text mb-2">
+                                        Pastikan baris pertama adalah header yang sesuai dengan kolom tabel.
+                                        Format yang didukung: <strong>.csv</strong>, <strong>.xlsx</strong>, <strong>.xls</strong>.
+                                    </div>
+                                    <div class="alert alert-info small mb-0">
+                                        <strong>Format yang didukung & tips:</strong>
+                                        <ul class="mb-0 mt-1">
+                                            <li><strong>.csv</strong> — Disarankan menyimpan sebagai <em>CSV UTF-8 (Comma delimited)</em>.</li>
+                                            <li><strong>.xlsx / .xls</strong> — Aplikasi akan membaca worksheet pertama.</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                                <button type="submit" class="btn btn-primary w-100 rounded-pill d-inline-flex align-items-center justify-content-center"><i class="bx bx-import me-1"></i> Import Data</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                
+                {{-- Card Koreksi Data --}}
+                <div class="col-md-6">
+                    <div class="md-card h-100">
+                        <div class="md-card-inner">
+                            <h5 class="mb-4">Koreksi Data</h5>
+                            <form action="{{ route('admin.migrasi.koreksi') }}" method="POST" enctype="multipart/form-data">
+                                @csrf
+                                <div class="mb-3">
+                                    <label for="dataset_koreksi" class="text-uppercase fw-semibold text-secondary mb-1" style="font-size: 0.75rem;">Pilih Dataset</label>
+                                    <select class="form-select" id="dataset_koreksi" name="dataset_koreksi" required>
+                                        @foreach($datasets as $key => $dataset)
+                                            <option value="{{ $key }}" {{ old('dataset_koreksi', 's_transaksi_2') === $key ? 'selected' : '' }}>
+                                                {{ $dataset['label'] }} (tabel {{ $dataset['table'] }})
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                    <div class="form-text">
+                                        File CSV koreksi minimal harus memiliki kolom Kunci Koreksi dan kolom yang ingin diperbarui.
+                                    </div>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="text-uppercase fw-semibold text-secondary mb-1" style="font-size: 0.75rem;">Kunci Koreksi</label>
+                                    <select class="form-select" name="koreksi_key" id="koreksi_key">
+                                        <!-- Options populated by JS -->
+                                    </select>
+                                    <div class="form-text small">Kolom yang akan digunakan untuk mencari baris pada tabel saat melakukan koreksi.</div>
+                                </div>
+                                <div class="mb-4">
+                                    <label for="file_koreksi" class="text-uppercase fw-semibold text-secondary mb-1" style="font-size: 0.75rem;">File CSV Koreksi</label>
+                                    <input type="file" class="form-control" id="file_koreksi" name="file" accept=".csv" required>
+                                    <div class="form-text">
+                                        Untuk nilai kolom: <strong>BLANK</strong> = tidak diubah, <strong>NULL</strong> = di-set menjadi NULL.
+                                    </div>
+                                </div>
+                                <button type="submit" class="btn btn-warning w-100 rounded-pill d-inline-flex align-items-center justify-content-center"><i class="bx bx-check-double me-1"></i> Proses Koreksi</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 {{-- Modal penolakan ketika header tidak sesuai --}}
 @if(session('headerMismatch'))
 <div class="modal fade" id="importRejectedModal" tabindex="-1" aria-hidden="true">

@@ -3,101 +3,107 @@
 @section('title', 'SPTJM Online')
 
 @section('content')
-<div class="card" style="width: 100%; padding: 10px;">
-  <h5 class="card-header text-start p-2">Tambah Versi</h5>
-  <hr>
-  @if (session('success'))
-    <div class="alert alert-success alert-dismissible fade show" role="alert">
-      {{ session('success') }}
-      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-    </div>
-  @endif
-  @if (session('error'))
-    <div class="alert alert-danger alert-dismissible fade show" role="alert">
-      {{ session('error') }}
-      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-    </div>
-  @endif
-
-  <form method="POST" action="{{ route('admin.versi.store') }}" onsubmit="return validateForm()">
-    @csrf
-    <div class="row mb-4 mx-1">
-      <div class="col-lg-2 col-md-4 mb-2">
-        <label class="form-label">Pilih Tahun Acuan</label>
-        <select id="tahun_acuan" class="form-select" name="tahun_acuan">
-          @if($tahunAcuan)
-            <option value="{{ $tahunAcuan }}" selected>{{ $tahunAcuan }}</option>
-          @else
-            <option value="" selected disabled>—</option>
-          @endif
-        </select>
-      </div>
-      <div class="col-lg-4 col-md-4 mb-2">
-        <label class="form-label" for="tahun_target">Masukkan Tahun Versi</label>
-        <input type="text" class="form-control" id="tahun_target" name="tahun_target" placeholder="Masukkan tahun versi" />
-      </div>
-      <div class="col-lg-2 col-md-4 mb-2 d-flex align-items-end">
-        <button type="submit" class="btn btn-warning">
-          <span class="tf-icons bx bx-loader"></span>&nbsp; Proses
-        </button>
-      </div>
-      <div class="col-lg-3 col-md-4 mb-2 ms-auto d-flex align-items-end">
-
-      </div>
-    </div>
-  </form>
-
-  <div class="card mb-4">
-    <div class="card-body">
-      <div class="d-flex align-items-center justify-content-between flex-wrap">
-        <h5 class="mb-3 me-3">Data Tahun Versi </h5>
-        
-        <div class="d-flex align-items-center gap-3 flex-wrap">
-          <div class="form-check form-switch mb-2">
-            <input class="form-check-input" type="checkbox" id="toggleStatusClick">
-            <label class="form-check-label" for="toggleStatusClick">Aktifkan ubah status</label>
-          </div>
-
-          <!-- Search removed as requested -->
+    {{-- Page Header --}}
+    <div class="md-page-header mb-4">
+        <div class="page-titles">
+            <h4 class="fw-bold mb-1" style="color: #0f2b5c;">Tambah Versi</h4>
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb mb-0">
+                    <li class="breadcrumb-item"><a href="#">Pengaturan</a></li>
+                    <li class="breadcrumb-item active">Tambah Versi</li>
+                </ol>
+            </nav>
         </div>
-</div>
-
-      </div>
-
-      <div class="table-responsive text-nowrap">
-        <table class="table table-bordered text-center">
-          <thead class="table-light">
-            <tr>
-              <th>NO</th>
-              <th>TAHUN VERSI</th>
-              <th>Status</th>
-              <th>JUMLAH BARIS</th>
-            </tr>
-          </thead>
-          <tbody class="table-border-bottom-0">
-            @forelse ($versis as $row)
-              <tr>
-                <td>{{ $versis->firstItem() + $loop->index }}</td>
-                <td>{{ $row->Tahun_Versi }}</td>
-                <td>
-                  @php $isActive = in_array($row->Tahun_Versi, $activeYears ?? []); @endphp
-                  <button type="button" class="btn btn-sm toggle-status-btn {{ $isActive ? 'btn-success' : 'btn-secondary' }}" data-year="{{ $row->Tahun_Versi }}">
-                    {{ $isActive ? 'Aktif' : 'Non-aktif' }}
-                  </button>
-                </td>
-                <td>{{ $row->jumlah }}</td>
-              </tr>
-            @empty
-              <tr><td colspan="4" class="text-center">Data tidak ditemukan</td></tr>
-            @endforelse
-          </tbody>
-        </table>
-      </div>
-
-      <div class="mt-3">{{ $versis->links() }}</div>
     </div>
-  </div>
-</div>
+
+    @if (session('success'))
+        <div class="alert alert-success alert-dismissible fade show mb-4" role="alert">
+            {{ session('success') }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    @endif
+    @if (session('error'))
+        <div class="alert alert-danger alert-dismissible fade show mb-4" role="alert">
+            {{ session('error') }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    @endif
+
+    {{-- Form Card --}}
+    <div class="md-card mt-4 mb-4">
+        <div class="md-card-inner">
+            <h5 class="mb-4">Buat Versi Baru</h5>
+            <form method="POST" action="{{ route('admin.versi.store') }}" onsubmit="return validateForm()">
+                @csrf
+                <div class="row align-items-end g-3">
+                    <div class="col-lg-3 col-md-4">
+                        <label class="text-uppercase fw-semibold text-secondary mb-1" style="font-size: 0.75rem;">Pilih Tahun Acuan</label>
+                        <select id="tahun_acuan" class="form-select" name="tahun_acuan">
+                            @if($tahunAcuan)
+                                <option value="{{ $tahunAcuan }}" selected>{{ $tahunAcuan }}</option>
+                            @else
+                                <option value="" selected disabled>—</option>
+                            @endif
+                        </select>
+                    </div>
+                    <div class="col-lg-4 col-md-5">
+                        <label class="text-uppercase fw-semibold text-secondary mb-1" style="font-size: 0.75rem;" for="tahun_target">Masukkan Tahun Versi</label>
+                        <input type="text" class="form-control" id="tahun_target" name="tahun_target" placeholder="Masukkan tahun versi" />
+                    </div>
+                    <div class="col-lg-3 col-md-3">
+                        <button type="submit" class="btn btn-primary d-inline-flex align-items-center justify-content-center w-100 rounded-pill">
+                            <i class="bx bx-loader me-1"></i> Proses
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    {{-- Main Card for Table --}}
+    <div class="md-card">
+        <div class="md-card-inner">
+            <div class="d-flex align-items-center justify-content-between flex-wrap mb-3">
+                <h5 class="mb-0">Data Tahun Versi </h5>
+                <div class="form-check form-switch mb-0">
+                    <input class="form-check-input" type="checkbox" id="toggleStatusClick">
+                    <label class="form-check-label" for="toggleStatusClick">Aktifkan ubah status</label>
+                </div>
+            </div>
+
+            <div class="md-table-wrap table-responsive text-nowrap">
+                <table class="table table-hover text-center">
+                    <thead>
+                        <tr>
+                            <th>NO</th>
+                            <th>TAHUN VERSI</th>
+                            <th>Status</th>
+                            <th>JUMLAH BARIS</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @forelse ($versis as $row)
+                            <tr>
+                                <td>{{ $versis->firstItem() + $loop->index }}</td>
+                                <td>{{ $row->Tahun_Versi }}</td>
+                                <td>
+                                    @php $isActive = in_array($row->Tahun_Versi, $activeYears ?? []); @endphp
+                                    <button type="button" class="btn btn-sm rounded-pill toggle-status-btn {{ $isActive ? 'btn-success' : 'btn-secondary' }}" data-year="{{ $row->Tahun_Versi }}">
+                                        {{ $isActive ? 'Aktif' : 'Non-aktif' }}
+                                    </button>
+                                </td>
+                                <td>{{ number_format($row->jumlah, 0, ',', '.') }}</td>
+                            </tr>
+                        @empty
+                            <tr><td colspan="4" class="text-center">Data tidak ditemukan</td></tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="mt-4">{{ $versis->links() }}</div>
+        </div>
+    </div>
 @endsection
 
 @section('page-script')
