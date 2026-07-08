@@ -158,27 +158,7 @@
     outline: none;
 }
 
-/* ── Table ── */
-.md-table-wrap table { border-collapse: collapse !important; width: 100% !important; }
-.md-table-wrap table thead th {
-    background-color: var(--md-bg-gray) !important;
-    color: var(--md-text-muted) !important;
-    font-size: 0.75rem;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    padding: 14px 16px;
-    border-bottom: 2px solid var(--md-border) !important;
-    white-space: nowrap;
-}
-.md-table-wrap table tbody td {
-    padding: 14px 16px;
-    font-size: 0.88rem;
-    color: var(--md-text-main);
-    vertical-align: middle;
-    border-bottom: 1px solid #f1f5f9 !important;
-}
-.md-table-wrap table tbody tr:hover { background-color: #f8fafc !important; }
+
 
 /* ── Custom Badges ── */
 .badge-bulan {
@@ -217,36 +197,7 @@
     display: inline-block;
 }
 
-/* ── Pagination ── */
-.md-pagination {
-    display: flex;
-    justify-content: flex-end;
-    align-items: center;
-    padding: 16px 0 4px;
-    gap: 4px;
-}
-.md-pagination .page-link {
-    border: 1px solid var(--md-border) !important;
-    border-radius: 6px !important;
-    padding: 6px 14px !important;
-    font-size: 0.84rem;
-    color: var(--md-text-main);
-    background: #fff;
-    transition: all 0.2s;
-}
-.md-pagination .page-link:hover {
-    background: var(--md-bg-gray);
-    color: var(--md-primary);
-}
-.md-pagination .page-item.active .page-link {
-    background: var(--md-primary) !important;
-    border-color: var(--md-primary) !important;
-    color: #fff !important;
-}
-.md-pagination .page-item.disabled .page-link {
-    color: #cbd5e1;
-    pointer-events: none;
-}
+
 
 /* ── Modal ── */
 .modal-content {
@@ -493,4 +444,5 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 </script>
 @endsection
+
 

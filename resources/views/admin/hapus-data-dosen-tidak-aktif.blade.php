@@ -130,101 +130,8 @@
 }
 .dataTables_filter input:focus { border-color: var(--md-primary); background-color: #fff; }
 
-/* ── Table ── */
-.md-table-wrap table.dataTable { border-collapse: collapse !important; width: 100% !important; margin-top: 0 !important; }
-.md-table-wrap table.dataTable thead th {
-    background-color: var(--md-bg-gray) !important;
-    color: var(--md-text-muted) !important;
-    font-size: 0.75rem;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    padding: 14px 16px;
-    border-bottom: 2px solid var(--md-border) !important;
-    white-space: nowrap;
-}
-.md-table-wrap table.dataTable tbody td {
-    padding: 14px 16px;
-    font-size: 0.88rem;
-    color: var(--md-text-main);
-    vertical-align: middle;
-    border-bottom: 1px solid #f1f5f9 !important;
-}
-.md-table-wrap table.dataTable tbody tr:hover { background-color: #f8fafc !important; }
 
-/* DataTables overrides */
-.dataTables_wrapper .row { margin: 0; padding: 0; }
-.dataTables_wrapper .dataTables_paginate { margin-top: 16px; display: flex; justify-content: flex-end; }
-.dataTables_wrapper .dataTables_paginate .paginate_button.current,
-.dataTables_wrapper .dataTables_paginate .paginate_button.current:hover {
-    background: var(--md-primary) !important;
-    color: #fff !important;
-    border: 1px solid var(--md-primary) !important;
-    border-radius: 4px !important;
-}
-.dataTables_wrapper .dataTables_paginate .paginate_button {
-    border: 1px solid var(--md-border) !important;
-    border-radius: 4px !important;
-    padding: 5px 12px !important;
-    margin: 0 2px !important;
-}
-.dataTables_wrapper .dataTables_paginate .paginate_button:hover:not(.current):not(.disabled) {
-    background: var(--md-bg-gray) !important;
-    color: var(--md-primary) !important;
-    border-color: var(--md-border) !important;
-}
-.dataTables_wrapper .dataTables_info { font-size: 0.82rem; color: var(--md-text-muted); padding-top: 20px; }
 
-/* Action Buttons & Badges */
-.btn-aksi-circle {
-    width: 32px;
-    height: 32px;
-    border-radius: 50%;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    border: none;
-    cursor: pointer;
-    transition: all 0.2s;
-    color: #fff;
-    text-decoration: none;
-}
-.btn-aksi-delete {
-    background-color: #fee2e2;
-    color: #b91c1c;
-}
-.btn-aksi-delete:hover {
-    background-color: #fecaca;
-    color: #991b1b;
-}
-.btn-aksi-info {
-    background-color: #f1f5f9;
-    color: #64748b;
-}
-.btn-aksi-info:hover {
-    background-color: #e2e8f0;
-    color: #475569;
-}
-.badge-tidak-aktif {
-    background-color: #fee2e2;
-    color: #b91c1c;
-    font-weight: 700;
-    font-size: 0.72rem;
-    padding: 4px 10px;
-    border-radius: 4px;
-    display: inline-block;
-}
-.badge-keterangan {
-    background-color: #e0e7ff;
-    color: #3730a3;
-    font-weight: 600;
-    font-size: 0.75rem;
-    padding: 4px 10px;
-    border-radius: 20px;
-    display: inline-block;
-    white-space: normal;
-    text-align: center;
-}
 </style>
 @endsection
 
@@ -468,4 +375,5 @@ $(document).ready(function() {
 });
 </script>
 @endsection
+
 

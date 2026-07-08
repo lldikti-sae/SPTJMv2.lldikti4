@@ -137,38 +137,10 @@
     border-left: 1px solid #d9dee3;
 }
 
-/* ── Table ── */
-#ptsTable {
-    font-size: 0.83rem;
-    color: #2c3e50;
-    border-collapse: separate;
-    border-spacing: 0;
-}
-#ptsTable thead tr th {
-    background-color: #eef0f3;
-    color: #5c6877;
-    font-weight: 600;
-    font-size: 0.75rem;
-    text-transform: uppercase;
-    letter-spacing: 0.04em;
-    padding: 10px 14px;
-    border-bottom: 2px solid #dee2e6;
-    white-space: nowrap;
-}
-#ptsTable tbody tr {
-    transition: background 0.15s;
-}
-#ptsTable tbody tr:hover {
-    background-color: #f5f7fa;
-}
-#ptsTable tbody td {
-    padding: 10px 14px;
-    border-bottom: 1px solid #f0f2f5;
-    vertical-align: middle;
-}
-#ptsTable tbody tr:last-child td {
-    border-bottom: none;
-}
+/* ── Table: dipindahkan ke global sptjm-datatable.css ── */
+#ptsTable { border-collapse: separate; border-spacing: 0; }
+#ptsTable tbody tr { transition: background 0.15s; }
+#ptsTable tbody tr:last-child td { border-bottom: none; }
 
 /* ── Badge Status ── */
 .badge-aktif {
@@ -214,29 +186,7 @@
     transform: scale(1.07);
 }
 
-/* ── DataTables Override ── */
-div.dataTables_wrapper div.dataTables_info {
-    font-size: 0.78rem;
-    color: #8592a3;
-    padding-top: 8px;
-}
-div.dataTables_wrapper div.dataTables_paginate {
-    padding-top: 6px;
-}
-div.dataTables_wrapper div.dataTables_paginate .pagination {
-    margin: 0;
-}
-div.dataTables_wrapper div.dataTables_paginate .page-link {
-    font-size: 0.8rem;
-    padding: 4px 10px;
-    color: #696cff;
-    border-color: #d9dee3;
-}
-div.dataTables_wrapper div.dataTables_paginate .page-item.active .page-link {
-    background: #696cff;
-    border-color: #696cff;
-    color: #fff;
-}
+/* ── DataTables Override: dipindahkan ke global sptjm-datatable.css ── */
 div.dataTables_wrapper div.dataTables_filter,
 div.dataTables_wrapper div.dataTables_length {
     display: none; /* kita pakai toolbar custom */

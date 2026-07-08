@@ -113,61 +113,8 @@
 }
 .dataTables_filter input:focus { border-color: var(--md-primary); background-color: #fff; }
 
-/* ── Table ── */
-.md-table-wrap table.dataTable { border-collapse: collapse !important; width: 100% !important; margin-top: 0 !important; }
-.md-table-wrap table.dataTable thead th {
-    background-color: var(--md-bg-gray) !important;
-    color: var(--md-text-muted) !important;
-    font-size: 0.75rem;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    padding: 14px 16px;
-    border-bottom: 2px solid var(--md-border) !important;
-}
-.md-table-wrap table.dataTable tbody td {
-    padding: 14px 16px;
-    font-size: 0.88rem;
-    color: var(--md-text-main);
-    vertical-align: middle;
-    border-bottom: 1px solid #f1f5f9 !important;
-}
-.md-table-wrap table.dataTable tbody tr:hover { background-color: #f8fafc !important; }
 
-/* DataTables overrides */
-.dataTables_wrapper .row { margin: 0; padding: 0; }
-.dataTables_wrapper .dataTables_paginate { margin-top: 16px; }
-.dataTables_wrapper .dataTables_paginate .paginate_button.current,
-.dataTables_wrapper .dataTables_paginate .paginate_button.current:hover {
-    background: var(--md-primary) !important;
-    color: #fff !important;
-    border: 1px solid var(--md-primary) !important;
-    border-radius: 4px !important;
-}
-.dataTables_wrapper .dataTables_paginate .paginate_button {
-    border: 1px solid var(--md-border) !important;
-    border-radius: 4px !important;
-    padding: 5px 12px !important;
-    margin: 0 2px !important;
-}
-.dataTables_wrapper .dataTables_paginate .paginate_button:hover:not(.current):not(.disabled) {
-    background: var(--md-bg-gray) !important;
-    color: var(--md-primary) !important;
-    border-color: var(--md-border) !important;
-}
-.dataTables_wrapper .dataTables_info { font-size: 0.82rem; color: var(--md-text-muted); padding-top: 20px; }
 
-.btn-link-dokumen {
-    color: var(--md-primary);
-    text-decoration: none;
-    font-weight: 600;
-    display: inline-flex;
-    align-items: center;
-    gap: 4px;
-}
-.btn-link-dokumen:hover {
-    text-decoration: underline;
-}
 </style>
 
 {{-- Page Header --}}
@@ -286,3 +233,4 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 </script>
 @endsection
+

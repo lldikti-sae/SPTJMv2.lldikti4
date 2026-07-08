@@ -107,27 +107,7 @@
 }
 .md-toolbar .search-wrap input:focus { border-color: #1a56db; background-color: #fff; }
 
-/* ── Table ── */
-.md-table-wrap table.dataTable thead th {
-    background: #f1f3f5 !important;
-    color: #374151 !important;
-    font-size: 0.75rem !important;
-    font-weight: 700 !important;
-    text-transform: uppercase !important;
-    letter-spacing: 0.05em !important;
-    border-bottom: 2px solid #e5e7eb !important;
-    padding: 12px 14px !important;
-    white-space: nowrap;
-}
-.md-table-wrap table.dataTable tbody td {
-    font-size: 0.84rem;
-    color: #374151;
-    padding: 10px 14px !important;
-    vertical-align: middle;
-    border-bottom: 1px solid #f1f3f5;
-}
-.md-table-wrap table.dataTable tbody tr:hover { background-color: #f8fafc !important; }
-.md-table-wrap table.dataTable { border-collapse: collapse !important; }
+/* ── Table: dipindahkan ke global sptjm-datatable.css ── */
 
 /* Badge status */
 .badge-aktif {
@@ -172,21 +152,6 @@
     color: #495057;
 }
 
-/* DataTables overrides */
-.dataTables_wrapper .dataTables_paginate .paginate_button.current,
-.dataTables_wrapper .dataTables_paginate .paginate_button.current:hover {
-    background: #1a56db !important;
-    color: #fff !important;
-    border: none !important;
-    border-radius: 6px !important;
-}
-.dataTables_wrapper .dataTables_paginate .paginate_button:hover {
-    background: #eef2ff !important;
-    color: #1a56db !important;
-    border: none !important;
-    border-radius: 6px !important;
-}
-.dataTables_wrapper .dataTables_info { font-size: 0.82rem; color: #8592a3; }
 </style>
 @endsection
 
@@ -648,4 +613,5 @@
   });
 </script>
 @endsection
+
 
