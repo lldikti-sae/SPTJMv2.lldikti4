@@ -302,7 +302,6 @@
       paging: true,
       pageLength: 100,
       lengthMenu: [[50, 100, 200, 500], [50, 100, 200, 500]],
-      scrollX: true,
       ajax: {
         url: ajaxUrl,
         data: {

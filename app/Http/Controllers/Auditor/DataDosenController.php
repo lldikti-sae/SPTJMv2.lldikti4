@@ -51,7 +51,7 @@ class DataDosenController extends Controller
           }
 
           $urlView = route('auditor.data-dosen.show', ['identifier' => $identifier]);
-          return '<a href="' . $urlView . '" class="btn btn-icon btn-sm btn-primary" title="Lihat"><span class="tf-icons bx bx-show"></span></a>';
+          return '<a href="' . $urlView . '" class="sptjm-icon-btn sptjm-btn-view" title="Lihat"><span class="tf-icons bx bx-show"></span></a>';
         })
         ->rawColumns(['aksi', 'aktif'])
         ->make(true);

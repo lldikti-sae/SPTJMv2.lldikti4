@@ -270,9 +270,9 @@
                                                             }
                                                         }
                                                     @endphp
-                                                    <button type="button" class="btn btn-sm btn-primary btn-aksi-sp2d-individu py-0 px-2"
-                                                        data-nidn="{{ $row->NIDN }}" data-nama="{{ $row->Nama }}" data-jenis="kurang" data-bulan="{{ json_encode($availMonths) }}" title="Input Pembayaran NIDN: {{ $row->NIDN }}" style="font-size:11px;">
-                                                        <i class="bx bx-edit-alt"></i> Pembayaran
+                                                    <button type="button" class="sptjm-icon-btn sptjm-btn-edit btn-aksi-sp2d-individu"
+                                                        data-nidn="{{ $row->NIDN }}" data-nama="{{ $row->Nama }}" data-jenis="kurang" data-bulan="{{ json_encode($availMonths) }}" title="Pembayaran NIDN: {{ $row->NIDN }}">
+                                                        <i class="bx bx-edit-alt"></i>
                                                     </button>
                                                     @else
                                                     <span class="badge bg-label-success d-inline-flex align-items-center" style="font-size:10px;padding:3px 8px;" title="Tidak ada selisih">
@@ -449,9 +449,9 @@
                                                             }
                                                         }
                                                     @endphp
-                                                    <button type="button" class="btn btn-sm btn-primary btn-aksi-sp2d-individu py-0 px-2"
-                                                        data-nidn="{{ $row->NIDN }}" data-nama="{{ $row->Nama }}" data-jenis="lebih" data-bulan="{{ json_encode($availMonths) }}" title="Input Pembayaran NIDN: {{ $row->NIDN }}" style="font-size:11px;">
-                                                        <i class="bx bx-edit-alt"></i> Pembayaran
+                                                    <button type="button" class="sptjm-icon-btn sptjm-btn-edit btn-aksi-sp2d-individu"
+                                                        data-nidn="{{ $row->NIDN }}" data-nama="{{ $row->Nama }}" data-jenis="lebih" data-bulan="{{ json_encode($availMonths) }}" title="Pembayaran NIDN: {{ $row->NIDN }}">
+                                                        <i class="bx bx-edit-alt"></i>
                                                     </button>
                                                     @else
                                                     <span class="badge bg-label-success d-inline-flex align-items-center" style="font-size:10px;padding:3px 8px;" title="Tidak ada selisih">
@@ -647,9 +647,9 @@
                                                             }
                                                         }
                                                     @endphp
-                                                    <button type="button" class="btn btn-sm btn-primary btn-aksi-sp2d-individu py-0 px-2"
-                                                        data-nidn="{{ $row->NIDN }}" data-nama="{{ $row->Nama }}" data-jenis="lebih" data-bulan="{{ json_encode($availMonths) }}" title="Input Pembayaran NIDN: {{ $row->NIDN }}" style="font-size:11px;">
-                                                        <i class="bx bx-edit-alt"></i> Pembayaran
+                                                    <button type="button" class="sptjm-icon-btn sptjm-btn-edit btn-aksi-sp2d-individu"
+                                                        data-nidn="{{ $row->NIDN }}" data-nama="{{ $row->Nama }}" data-jenis="lebih" data-bulan="{{ json_encode($availMonths) }}" title="Pembayaran NIDN: {{ $row->NIDN }}">
+                                                        <i class="bx bx-edit-alt"></i>
                                                     </button>
                                                     @else
                                                     <span class="badge bg-label-success d-inline-flex align-items-center" style="font-size:10px;padding:3px 8px;" title="Tidak ada selisih">
@@ -742,14 +742,18 @@
                                             <td class="text-center">
                                                 <div class="d-flex gap-1 justify-content-center flex-nowrap">
                                                     @if(!empty($rekap->pdf) && ($u = $rekapAssetUrl($rekap->pdf)))
-                                                    <a href="{{ $u }}" class="btn btn-sm btn-danger py-0 px-2" target="_blank" title="Download PDF" style="font-size:11px;">PDF</a>
+                                                    <a href="{{ $u }}" class="sptjm-icon-btn sptjm-btn-print" target="_blank" title="Download PDF">
+                                                        <i class="bx bx-file"></i>
+                                                    </a>
                                                     @endif
                                                     @if(!empty($rekap->excel) && ($u = $rekapAssetUrl($rekap->excel)))
-                                                    <a href="{{ $u }}" class="btn btn-sm btn-success py-0 px-2" target="_blank" title="Download XLSX" style="font-size:11px;">XLSX</a>
+                                                    <a href="{{ $u }}" class="sptjm-icon-btn sptjm-btn-reset" target="_blank" title="Download XLSX">
+                                                        <i class="bx bx-download"></i>
+                                                    </a>
                                                     @endif
                                                     
-                                                    <a href="{{ route('admin.kekurangan-bayar.detail-rekap', $rekap->id) }}" class="btn btn-sm btn-info py-0 px-2" title="Lihat detail dan pilah dosen" style="font-size:11px;">
-                                                        <i class="bx bx-list-ul"></i> Detail
+                                                    <a href="{{ route('admin.kekurangan-bayar.detail-rekap', $rekap->id) }}" class="sptjm-icon-btn sptjm-btn-view" title="Lihat detail dan pilah dosen">
+                                                        <i class="bx bx-show"></i>
                                                     </a>
 
                                                     @if(!$isLebihRekap)
@@ -759,12 +763,11 @@
                                                             </span>
                                                         @else
                                                             <button type="button"
-                                                                class="btn btn-sm btn-primary btn-aksi-sp2d py-0 px-2"
+                                                                class="sptjm-icon-btn sptjm-btn-edit btn-aksi-sp2d"
                                                                 data-rekap-id="{{ $rekap->id }}"
                                                                 data-rekap-periode="{{ $rekap->periode }}"
-                                                                title="Input No SP2D"
-                                                                style="font-size:11px;">
-                                                                <i class="bx bx-edit-alt"></i> Proses
+                                                                title="Input No SP2D">
+                                                                <i class="bx bx-edit-alt"></i>
                                                             </button>
                                                         @endif
                                                     @endif
@@ -772,8 +775,8 @@
                                                     <form action="{{ route('admin.kekurangan-bayar.destroy-rekap-single', $rekap->id) }}" method="POST" class="d-inline form-hapus-rekap">
                                                         @csrf
                                                         @method('DELETE')
-                                                        <button type="button" class="btn btn-sm btn-danger py-0 px-2 btn-hapus-rekap" title="Hapus Rekap & Data Dosen" style="font-size:11px;">
-                                                            <i class="bx bx-trash"></i> Hapus
+                                                        <button type="button" class="sptjm-icon-btn sptjm-btn-delete btn-hapus-rekap" title="Hapus Rekap & Data Dosen">
+                                                            <i class="bx bx-trash"></i>
                                                         </button>
                                                     </form>
                                                 </div>

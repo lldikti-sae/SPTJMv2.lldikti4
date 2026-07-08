@@ -83,7 +83,7 @@ class LihatDataDosenController extends Controller
 
           // View button
           $urlView = route('dosen.showData', ['nidn' => $identifier]);
-          $viewBtn = '<a href="' . $urlView . '" class="btn btn-icon btn-sm btn-primary me-1" title="Lihat"><span class="tf-icons bx bx-show"></span></a>';
+          $viewBtn = '<a href="' . $urlView . '" class="sptjm-icon-btn sptjm-btn-view" title="Lihat"><span class="tf-icons bx bx-show"></span></a>';
 
           // Status button
           $isActive = false;
@@ -92,23 +92,23 @@ class LihatDataDosenController extends Controller
             $isActive = ($val === 1 || $val === '1' || strcasecmp((string) $val, 'YA') === 0 || strcasecmp((string) $val, 'Y') === 0);
           }
           if ($isActive) {
-            $statusBtn = '<a href="' . $urlPengaktifan . '" class="btn btn-icon btn-sm btn-success me-1" title="Pengaktifan"><i class="bx bx-check-circle"></i></a>';
+            $statusBtn = '<a href="' . $urlPengaktifan . '" class="sptjm-icon-btn sptjm-btn-reset" title="Pengaktifan"><i class="bx bx-check-circle"></i></a>';
           } else {
-            $statusBtn = '<a href="' . $urlPengaktifan . '" class="btn btn-icon btn-sm btn-danger me-1" title="Tidak Aktif"><i class="bx bx-block"></i></a>';
+            $statusBtn = '<a href="' . $urlPengaktifan . '" class="sptjm-icon-btn sptjm-btn-delete" title="Tidak Aktif"><i class="bx bx-block"></i></a>';
           }
 
           // Edit button
-          $editBtn = '<a href="' . $urlPerubahan . '" class="btn btn-icon btn-sm btn-warning me-1" title="Edit"><i class="bx bx-edit-alt"></i></a>';
+          $editBtn = '<a href="' . $urlPerubahan . '" class="sptjm-icon-btn sptjm-btn-edit" title="Edit"><i class="bx bx-edit-alt"></i></a>';
 
           // Histori button (uses NIDN as key; when missing, show a disabled placeholder to keep 2x2)
           if ($nidnOnly !== '') {
             $histUrl = route('pic.lihat.histori.dosen', $nidnOnly);
-            $histBtn = '<a href="' . $histUrl . '" class="btn btn-icon btn-sm btn-secondary" title="Histori"><span class="tf-icons bx bx-history"></span></a>';
+            $histBtn = '<a href="' . $histUrl . '" class="sptjm-icon-btn sptjm-btn-secondary" title="Histori"><span class="tf-icons bx bx-history"></span></a>';
           } else {
-            $histBtn = '<span class="btn btn-icon btn-sm btn-secondary disabled" title="Histori"><span class="tf-icons bx bx-history"></span></span>';
+            $histBtn = '<span class="sptjm-icon-btn sptjm-btn-secondary disabled" title="Histori"><span class="tf-icons bx bx-history"></span></span>';
           }
 
-          return $viewBtn . $statusBtn . $editBtn . $histBtn;
+          return $viewBtn . ' ' . $statusBtn . ' ' . $editBtn . ' ' . $histBtn;
         })
         // tambahkan alias kolom dinamis berdasarkan bulan sesi
         ->addColumn('gol', function ($row) use ($golCol) {

@@ -139,29 +139,26 @@
                                                   && ((string) ($entry['tahun'] ?? '') === (string) $data->tahun);
                                             }
                                         @endphp
-                                        <button type="button" class="btn btn-icon btn-sm edit-usulan me-1"
+                                        <button type="button" class="sptjm-icon-btn sptjm-btn-edit edit-usulan"
                                             data-id="{{ $data->id }}" data-tahun="{{ $data->tahun }} "
                                             data-bulan="{{ $data->bulan }}"
                                             data-pencairan_ke="{{ $data->pencairan_ke }}"
                                             data-tanggal_mulai="{{ $data->tanggal_mulai }}"
                                             data-tanggal_selesai="{{ $data->tanggal_selesai }}"
                                             data-status="{{ $data->status }}" data-bs-toggle="modal"
-                                            data-bs-target="#modalUsulanForm"
-                                            style="background-color: #ff9f43 !important; border-color: #ff9f43 !important; color: white !important; border-radius: 6px !important; width: 32px; height: 32px; display: inline-flex; align-items: center; justify-content: center;">
-                                            <i class="bx bx-pencil" style="font-size: 1.1rem;"></i>
+                                            data-bs-target="#modalUsulanForm" title="Edit">
+                                            <i class="bx bx-pencil"></i>
                                         </button>
 
                                         @if ($isChecked)
-                                            <button type="button" class="toggle-ceklist btn btn-icon btn-sm" title="Non-Ceklis"
-                                                data-action="noncek" data-id="{{ $data->id }}" data-jenis="{{ $data->jenis_usulan }}"
-                                                style="background-color: #28c76f !important; border-color: #28c76f !important; color: white !important; border-radius: 6px !important; width: 32px; height: 32px; display: inline-flex; align-items: center; justify-content: center;">
-                                                <i class="bx bx-check" style="font-size: 1.1rem;"></i>
+                                            <button type="button" class="toggle-ceklist sptjm-icon-btn sptjm-btn-reset" title="Non-Ceklis"
+                                                data-action="noncek" data-id="{{ $data->id }}" data-jenis="{{ $data->jenis_usulan }}">
+                                                <i class="bx bx-check"></i>
                                             </button>
                                         @else
-                                            <button type="button" class="toggle-ceklist btn btn-icon btn-sm" title="Ceklis"
-                                                data-action="cek" data-id="{{ $data->id }}" data-jenis="{{ $data->jenis_usulan }}"
-                                                style="background-color: #ea5455 !important; border-color: #ea5455 !important; color: white !important; border-radius: 6px !important; width: 32px; height: 32px; display: inline-flex; align-items: center; justify-content: center;">
-                                                <i class="bx bx-block" style="font-size: 1.1rem;"></i>
+                                            <button type="button" class="toggle-ceklist sptjm-icon-btn sptjm-btn-delete" title="Ceklis"
+                                                data-action="cek" data-id="{{ $data->id }}" data-jenis="{{ $data->jenis_usulan }}">
+                                                <i class="bx bx-block"></i>
                                             </button>
                                         @endif
                                     </td>
@@ -486,15 +483,15 @@ document.addEventListener('click', async function(e) {
                 related.forEach(el => {
                     if (el === btn) {
                         // this becomes active (green)
-                        el.classList.remove('btn-danger');
-                        el.classList.add('btn-success');
+                        el.classList.remove('sptjm-btn-delete');
+                        el.classList.add('sptjm-btn-reset');
                         el.dataset.action = 'noncek';
                         el.title = 'Non-Ceklis';
                         el.innerHTML = '<i class="bx bx-check"></i>';
                     } else {
                         // others become non-active (red)
-                        el.classList.remove('btn-success');
-                        el.classList.add('btn-danger');
+                        el.classList.remove('sptjm-btn-reset');
+                        el.classList.add('sptjm-btn-delete');
                         el.dataset.action = 'cek';
                         el.title = 'Ceklis';
                         el.innerHTML = '<i class="bx bx-block"></i>';
@@ -502,8 +499,8 @@ document.addEventListener('click', async function(e) {
                 });
             } else {
                 // clicking noncek => set this button back to non-active (red)
-                btn.classList.remove('btn-success');
-                btn.classList.add('btn-danger');
+                btn.classList.remove('sptjm-btn-reset');
+                btn.classList.add('sptjm-btn-delete');
                 btn.dataset.action = 'cek';
                 btn.title = 'Ceklis';
                 btn.innerHTML = '<i class="bx bx-block"></i>';

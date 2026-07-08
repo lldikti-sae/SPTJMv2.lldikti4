@@ -97,7 +97,7 @@ class NonaktifkanDosenPtsController extends Controller
 
       // Determine action: if active -> show 'Nonaktifkan', else show 'Aktifkan'
       $actionType = $isActive ? 'deactivate' : 'activate';
-      $btnClass = $isActive ? 'btn-danger' : 'btn-success';
+      $btnClass = $isActive ? 'sptjm-btn-delete' : 'sptjm-btn-reset';
       // Use icon-only buttons (Boxicons) and include title/aria-label for accessibility
       if ($isActive) {
         $icon = '<span class="tf-icons bx bx-power-off"></span>';
@@ -108,7 +108,7 @@ class NonaktifkanDosenPtsController extends Controller
       }
       // Use identifier: prefer NIDN, fallback to NUPTK
       $identifier = !empty($row->nidn) ? $row->nidn : ($row->nuptk ?? '');
-      $actionBtn = '<button type="button" class="btn btn-icon btn-sm ' . $btnClass . ' btn-toggle" title="' . $title . '" aria-label="' . $title . '" data-identifier="' . e($identifier) . '" data-action="' . $actionType . '">' . $icon . '</button>';
+      $actionBtn = '<button type="button" class="sptjm-icon-btn ' . $btnClass . ' btn-toggle" title="' . $title . '" aria-label="' . $title . '" data-identifier="' . e($identifier) . '" data-action="' . $actionType . '">' . $icon . '</button>';
 
       $rows[] = [
         'nidn' => $row->nidn,

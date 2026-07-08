@@ -45,19 +45,19 @@
                             </td>
                             <td>{{ Str::mask($user->cp, '*', -3, 2) }}</td>
                             <td>
-                                <button class="btn btn-sm btn-warning edit-pengguna" data-id="{{ $user->id }}"
+                                <button class="sptjm-icon-btn sptjm-btn-edit edit-pengguna" data-id="{{ $user->id }}"
                                     data-email="{{ $user->email }}" data-role="{{ $user->role }}"
                                     data-active="{{ $user->active }}" data-cp="{{ $user->cp }}" 
                                     data-bs-toggle="modal"
-                                    data-bs-target="#modalPenggunaForm">
+                                    data-bs-target="#modalPenggunaForm" title="Edit">
                                     <i class="bx bx-edit"></i>
                                 </button>
                                 <form action="{{ route('admin.pengguna-akun.destroy', $user->id) }}" method="POST"
                                     class="d-inline delete-form">
                                     @csrf
                                     @method('DELETE')
-                                    <button type="button" class="btn btn-sm btn-danger delete-pengguna" id="confirm-text"
-                                        data-id="{{ $user->id }}">
+                                    <button type="button" class="sptjm-icon-btn sptjm-btn-delete delete-pengguna" id="confirm-text"
+                                        data-id="{{ $user->id }}" title="Hapus">
                                         <i class="bx bx-trash"></i>
                                     </button>
                                 </form>

@@ -24,9 +24,7 @@
 
 /* Table header/body/pagination: dipindahkan ke global sptjm-datatable.css */
 
-.btn-aksi-edit   { background:#fd9f10; border:none; color:#fff; border-radius:6px; padding:5px 9px; font-size:0.82rem; cursor:pointer; }
-.btn-aksi-delete { background:#dc3545; border:none; color:#fff; border-radius:6px; padding:5px 9px; font-size:0.82rem; cursor:pointer; }
-.btn-aksi-edit:hover { background:#e68a00; } .btn-aksi-delete:hover { background:#bb2d3b; }
+/* Action buttons now use sptjm-icon-btn from demo.css */
 </style>
 @endsection
 
@@ -68,15 +66,15 @@
                         <td><span class="fw-bold text-dark">{{ $pajak->akumulasi }}</span></td>
                         <td><span class="fw-semibold text-primary">{{ number_format($pajak->tarif_pajak, 2) }}%</span></td>
                         <td>
-                            <button class="btn-aksi-edit edit-pajak" data-id="{{ $pajak->no }}"
+                            <button class="sptjm-icon-btn sptjm-btn-edit edit-pajak" data-id="{{ $pajak->no }}"
                                 data-status="{{ $pajak->status }}" data-akumulasi="{{ $pajak->akumulasi }}"
                                 data-tarif_pajak="{{ $pajak->tarif_pajak }}" data-bs-toggle="modal"
-                                data-bs-target="#modalPajakForm">
+                                data-bs-target="#modalPajakForm" title="Edit">
                                 <i class="bx bx-edit"></i>
                             </button>
                             <form action="{{ route('admin/data-pajak.destroy', $pajak->no) }}" method="POST" class="d-inline delete-form">
                                 @csrf @method('DELETE')
-                                <button type="button" class="btn-aksi-delete delete-pajak">
+                                <button type="button" class="sptjm-icon-btn sptjm-btn-delete delete-pajak" title="Hapus">
                                     <i class="bx bx-trash"></i>
                                 </button>
                             </form>
@@ -127,16 +125,16 @@
                             @endif
                         </td>
                         <td>
-                            <button class="btn-aksi-edit edit-pemotong" data-id="{{ $item['id'] ?? '' }}"
+                            <button class="sptjm-icon-btn sptjm-btn-edit edit-pemotong" data-id="{{ $item['id'] ?? '' }}"
                                 data-npwp="{{ $item['npwp'] ?? '' }}" data-nama="{{ $item['nama'] ?? '' }}"
                                 data-tanggal="{{ $item['tanggal'] ?? '' }}"
                                 data-ttd="{{ !empty($item['tanda_tangan_path']) ? asset('storage/' . $item['tanda_tangan_path']) : '' }}"
-                                data-cap="{{ !empty($item['cap_path']) ? asset('storage/' . $item['cap_path']) : '' }}">
+                                data-cap="{{ !empty($item['cap_path']) ? asset('storage/' . $item['cap_path']) : '' }}" title="Edit">
                                 <i class="bx bx-edit"></i>
                             </button>
                             <form action="{{ route('admin/data-pajak.identitas-pemotong.destroy', $item['id'] ?? '') }}" method="POST" class="d-inline delete-form-pemotong">
                                 @csrf @method('DELETE')
-                                <button type="button" class="btn-aksi-delete delete-pemotong">
+                                <button type="button" class="sptjm-icon-btn sptjm-btn-delete delete-pemotong" title="Hapus">
                                     <i class="bx bx-trash"></i>
                                 </button>
                             </form>

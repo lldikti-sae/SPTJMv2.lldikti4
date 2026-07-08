@@ -86,19 +86,19 @@ class LihatDataDosenPtsController extends Controller
           }
 
           if ($isActive) {
-            $statusBtn = '<a href="' . $linkEmpat . '" target="_blank" rel="noopener" class="btn btn-icon btn-sm btn-success me-1" title="Pengaktifan (cek di EMpat)"><i class="bx bx-check-circle"></i></a>';
+            $statusBtn = '<a href="' . $linkEmpat . '" target="_blank" rel="noopener" class="sptjm-icon-btn sptjm-btn-reset" title="Pengaktifan (cek di EMpat)"><i class="bx bx-check-circle"></i></a>';
           } else {
-            $statusBtn = '<a href="' . $urlPengaktifan . '" class="btn btn-icon btn-sm btn-danger me-1" title="Tidak Aktif"><i class="bx bx-block"></i></a>';
+            $statusBtn = '<a href="' . $urlPengaktifan . '" class="sptjm-icon-btn sptjm-btn-delete" title="Tidak Aktif"><i class="bx bx-block"></i></a>';
           }
 
           // View button opens the regular detail view
           $urlView = route('pts.detail-data-dosen', ['nidn' => $identifier]);
-          $viewBtn = '<a href="' . $urlView . '" class="btn btn-icon btn-sm btn-primary me-1" title="Lihat"><span class="tf-icons bx bx-show"></span></a>';
+          $viewBtn = '<a href="' . $urlView . '" class="sptjm-icon-btn sptjm-btn-view" title="Lihat"><span class="tf-icons bx bx-show"></span></a>';
 
           // Edit button opens the "Perubahan Data" tab
-          $editBtn = '<a href="' . $urlPerubahan . '" class="btn btn-icon btn-sm btn-warning" title="Edit"><i class="bx bx-edit-alt"></i></a>';
+          $editBtn = '<a href="' . $urlPerubahan . '" class="sptjm-icon-btn sptjm-btn-edit" title="Edit"><i class="bx bx-edit-alt"></i></a>';
 
-          return $viewBtn . $statusBtn . $editBtn;
+          return $viewBtn . ' ' . $statusBtn . ' ' . $editBtn;
         })
         ->rawColumns(['aksi'])
         ->make(true);

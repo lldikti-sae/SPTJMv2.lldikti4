@@ -164,23 +164,23 @@
                                         @method('DELETE')
 
                                         {{-- Tombol File PDF --}}
-                                        <a href="{{ route('admin.print-pencairan', ['id' => $item->no]) }}" target="_blank" class="btn btn-sm btn-secondary me-1 d-inline-flex align-items-center justify-content-center text-center" title="Lihat File PDF" style="width: 32px; height: 32px; border-radius: 6px; background-color: #64748b; border-color: #64748b;">
-                                            <i class="bx bx-file" style="font-size: 1.1rem;"></i>
+                                        <a href="{{ route('admin.print-pencairan', ['id' => $item->no]) }}" target="_blank" class="sptjm-icon-btn sptjm-btn-print me-1" title="Lihat File PDF">
+                                            <i class="bx bx-file"></i>
                                         </a>
 
                                         {{-- Tombol Export XLS --}}
-                                        <a href="{{ route('admin.export-pencairan', $item->no) }}" class="btn btn-sm btn-success me-1 d-inline-flex align-items-center justify-content-center text-center" title="Unduh XLS" style="width: 32px; height: 32px; border-radius: 6px; background-color: #10b981; border-color: #10b981;">
-                                            <i class="bx bx-download" style="font-size: 1.1rem;"></i>
+                                        <a href="{{ route('admin.export-pencairan', $item->no) }}" class="sptjm-icon-btn sptjm-btn-reset me-1" title="Unduh XLS">
+                                            <i class="bx bx-download"></i>
                                         </a>
 
                                         {{-- Tombol Hapus --}}
-                                        <button type="button" class="btn btn-sm btn-danger me-1 d-inline-flex align-items-center justify-content-center text-center delete-rekap" title="Hapus Data" style="width: 32px; height: 32px; border-radius: 6px; background-color: #ef4444; border-color: #ef4444;">
-                                            <i class="bx bx-trash" style="font-size: 1.1rem;"></i>
+                                        <button type="button" class="sptjm-icon-btn sptjm-btn-delete me-1 delete-rekap" title="Hapus Data">
+                                            <i class="bx bx-trash"></i>
                                         </button>
 
                                         {{-- Tombol Modal SP2D --}}
-                                        <button type="button" class="btn btn-sm btn-dark d-inline-flex align-items-center justify-content-center text-center" data-bs-toggle="modal" data-bs-target="#sp2dModal{{ $item->no }}" title="Input SP2D" style="width: 32px; height: 32px; border-radius: 6px; background-color: #0f2b5c; border-color: #0f2b5c;">
-                                            <i class="bx bx-edit-alt" style="font-size: 1.1rem;"></i>
+                                        <button type="button" class="sptjm-icon-btn sptjm-btn-edit" data-bs-toggle="modal" data-bs-target="#sp2dModal{{ $item->no }}" title="Input SP2D">
+                                            <i class="bx bx-edit-alt"></i>
                                         </button>
                                     </form>
                                 </div>

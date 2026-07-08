@@ -98,8 +98,6 @@
         $('#detailRiwayatTable').DataTable({
             processing: true,
             serverSide: true,
-            scrollX: true,
-            scrollCollapse: true,
             paging: true,
             pageLength: 50,
             lengthMenu: [

@@ -45,8 +45,6 @@
         $('#dosenTable').DataTable({
           processing: true,
           serverSide: true,
-          scrollX: true,
-          scrollCollapse: true,
           paging: true,
           deferRender: true,
           pageLength: 25,

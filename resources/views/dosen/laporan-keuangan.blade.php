@@ -170,7 +170,6 @@
               $('#myTable').DataTable({
                 processing: true,
                 serverSide: true,
-                scrollX: true,
                 pageLength: 10,
                 order: [],
                 ajax: {

@@ -17,7 +17,7 @@ class DataBankController extends Controller
       $b_bank = Bank::query();
       return DataTables::of($b_bank)
         ->addColumn("aksi", function ($row) {
-          $editBtn = '<button class="btn btn-sm btn-warning edit-bank"
+          $editBtn = '<button class="sptjm-icon-btn sptjm-btn-edit edit-bank"
                     data-id="' . $row->kode_bank . '"
                     data-bs-toggle="modal"
                     data-bs-target="#modalBankForm">
@@ -28,7 +28,7 @@ class DataBankController extends Controller
                         method="POST" class="d-inline delete-form">
                         ' . csrf_field() . '
                         ' . method_field("DELETE") . '
-                        <button type="button" class="btn btn-sm btn-danger delete-bank"
+                        <button type="button" class="sptjm-icon-btn sptjm-btn-delete delete-bank"
                             data-id="' . $row->kode_bank . '">
                             <i class="bx bx-trash"></i>
                         </button>

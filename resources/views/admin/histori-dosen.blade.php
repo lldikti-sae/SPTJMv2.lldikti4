@@ -201,8 +201,6 @@
       const table = $('#dosenTable').DataTable({
         processing: true,
         serverSide: true,
-        scrollX: true,
-        scrollCollapse: true,
         ajax: {
           url: '{{ route("admin.histori-dosen.data") }}',
           error: function(xhr) {
@@ -242,12 +240,7 @@
               data: 'aksi', 
               name: 'aksi', 
               orderable: false, 
-              searchable: false,
-              render: function(data, type, row) {
-                  let modified = data;
-                  modified = modified.replace(/btn btn-sm btn-secondary/g, 'btn-lihat-histori');
-                  return modified;
-              }
+              searchable: false
           },
         ],
         language: {

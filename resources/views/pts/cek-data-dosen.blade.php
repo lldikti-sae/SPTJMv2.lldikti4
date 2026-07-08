@@ -115,7 +115,6 @@ $(document).ready(() => {
         order: [
             [1, 'asc']
         ],
-        scrollX: true,
         responsive: true,
         language: {
             paginate: {

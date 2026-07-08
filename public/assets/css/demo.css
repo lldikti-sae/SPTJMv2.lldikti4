@@ -159,16 +159,137 @@ body:has(.sptjm-login-page) html {
   background-color: #F8FAFC !important;
 }
 
-/* ── Sidebar & Navbar Base ── */
+/* ── Sidebar Base ── */
 .bg-menu-theme {
   background-color: #ffffff !important;
   border-right: 1px solid #e2e8f0;
 }
 
-.bg-navbar-theme {
+/* ═══════════════════════════════════════════════
+   NAVBAR OVERRIDE — SPTJM Dashboard (demo.css)
+   Ini override statis yg pasti load tanpa cache
+   ═══════════════════════════════════════════════ */
+.bg-navbar-theme,
+#layout-navbar,
+nav#layout-navbar {
   background-color: #ffffff !important;
-  border-bottom: 1px solid #e2e8f0;
+  border-bottom: 1.5px solid #e8ecf4 !important;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.06) !important;
 }
+
+/* Hapus blur/backdrop filter bawaan theme */
+.layout-navbar {
+  background-color: #ffffff !important;
+  -webkit-backdrop-filter: none !important;
+  backdrop-filter: none !important;
+}
+
+/* Judul navbar */
+#layout-navbar .sptjm-nav-title {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #0f2b5c;
+  letter-spacing: -0.3px;
+  white-space: nowrap;
+}
+
+/* User info wrap */
+.sptjm-user-info-wrap {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  text-decoration: none !important;
+}
+.sptjm-user-info-wrap .sptjm-user-text {
+  text-align: right;
+}
+.sptjm-user-info-wrap .sptjm-user-name {
+  display: block;
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: #1e293b;
+  line-height: 1.2;
+}
+.sptjm-user-info-wrap .sptjm-user-role {
+  display: block;
+  font-size: 0.75rem;
+  color: #64748b;
+  line-height: 1.2;
+}
+.sptjm-user-info-wrap .sptjm-avatar {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #e2e8f0;
+}
+.dropdown-user .hide-arrow::after { display: none !important; }
+
+/* Navbar nav-right full width */
+#layout-navbar .navbar-nav-right {
+  width: 100%;
+  display: flex !important;
+  align-items: center !important;
+}
+
+/* ═══════════════════════════════════════════════
+   SPTJM ICON BUTTONS — Rounded Circle Style
+   ═══════════════════════════════════════════════ */
+.sptjm-icon-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  border: none;
+  cursor: pointer;
+  font-size: 0.95rem;
+  transition: transform 0.15s ease, box-shadow 0.15s ease, background-color 0.15s ease;
+  flex-shrink: 0;
+  text-decoration: none !important;
+  vertical-align: middle;
+}
+.sptjm-icon-btn:hover {
+  transform: scale(1.1);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+.sptjm-icon-btn:active { transform: scale(0.97); }
+.sptjm-icon-btn i { pointer-events: none; }
+
+/* Edit – solid yellow/warning */
+.sptjm-btn-edit { background-color: #f59e0b; color: #ffffff; }
+.sptjm-btn-edit:hover { background-color: #d97706; color: #ffffff; }
+
+/* Reset/Upload/Success – solid green */
+.sptjm-btn-reset { background-color: #10b981; color: #ffffff; }
+.sptjm-btn-reset:hover { background-color: #059669; color: #ffffff; }
+
+/* Delete – solid red */
+.sptjm-btn-delete { background-color: #ef4444; color: #ffffff; }
+.sptjm-btn-delete:hover { background-color: #dc2626; color: #ffffff; }
+
+/* Print – solid teal */
+.sptjm-btn-print { background-color: #14b8a6; color: #ffffff; }
+.sptjm-btn-print:hover { background-color: #0d9488; color: #ffffff; }
+
+/* View – solid dark blue */
+.sptjm-btn-view { background-color: #1e3a8a; color: #ffffff; }
+.sptjm-btn-view:hover { background-color: #1e40af; color: #ffffff; }
+
+/* Secondary/Histori – solid gray */
+.sptjm-btn-secondary { background-color: #6b7280; color: #ffffff; }
+.sptjm-btn-secondary:hover { background-color: #4b5563; color: #ffffff; }
+.sptjm-btn-secondary.disabled,
+.sptjm-btn-secondary:disabled { background-color: #9ca3af; color: #d1d5db; cursor: not-allowed; opacity: 0.6; pointer-events: none; }
+
+/* Spacing between adjacent action buttons */
+td .sptjm-icon-btn + .sptjm-icon-btn,
+td .sptjm-icon-btn + form,
+td form + .sptjm-icon-btn,
+td form + form { margin-left: 4px; }
+td form { display: inline; }
 
 /* ── Sidebar Active Item (top-level) ── */
 .menu-inner > .menu-item.active > .menu-link {
@@ -389,3 +510,70 @@ body:has(.sptjm-login-page) html {
   background-color: #1A56DB;
   border-color: #1A56DB;
 }
+
+/* DataTables Pagination Override (Screenshot 3) */
+/* Reset DataTables wrapper paginate button classes to avoid nested double-borders */
+.dataTables_wrapper .dataTables_paginate .paginate_button {
+  background: transparent !important;
+  border: none !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  box-shadow: none !important;
+}
+.dataTables_wrapper .dataTables_paginate .paginate_button:hover {
+  background: transparent !important;
+  border: none !important;
+}
+.dataTables_wrapper .dataTables_paginate .paginate_button.current,
+.dataTables_wrapper .dataTables_paginate .paginate_button.current:hover {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+.dataTables_wrapper .dataTables_paginate .paginate_button.disabled,
+.dataTables_wrapper .dataTables_paginate .paginate_button.disabled:hover {
+  background: transparent !important;
+  border: none !important;
+}
+
+/* Style the actual Bootstrap 5 page-link elements inside the pagination list */
+.dataTables_wrapper .dataTables_paginate .pagination .page-item .page-link {
+  background: #ffffff !important;
+  border: 1px solid #e2e8f0 !important;
+  color: #1e3a8a !important;
+  border-radius: 6px !important;
+  padding: 6px 14px !important;
+  margin: 0 2px !important;
+  font-weight: 600;
+  font-size: 0.875rem;
+  min-width: 36px;
+  height: 36px;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  transition: all 0.2s ease;
+  box-shadow: none !important;
+}
+.dataTables_wrapper .dataTables_paginate .pagination .page-item:not(.active):not(.disabled) .page-link:hover {
+  background: #f8fafc !important;
+  color: #0b3d91 !important;
+  border-color: #cbd5e1 !important;
+}
+.dataTables_wrapper .dataTables_paginate .pagination .page-item.active .page-link {
+  background: #1e3a8a !important; /* Solid dark blue */
+  border: 1px solid #1e3a8a !important; /* No white spacing border or outline */
+  color: #ffffff !important;
+  box-shadow: none !important;
+}
+.dataTables_wrapper .dataTables_paginate .pagination .page-item.disabled .page-link {
+  color: #94a3b8 !important;
+  background: #f8fafc !important;
+  border-color: #e2e8f0 !important;
+  cursor: not-allowed !important;
+}
+/* Previous & Next specific styling */
+.dataTables_wrapper .dataTables_paginate .pagination .page-item.previous .page-link,
+.dataTables_wrapper .dataTables_paginate .pagination .page-item.next .page-link {
+  padding: 6px 16px !important;
+}
+

@@ -269,6 +269,71 @@
 
     <!-- ─── GLOBAL CARD ENHANCEMENT ─── -->
     <style>
+        /* ─── GLOBAL SPTJM ICON BUTTONS (Rounded Circle Style) ─── */
+        .sptjm-icon-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            border: none;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: transform 0.15s ease, box-shadow 0.15s ease;
+            flex-shrink: 0;
+        }
+        .sptjm-icon-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+        .sptjm-icon-btn:active { transform: scale(0.97); }
+
+        /* Edit – soft blue */
+        .sptjm-btn-edit {
+            background-color: #e8f0fe;
+            color: #1a56db;
+        }
+        .sptjm-btn-edit:hover { background-color: #d0e1fd; color: #1a56db; }
+
+        /* Reset/Upload – soft green */
+        .sptjm-btn-reset {
+            background-color: #e8faf0;
+            color: #28a745;
+        }
+        .sptjm-btn-reset:hover { background-color: #c3f0d8; color: #1e7e34; }
+
+        /* Delete – soft red */
+        .sptjm-btn-delete {
+            background-color: #fde8e8;
+            color: #dc3545;
+        }
+        .sptjm-btn-delete:hover { background-color: #fcc8c8; color: #b02a37; }
+
+        /* Print – soft teal */
+        .sptjm-btn-print {
+            background-color: #e8f7fd;
+            color: #0d9488;
+        }
+        .sptjm-btn-print:hover { background-color: #c4eefa; color: #0a7a6e; }
+
+        /* View – soft purple */
+        .sptjm-btn-view {
+            background-color: #f0e8fe;
+            color: #7c3aed;
+        }
+        .sptjm-btn-view:hover { background-color: #e0cefc; color: #5b21b6; }
+
+        /* Wrap for spacing */
+        td .sptjm-icon-btn + .sptjm-icon-btn,
+        td .sptjm-icon-btn + form,
+        td form + .sptjm-icon-btn,
+        td form + form {
+            margin-left: 4px;
+        }
+    </style>
+
+    <style>
         /* ─── GLOBAL CARD ENHANCEMENT ─── */
         .card, 
         .md-card,
@@ -289,6 +354,76 @@
             padding-bottom: 12px !important;
             margin-bottom: 16px !important;
         }
+<<<<<<< HEAD
+=======
+
+        /* ─── GLOBAL TABLE GRIDLINES & BORDERS ─── */
+        table.dataTable,
+        .table,
+        .md-table-wrap table,
+        .md2-table {
+            border: 1.5px solid #cbd5e1 !important;
+            border-collapse: collapse !important;
+            width: 100% !important;
+        }
+        table.dataTable thead th,
+        .table thead th,
+        .md-table-wrap table thead th,
+        .md2-table thead th {
+            border: 1.5px solid #cbd5e1 !important;
+            background-color: #f1f5f9 !important;
+            color: #1e293b !important;
+            font-weight: 700 !important;
+            text-transform: uppercase !important;
+            font-size: 0.76rem !important;
+            letter-spacing: 0.05em !important;
+            padding: 10px 12px !important;
+            vertical-align: middle !important;
+        }
+        table.dataTable tbody td,
+        .table tbody td,
+        .md-table-wrap table tbody td,
+        .md2-table tbody td {
+            border: 1.5px solid #cbd5e1 !important;
+            padding: 8px 12px !important;
+            vertical-align: middle !important;
+            color: #334155 !important;
+        }
+        
+        /* ─── DATATABLES PAGINATION FOOTER WRAPPER ─── */
+        .dataTables_wrapper > .row:last-child {
+            background-color: #edf2f9 !important;
+            padding: 12px 24px !important;
+            border-top: 1.5px solid #dbeafe !important;
+            margin-left: -24px !important;
+            margin-right: -24px !important;
+            margin-bottom: -24px !important;
+            margin-top: 16px !important;
+            border-bottom-left-radius: 12px !important;
+            border-bottom-right-radius: 12px !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: space-between !important;
+        }
+        .dataTables_wrapper .dataTables_paginate .paginate_button {
+            background: transparent !important;
+            border: none !important;
+            padding: 0 !important;
+            margin: 0 !important;
+            box-shadow: none !important;
+            cursor: pointer !important;
+        }
+        .dataTables_wrapper .dataTables_paginate .paginate_button:hover {
+            background: transparent !important;
+            border: none !important;
+        }
+        .dataTables_wrapper .dataTables_paginate .paginate_button.current,
+        .dataTables_wrapper .dataTables_paginate .paginate_button.current:hover {
+            background: transparent !important;
+            border: none !important;
+            box-shadow: none !important;
+        }
+>>>>>>> origin/feature/ui-masterdata
     </style>
 
 </body>
