@@ -52,12 +52,12 @@
                                 @endif
                             </td>
                             <td>
-                                <button class="btn btn-sm btn-info edit-akses" data-id="{{ $user->id }}"
+                                <button class="sptjm-icon-btn sptjm-btn-edit edit-akses" data-id="{{ $user->id }}"
                                     data-email="{{ $user->email }}"
                                     data-permissions='{{ json_encode($user->admin_permissions ?? []) }}'
                                     data-bs-toggle="modal"
-                                    data-bs-target="#modalAksesForm">
-                                    <i class="bx bx-check-shield"></i> Atur Akses
+                                    data-bs-target="#modalAksesForm" title="Atur Akses">
+                                    <i class="bx bx-check-shield"></i>
                                 </button>
                             </td>
                         </tr>

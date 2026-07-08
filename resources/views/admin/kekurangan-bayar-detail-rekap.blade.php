@@ -62,8 +62,8 @@
                                                     @csrf
                                                     <input type="hidden" name="nidn" value="{{ $dosen->NIDN }}">
                                                     <input type="hidden" name="nominal" value="{{ abs($dosen->kesimpulan) }}">
-                                                    <button type="submit" class="btn btn-sm btn-danger py-0 px-2" style="font-size:11px;">
-                                                        <i class="bx bx-trash"></i> Keluarkan
+                                                    <button type="submit" class="sptjm-icon-btn sptjm-btn-delete" title="Keluarkan">
+                                                        <i class="bx bx-trash"></i>
                                                     </button>
                                                 </form>
                                             @endif

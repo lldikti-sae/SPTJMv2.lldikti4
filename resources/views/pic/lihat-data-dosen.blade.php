@@ -43,8 +43,6 @@
       serverSide: true,
       responsive: true,
       searching: true,
-      scrollX: true,
-      scrollCollapse: true,
       ajax: {
         url: "{{ route('pic.lihat-data-dosen') }}"
       },

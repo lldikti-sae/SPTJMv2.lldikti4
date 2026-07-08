@@ -22,7 +22,7 @@ class DaftarPtController extends Controller
       return DataTables::of($data_pts)
         ->addColumn('aksi', function ($row) {
           return "<a href='" . route('admin.daftar-pt.edit', ['id' => $row->id]) . "'
-                                    class='btn btn-sm btn-warning'>
+                                    class='sptjm-icon-btn sptjm-btn-edit'>
                                     <i class='bx bx-edit'></i>
                                 </a>
 ";

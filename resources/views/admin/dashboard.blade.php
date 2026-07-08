@@ -142,8 +142,6 @@ document.addEventListener('DOMContentLoaded', function () {
         paging: true,
         pageLength: 10,
         lengthChange: false, // hide length change
-        scrollX: true,
-        scrollCollapse: true,
         ajax: {
             url: '{{ route('admin.dashboard.dosen-pensiun.data') }}'
         },

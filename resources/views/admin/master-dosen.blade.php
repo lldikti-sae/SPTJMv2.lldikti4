@@ -482,9 +482,7 @@
     const table = $('#dosenTable').DataTable({
       processing: true,
       serverSide: true,
-      responsive: true,
-      scrollX: true,
-      scrollCollapse: true,
+      responsive: false,
       pageLength: 10,
       dom: '<"d-none"l><"d-none"f>rtip', // sembunyikan length & search bawaan DT
       lengthMenu: [[10, 25, 50, 100, 500, -1], [10, 25, 50, 100, 500, 'All']],

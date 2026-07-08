@@ -11,11 +11,12 @@
 /* ── Page Header ── */
 .md-page-header {
     display: flex;
-    align-items: flex-start;
+    align-items: center;
     justify-content: space-between;
     flex-wrap: wrap;
     gap: 12px;
     margin-bottom: 24px;
+    margin-top: 8px; /* Aga kebawahan */
 }
 .md-page-header .page-titles h4 {
     font-size: 1.35rem;
@@ -175,28 +176,25 @@
 }
 .md-table-wrap table.dataTable tbody tr:hover { background-color: #f8fafc !important; }
 
-/* DataTables overrides */
-.dataTables_wrapper .row { margin: 0; padding: 0; }
-.dataTables_wrapper .dataTables_paginate { margin-top: 16px; }
-.dataTables_wrapper .dataTables_paginate .paginate_button.current,
-.dataTables_wrapper .dataTables_paginate .paginate_button.current:hover {
-    background: #0b3d91 !important;
-    color: #fff !important;
-    border: 1px solid #0b3d91 !important;
-    border-radius: 4px !important;
+/* DataTables overrides - Footer Row Layout */
+.dataTables_wrapper .row:last-child { 
+    background-color: #f1f5f9; 
+    padding: 12px 24px; 
+    border-top: 1px solid #e2e8f0; 
+    border-radius: 0 0 10px 10px;
+    align-items: center;
+    display: flex !important;
+    justify-content: space-between !important;
 }
-.dataTables_wrapper .dataTables_paginate .paginate_button {
-    border: 1px solid #e2e8f0 !important;
-    border-radius: 4px !important;
-    padding: 5px 12px !important;
-    margin: 0 2px !important;
-}
-.dataTables_wrapper .dataTables_paginate .paginate_button:hover:not(.current):not(.disabled) {
-    background: #f1f5f9 !important;
-    color: #0b3d91 !important;
-    border-color: #e2e8f0 !important;
-}
-.dataTables_wrapper .dataTables_info { font-size: 0.82rem; color: #8592a3; padding-top: 20px; }
+/* Paginate on right */
+.dataTables_wrapper .dataTables_paginate { margin-top: 0; display: flex; align-items: center; justify-content: flex-end; }
+.dataTables_wrapper .pagination { gap: 6px; margin: 0; }
+.dataTables_wrapper .dataTables_info { font-size: 0.82rem; color: #8592a3; padding-top: 0; }
+/* Pull info column to left, paginate column to right */
+.dataTables_wrapper .row:last-child > div:first-child { order: 1; }
+.dataTables_wrapper .row:last-child > div:last-child { order: 2; margin-left: auto; }
+
+
 
 /* ── Custom Elements ── */
 .text-link-nidn {
@@ -723,8 +721,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const table = $('#dosenTable').DataTable({
         processing: true,
         serverSide: true,
-        scrollX: true,
-        scrollCollapse: true,
+        responsive: false,
         paging: true,
         deferRender: true,
         pageLength: 15,
@@ -780,14 +777,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 orderable: false,
                 searchable: false,
                 render: function(data, type, row) {
-                    let modified = data;
-                    modified = modified.replace(/btn btn-icon btn-sm btn-primary/g, 'btn-aksi-circle btn-aksi-view');
-                    modified = modified.replace(/btn btn-icon btn-sm btn-success/g, 'btn-aksi-circle btn-aksi-check');
-                    modified = modified.replace(/btn btn-icon btn-sm btn-danger/g, 'btn-aksi-circle btn-aksi-block');
-                    modified = modified.replace(/btn btn-icon btn-sm btn-warning/g, 'btn-aksi-circle btn-aksi-edit');
-                    modified = modified.replace(/tf-icons /g, '');
-                    modified = modified.replace(/me-1/g, '');
-                    return modified;
+                    return data;
                 }
             }
         ],
@@ -951,8 +941,6 @@ document.addEventListener('DOMContentLoaded', function() {
                             info: true,
                         lengthChange: true,
                         pageLength: 25,
-                        scrollX: true,
-                        scrollCollapse: true,
                         order: [[1, 'asc']], // urut berdasarkan NIDN
                         columnDefs: [
                             { orderable: false, searchable: false, targets: 0 }, // disable sorting/search on checkbox column

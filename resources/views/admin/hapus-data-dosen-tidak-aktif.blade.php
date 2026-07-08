@@ -311,8 +311,6 @@ $(document).ready(function() {
         serverSide: true,
         processing: true,
         responsive: true,
-        scrollX: true,
-        scrollCollapse: true,
         pageLength: 15,
         lengthMenu: [15, 25, 75, 100],
         dom: "<'md-toolbar'<'entries-wrap'l><'search-wrap'f>>" +

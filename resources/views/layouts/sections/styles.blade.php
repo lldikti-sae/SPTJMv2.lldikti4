@@ -68,59 +68,86 @@ table thead th {
     display: flex !important;
     align-items: center !important;
     gap: 4px !important;
+    justify-content: flex-end !important;
 }
 
-/* Semua tombol paginate */
+/* Footer row: info on left, pagination on right */
+.dataTables_wrapper .row:last-child {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+}
+.dataTables_wrapper .row:last-child > div:first-child {
+    order: 1;
+}
+.dataTables_wrapper .row:last-child > div:last-child {
+    order: 2;
+    margin-left: auto;
+}
+
+/* Reset DataTables wrapper paginate button classes to avoid nested double-borders */
 .dataTables_wrapper .dataTables_paginate .paginate_button {
-    border: 1.5px solid #e2e8f0 !important;
-    border-radius: 8px !important;
-    background: #ffffff !important;
-    color: #374151 !important;
-    font-size: 0.82rem !important;
-    font-weight: 600 !important;
-    padding: 5px 12px !important;
-    min-width: 36px !important;
-    text-align: center !important;
-    transition: all 0.2s ease !important;
-    cursor: pointer !important;
-    line-height: 1.5 !important;
-    margin: 0 1px !important;
-}
-
-/* Previous & Next */
-.dataTables_wrapper .dataTables_paginate .paginate_button.previous,
-.dataTables_wrapper .dataTables_paginate .paginate_button.next {
-    color: #374151 !important;
-    font-weight: 600 !important;
-    background: #f8fafc !important;
-    padding: 5px 16px !important;
-    border-color: #e2e8f0 !important;
-}
-
-/* Hover */
-.dataTables_wrapper .dataTables_paginate .paginate_button:hover:not(.disabled):not(.current) {
-    background: #f1f5f9 !important;
-    border-color: #cbd5e1 !important;
-    color: #0f2b5c !important;
+    background: transparent !important;
+    border: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
     box-shadow: none !important;
 }
-
-/* Active / current */
+.dataTables_wrapper .dataTables_paginate .paginate_button:hover {
+    background: transparent !important;
+    border: none !important;
+}
 .dataTables_wrapper .dataTables_paginate .paginate_button.current,
 .dataTables_wrapper .dataTables_paginate .paginate_button.current:hover {
-    background: #0f2b5c !important;
-    border-color: #0f2b5c !important;
-    color: #ffffff !important;
-    box-shadow: 0 2px 8px rgba(15, 43, 92, 0.25) !important;
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
 }
-
-/* Disabled */
 .dataTables_wrapper .dataTables_paginate .paginate_button.disabled,
 .dataTables_wrapper .dataTables_paginate .paginate_button.disabled:hover {
+    background: transparent !important;
+    border: none !important;
+}
+
+/* Style the actual Bootstrap 5 page-link elements inside the pagination list */
+.dataTables_wrapper .dataTables_paginate .pagination .page-item .page-link {
+    background: #ffffff !important;
+    border: 1px solid #e2e8f0 !important;
+    color: #1e3a8a !important;
+    border-radius: 6px !important;
+    padding: 6px 14px !important;
+    margin: 0 2px !important;
+    font-weight: 600;
+    font-size: 0.875rem;
+    min-width: 36px;
+    height: 36px;
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    transition: all 0.2s ease;
+    box-shadow: none !important;
+}
+.dataTables_wrapper .dataTables_paginate .pagination .page-item:not(.active):not(.disabled) .page-link:hover {
+    background: #f8fafc !important;
+    color: #0b3d91 !important;
+    border-color: #cbd5e1 !important;
+}
+.dataTables_wrapper .dataTables_paginate .pagination .page-item.active .page-link {
+    background: #1e3a8a !important; /* Solid dark blue */
+    border: 1px solid #1e3a8a !important; /* No white spacing border or outline */
+    color: #ffffff !important;
+    box-shadow: none !important;
+}
+.dataTables_wrapper .dataTables_paginate .pagination .page-item.disabled .page-link {
+    color: #94a3b8 !important;
     background: #f8fafc !important;
     border-color: #e2e8f0 !important;
-    color: #94a3b8 !important;
     cursor: not-allowed !important;
+}
+/* Previous & Next specific styling */
+.dataTables_wrapper .dataTables_paginate .pagination .page-item.previous .page-link,
+.dataTables_wrapper .dataTables_paginate .pagination .page-item.next .page-link {
+    padding: 6px 16px !important;
 }
 
 /* Ellipsis */

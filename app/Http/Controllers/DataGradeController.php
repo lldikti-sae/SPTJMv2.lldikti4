@@ -19,12 +19,12 @@ class DataGradeController extends Controller
 
       return DataTables::of($c_grade)
         ->addColumn('aksi', function ($row) {
-          $editBtn = '<button class="btn btn-sm btn-warning edit-grade" data-id="' . $row->kode . '"><i class="bx bx-edit"></i></button>';
+          $editBtn = '<button class="sptjm-icon-btn sptjm-btn-edit edit-grade" data-id="' . $row->kode . '"><i class="bx bx-edit"></i></button>';
 
           $deleteForm = '<form action="' . route('admin.data-grade.destroy', ['kode' => $row->kode]) . '" method="POST" class="d-inline delete-form">'
             . csrf_field()
             . method_field('DELETE')
-            . '<button type="button" class="btn btn-sm btn-danger delete-grade" data-id="' . $row->kode . '"><i class="bx bx-trash"></i></button>'
+            . '<button type="button" class="sptjm-icon-btn sptjm-btn-delete delete-grade" data-id="' . $row->kode . '"><i class="bx bx-trash"></i></button>'
             . '</form>';
 
           return $editBtn . ' ' . $deleteForm;

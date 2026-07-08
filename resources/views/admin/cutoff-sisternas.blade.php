@@ -515,8 +515,6 @@ document.addEventListener('DOMContentLoaded', function() {
     const cutOffTable = $('#cutoffTable').DataTable({
         processing: true,
         serverSide: true,
-        scrollX: true,
-        scrollCollapse: true,
         ajax: {
             url: '{{ route("admin.cutoff-sisternas") }}',
             data: function(d) {

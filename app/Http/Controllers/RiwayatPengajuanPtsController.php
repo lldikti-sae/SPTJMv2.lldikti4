@@ -59,10 +59,10 @@ class RiwayatPengajuanPtsController extends Controller
           $fileUrl = asset('storage/' . $filePath);
           $detailUrl = route('pts.detail-riwayat-pengajuan', ['no' => $row->no]);
 
-          return '<a href="' . $fileUrl . '" target="_blank" class="btn btn-sm btn-primary" style="margin-right: 10px;">'
+          return '<a href="' . $fileUrl . '" target="_blank" class="sptjm-icon-btn sptjm-btn-print" title="Lihat PDF" style="margin-right: 10px;">'
             . '<i class="bx bx-file"></i>'
             . '</a>'
-            . '<a href="' . $detailUrl . '" class="btn btn-sm btn-info">'
+            . '<a href="' . $detailUrl . '" class="sptjm-icon-btn sptjm-btn-view" title="Detail">'
             . '<i class="bx bx-info-circle"></i>'
             . '</a>';
         })

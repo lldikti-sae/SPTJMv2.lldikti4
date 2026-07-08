@@ -286,7 +286,7 @@ class ComplainPicController extends ComplainAdminController
                     if ($status === 'setuju') $badge = 'bg-label-success';
                     if ($status === 'tolak') $badge = 'bg-label-danger';
 
-                    $replyBtn = '<button type="button" class="btn btn-sm btn-icon btn-warning reply-complain" data-id="' . $r->id . '" title="Tanggapi"><i class="bx bx-message-square-dots"></i></button>';
+                    $replyBtn = '<button type="button" class="sptjm-icon-btn sptjm-btn-edit reply-complain" data-id="' . $r->id . '" title="Tanggapi"><i class="bx bx-message-square-dots"></i></button>';
 
                     $fullTitle = (string) ($r->judul ?? '');
                     $words = preg_split('/\s+/', trim($fullTitle));

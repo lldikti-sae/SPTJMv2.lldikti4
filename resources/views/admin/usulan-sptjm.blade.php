@@ -205,8 +205,6 @@ document.addEventListener('DOMContentLoaded', function() {
         lengthChange: true,
         searching: true,
         responsive: true,
-        scrollX: true,
-        scrollCollapse: true,
         order: [[0, 'desc']],
         columns: [
             { data: 'id_usulan' },

@@ -22,9 +22,7 @@ table.md2-table thead th { background:#f1f3f5!important; color:#374151!important
 table.md2-table tbody td { font-size:0.84rem; color:#374151; padding:10px 14px!important; vertical-align:middle; border-bottom:1px solid #f1f3f5; }
 table.md2-table tbody tr:hover { background:#f8fafc!important; }
 table.md2-table { border-collapse:collapse!important; width:100%; }
-.btn-aksi-edit   { background:#fd9f10; border:none; color:#fff; border-radius:6px; padding:5px 9px; font-size:0.82rem; cursor:pointer; }
-.btn-aksi-delete { background:#dc3545; border:none; color:#fff; border-radius:6px; padding:5px 9px; font-size:0.82rem; cursor:pointer; }
-.btn-aksi-edit:hover { background:#e68a00; } .btn-aksi-delete:hover { background:#bb2d3b; }
+/* Action buttons now use sptjm-icon-btn from demo.css */
 </style>
 @endsection
 
@@ -62,14 +60,14 @@ table.md2-table { border-collapse:collapse!important; width:100%; }
                         <td><span class="fw-semibold text-primary">{{ $pegawai->kode }}</span></td>
                         <td><span class="fw-bold text-dark">{{ $pegawai->jenis }}</span></td>
                         <td>
-                            <button class="btn-aksi-edit edit-pegawai" data-id="{{ $pegawai->kode }}"
+                            <button class="sptjm-icon-btn sptjm-btn-edit edit-pegawai" data-id="{{ $pegawai->kode }}"
                               data-kode="{{ $pegawai->kode }}" data-jenis="{{ $pegawai->jenis }}"
-                              data-bs-toggle="modal" data-bs-target="#modalPegawaiForm">
+                              data-bs-toggle="modal" data-bs-target="#modalPegawaiForm" title="Edit">
                                 <i class="bx bx-edit"></i>
                             </button>
                             <form action="{{ route('admin/data-pegawai.destroy', $pegawai->kode) }}" method="POST" class="d-inline delete-form">
                                 @csrf @method('DELETE')
-                                <button type="button" class="btn-aksi-delete delete-pegawai" data-id="{{ $pegawai->kode }}">
+                                <button type="button" class="sptjm-icon-btn sptjm-btn-delete delete-pegawai" data-id="{{ $pegawai->kode }}" title="Hapus">
                                     <i class="bx bx-trash"></i>
                                 </button>
                             </form>

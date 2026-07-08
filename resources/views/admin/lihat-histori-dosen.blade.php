@@ -245,8 +245,6 @@
 document.addEventListener('DOMContentLoaded', function() {
     if (window.jQuery && window.jQuery.fn.DataTable) {
         window.jQuery('#lihatHistoriTable').DataTable({
-            scrollX: true,
-            scrollCollapse: true,
             pageLength: 15,
             lengthMenu: [[15, 25, 50, 100], [15, 25, 50, 100]],
             dom: "<'md-toolbar'<'entries-wrap'l><'search-wrap'f>>" +
