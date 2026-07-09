@@ -87,8 +87,7 @@
     {{-- Beri margin buatan karena menggunakan background PDF --}}
     <div style="height: 145px;"></div>
 
-    <!-- KOP SURAT LLDIKTI -->
-    <img src="{{ public_path('assets/img/KopSurat_LLDIKTI4.png') }}" alt="Kop Surat LLDIKTI Wilayah IV" class="kop-img">
+
 
     {{-- Tabel Header SKPP --}}
     <table class="header-table">

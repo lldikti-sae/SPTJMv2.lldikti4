@@ -261,75 +261,6 @@ div.dataTables_wrapper div.dataTables_length {
 
 {{-- ── Modal Tambah/Edit PT ── --}}
 <div class="modal fade" id="modalPTForm" tabindex="-1" aria-labelledby="modalPTFormLabel" aria-hidden="true">
-<<<<<<< HEAD
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="modalPTTitle">Tambah Perguruan Tinggi</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-      </div>
-      <form id="ptForm" method="POST" action="{{ route('admin/daftar-pt.store') }}" enctype="multipart/form-data">
-        @csrf
-        <div class="modal-body">
-          <div class="col mb-3">
-            <label for="kodePTS" class="form-label">Kode Perguruan Tinggi</label>
-            <input type="text" id="kodePTS" class="form-control @error('kode_pts') is-invalid @enderror"
-              name="kode_pts" placeholder="Masukkan Kode PT" required pattern="^[1-9][0-9]*$"
-              title="Hanya angka, tidak boleh diawali 0 atau mengandung spasi">
-            @error('kode_pts')
-            <div class="invalid-feedback">{{ $message }}</div>
-            @enderror
-          </div>
-          <div class="mb-3">
-            <label class="form-label">Nama Perguruan Tinggi</label>
-            <input type="text" class="form-control" id="nama_pts" name="nama_pts"
-              placeholder="Masukkan Nama PT" required>
-          </div>
-          <div class="mb-3">
-            <label class="form-label">Nama Pimpinan</label>
-            <input type="text" class="form-control" id="nama_pimpinan" name="nama_pimpinan"
-              placeholder="Masukkan Nama Pimpinan" required>
-          </div>
-          <div class="mb-3">
-            <label class="form-label">Jabatan Pimpinan</label>
-            <input type="text" class="form-control" id="jabatan_pimpinan" name="jabatan_pimpinan"
-              placeholder="Masukkan Nama Jabatan Pimpinan" required>
-          </div>
-          <div class="mb-3">
-            <label class="form-label">Alamat Perguruan Tinggi</label>
-            <input type="text" class="form-control" id="alamat_pt" name="alamat_pt"
-              placeholder="Masukkan Alamat PT" required>
-          </div>
-          <div class="mb-3">
-            <label class="form-label">Wilayah</label>
-            @if(Auth::check() && Auth::user()->role === 'pic')
-                <input type="text" class="form-control" name="wilayah" value="{{ Auth::user()->email }}" readonly style="background-color: #eceef1;">
-            @else
-                <select class="form-select" id="wilayah" name="wilayah" required>
-                  <option value="">-- Pilih Wilayah --</option>
-                  @foreach ($users as $user)
-                  <option value="{{ $user->email }}">{{ $user->email }}</option>
-                  @endforeach
-                </select>
-            @endif
-          </div>
-          <div class="mb-3">
-            <label class="form-label">Password</label>
-            <input type="password" class="form-control" id="password" name="password"
-              placeholder="Masukkan Password" required>
-          </div>
-          <div class="mb-3">
-            <label class="form-label">Status</label>
-            <select class="form-select" id="aktif" name="aktif" required>
-              <option value="1">Aktif</option>
-              <option value="0">Tidak Aktif</option>
-            </select>
-          </div>
-          <div class="mb-3">
-            <label class="form-label">Upload Dokumen</label>
-            <input type="file" class="form-control" id="dokumen" name="dokumen" accept=".pdf,.doc,.docx">
-          </div>
-=======
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content" style="border-radius:10px; border:none; box-shadow:0 8px 30px rgba(0,0,0,0.12);">
             <div class="modal-header" style="background:#f8f9fa; border-radius:10px 10px 0 0; border-bottom:1px solid #e9ecef;">
@@ -373,12 +304,16 @@ div.dataTables_wrapper div.dataTables_length {
                     </div>
                     <div class="mb-3">
                         <label class="form-label fw-semibold" style="font-size:0.82rem; color:#5c6877;">Wilayah</label>
-                        <select class="form-select" id="wilayah" name="wilayah" required style="font-size:0.85rem;">
-                            <option value="">-- Pilih Wilayah --</option>
-                            @foreach ($users as $user)
-                            <option value="{{ $user->email }}">{{ $user->email }}</option>
-                            @endforeach
-                        </select>
+                        @if(Auth::check() && Auth::user()->role === 'pic')
+                            <input type="text" class="form-control" name="wilayah" value="{{ Auth::user()->email }}" readonly style="background-color: #eceef1; font-size:0.85rem;">
+                        @else
+                            <select class="form-select" id="wilayah" name="wilayah" required style="font-size:0.85rem;">
+                                <option value="">-- Pilih Wilayah --</option>
+                                @foreach ($users as $user)
+                                <option value="{{ $user->email }}">{{ $user->email }}</option>
+                                @endforeach
+                            </select>
+                        @endif
                     </div>
                     <div class="mb-3">
                         <label class="form-label fw-semibold" style="font-size:0.82rem; color:#5c6877;">Password</label>
@@ -404,54 +339,12 @@ div.dataTables_wrapper div.dataTables_length {
                     </button>
                 </div>
             </form>
->>>>>>> feature/ui-admin-SPTJM
         </div>
     </div>
 </div>
 
 {{-- ── Modal Sync ── --}}
 <div class="modal fade" id="modalSync" tabindex="-1" aria-labelledby="modalSyncFormLabel" aria-hidden="true">
-<<<<<<< HEAD
-  <div class="modal-dialog modal-md modal-dialog-centered">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="modalSyncTitle">Sinkronisasi Perguruan Tinggi</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-      </div>
-      <form id="syncPtForm" method="POST" action="{{ route('admin.daftar-pt.updateWilayah') }}">
-        @csrf
-        @method('PUT')
-        <div class="modal-body">
-          <div class="mb-3">
-            <label for="">Kode Perguruan Tinggi</label>
-            <select name="kode_pts" id="kode_pts_sync" class="form-control" required>
-              <option value="" selected>---Pilih---</option>
-              @foreach ($kode_pts as $kode)
-              <option value="{{ $kode->kode_pts }}" data-nama="{{ $kode->nama_pts ?? '' }}">
-                {{ $kode->kode_pts }}
-              </option>
-              @endforeach
-            </select>
-          </div>
-          <div>
-            <label for="">Nama Perguruan Tinggi</label>
-            <input type="text" readonly class="form-control" id="nama_pts_sync" name="nama_pts"
-              placeholder="Masukkan Nama PT" required>
-          </div>
-          <div class="mb-3">
-            <label class="form-label">Pemegang Wilayah Baru</label>
-            @if(Auth::check() && Auth::user()->role === 'pic')
-                <input type="text" class="form-control" name="pemegang_wilayah_baru" value="{{ Auth::user()->email }}" readonly style="background-color: #eceef1;">
-            @else
-                <select name="pemegang_wilayah_baru" id="pemegang_wilayah_baru" class="form-control" required>
-                  <option value="" selected>--PILIH--</option>
-                  @foreach ($users as $user)
-                  <option value="{{ $user->email }}">{{ $user->email }}</option>
-                  @endforeach
-                </select>
-            @endif
-          </div>
-=======
     <div class="modal-dialog modal-md modal-dialog-centered">
         <div class="modal-content" style="border-radius:10px; border:none; box-shadow:0 8px 30px rgba(0,0,0,0.12);">
             <div class="modal-header" style="background:#f8f9fa; border-radius:10px 10px 0 0; border-bottom:1px solid #e9ecef;">
@@ -482,12 +375,16 @@ div.dataTables_wrapper div.dataTables_length {
                     </div>
                     <div class="mb-0">
                         <label class="form-label fw-semibold" style="font-size:0.82rem; color:#5c6877;">Pemegang Wilayah Baru</label>
-                        <select name="pemegang_wilayah_baru" id="pemegang_wilayah_baru" class="form-select" required style="font-size:0.85rem;">
-                            <option value="" selected>-- Pilih --</option>
-                            @foreach ($users as $user)
-                            <option value="{{ $user->email }}">{{ $user->email }}</option>
-                            @endforeach
-                        </select>
+                        @if(Auth::check() && Auth::user()->role === 'pic')
+                            <input type="text" class="form-control" name="pemegang_wilayah_baru" value="{{ Auth::user()->email }}" readonly style="background-color: #eceef1; font-size:0.85rem;">
+                        @else
+                            <select name="pemegang_wilayah_baru" id="pemegang_wilayah_baru" class="form-select" required style="font-size:0.85rem;">
+                                <option value="" selected>-- Pilih --</option>
+                                @foreach ($users as $user)
+                                <option value="{{ $user->email }}">{{ $user->email }}</option>
+                                @endforeach
+                            </select>
+                        @endif
                     </div>
                 </div>
                 <div class="modal-footer" style="background:#f8f9fa; border-top:1px solid #e9ecef; border-radius:0 0 10px 10px;">
@@ -497,7 +394,6 @@ div.dataTables_wrapper div.dataTables_length {
                     </button>
                 </div>
             </form>
->>>>>>> feature/ui-admin-SPTJM
         </div>
     </div>
 </div>

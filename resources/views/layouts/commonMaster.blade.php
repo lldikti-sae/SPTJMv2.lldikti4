@@ -12,6 +12,10 @@
         content="{{ config('variables.templateDescription') ? config('variables.templateDescription') : '' }}" />
     <meta name="keywords"
         content="{{ config('variables.templateKeyword') ? config('variables.templateKeyword') : '' }}">
+
+    <!-- Preload Logo and Fonts to prevent blinking/flashing on page load -->
+    <link rel="preload" as="image" href="{{ asset('assets/img/favicon/logo-lldikti-4.png') }}">
+    <link rel="preload" href="{{ asset('assets/vendor/fonts/boxicons/boxicons.woff2') }}" as="font" type="font/woff2" crossorigin>
     <!-- laravel CRUD token -->
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <!-- Canonical SEO -->
@@ -57,19 +61,19 @@
         }
     </style>
 
-    <!-- Prevent sidebar transition flicker between page navigations -->
     <script>
-        (function () {
-            try {
-                document.documentElement.classList.add('sptjm-no-menu-transition');
-            } catch (e) {
-                // ignore
-            }
-        })();
+        // Disable transitions instantly to prevent sidebar accordion from blinking/jumping on page load
+        document.documentElement.classList.add('sptjm-no-transition');
+        window.addEventListener('load', function() {
+            // Re-enable transitions once ALL scripts (including menu.js) have fully initialized
+            setTimeout(function() {
+                document.documentElement.classList.remove('sptjm-no-transition');
+            }, 50);
+        });
     </script>
     <style>
-        html.sptjm-no-menu-transition .layout-menu,
-        html.sptjm-no-menu-transition .layout-menu * {
+        .sptjm-no-transition .layout-menu,
+        .sptjm-no-transition .layout-menu * {
             transition: none !important;
             animation: none !important;
         }

@@ -3,46 +3,28 @@
 @section('title', 'SPTJM Online')
 
 @section('content')
-<<<<<<< HEAD
-    <div class="row">
-        <div class="col-12">
-            <!-- Filter Form -->
-            <div class="card mb-4">
-                <div class="card-header">
-                    <h5 class="mb-0">Rekapitulasi Berjalan Non Eligible</h5>
-                    <hr>
-                </div>
-                <div class="card-body">
-                    <form action="{{ route('admin.rekap-usulan-non-el') }}" method="GET">
-                        <div class="row g-3">
-                            <div class="col-md-2">
-                                <label for="tipe_sptjm" class="form-label fw-semibold">Pilih Tipe SPTJM</label>
-                                <select class="form-select" id="tipe_sptjm" name="tipe_sptjm" onchange="this.form.submit()">
-                                    <option value="SPTJM" {{ request('tipe_sptjm', 'SPTJM') == 'SPTJM' ? 'selected' : '' }}>SPTJM</option>
-                                    <option value="TUKIN" {{ request('tipe_sptjm') == 'TUKIN' ? 'selected' : '' }}>TUKIN</option>
-                                </select>
-                            </div>
 
-                            <div class="col-md-2">
-                                <label for="pencairan_ke" class="form-label fw-semibold">Pencairan ke-</label>
-                                <select class="form-select" id="pencairan_ke" name="pencairan_ke">
-                                    <option value="Semua" {{ request('pencairan_ke') == 'Semua' ? 'selected' : '' }}>Semua
-                                    </option>
-                                    @for ($i = 1; $i <= 20; $i++)
-                                        <option value="{{ $i }}" {{ request('pencairan_ke') == $i ? 'selected' : '' }}>{{ $i }}</option>
-                                    @endfor
-                                </select>
-                            </div>
-=======
 <style>
     .card-non-el {
-        border: 1.5px solid #dbeafe !important;
-        box-shadow: 0 10px 30px rgba(26, 86, 219, 0.15) !important;
+        border: 1.5px solid #fee2e2 !important;
+        box-shadow: 0 10px 30px rgba(220, 38, 38, 0.1) !important;
         border-radius: 12px !important;
         background: #ffffff !important;
     }
+    
+    .md2-table th {
+        border-bottom: 2px solid #e2e8f0 !important;
+        padding: 12px 16px !important;
+        text-transform: uppercase;
+    }
+
+    .md2-table td {
+        padding: 12px 16px !important;
+        vertical-align: middle;
+        border-bottom: 1px solid #f1f5f9;
+        font-size: 0.85rem;
+    }
 </style>
->>>>>>> feature/ui-admin-SPTJM
 
 <div class="content-wrapper">
     <!-- Breadcrumb -->
@@ -50,26 +32,35 @@
         <ol class="breadcrumb" style="font-size: 0.85rem; padding: 0; background: transparent;">
             <li class="breadcrumb-item"><a href="#" style="color: #64748b;">Proses Pembayaran</a></li>
             <li class="breadcrumb-item"><a href="#" style="color: #64748b;">Rekapitulasi Usulan</a></li>
-            <li class="breadcrumb-item active fw-bold" aria-current="page" style="color: #1a56db;">Non Eligible</li>
+            <li class="breadcrumb-item active fw-bold" aria-current="page" style="color: #dc2626;">Non Eligible</li>
         </ol>
     </nav>
 
     <!-- Header -->
     <div class="d-flex justify-content-between align-items-center mb-4">
         <div>
-            <h4 class="fw-bold text-dark mb-1" style="color: #0f2b5c !important; font-size: 1.5rem;">Rekapitulasi Berjalan Non Eligible</h4>
+            <h4 class="fw-bold text-dark mb-1" style="color: #7f1d1d !important; font-size: 1.5rem;">Rekapitulasi Berjalan Non Eligible</h4>
         </div>
     </div>
 
     <!-- Filter Form -->
     <div class="card card-non-el mb-4">
         <div class="card-body p-4">
-            <h6 class="fw-bold text-dark mb-3" style="color: #0f2b5c !important; display: inline-flex; align-items: center; gap: 8px;">
-                <i class="bx bx-filter-alt" style="color: #d97706;"></i> Parameter Filter Data
+            <h6 class="fw-bold text-dark mb-3" style="color: #7f1d1d !important; display: inline-flex; align-items: center; gap: 8px;">
+                <i class="bx bx-filter-alt" style="color: #dc2626;"></i> Parameter Filter Data
             </h6>
             <form action="{{ route('admin.rekap-usulan-non-el') }}" method="GET">
                 <div class="row g-3 align-items-end">
-                    <div class="col-md-5">
+                    
+                    <div class="col-md-3">
+                        <label for="tipe_sptjm" class="form-label fw-bold text-dark text-uppercase" style="font-size: 0.68rem; letter-spacing: 0.05em;">Tipe SPTJM</label>
+                        <select class="form-select" id="tipe_sptjm" name="tipe_sptjm" onchange="this.form.submit()" style="border-color: #cbd5e1;">
+                            <option value="SPTJM" {{ request('tipe_sptjm', 'SPTJM') == 'SPTJM' ? 'selected' : '' }}>SPTJM</option>
+                            <option value="TUKIN" {{ request('tipe_sptjm') == 'TUKIN' ? 'selected' : '' }}>TUKIN</option>
+                        </select>
+                    </div>
+
+                    <div class="col-md-4">
                         <label for="pencairan_ke" class="form-label fw-bold text-dark text-uppercase" style="font-size: 0.68rem; letter-spacing: 0.05em;">Pencairan ke-</label>
                         <select class="form-select" id="pencairan_ke" name="pencairan_ke" style="border-color: #cbd5e1;">
                             <option value="Semua" {{ request('pencairan_ke') == 'Semua' ? 'selected' : '' }}>Semua</option>
@@ -79,7 +70,7 @@
                         </select>
                     </div>
 
-                    <div class="col-md-5">
+                    <div class="col-md-3">
                         <label for="Eligible_span" class="form-label fw-bold text-dark text-uppercase" style="font-size: 0.68rem; letter-spacing: 0.05em;">Eligible Span</label>
                         <select class="form-select" id="Eligible_span" name="Eligible_span" style="border-color: #cbd5e1;">
                             <option value="TIDAK" {{ request('Eligible_span') == 'TIDAK' ? 'selected' : '' }}>TIDAK</option>
@@ -87,7 +78,7 @@
                     </div>
 
                     <div class="col-md-2">
-                        <button type="submit" class="btn btn-primary w-100 fw-bold" style="background-color: #0f2b5c; border-color: #0f2b5c; border-radius: 6px; padding: 7px 0; font-size: 0.875rem;">Lihat</button>
+                        <button type="submit" class="btn btn-danger w-100 fw-bold" style="background-color: #dc2626; border-color: #dc2626; border-radius: 6px; padding: 7px 0; font-size: 0.875rem;">Lihat</button>
                     </div>
                 </div>
             </form>
@@ -97,7 +88,7 @@
     @if ($hasFilter)
         <div class="card card-non-el mb-4">
             <div class="card-header d-flex justify-content-between align-items-center p-4">
-                <h6 class="mb-0 fw-bold text-dark" style="color: #0f2b5c !important;">Tabel Rekapitulasi</h6>
+                <h6 class="mb-0 fw-bold text-dark" style="color: #7f1d1d !important;">Tabel Rekapitulasi</h6>
             </div>
 
             <div class="card-body px-4 pb-4 pt-0">
@@ -133,40 +124,40 @@
     @endif
 </div>
 
-    <script>
-        $(document).ready(function() {
-            const ajaxUrl = "{{ route('admin.rekap-usulan-non-el.data') }}";
-            const tipeSptjm = "{{ request('tipe_sptjm', 'SPTJM') }}";
-            const pencairanKe = "{{ request('pencairan_ke', 'Semua') }}";
-            const eligibleSpan = "{{ request('Eligible_span', 'TIDAK') }}";
+<script>
+    $(document).ready(function() {
+        const ajaxUrl = "{{ route('admin.rekap-usulan-non-el.data') }}";
+        const tipeSptjm = "{{ request('tipe_sptjm', 'SPTJM') }}";
+        const pencairanKe = "{{ request('pencairan_ke', 'Semua') }}";
+        const eligibleSpan = "{{ request('Eligible_span', 'TIDAK') }}";
 
-            $('#rekapTable').DataTable({
-                processing: true,
-                serverSide: true,
-                paging: true,
-                pageLength: 100,
-                lengthMenu: [[50, 100, 200, 500], [50, 100, 200, 500]],
-                ajax: {
-                    url: ajaxUrl,
-                    data: {
-                        tipe_sptjm: tipeSptjm,
-                        pencairan_ke: pencairanKe,
-                        Eligible_span: eligibleSpan,
-                    }
+        $('#rekapTable').DataTable({
+            processing: true,
+            serverSide: true,
+            paging: true,
+            pageLength: 100,
+            lengthMenu: [[50, 100, 200, 500], [50, 100, 200, 500]],
+            ajax: {
+                url: ajaxUrl,
+                data: {
+                    tipe_sptjm: tipeSptjm,
+                    pencairan_ke: pencairanKe,
+                    Eligible_span: eligibleSpan,
+                }
+            },
+            language: {
+                paginate: {
+                    first: "Awal",
+                    last: "Akhir",
+                    next: "→",
+                    previous: "←",
                 },
-                language: {
-                    paginate: {
-                        first: "Awal",
-                        last: "Akhir",
-                        next: "→",
-                        previous: "←",
-                    },
-                    zeroRecords: "Data tidak ditemukan",
-                    infoEmpty: "Tidak ada data tersedia",
-                    searchPlaceholder: "Cari data...",
-                    search: "Cari Data:"
-                },
-            });
+                zeroRecords: "Data tidak ditemukan",
+                infoEmpty: "Tidak ada data tersedia",
+                searchPlaceholder: "Cari data...",
+                search: "Cari Data:"
+            },
         });
-    </script>
+    });
+</script>
 @endsection

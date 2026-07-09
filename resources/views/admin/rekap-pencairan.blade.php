@@ -39,8 +39,18 @@
                 <i class="bx bx-filter" style="color: #d97706; font-size: 1.15rem;"></i>
                 Proses Rekapitulasi Pencairan
             </h6>
-            <form method="GET" action="{{ route('rekap-pencairan') }}">
+            <form method="GET" action="{{ route('rekap-pencairan') }}" id="filterPencairanForm">
                 <div class="d-flex flex-wrap align-items-end gap-3">
+                    <!-- Tipe SPTJM -->
+                    <div style="min-width: 200px;">
+                        <label for="tipe_sptjm" class="form-label fw-bold text-uppercase mb-1" style="font-size: 0.68rem; letter-spacing: 0.06em; color: #64748b;">Tipe Pencairan</label>
+                        <select class="form-select" id="tipe_sptjm" name="tipe_sptjm"
+                            style="border: 1.5px solid #cbd5e1; border-radius: 8px; font-size: 0.9rem; color: #374151;">
+                            <option value="SPTJM" {{ request('tipe_sptjm', 'SPTJM') == 'SPTJM' ? 'selected' : '' }}>SPTJM</option>
+                            <option value="TUKIN" {{ request('tipe_sptjm') == 'TUKIN' ? 'selected' : '' }}>TUKIN</option>
+                        </select>
+                    </div>
+
                     <!-- Dropdown Pencairan ke- -->
                     <div style="min-width: 200px;">
                         <label for="pencairan_ke" class="form-label fw-bold text-uppercase mb-1" style="font-size: 0.68rem; letter-spacing: 0.06em; color: #64748b;">Pencairan ke-</label>
@@ -78,7 +88,6 @@
                             style="background-color: #0f2b5c; color: #ffffff; border-color: #0f2b5c; border-radius: 8px; padding: 9px 20px; font-size: 0.875rem; white-space: nowrap; text-decoration: none;">
                             <i class="bx bx-refresh" style="font-size: 1.05rem;"></i> Sinkronkan Data
                         </a>
-                    </div>
                     </div>
                 </div>
             </form>
@@ -186,11 +195,9 @@
                                     </form>
                                 </div>
                                 @endif
-                            </td>
-                        </tr>
 
-                        <!-- Modal untuk setiap data -->
-                        <div class="modal fade" id="sp2dModal{{ $item->no }}" tabindex="-1" aria-labelledby="sp2dModalLabel{{ $item->no }}" aria-hidden="true">
+                                <!-- Modal untuk setiap data -->
+                                <div class="modal fade text-start" id="sp2dModal{{ $item->no }}" tabindex="-1" aria-labelledby="sp2dModalLabel{{ $item->no }}" aria-hidden="true">
                             <div class="modal-dialog modal-dialog-centered">
                                 <div class="modal-content" style="border-radius: 12px; border: none; box-shadow: 0 20px 40px rgba(0,0,0,0.15);">
                                     <div class="modal-header" style="border-bottom: 1px solid #e2e8f0; padding: 20px;">
@@ -218,6 +225,8 @@
                                 </div>
                             </div>
                         </div>
+                            </td>
+                        </tr>
                         @endforeach
                         @else
                         <tr>
@@ -243,6 +252,29 @@
 @endif
 
 <script>
+  // Loading saat submit filter
+  const filterForm = document.getElementById("filterPencairanForm");
+  if(filterForm) {
+      filterForm.addEventListener("submit", function() {
+          Swal.fire({
+              title: 'Mohon Tunggu...',
+              html: `
+                <div class="d-flex justify-content-center align-items-center flex-column">
+                  <div class="spinner-border spinner-border-lg" style="color: #0f2b5c;" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                  </div>
+                  <div class="mt-3 fw-semibold text-muted" style="font-size: 0.9rem;">Sedang memproses dan memfilter data rekapan...</div>
+                </div>
+              `,
+              showConfirmButton: false,
+              allowOutsideClick: false,
+              allowEscapeKey: false,
+              backdrop: true,
+              scrollbarPadding: false
+          });
+      });
+  }
+
   // Fitur Pencarian
   document.getElementById("searchInput").addEventListener("keyup", function() {
       const value = this.value.toLowerCase();

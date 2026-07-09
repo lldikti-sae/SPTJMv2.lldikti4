@@ -69,8 +69,7 @@
     {{-- Beri margin buatan karena menggunakan background PDF --}}
     <div style="height: 145px;"></div>
 
-    <!-- KOP SURAT LLDIKTI -->
-    <img src="{{ public_path('assets/img/KopSurat_LLDIKTI4.png') }}" alt="Kop Surat LLDIKTI Wilayah IV" class="kop-img">
+
 
     {{-- Header Surat (Nomor, Lampiran, Perihal) --}}
     <table style="width: 100%; border: none; border-collapse: collapse; margin-bottom: 15px;">

@@ -31,98 +31,11 @@
         </ol>
     </nav>
 
-<<<<<<< HEAD
-        @if (session('error'))
-        <div class="alert alert-danger">{{ session('error') }}</div>
-        @endif
-
-      </div>
-      <div class="card-body">
-        <form action="{{ route('admin.rekap-usulan-eligible') }}" method="GET">
-          <div class="row g-3">
-
-            <!-- Tipe SPTJM -->
-            <div class="col-md-2">
-              <label for="tipe_sptjm" class="form-label fw-semibold">Pilih Tipe SPTJM</label>
-              <select class="form-select" id="tipe_sptjm" name="tipe_sptjm" onchange="this.form.submit()">
-                <option value="SPTJM" {{ request('tipe_sptjm', 'SPTJM') == 'SPTJM' ? 'selected' : '' }}>SPTJM</option>
-                <option value="TUKIN" {{ request('tipe_sptjm') == 'TUKIN' ? 'selected' : '' }}>TUKIN</option>
-              </select>
-            </div>
-
-            <!-- Pencairan -->
-            <div class="col-md-2">
-              <label for="pencairan_ke" class="form-label fw-semibold">Pencairan ke-</label>
-              <select class="form-select" id="pencairan_ke" name="pencairan_ke">
-                <option value="Semua" {{ request('pencairan_ke') == 'Semua' ? 'selected' : '' }}>Semua
-                </option>
-                @for ($i = 1; $i <= 20; $i++)
-                  <option value="{{ $i }}" {{ request('pencairan_ke') == $i ? 'selected' : '' }}>{{ $i }}</option>
-                @endfor
-              </select>
-            </div>
-
-            <!-- Bank -->
-            <div class="col-md-2">
-              <label for="bank" class="form-label fw-semibold">Pilih Bank</label>
-              <select class="form-select" id="bank" name="bank">
-                <option value="Semua" {{ request('bank') == 'Semua' ? 'selected' : '' }}>Semua</option>
-                @foreach (['BRI', 'MANDIRI', 'BNI', 'BTN', 'BSI'] as $bank)
-                <option value="{{ $bank }}" {{ request('bank') == $bank ? 'selected' : '' }}>{{ $bank }}
-                </option>
-                @endforeach
-              </select>
-            </div>
-
-            <!-- Status Pegawai -->
-            <div class="col-md-2">
-              <label for="status_pegawai" class="form-label fw-semibold">Status Pegawai</label>
-              <select class="form-select" id="status_pegawai" name="status_pegawai">
-                @foreach (['Semua', 'NON PNS', 'PNS'] as $status)
-                <option value="{{ $status }}"
-                  {{ request('status_pegawai') == $status ? 'selected' : '' }}>
-                  {{ $status }}
-                </option>
-                @endforeach
-              </select>
-            </div>
-
-            <!-- Eligible -->
-            <div class="col-md-2">
-              <label for="Eligible_span" class="form-label fw-semibold">Eligible Span</label>
-              <select class="form-select" id="Eligible_span" name="Eligible_span">
-                <option value="YA" {{ request('Eligible_span') == 'YA' ? 'selected' : '' }}>YA
-                </option>
-              </select>
-            </div>
-
-            <!-- Tunjangan -->
-            <div class="col-md-2">
-              <label for="tunjangan" class="form-label fw-semibold">Tunjangan</label>
-              <select class="form-select" id="tunjangan" name="tunjangan">
-                @foreach (['Semua', 'tpd1' => 'TPD', 'tkgb1' => 'TKGB'] as $value => $label)
-                <option value="{{ is_int($value) ? $label : $value }}"
-                  {{ request('tunjangan') == (is_int($value) ? $label : $value) ? 'selected' : '' }}>
-                  {{ is_int($value) ? $label : $label }}
-                </option>
-                @endforeach
-              </select>
-            </div>
-
-            <!-- Submit -->
-            <div class="col-md-2 d-flex align-items-end">
-              <button type="submit" class="btn btn-primary w-100">Lihat</button>
-            </div>
-          </div>
-        </form>
-      </div>
-=======
     <!-- Header -->
     <div class="d-flex justify-content-between align-items-center mb-4">
         <div>
             <h4 class="fw-bold text-dark mb-1" style="color: #0f2b5c !important; font-size: 1.5rem;">Rekapitulasi Berjalan Eligible</h4>
         </div>
->>>>>>> feature/ui-admin-SPTJM
     </div>
 
     <!-- Filter Form -->
@@ -133,6 +46,15 @@
             </h6>
             <form action="{{ route('admin.rekap-usulan-eligible') }}" method="GET">
                 <div class="row g-3">
+                    <!-- Tipe SPTJM -->
+                    <div class="col">
+                        <label for="tipe_sptjm" class="form-label fw-bold text-dark text-uppercase" style="font-size: 0.68rem; letter-spacing: 0.05em;">Tipe SPTJM</label>
+                        <select class="form-select" id="tipe_sptjm" name="tipe_sptjm" onchange="this.form.submit()" style="border-color: #cbd5e1;">
+                            <option value="SPTJM" {{ request('tipe_sptjm', 'SPTJM') == 'SPTJM' ? 'selected' : '' }}>SPTJM</option>
+                            <option value="TUKIN" {{ request('tipe_sptjm') == 'TUKIN' ? 'selected' : '' }}>TUKIN</option>
+                        </select>
+                    </div>
+
                     <!-- Pencairan -->
                     <div class="col">
                         <label for="pencairan_ke" class="form-label fw-bold text-dark text-uppercase" style="font-size: 0.68rem; letter-spacing: 0.05em;">Pencairan ke-</label>
