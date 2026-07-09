@@ -60,6 +60,16 @@
           "url": "admin/status-perubahan",
           "name": "Status Perubahan",
           "slug": "master-perubahan"
+        },
+        {
+          "url": "admin/master-kop-surat",
+          "name": "Kop Surat",
+          "slug": "admin.master-kop-surat.index"
+        },
+        {
+          "url": "admin/master-penandatangan",
+          "name": "Penandatangan",
+          "slug": "admin.master-penandatangan.index"
         }
       ]
     },

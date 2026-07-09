@@ -136,6 +136,11 @@ class PerubahanDataDosenController extends Controller
       'TMT_Inpassing_Akhir' => (string) $request->input('tmt_inpassing_akhir', $draft['tmt_inpassing_akhir'] ?? ''),
     ];
 
+    for ($i = 1; $i <= 12; $i++) {
+        $base["KodeUsulan$i"] = 'Draf Baru';
+        $base["Gaji$i"] = 0;
+    }
+
     try {
       Transaksi::create($base);
     } catch (\Throwable $e) {
@@ -1314,6 +1319,12 @@ class PerubahanDataDosenController extends Controller
       if ($statusChanged && $oldAktif === '0' && $newAktif === '1') {
         $kodeUsulanToApplyNew = null;
       }
+      
+      $sebelumTmtLabel = 'Sebelum TMT';
+      if ($mode === 'new') {
+        $kodeUsulanToApplyNew = 'Draf Baru';
+        $sebelumTmtLabel = 'Dosen Baru';
+      }
 
       // Perubahan bulanan mengikuti session('bulan') untuk mode=edit.
       // Untuk mode=new (Tambah Dosen), tetap gunakan perilaku lama (mulai dari bulan TMT sampai Desember).
@@ -1367,19 +1378,10 @@ class PerubahanDataDosenController extends Controller
         // Jika tahun session lebih besar dari tahun TMT, maka update dimulai dari Januari.
         $startMonthSession = ($year === $tahunTmt) ? $bulanAktif : 1;
 
-        // For mode=new: also fill KodeUsulan from Januari up to the month before TMT Keaktifan
-        // (e.g., TMT 23/04/2026 => KodeUsulan1-3 set to alasan_perubahan).
-        if ($year === (int) $startYearKeaktifan) {
-          // Months before TMT => set to alasan
-          if ((int) $startMonthKeaktifan > 1) {
-            for ($i = 1; $i < (int) $startMonthKeaktifan; $i++) {
-              $updateBulanan["KodeUsulan{$i}"] = $alasan;
-            }
-          }
-          // Month of TMT and after (same year) => NULL
-          for ($i = (int) $startMonthKeaktifan; $i <= 12; $i++) {
-            $updateBulanan["KodeUsulan{$i}"] = null;
-          }
+        // Tambahan: Untuk bulan-bulan sebelum TMT, set KodeUsulan menjadi 'Sebelum TMT' agar tidak masuk susulan
+        for ($i = 1; $i < $startMonthSession; $i++) {
+          $updateBulanan["Gaji{$i}"] = 0;
+          $updateBulanan["KodeUsulan{$i}"] = $sebelumTmtLabel;
         }
 
         for ($i = $startMonthSession; $i <= 12; $i++) {
@@ -1387,7 +1389,7 @@ class PerubahanDataDosenController extends Controller
           $updateBulanan["Gol{$i}"] = $request->gol;
           $updateBulanan["Tahun{$i}"] = $request->tahun;
           $updateBulanan["Gaji{$i}"] = $gajiToApply;
-          // KodeUsulan is handled above for mode=new based on TMT Keaktifan.
+          $updateBulanan["KodeUsulan{$i}"] = $kodeUsulanToApplyNew;
         }
       }
       if (!empty($updateBulanan)) {
@@ -1512,10 +1514,11 @@ class PerubahanDataDosenController extends Controller
             if ($tahunIterasi < $year) {
               // Tahun di bawah tahun login
               if ($tahunIterasi === $tahunTmt) {
-                // Tahun sama dengan tahun TMT: sebelum bulanAktif kosong, setelahnya isi $nilaiKode
+                // Tahun sama dengan tahun TMT: sebelum bulanAktif diset 'Sebelum TMT', setelahnya isi $kodeUsulanToApplyNew
                 for ($i = 1; $i <= 12; $i++) {
                   if ($i < $bulanAktif) {
-                    $dataBaru["KodeUsulan{$i}"] = null;
+                    $dataBaru["KodeUsulan{$i}"] = $sebelumTmtLabel;
+                    $dataBaru["Gaji{$i}"] = 0;
                   } else {
                     $dataBaru["KodeUsulan{$i}"] = $kodeUsulanToApplyNew;
                   }
@@ -2030,10 +2033,39 @@ class PerubahanDataDosenController extends Controller
 
     if ($request->has('kode_pt')) {
       $kodePt = $this->norm($request->input('kode_pt'));
-      if ($kodePt !== '') {
-        $ptsName = DB::table('a_pts')->where('kode_pts', $kodePt)->value('nama_pts');
-        if (!empty($ptsName) && $this->norm($ptsName) !== $this->norm($data_dosen->PTS ?? '')) {
-          $dataUpdate['PTS'] = $ptsName;
+      $oldKodePt = $this->norm($data_dosen->Kode_PT ?? '');
+      if ($kodePt !== '' && $kodePt !== $oldKodePt) {
+        $ptsData = DB::table('a_pts')->where('kode_pts', $kodePt)->first();
+        if ($ptsData) {
+          $ptsName = $ptsData->nama_pts;
+          $wilayahBaru = strtolower($ptsData->wilayah);
+
+          // Cek apakah ada usulan aktif di tahun ini
+          if ($this->hasActiveUsulan($identifierUpdate, $year)) {
+             return redirect()->back()->withInput()->with([
+                 'requires_scheduling' => true,
+                 'kode_pt_baru' => $kodePt,
+                 'nama_pts_baru' => $ptsName,
+                 'pemegang_wilayah_baru' => $wilayahBaru,
+                 'warning' => 'Dosen ini tidak bisa dipindah PTS sekarang karena dalam proses usulan pencairan aktif.'
+             ]);
+          }
+
+          // Jika tidak ada usulan aktif, langsung eksekusi perpindahan global
+          $globalPtsUpdate = [
+            'Kode_PT' => $kodePt,
+            'PTS' => $ptsName,
+            'Pemegang_Wilayah' => $wilayahBaru,
+          ];
+          Transaksi::where(function ($q) use ($identifierUpdate) {
+            $q->where('NIDN', $identifierUpdate)
+              ->orWhere('NUPTK', $identifierUpdate);
+          })->update($globalPtsUpdate);
+
+          // Hapus kunci dari $dataUpdate agar tidak di-update lagi di bawah
+          if (isset($dataUpdate['Kode_PT'])) unset($dataUpdate['Kode_PT']);
+          if (isset($dataUpdate['PTS'])) unset($dataUpdate['PTS']);
+          if (isset($dataUpdate['Pemegang_Wilayah'])) unset($dataUpdate['Pemegang_Wilayah']);
         }
       }
     }
@@ -2264,5 +2296,27 @@ class PerubahanDataDosenController extends Controller
       ->delete();
 
     return redirect()->back()->with('success', 'Data dosen tidak aktif berhasil dihapus.');
+  }
+
+  private function hasActiveUsulan($identifier, $year) {
+      $transaksi = Transaksi::where(function ($q) use ($identifier) {
+              $q->where('NIDN', $identifier)
+                ->orWhere('NUPTK', $identifier);
+          })
+          ->where('Tahun_Versi', $year)
+          ->first();
+
+      if (!$transaksi) return false;
+
+      for ($i = 1; $i <= 12; $i++) {
+          $kodeUsulan = $transaksi->{'KodeUsulan' . $i} ?? null;
+          $noSp2d = $transaksi->{'No_sp2d_' . $i} ?? null;
+
+          // Jika ada kode usulan, tapi No SP2D kosong (belum selesai)
+          if (!empty($kodeUsulan) && empty($noSp2d)) {
+              return true;
+          }
+      }
+      return false;
   }
 }

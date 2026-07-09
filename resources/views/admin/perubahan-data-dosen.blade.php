@@ -1378,6 +1378,47 @@ document.addEventListener('DOMContentLoaded', function () {
             window.location.href = __sinkronisasiUrl + '?' + qs.toString();
         };
 
+        // Custom handling for requires_scheduling
+        const __requires_scheduling = {!! json_encode(session('requires_scheduling') ?? false) !!};
+        if (__requires_scheduling) {
+            const jadwalUrl = {!! json_encode(route($routePrefix . '.jadwal-pindah-pts.simpan' ?? 'admin.jadwal-pindah-pts.simpan')) !!};
+            const postData = {
+                nidn: __identifier,
+                kode_pt_baru: {!! json_encode(session('kode_pt_baru') ?? '') !!},
+                nama_pts_baru: {!! json_encode(session('nama_pts_baru') ?? '') !!},
+                pemegang_wilayah_baru: {!! json_encode(session('pemegang_wilayah_baru') ?? '') !!},
+                _token: {!! json_encode(csrf_token()) !!}
+            };
+            
+            Swal.fire({
+                title: 'Perhatian!',
+                text: __sptjm_flash.warning || 'Dosen ini tidak bisa dipindah PTS sekarang karena dalam proses usulan pencairan aktif.',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Jadwalkan',
+                cancelButtonText: 'Batal'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    const form = document.createElement('form');
+                    form.method = 'POST';
+                    form.action = jadwalUrl;
+                    for (const key in postData) {
+                        const hiddenField = document.createElement('input');
+                        hiddenField.type = 'hidden';
+                        hiddenField.name = key;
+                        hiddenField.value = postData[key];
+                        form.appendChild(hiddenField);
+                    }
+                    document.body.appendChild(form);
+                    form.submit();
+                }
+            });
+            // Hapus warning dari flash standar agar tidak muncul dua kali
+            __sptjm_flash.warning = null;
+        }
+
         // Show success modal and redirect immediately after it is closed
         if (shouldRedirectAfterSuccess) {
             // Avoid double-success by not passing success into fromFlash
@@ -1400,7 +1441,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 Alert.fromFlash(__sptjm_flash);
             }
         }
-    } catch (e) {}
+    } catch (e) { console.error('Flash handling error', e); }
 
     // Show Laravel validation errors (server-side) in a modal
     try {

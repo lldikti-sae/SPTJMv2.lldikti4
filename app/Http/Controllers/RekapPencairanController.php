@@ -135,6 +135,65 @@ class RekapPencairanController extends Controller
         ->where('status', 'Proses')
         ->update(['status' => 'Selesai']);
 
+      // --- TRIGGER JADWAL PINDAH PTS ---
+      // Setelah update SP2D, cek apakah ada jadwal pindah PTS untuk NIDN/NUPTK yang baru saja selesai.
+      foreach ($nidns as $identifier) {
+          $jadwal = DB::table('j_jadwal_pindah_pts')
+              ->where(function($q) use ($identifier) {
+                  $q->where('nidn', $identifier)
+                    ->orWhere('nuptk', $identifier);
+              })
+              ->where('status', 'pending')
+              ->first();
+
+          if ($jadwal) {
+              // Cek apakah masih ada usulan aktif LAINNYA untuk dosen ini di TAHUN ini
+              $masihAdaUsulanAktif = false;
+              $transaksi = DB::table('s_transaksi_2')
+                  ->where(function($q) use ($identifier) {
+                      $q->where('NIDN', $identifier)
+                        ->orWhere('NUPTK', $identifier);
+                  })
+                  ->where('Tahun_Versi', $prosesCair->tahun)
+                  ->first();
+
+              if ($transaksi) {
+                  for ($j = 1; $j <= 12; $j++) {
+                      $kodeUsulan = $transaksi->{'KodeUsulan' . $j} ?? null;
+                      $noSp2d = $transaksi->{'No_sp2d_' . $j} ?? null;
+                      if (!empty($kodeUsulan) && empty($noSp2d)) {
+                          $masihAdaUsulanAktif = true;
+                          break;
+                      }
+                  }
+              }
+
+              if (!$masihAdaUsulanAktif) {
+                  // Eksekusi perpindahan PTS secara global (untuk semua tahun versi dosen ini)
+                  DB::table('s_transaksi_2')
+                      ->where(function($q) use ($identifier) {
+                          $q->where('NIDN', $identifier)
+                            ->orWhere('NUPTK', $identifier);
+                      })
+                      ->update([
+                          'Kode_PT' => $jadwal->kode_pt_baru,
+                          'PTS' => $jadwal->nama_pts_baru,
+                          'Pemegang_Wilayah' => $jadwal->pemegang_wilayah_baru,
+                      ]);
+
+                  // Update status jadwal menjadi selesai
+                  DB::table('j_jadwal_pindah_pts')
+                      ->where('id', $jadwal->id)
+                      ->update([
+                          'status' => 'selesai',
+                          'dieksekusi_pada' => \Carbon\Carbon::now(),
+                          'updated_at' => \Carbon\Carbon::now()
+                      ]);
+              }
+          }
+      }
+      // ---------------------------------
+
       return redirect()
         ->back()
         ->with('success', 'Data SP2D berhasil disimpan.');
@@ -336,7 +395,13 @@ class RekapPencairanController extends Controller
     ];
 
     // 🔹 Ambil data pejabat di sini, bukan di view
-    $pejabat = DB::table('v_pejabat')->first();
+    $m_pejabat = DB::table('m_pejabat')->get();
+    $pejabat = new \stdClass();
+    foreach ($m_pejabat as $p) {
+        $pejabat->{"pejabat{$p->urutan}"} = $p->nama;
+        $pejabat->{"nip_pejabat{$p->urutan}"} = $p->nip;
+        $pejabat->{"jabatan{$p->urutan}"} = $p->jabatan;
+    }
 
     // Determine visible months (same logic as print view)
     $showMonths = [];

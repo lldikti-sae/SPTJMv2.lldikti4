@@ -6,7 +6,7 @@
     <style>
         @page {
             size: A4 portrait;
-            margin: 4.5cm 2.5cm 1.5cm 2.5cm;
+            margin: 1.5cm 2.5cm 1.5cm 2.5cm;
         }
         body {
             font-family: 'Times New Roman', Times, serif;
@@ -59,6 +59,9 @@
     </style>
 </head>
 <body>
+
+    {{-- Beri margin buatan karena menggunakan background PDF --}}
+    <div style="height: 145px;"></div>
 
     {{-- Judul Surat --}}
     <div class="text-center" style="margin-top: 15px;">
@@ -116,7 +119,7 @@
                 $tanggalSurat = !empty($detail['tanggal_cetak']) ? $detail['tanggal_cetak'] : \Carbon\Carbon::now()->locale('id')->translatedFormat('d F Y');
             @endphp
             Bandung, {{ $tanggalSurat }}<br>
-            {{ $detail['ttd_jabatan'] ?? 'Kuasa Pengguna Anggaran,' }}<br>
+            {{ rtrim($detail['ttd_jabatan'] ?? 'Kuasa Pengguna Anggaran', ', ') }},<br>
             <br><br><br><br><br>
             <span class="fw-bold" style="text-decoration: underline;">{{ $detail['ttd_nama'] ?? 'Dr. Lukman, S.T., M.Hum.' }}</span><br>
             NIP. {{ $detail['ttd_nip'] ?? '197805112003121002' }}

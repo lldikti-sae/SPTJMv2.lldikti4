@@ -198,7 +198,13 @@
   </table>
 
   @php
-  $pejabat = DB::table('v_pejabat')->first();
+  $m_pejabat = DB::table('m_pejabat')->get();
+  $pejabat = new \stdClass();
+  foreach ($m_pejabat as $p) {
+      $pejabat->{"pejabat{$p->urutan}"} = $p->nama;
+      $pejabat->{"nip_pejabat{$p->urutan}"} = $p->nip;
+      $pejabat->{"jabatan{$p->urutan}"} = $p->jabatan;
+  }
   @endphp
   <br>
   <br>

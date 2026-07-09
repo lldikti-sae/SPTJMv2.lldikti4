@@ -32,6 +32,7 @@ use App\Http\Controllers\JabatanController;
 use App\Http\Controllers\StatusKeaktifanController;
 use App\Http\Controllers\StatusPegawaiController;
 use App\Http\Controllers\StatusPerubahanController;
+use App\Http\Controllers\KopSuratController;
 
 // Data Dosen
 use App\Http\Controllers\DataDosenController;
@@ -205,6 +206,14 @@ Route::delete('/admin/data-pajak/identitas-pemotong/{id}', [IdentitasPemotongCon
 
 // Jabatan
 Route::get('/admin/jabatan', [JabatanController::class, 'index'])->name('admin.data-jabatan');
+
+// Master Kop Surat & Penandatangan
+Route::get('/admin/master-kop-surat', [KopSuratController::class, 'indexKop'])->name('admin.master-kop-surat.index');
+Route::post('/admin/master-kop-surat', [KopSuratController::class, 'updateKop'])->name('admin.master-kop-surat.update');
+Route::get('/admin/master-penandatangan', [KopSuratController::class, 'indexPenandatangan'])->name('admin.master-penandatangan.index');
+Route::post('/admin/master-penandatangan', [KopSuratController::class, 'storePenandatangan'])->name('admin.master-penandatangan.store');
+Route::put('/admin/master-penandatangan/{id}', [KopSuratController::class, 'updatePenandatangan'])->name('admin.master-penandatangan.update');
+Route::delete('/admin/master-penandatangan/{id}', [KopSuratController::class, 'destroyPenandatangan'])->name('admin.master-penandatangan.destroy');
 Route::post('/admin/data-jabatan', [JabatanController::class, 'store'])->name('admin/data-jabatan.store');
 Route::get('/admin/data-jabatan/{kode}/edit', [JabatanController::class, 'edit'])->name('admin/data-jabatan.edit');
 Route::put('/admin/data-jabatan/{kode}', [JabatanController::class, 'update'])->name('admin/data-jabatan.update');
@@ -262,6 +271,7 @@ Route::get('/admin/perubahan-data-dosen/{nidn}', [App\Http\Controllers\Perubahan
 // POST endpoints for perubahan-data-dosen tabs
 Route::post('/admin/perubahan-data-dosen/{nidn}/pengaktifan', [App\Http\Controllers\PerubahanDataDosenController::class, 'ubahDataDosen'])->name('admin.perubahan-data-dosen.pengaktifan');
 Route::post('/admin/perubahan-data-dosen/{nidn}/perubahan', [App\Http\Controllers\PerubahanDataDosenController::class, 'updateData'])->name('admin.perubahan-data-dosen.perubahan');
+Route::post('/admin/jadwal-pindah-pts', [App\Http\Controllers\JadwalPindahPtsController::class, 'simpan'])->name('admin.jadwal-pindah-pts.simpan');
 Route::get('/admin/hapus-data-dosen-tidak-aktif', [DataDosenController::class, 'viewDataDosenTidakAktif'])->name('admin.data-dosen.tidak-aktif');
 Route::post('/admin/hapus-data-dosen-tidak-aktif/data', [DataDosenController::class, 'datatableTidakAktif'])->name('admin.data-dosen.tidak-aktif.data'); //data table
 Route::delete('/admin/hapus-data-dosen-tidak-aktif/{id}', [DataDosenController::class, 'hapusDataDosenTidakAktif'])->name('admin.data-dosen.tidak-aktif.hapus');

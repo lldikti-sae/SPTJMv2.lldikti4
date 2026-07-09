@@ -205,6 +205,55 @@ class ComplainAdminController extends Controller
         }
     }
 
+    private function applySebelumTmtIfNull(string $identifier, int $tmtYear, int $tmtMonth): void
+    {
+        // For the TMT year, months 1 to $tmtMonth-1
+        if ($tmtMonth > 1) {
+            $record = Transaksi::where(function ($q) use ($identifier) {
+                    $q->where('NIDN', $identifier)->orWhere('NUPTK', $identifier);
+                })
+                ->where('Tahun_Versi', $tmtYear)
+                ->first();
+            
+            if ($record) {
+                $update = [];
+                for ($i = 1; $i < $tmtMonth; $i++) {
+                    $col = 'KodeUsulan' . $i;
+                    $val = strtolower($this->norm($record->{$col} ?? ''));
+                    if (in_array($val, ['', 'draf baru', 'dosen baru'])) {
+                        $update[$col] = 'Dosen Baru';
+                        $update['Gaji' . $i] = 0;
+                    }
+                }
+                if (!empty($update)) {
+                    Transaksi::where('No', $record->No)->update($update);
+                }
+            }
+        }
+        
+        // For years before TMT year, all 12 months
+        $pastRecords = Transaksi::where(function ($q) use ($identifier) {
+                $q->where('NIDN', $identifier)->orWhere('NUPTK', $identifier);
+            })
+            ->where('Tahun_Versi', '<', $tmtYear)
+            ->get();
+            
+        foreach ($pastRecords as $record) {
+            $update = [];
+            for ($i = 1; $i <= 12; $i++) {
+                $col = 'KodeUsulan' . $i;
+                $val = strtolower($this->norm($record->{$col} ?? ''));
+                if (in_array($val, ['', 'draf baru', 'dosen baru'])) {
+                    $update[$col] = 'Dosen Baru';
+                    $update['Gaji' . $i] = 0;
+                }
+            }
+            if (!empty($update)) {
+                Transaksi::where('No', $record->No)->update($update);
+            }
+        }
+    }
+
     private function applyPerubahanDataDosenApproval(array $payload, $row, $admin): void
     {
         $identifier = trim((string) ($payload['nidn'] ?? ($row->nidn ?? '')));
@@ -331,8 +380,21 @@ class ComplainAdminController extends Controller
             }
         }
 
-        // Monthly rules based on TMT Keaktifan when status changes
-        if ($statusChanged) {
+        $isNewLecturer = true;
+        for ($i = 1; $i <= 12; $i++) {
+            $val = strtolower($this->norm($current->{"KodeUsulan$i"} ?? ''));
+            if ($val !== '' && !in_array($val, ['draf baru', 'dosen baru'])) {
+                $isNewLecturer = false;
+                break;
+            }
+        }
+        
+        $isReactivation = ($oldAktif === '0' && $newAktif === '1');
+        $isDeactivation = ($oldAktif === '1' && $newAktif === '0');
+        $isPengaktifan = $statusChanged || ($payload['tab'] ?? '') === 'pengaktifan' || $isNewLecturer;
+
+        // Monthly rules based on TMT Keaktifan when status changes or new lecturer
+        if ($isPengaktifan) {
             if (empty($payload['tmt_keaktifan'])) {
                 throw new \RuntimeException('TMT Keaktifan wajib diisi dengan format tanggal yang valid.');
             }
@@ -344,29 +406,32 @@ class ComplainAdminController extends Controller
             [$startY, $startM] = $ym;
             $alasan = (string) ($payload['alasan_perubahan'] ?? '');
 
-                if ($oldAktif === '1' && $newAktif === '0') {
-                    $this->applyMonthlyRangeUpdate($identifier, $startY, $startM, 'KodeUsulan', $alasan);
-                } elseif ($oldAktif === '0' && $newAktif === '1') {
-                    $this->applyMonthlyRangeUpdate($identifier, $startY, $startM, 'KodeUsulan', null);
-                }
+            if ($isDeactivation) {
+                $this->applyMonthlyRangeUpdate($identifier, $startY, $startM, 'KodeUsulan', $alasan);
+            } elseif ($isReactivation || $isNewLecturer) {
+                $kodeUsulanNew = null;
+                $this->applyMonthlyRangeUpdate($identifier, $startY, $startM, 'KodeUsulan', $kodeUsulanNew);
+                // Tutup celah susulan: isi bulan sebelumnya dengan 'Dosen Baru'
+                $this->applySebelumTmtIfNull($identifier, $startY, $startM);
+            }
 
-                // Update Gaji range following the same change semantics
-                $gajiToApply = null;
-                if ($oldAktif === '1' && $newAktif === '0') {
-                    $gajiToApply = 0;
-                } elseif ($oldAktif === '0' && $newAktif === '1') {
-                    $jabatanForSalary = (string) ($payload['jabatan'] ?? '');
-                    $golForSalary = $payload['gol'] ?? null;
-                    $mkForSalary = $payload['tahun'] ?? null;
-                    $fromRef = $this->lookupGajiFromCGrade($golForSalary, $mkForSalary, $jabatanForSalary);
-                    if ($fromRef !== null) {
-                        $gajiToApply = $fromRef;
-                    } elseif (isset($payload['gaji']) && is_numeric($payload['gaji'])) {
-                        $gajiToApply = (int) $payload['gaji'];
-                    } else {
-                        $gajiToApply = 0;
-                    }
+            // Update Gaji range following the same change semantics
+            $gajiToApply = null;
+            if ($isDeactivation) {
+                $gajiToApply = 0;
+            } elseif ($isReactivation || $isNewLecturer) {
+                $jabatanForSalary = (string) ($payload['jabatan'] ?? '');
+                $golForSalary = $payload['gol'] ?? null;
+                $mkForSalary = $payload['tahun'] ?? null;
+                $fromRef = $this->lookupGajiFromCGrade($golForSalary, $mkForSalary, $jabatanForSalary);
+                if ($fromRef !== null) {
+                    $gajiToApply = $fromRef;
+                } elseif (isset($payload['gaji']) && is_numeric($payload['gaji'])) {
+                    $gajiToApply = (int) $payload['gaji'];
                 } else {
+                    $gajiToApply = 0;
+                }
+            } else {
                     if (isset($payload['gaji']) && is_numeric($payload['gaji'])) {
                         $gajiToApply = (int) $payload['gaji'];
                     }

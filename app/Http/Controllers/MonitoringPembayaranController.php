@@ -207,6 +207,17 @@ class MonitoringPembayaranController extends Controller
         ->with('error', 'Data dengan NIDN tersebut tidak ditemukan untuk rentang tahun ' . $startYear . ' s.d. ' . $endYear);
     }
 
+    // Override header properties from a_dosen (master) to ensure it shows the latest PTS
+    $masterDosen = DB::table('a_dosen')->where(function ($q) use ($nidn) {
+        $q->where('nidn', $nidn)->orWhere('nuptk', $nidn);
+    })->first();
+    if ($masterDosen) {
+        $transaksi->Nama = $masterDosen->nama_dosen ?? $transaksi->Nama;
+        $transaksi->Kode_PT = $masterDosen->kode_pts ?? $transaksi->Kode_PT;
+        $transaksi->PTS = $masterDosen->nama_pts ?? $transaksi->PTS;
+        $transaksi->Aktif = $masterDosen->aktif ?? $transaksi->Aktif;
+    }
+
     // Default tahun yang ditampilkan: tahun awal (agar saat klik Cari langsung baca tahun awal)
     if (empty($selectedYear)) {
       $selectedYear = $startYear;
@@ -681,6 +692,17 @@ class MonitoringPembayaranController extends Controller
 
     if (!$transaksi) {
       return response()->json(['success' => false, 'message' => 'Data profil tidak ditemukan untuk rentang tahun.']);
+    }
+
+    // Override header properties from a_dosen (master) to ensure it shows the latest PTS
+    $masterDosen = DB::table('a_dosen')->where(function ($q) use ($nidn) {
+        $q->where('nidn', $nidn)->orWhere('nuptk', $nidn);
+    })->first();
+    if ($masterDosen) {
+        $transaksi->Nama = $masterDosen->nama_dosen ?? $transaksi->Nama;
+        $transaksi->Kode_PT = $masterDosen->kode_pts ?? $transaksi->Kode_PT;
+        $transaksi->PTS = $masterDosen->nama_pts ?? $transaksi->PTS;
+        $transaksi->Aktif = $masterDosen->aktif ?? $transaksi->Aktif;
     }
 
     // default selectedYear to the latest transaction year if not provided

@@ -36,9 +36,17 @@ class SkppController extends Controller
         }
 
         $skppList = $query->paginate($perPage)->appends($request->query());
-        $pejabat = DB::table('v_pejabat')->first();
+        $m_pejabat = DB::table('m_pejabat')->get();
+        $pejabat = new \stdClass();
+        foreach ($m_pejabat as $p) {
+            $pejabat->{"pejabat{$p->urutan}"} = $p->nama;
+            $pejabat->{"nip_pejabat{$p->urutan}"} = $p->nip;
+            $pejabat->{"jabatan{$p->urutan}"} = $p->jabatan;
+        }
 
-        return view('admin.skpp', compact('skppList', 'pejabat'));
+        $master_kop = DB::table('m_kop_surat')->first();
+
+        return view('admin.skpp', compact('skppList', 'pejabat', 'm_pejabat', 'master_kop'));
     }
 
     /**
@@ -449,7 +457,26 @@ class SkppController extends Controller
         }
         $pesanData['pangkat_golongan'] = $pangkatGolongan;
 
-            $pesanJson = json_encode($pesanData);
+        $pesanJson = json_encode($pesanData);
+
+        // Auto-save new penandatangan
+        if (!empty($request->ttd_nama)) {
+            $pejabatExists = DB::table('m_pejabat')
+                ->where('nama', $request->ttd_nama)
+                ->exists();
+                
+            if (!$pejabatExists) {
+                $maxUrutan = DB::table('m_pejabat')->max('urutan') ?? 0;
+                DB::table('m_pejabat')->insert([
+                    'urutan' => $maxUrutan + 1,
+                    'nama' => $request->ttd_nama,
+                    'nip' => $request->ttd_nip,
+                    'jabatan' => $request->ttd_jabatan,
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ]);
+            }
+        }
 
         DB::table('i_complain')->insert([
             'pelapor_tipe' => 'admin',
@@ -481,6 +508,7 @@ class SkppController extends Controller
             'success' => true,
             'skpp' => $skpp,
             'detail' => json_decode($skpp->pesan, true) ?? [],
+            'master_kop' => DB::table('m_kop_surat')->first()
         ]);
     }
 
@@ -544,6 +572,25 @@ class SkppController extends Controller
         $pesanData['pangkat_golongan'] = $pangkatGolongan;
 
         $pesanJson = json_encode($pesanData);
+
+        // Auto-save new penandatangan
+        if (!empty($request->ttd_nama)) {
+            $pejabatExists = DB::table('m_pejabat')
+                ->where('nama', $request->ttd_nama)
+                ->exists();
+                
+            if (!$pejabatExists) {
+                $maxUrutan = DB::table('m_pejabat')->max('urutan') ?? 0;
+                DB::table('m_pejabat')->insert([
+                    'urutan' => $maxUrutan + 1,
+                    'nama' => $request->ttd_nama,
+                    'nip' => $request->ttd_nip,
+                    'jabatan' => $request->ttd_jabatan,
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ]);
+            }
+        }
 
         DB::table('i_complain')->where('id', $id)->update([
             'kode_pts' => $request->kode_pt,
@@ -658,6 +705,7 @@ class SkppController extends Controller
             'tkgb_pajak' => $tkgb_pajak,
             'tkgb_bersih' => $tkgb_bersih,
             'is_guru_besar' => $is_guru_besar,
+            'master_kop' => DB::table('m_kop_surat')->first(),
         ];
 
         $viewName = ($skpp->jenis_pengajuan === 'Surat Keterangan') ? 'admin.cetak-surat-keterangan' : 'admin.cetak-skpp';
@@ -667,8 +715,44 @@ class SkppController extends Controller
 
         $prefix = ($skpp->jenis_pengajuan === 'Surat Keterangan') ? 'Surat_Keterangan_SKPP_' : 'SKPP_';
         $namaDosen = str_replace([' ', '/', '\\'], '_', $dosen->Nama ?? 'Dosen');
+        $finalFilename = $prefix . $namaDosen . '.pdf';
+
+        if (!empty($data['master_kop']->file_pdf_url) && class_exists('\setasign\Fpdi\Fpdi')) {
+            $pdfBgPath = public_path($data['master_kop']->file_pdf_url);
+            
+            if (file_exists($pdfBgPath)) {
+                $dompdfOutput = $pdf->output();
+                $tempSkpp = tempnam(sys_get_temp_dir(), 'skpp_');
+                file_put_contents($tempSkpp, $dompdfOutput);
+
+                $fpdi = new \setasign\Fpdi\Fpdi();
+                
+                // Import Background Kop Surat (Page 1)
+                $fpdi->setSourceFile($pdfBgPath);
+                $bgTplId = $fpdi->importPage(1);
+                
+                // Import Generated SKPP
+                $pageCount = $fpdi->setSourceFile($tempSkpp);
+                
+                for ($i = 1; $i <= $pageCount; $i++) {
+                    $fpdi->AddPage();
+                    // Gunakan template background di setiap halaman (atau bisa diatur khusus halaman 1)
+                    $fpdi->useTemplate($bgTplId);
+                    
+                    $skppTpl = $fpdi->importPage($i);
+                    $fpdi->useTemplate($skppTpl);
+                }
+
+                unlink($tempSkpp);
+
+                return response($fpdi->Output('S'), 200, [
+                    'Content-Type' => 'application/pdf',
+                    'Content-Disposition' => 'inline; filename="' . $finalFilename . '"'
+                ]);
+            }
+        }
         
-        return $pdf->stream($prefix . $namaDosen . '.pdf');
+        return $pdf->stream($finalFilename);
     }
 
     /**

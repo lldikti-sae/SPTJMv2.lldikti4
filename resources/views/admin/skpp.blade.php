@@ -452,9 +452,20 @@ input[type=number] {
                             </div>
                         </div>
                         <div class="row g-3 mb-3">
+                            <div class="col-md-12">
+                                <label class="form-label">Pilih Penandatangan (Otomatis dari Master Pejabat)</label>
+                                <select class="form-select" id="select_penandatangan">
+                                    <option value="">-- Ketik Manual --</option>
+                                    @foreach($m_pejabat as $p)
+                                        <option value="{{ json_encode(['nama' => $p->nama, 'jabatan' => rtrim($p->jabatan, ', '), 'nip' => $p->nip]) }}" {{ stripos($p->nama, 'lukman') !== false ? 'selected' : '' }}>
+                                            {{ $p->nama }} - {{ rtrim($p->jabatan, ', ') }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                            </div>
                             <div class="col-md-4">
                                 <label class="form-label">Jabatan Penandatangan</label>
-                                <input type="text" class="form-control" id="prev_ttd_jabatan" name="ttd_jabatan" value="Kuasa Pengguna Anggaran,">
+                                <input type="text" class="form-control" id="prev_ttd_jabatan" name="ttd_jabatan" value="{{ rtrim($pejabat->jabatan1 ?? 'Kuasa Pengguna Anggaran', ', ') }}">
                             </div>
                             <div class="col-md-4">
                                 <label class="form-label">Nama Penandatangan</label>
@@ -669,11 +680,75 @@ document.addEventListener('DOMContentLoaded', function() {
         document.getElementById('prev_nomor_skpp').value = '';
         document.getElementById('prev_tanggal_cetak').value = '';
         
-        // Reset ttd fields
-        document.getElementById('prev_ttd_jabatan').value = 'Kuasa Pengguna Anggaran,';
-        document.getElementById('prev_ttd_nama').value = '{{ $pejabat->pejabat1 ?? "" }}';
-        document.getElementById('prev_ttd_nip').value = '{{ $pejabat->nip_pejabat1 ?? "" }}';
+        // Reset ttd fields based on dropdown
+        let selectTtd = document.getElementById('select_penandatangan');
+        if (selectTtd.value) {
+            let data = JSON.parse(selectTtd.value);
+            document.getElementById('prev_ttd_jabatan').value = data.jabatan;
+            document.getElementById('prev_ttd_nama').value = data.nama;
+            document.getElementById('prev_ttd_nip').value = data.nip;
+            
+            document.getElementById('prev_ttd_jabatan').readOnly = true;
+            document.getElementById('prev_ttd_nama').readOnly = true;
+            document.getElementById('prev_ttd_nip').readOnly = true;
+            
+            document.getElementById('prev_ttd_jabatan').style.backgroundColor = '#eceef1';
+            document.getElementById('prev_ttd_nama').style.backgroundColor = '#eceef1';
+            document.getElementById('prev_ttd_nip').style.backgroundColor = '#eceef1';
+        } else {
+            document.getElementById('prev_ttd_jabatan').value = '';
+            document.getElementById('prev_ttd_nama').value = '';
+            document.getElementById('prev_ttd_nip').value = '';
+            
+            document.getElementById('prev_ttd_jabatan').readOnly = false;
+            document.getElementById('prev_ttd_nama').readOnly = false;
+            document.getElementById('prev_ttd_nip').readOnly = false;
+            
+            document.getElementById('prev_ttd_jabatan').style.backgroundColor = '';
+            document.getElementById('prev_ttd_nama').style.backgroundColor = '';
+            document.getElementById('prev_ttd_nip').style.backgroundColor = '';
+        }
     });
+
+    // Handle dropdown change
+    document.getElementById('select_penandatangan').addEventListener('change', function() {
+        const ttdJabatan = document.getElementById('prev_ttd_jabatan');
+        const ttdNama = document.getElementById('prev_ttd_nama');
+        const ttdNip = document.getElementById('prev_ttd_nip');
+        
+        if (this.value) {
+            let data = JSON.parse(this.value);
+            ttdJabatan.value = data.jabatan;
+            ttdNama.value = data.nama;
+            ttdNip.value = data.nip;
+            
+            ttdJabatan.readOnly = true;
+            ttdNama.readOnly = true;
+            ttdNip.readOnly = true;
+            
+            ttdJabatan.style.backgroundColor = '#eceef1';
+            ttdNama.style.backgroundColor = '#eceef1';
+            ttdNip.style.backgroundColor = '#eceef1';
+        } else {
+            ttdJabatan.value = '';
+            ttdNama.value = '';
+            ttdNip.value = '';
+
+            ttdJabatan.readOnly = false;
+            ttdNama.readOnly = false;
+            ttdNip.readOnly = false;
+            
+            ttdJabatan.style.backgroundColor = '';
+            ttdNama.style.backgroundColor = '';
+            ttdNip.style.backgroundColor = '';
+        }
+    });
+
+    // Initialize dropdown on page load
+    let selectTtdInit = document.getElementById('select_penandatangan');
+    if(selectTtdInit.value) {
+        selectTtdInit.dispatchEvent(new Event('change'));
+    }
 
     // Allow Enter key on search
     document.getElementById('skppSearchInput').addEventListener('keypress', function(e) {
@@ -1189,6 +1264,29 @@ function editSkpp(id) {
         elTglCetak.value = valTglCetak;
         flatpickr(elTglCetak, { dateFormat: "j F Y", locale: "id", allowInput: true, defaultDate: parsedTglCetak });
 
+        // Find matching option in select_penandatangan or set to Ketik Manual
+        let matched = false;
+        const selectPenandatangan = document.getElementById('select_penandatangan');
+        for (let i = 0; i < selectPenandatangan.options.length; i++) {
+            let opt = selectPenandatangan.options[i];
+            if (opt.value) {
+                try {
+                    let optData = JSON.parse(opt.value);
+                    if (optData.nama === (detail.ttd_nama || '')) {
+                        selectPenandatangan.value = opt.value;
+                        matched = true;
+                        break;
+                    }
+                } catch(e) {}
+            }
+        }
+        if (!matched) {
+            selectPenandatangan.value = "";
+        }
+        
+        // Trigger change to update readOnly states, but then overwrite values just in case they were custom edited
+        selectPenandatangan.dispatchEvent(new Event('change'));
+        
         document.getElementById('prev_ttd_jabatan').value = detail.ttd_jabatan || '';
         document.getElementById('prev_ttd_nama').value = detail.ttd_nama || '';
         document.getElementById('prev_ttd_nip').value = detail.ttd_nip || '';

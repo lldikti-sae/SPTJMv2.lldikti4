@@ -545,6 +545,13 @@ class DataDosenController extends Controller
       } else {
         // Jika tahun session lebih besar dari tahun TMT, maka update dimulai dari Januari.
         $startMonthSession = ($year === $tahunTmt) ? $bulanAktif : 1;
+        
+        // Tambahan: Untuk bulan-bulan sebelum TMT, set KodeUsulan menjadi 'Sebelum TMT' agar tidak masuk susulan
+        for ($i = 1; $i < $startMonthSession; $i++) {
+          $updateBulanan["Gaji{$i}"] = 0;
+          $updateBulanan["KodeUsulan{$i}"] = 'Sebelum TMT';
+        }
+
         for ($i = $startMonthSession; $i <= 12; $i++) {
           $updateBulanan["Jabatan{$i}"] = $request->jabatan;
           $updateBulanan["Gol{$i}"] = $request->gol;
@@ -644,10 +651,11 @@ class DataDosenController extends Controller
             if ($tahunIterasi < $year) {
               // Tahun di bawah tahun login
               if ($tahunIterasi === $tahunTmt) {
-                // Tahun sama dengan tahun TMT: sebelum bulanAktif kosong, setelahnya isi $nilaiKode
+                // Tahun sama dengan tahun TMT: sebelum bulanAktif diset 'Sebelum TMT', setelahnya isi $kodeUsulanToApply
                 for ($i = 1; $i <= 12; $i++) {
                   if ($i < $bulanAktif) {
-                    $dataBaru["KodeUsulan{$i}"] = null;
+                    $dataBaru["KodeUsulan{$i}"] = 'Sebelum TMT';
+                    $dataBaru["Gaji{$i}"] = 0;
                   } else {
                     $dataBaru["KodeUsulan{$i}"] = $kodeUsulanToApply;
                   }
@@ -883,14 +891,11 @@ class DataDosenController extends Controller
     // $data_dosen->update();
     $dataUpdate = [
       'Nama' => $request->nama,
-      'Kode_PT' => $request->kode_pt,
-      'PTS' => $request->pts,
       'No_Rekening' => $request->no_rekening,
       'Bank' => $request->bank,
       'Nama_Rekening' => $request->nama_rekening,
       'Nama_Penerima' => $request->nama_penerima,
       'NPWP' => $request->npwp,
-      'Pemegang_Wilayah' => $request->pemegang_wilayah,
       'Tanggal_Update_Terakhir' => now(),
       'Keterangan' => $request->keterangan,
       'Eligible_span' => $request->eligible_span,
@@ -898,6 +903,36 @@ class DataDosenController extends Controller
     // dd($request->all(), $dataUpdate);
     // dd($data_dosen->PTS);
     $identifierUpdate = $data_dosen->NIDN ?? $data_dosen->NUPTK;
+    
+    // Langsung ubah Kode_PT, PTS, dan Pemegang_Wilayah untuk SEMUA TAHUN
+    if ($request->has('kode_pt') && !empty($request->kode_pt)) {
+      $kodePt = $request->kode_pt;
+      $oldKodePt = $data_dosen->Kode_PT ?? '';
+
+      if ($kodePt !== $oldKodePt) {
+          // Cek apakah ada usulan aktif di tahun ini
+          if ($this->hasActiveUsulan($identifierUpdate, $year)) {
+             return redirect()->back()->withInput()->with([
+                 'requires_scheduling' => true,
+                 'kode_pt_baru' => $kodePt,
+                 'nama_pts_baru' => $request->pts,
+                 'pemegang_wilayah_baru' => $request->pemegang_wilayah,
+                 'warning' => 'Dosen ini tidak bisa dipindah PTS sekarang karena dalam proses usulan pencairan aktif.'
+             ]);
+          }
+
+          $globalPtsUpdate = [
+            'Kode_PT' => $kodePt,
+            'PTS' => $request->pts,
+            'Pemegang_Wilayah' => $request->pemegang_wilayah,
+          ];
+          Transaksi::where(function ($q) use ($identifierUpdate) {
+              $q->where('NIDN', $identifierUpdate)
+                ->orWhere('NUPTK', $identifierUpdate);
+          })->update($globalPtsUpdate);
+      }
+    }
+
     Transaksi::where(function ($q) use ($identifierUpdate) {
         $q->where('NIDN', $identifierUpdate)
           ->orWhere('NUPTK', $identifierUpdate);
@@ -1095,5 +1130,26 @@ class DataDosenController extends Controller
       ->delete();
 
     return redirect()->back()->with('success', 'Data dosen tidak aktif berhasil dihapus.');
+  }
+  private function hasActiveUsulan($identifier, $year) {
+      $transaksi = Transaksi::where(function ($q) use ($identifier) {
+              $q->where('NIDN', $identifier)
+                ->orWhere('NUPTK', $identifier);
+          })
+          ->where('Tahun_Versi', $year)
+          ->first();
+
+      if (!$transaksi) return false;
+
+      for ($i = 1; $i <= 12; $i++) {
+          $kodeUsulan = $transaksi->{'KodeUsulan' . $i} ?? null;
+          $noSp2d = $transaksi->{'No_sp2d_' . $i} ?? null;
+
+          // Jika ada kode usulan, tapi No SP2D kosong (belum selesai)
+          if (!empty($kodeUsulan) && empty($noSp2d)) {
+              return true;
+          }
+      }
+      return false;
   }
 }
