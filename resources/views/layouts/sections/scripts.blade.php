@@ -8,6 +8,28 @@
 <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
 <script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
 <script src="https://cdn.datatables.net/fixedheader/3.4.0/js/dataTables.fixedHeader.min.js"></script>
+<!-- ─── SPTJM GLOBAL DATATABLE DEFAULTS ─── -->
+<script>
+    if (typeof $ !== 'undefined' && $.fn && $.fn.dataTable) {
+        $.extend(true, $.fn.dataTable.defaults, {
+            dom: '<"md-toolbar d-flex justify-content-between align-items-center mb-0"<"entries-wrap"l><"search-wrap"f>>rt<"dataTables_bottom mt-3"ip>',
+            language: {
+                search: "",
+                searchPlaceholder: "Cari data...",
+                lengthMenu: "Show _MENU_ Entries",
+                paginate: {
+                    first: 'Awal',
+                    last: 'Akhir',
+                    next: '→',
+                    previous: '←'
+                },
+                zeroRecords: 'Data tidak ditemukan',
+                infoEmpty: 'Tidak ada data tersedia',
+                info: 'Menampilkan _START_-_END_ dari _TOTAL_ entri'
+            }
+        });
+    }
+</script>
 <!-- Vendors JS -->
 @yield('vendor-script')
 <!-- END: Page Vendor JS-->
@@ -323,3 +345,84 @@
 <!-- BEGIN: Page JS-->
 @yield('page-script')
 <!-- END: Page JS-->
+
+<!-- ================================================================
+     SPTJM: Desktop Sidebar Toggle Patch
+     Sneat free template's _setCollapsed() only handles mobile.
+     This script patches Helpers.toggleCollapsed for desktop screens.
+     ================================================================ -->
+<script>
+(function () {
+    'use strict';
+
+    var STORAGE_KEY = 'sptjm.sidebar.collapsed';
+
+    function isDesktop() {
+        return (window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth) >= 1200;
+    }
+
+    function isCollapsedDesktop() {
+        return document.documentElement.classList.contains('layout-menu-collapsed');
+    }
+
+    function collapseDesktop() {
+        document.documentElement.classList.add('layout-menu-collapsed');
+        try { localStorage.setItem(STORAGE_KEY, '1'); } catch(e) {}
+    }
+
+    function expandDesktop() {
+        document.documentElement.classList.remove('layout-menu-collapsed');
+        try { localStorage.removeItem(STORAGE_KEY); } catch(e) {}
+    }
+
+    function toggleDesktop() {
+        if (isCollapsedDesktop()) {
+            expandDesktop();
+        } else {
+            collapseDesktop();
+        }
+        // Trigger resize so layout recalculates
+        setTimeout(function() {
+            window.dispatchEvent(new Event('resize'));
+        }, 300);
+    }
+
+    // Restore previous state on page load
+    function restoreState() {
+        if (!isDesktop()) return;
+        try {
+            if (localStorage.getItem(STORAGE_KEY) === '1') {
+                document.documentElement.classList.add('layout-menu-collapsed');
+            }
+        } catch(e) {}
+    }
+
+    // Patch Helpers.toggleCollapsed to support desktop
+    function patchHelpers() {
+        if (window.Helpers && typeof window.Helpers.toggleCollapsed === 'function') {
+            var _original = window.Helpers.toggleCollapsed.bind(window.Helpers);
+            window.Helpers.toggleCollapsed = function(animate) {
+                if (isDesktop()) {
+                    toggleDesktop();
+                } else {
+                    _original(animate);
+                }
+            };
+        }
+    }
+
+    // Bind click events on all .layout-menu-toggle elements
+    // Note: main.js already binds these — we only need the Helpers patch above.
+    // We intentionally skip re-binding here to avoid double-fire.
+    function bindToggles() {
+        // no-op: main.js handles .layout-menu-toggle clicks via patched Helpers.toggleCollapsed
+    }
+
+    // Run
+    restoreState();
+    document.addEventListener('DOMContentLoaded', function() {
+        patchHelpers();
+        bindToggles();
+    });
+})();
+</script>

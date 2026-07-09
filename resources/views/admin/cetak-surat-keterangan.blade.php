@@ -11,8 +11,10 @@
         body {
             font-family: 'Times New Roman', Times, serif;
             font-size: 12pt;
-            line-height: 1.5;
+            line-height: 1.4;
             color: #000;
+            margin: 0;
+            padding: 0;
         }
         .text-center {
             text-align: center;
@@ -30,8 +32,8 @@
             margin-bottom: 25px;
         }
         .data-box {
-            padding: 8px 15px;
-            margin: 12px 40px 12px 40px;
+            padding: 4px 0;
+            margin: 8px 0;
         }
         .data-box table {
             border-collapse: collapse;
@@ -44,7 +46,7 @@
         .signature-area {
             width: 300px;
             float: right;
-            margin-top: 20px;
+            margin-top: 15px;
             line-height: 1.3;
         }
         .clearfix::after {
@@ -54,7 +56,11 @@
         }
         p {
             text-align: justify;
-            margin: 6px 0;
+            margin: 4px 0;
+        }
+        .kop-img {
+            width: 100%;
+            margin-bottom: 10px;
         }
     </style>
 </head>
@@ -63,13 +69,27 @@
     {{-- Beri margin buatan karena menggunakan background PDF --}}
     <div style="height: 145px;"></div>
 
-    {{-- Judul Surat --}}
-    <div class="text-center" style="margin-top: 15px;">
-        <span class="title-underline">SURAT KETERANGAN</span>
-    </div>
-    <div class="nomor">
-        Nomor : {{ $detail['nomor_skpp'] ?? '......./LL4/PR/' . date('Y') }}
-    </div>
+    <!-- KOP SURAT LLDIKTI -->
+    <img src="{{ public_path('assets/img/KopSurat_LLDIKTI4.png') }}" alt="Kop Surat LLDIKTI Wilayah IV" class="kop-img">
+
+    {{-- Header Surat (Nomor, Lampiran, Perihal) --}}
+    <table style="width: 100%; border: none; border-collapse: collapse; margin-bottom: 15px;">
+        <tr>
+            <td style="width: 10%; padding: 1px 0;">Nomor</td>
+            <td style="width: 2%; padding: 1px 0;">:</td>
+            <td style="width: 88%; padding: 1px 0;">{{ $detail['nomor_skpp'] ?? '......./LL4/PR/' . date('Y') }}</td>
+        </tr>
+        <tr>
+            <td style="padding: 1px 0;">Lampiran</td>
+            <td style="padding: 1px 0;">:</td>
+            <td style="padding: 1px 0;">-</td>
+        </tr>
+        <tr>
+            <td style="padding: 1px 0; vertical-align: top;">Perihal</td>
+            <td style="padding: 1px 0; vertical-align: top;">:</td>
+            <td style="padding: 1px 0; vertical-align: top;">Surat Keterangan Penghentian Pembayaran (SKPP)</td>
+        </tr>
+    </table>
 
     {{-- Paragraf Pembuka --}}
     <p>
@@ -108,7 +128,7 @@
     </p>
 
     {{-- Paragraf Penutup --}}
-    <p style="margin-top: 12px;">
+    <p style="margin-top: 8px;">
         Demikian surat keterangan ini kami buat untuk dapat dipergunakan sebagaimana mestinya.
     </p>
 
@@ -119,7 +139,7 @@
                 $tanggalSurat = !empty($detail['tanggal_cetak']) ? $detail['tanggal_cetak'] : \Carbon\Carbon::now()->locale('id')->translatedFormat('d F Y');
             @endphp
             Bandung, {{ $tanggalSurat }}<br>
-            {{ rtrim($detail['ttd_jabatan'] ?? 'Kuasa Pengguna Anggaran', ', ') }},<br>
+            {{ $detail['ttd_jabatan'] ?? 'Kuasa Pengguna Anggaran,' }}<br>
             <br><br><br><br><br>
             <span class="fw-bold" style="text-decoration: underline;">{{ $detail['ttd_nama'] ?? 'Dr. Lukman, S.T., M.Hum.' }}</span><br>
             NIP. {{ $detail['ttd_nip'] ?? '197805112003121002' }}

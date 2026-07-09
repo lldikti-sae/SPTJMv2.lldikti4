@@ -122,3 +122,462 @@
   text-align: center;
   margin-top: 1rem;
 }
+
+/* =============================================================
+ * SPTJM Login Page — Reset Sneat Template Defaults
+ * Memastikan halaman login tidak terpengaruh style global Sneat
+ * ============================================================= */
+
+/* Netralkan background body Sneat saat di halaman login */
+body:has(.sptjm-login-page) {
+  background: transparent !important;
+  overflow: hidden;
+}
+
+/* Pastikan .sptjm-input tidak terkena style .form-control dari Bootstrap/Sneat */
+.sptjm-input.form-control,
+.sptjm-input {
+  line-height: normal !important;
+}
+
+/* Hapus shadow bawaan Sneat pada .authentication-inner */
+.authentication-wrapper.authentication-basic .card {
+  box-shadow: none;
+}
+
+/* Pastikan html tidak ada zoom override dari commonMaster saat halaman login */
+body:has(.sptjm-login-page) html {
+  zoom: 1 !important;
+}
+
+/* =============================================================
+ * SPTJM Admin Dashboard & Layout Styles (Figma Redesign)
+ * ============================================================= */
+
+/* Main Background */
+.layout-page, .content-wrapper {
+  background-color: #F8FAFC !important;
+}
+
+/* ── Sidebar Base ── */
+.bg-menu-theme {
+  background-color: #ffffff !important;
+  border-right: 1px solid #e2e8f0;
+}
+
+/* ═══════════════════════════════════════════════
+   NAVBAR OVERRIDE — SPTJM Dashboard (demo.css)
+   Ini override statis yg pasti load tanpa cache
+   ═══════════════════════════════════════════════ */
+.bg-navbar-theme,
+#layout-navbar,
+nav#layout-navbar {
+  background-color: #ffffff !important;
+  border-bottom: 1.5px solid #e8ecf4 !important;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.06) !important;
+}
+
+/* Hapus blur/backdrop filter bawaan theme */
+.layout-navbar {
+  background-color: #ffffff !important;
+  -webkit-backdrop-filter: none !important;
+  backdrop-filter: none !important;
+}
+
+/* Judul navbar */
+#layout-navbar .sptjm-nav-title {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #0f2b5c;
+  letter-spacing: -0.3px;
+  white-space: nowrap;
+}
+
+/* User info wrap */
+.sptjm-user-info-wrap {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  text-decoration: none !important;
+}
+.sptjm-user-info-wrap .sptjm-user-text {
+  text-align: right;
+}
+.sptjm-user-info-wrap .sptjm-user-name {
+  display: block;
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: #1e293b;
+  line-height: 1.2;
+}
+.sptjm-user-info-wrap .sptjm-user-role {
+  display: block;
+  font-size: 0.75rem;
+  color: #64748b;
+  line-height: 1.2;
+}
+.sptjm-user-info-wrap .sptjm-avatar {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #e2e8f0;
+}
+.dropdown-user .hide-arrow::after { display: none !important; }
+
+/* Navbar nav-right full width */
+#layout-navbar .navbar-nav-right {
+  width: 100%;
+  display: flex !important;
+  align-items: center !important;
+}
+
+/* ═══════════════════════════════════════════════
+   SPTJM ICON BUTTONS — Rounded Circle Style
+   ═══════════════════════════════════════════════ */
+.sptjm-icon-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  border: none;
+  cursor: pointer;
+  font-size: 0.95rem;
+  transition: transform 0.15s ease, box-shadow 0.15s ease, background-color 0.15s ease;
+  flex-shrink: 0;
+  text-decoration: none !important;
+  vertical-align: middle;
+}
+.sptjm-icon-btn:hover {
+  transform: scale(1.1);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+.sptjm-icon-btn:active { transform: scale(0.97); }
+.sptjm-icon-btn i { pointer-events: none; }
+
+/* Edit – solid yellow/warning */
+.sptjm-btn-edit { background-color: #f59e0b; color: #ffffff; }
+.sptjm-btn-edit:hover { background-color: #d97706; color: #ffffff; }
+
+/* Reset/Upload/Success – solid green */
+.sptjm-btn-reset { background-color: #10b981; color: #ffffff; }
+.sptjm-btn-reset:hover { background-color: #059669; color: #ffffff; }
+
+/* Delete – solid red */
+.sptjm-btn-delete { background-color: #ef4444; color: #ffffff; }
+.sptjm-btn-delete:hover { background-color: #dc2626; color: #ffffff; }
+
+/* Print – solid teal */
+.sptjm-btn-print { background-color: #14b8a6; color: #ffffff; }
+.sptjm-btn-print:hover { background-color: #0d9488; color: #ffffff; }
+
+/* View – solid dark blue */
+.sptjm-btn-view { background-color: #1e3a8a; color: #ffffff; }
+.sptjm-btn-view:hover { background-color: #1e40af; color: #ffffff; }
+
+/* Secondary/Histori – solid gray */
+.sptjm-btn-secondary { background-color: #6b7280; color: #ffffff; }
+.sptjm-btn-secondary:hover { background-color: #4b5563; color: #ffffff; }
+.sptjm-btn-secondary.disabled,
+.sptjm-btn-secondary:disabled { background-color: #9ca3af; color: #d1d5db; cursor: not-allowed; opacity: 0.6; pointer-events: none; }
+
+/* Spacing between adjacent action buttons */
+td .sptjm-icon-btn + .sptjm-icon-btn,
+td .sptjm-icon-btn + form,
+td form + .sptjm-icon-btn,
+td form + form { margin-left: 4px; }
+td form { display: inline; }
+
+/* ── Sidebar Active Item (top-level) ── */
+.menu-inner > .menu-item.active > .menu-link {
+  background-color: rgba(105, 108, 255, 0.1) !important;
+  color: #696cff !important;
+  font-weight: 600;
+  border-radius: 6px;
+  position: relative;
+}
+
+.menu-inner > .menu-item.active > .menu-link i {
+  color: #696cff !important;
+}
+
+/* ── Sidebar Non-active Items ── */
+.menu-inner > .menu-item:not(.active) > .menu-link {
+  color: #566a7f !important;
+}
+
+.menu-inner > .menu-item:not(.active) > .menu-link i {
+  color: #697a8d !important;
+}
+
+/* ── Sidebar Active marker bar (kanan) ── */
+.layout-wrapper:not(.layout-horizontal) .bg-menu-theme .menu-inner > .menu-item.active::before {
+  background: #696cff !important;
+  border-radius: 6px 0 0 6px !important;
+}
+
+/* ── Hover state ── */
+.bg-menu-theme .menu-inner .menu-item .menu-link:not(.active):hover {
+  background-color: rgba(67, 89, 113, 0.05) !important;
+  color: #333 !important;
+}
+
+/* ── Open (expanded parent) ── */
+.bg-menu-theme .menu-item.open:not(.menu-item-closing) > .menu-toggle {
+  color: #696cff !important;
+  background-color: rgba(105, 108, 255, 0.06) !important;
+}
+
+/* ── Submenu active item ── */
+.bg-menu-theme .menu-sub > .menu-item.active > .menu-link {
+  color: #696cff !important;
+  font-weight: 600;
+}
+
+/* ── Submenu active bullet ── */
+.bg-menu-theme .menu-sub > .menu-item.active > .menu-link:not(.menu-toggle)::before {
+  background-color: #696cff !important;
+  width: 0.5rem !important;
+  height: 0.5rem !important;
+  box-shadow: 0 0 0 2px rgba(105, 108, 255, 0.2) !important;
+}
+
+/* ── Submenu non-active bullet ── */
+.bg-menu-theme .menu-sub > .menu-item > .menu-link::before {
+  background-color: #c0c7d0 !important;
+}
+
+/* ── App Brand in sidebar ── */
+.menu .app-brand.demo {
+  border-bottom: 1px solid #e8eaed;
+  padding-bottom: 8px;
+}
+
+/* ── Menu header text ── */
+.bg-menu-theme .menu-header {
+  color: #a0aec0 !important;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+/* Dashboard Stat Cards */
+.sptjm-stat-card {
+  background: #ffffff;
+  border-radius: 16px;
+  border: 1px solid rgba(0,0,0,0.03);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+  padding: 0.75rem 1.1rem;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  height: 100%;
+}
+
+.sptjm-stat-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.08), 0 4px 6px -2px rgba(0, 0, 0, 0.04);
+}
+
+.sptjm-stat-title {
+  color: #64748B;
+  font-size: 0.8rem;
+  font-weight: 500;
+  margin-bottom: 0.25rem;
+}
+
+.sptjm-stat-value {
+  font-size: 1.6rem;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.val-primary { color: #1A56DB; }
+.val-success { color: #10B981; }
+.val-danger { color: #EF4444; }
+.val-warning { color: #D97706; }
+
+.sptjm-stat-icon-wrapper {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.sptjm-stat-icon-wrapper i {
+  font-size: 1.4rem !important;
+}
+
+.icon-bg-primary { background-color: #EFF6FF; color: #1A56DB; }
+.icon-bg-success { background-color: #ECFDF5; color: #10B981; }
+.icon-bg-danger { background-color: #FEF2F2; color: #EF4444; }
+.icon-bg-warning { background-color: #FFFBEB; color: #D97706; }
+
+/* Table Card */
+.sptjm-table-card {
+  background: #ffffff;
+  border-radius: 16px;
+  border: 1px solid rgba(0,0,0,0.03);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+  overflow: hidden;
+}
+
+.sptjm-table-header {
+  padding: 1.25rem 1.5rem;
+  border-bottom: 1px solid #E2E8F0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.sptjm-table-title {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: #0F172A;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 0;
+}
+
+.sptjm-table-actions {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.sptjm-search-input {
+  border: 1px solid #E2E8F0;
+  border-radius: 8px;
+  padding: 0.35rem 0.75rem;
+  font-size: 0.875rem;
+}
+
+/* Custom Table Styles inside Card */
+.sptjm-table-card .table {
+  margin-bottom: 0;
+}
+.sptjm-table-card .table > :not(caption) > * > * {
+  padding: 1rem 1.5rem;
+  color: #334155;
+  border-bottom-color: #F1F5F9;
+  vertical-align: middle;
+}
+
+.sptjm-table-card .table thead th {
+  background-color: #F8FAFC;
+  color: #64748B;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border-bottom: 1px solid #E2E8F0;
+}
+
+.sptjm-link {
+  color: #2563EB;
+  text-decoration: none;
+  font-weight: 500;
+}
+.sptjm-link:hover {
+  text-decoration: underline;
+}
+
+.sptjm-badge-active {
+  background-color: #EFF6FF;
+  color: #1A56DB;
+  padding: 0.35rem 0.75rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+/* DataTables Overrides for SPTJM Table */
+.sptjm-table-card .dataTables_wrapper .row {
+  padding: 1rem 1.5rem;
+}
+.sptjm-table-card .dataTables_wrapper .row:first-child {
+  display: none; /* Hide default length and search since we use custom or Figma design */
+}
+.sptjm-table-card .dataTables_info {
+  color: #64748B;
+  font-size: 0.875rem;
+}
+.sptjm-table-card .page-item.active .page-link {
+  background-color: #1A56DB;
+  border-color: #1A56DB;
+}
+
+/* DataTables Pagination Override (Screenshot 3) */
+/* Reset DataTables wrapper paginate button classes to avoid nested double-borders */
+.dataTables_wrapper .dataTables_paginate .paginate_button {
+  background: transparent !important;
+  border: none !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  box-shadow: none !important;
+}
+.dataTables_wrapper .dataTables_paginate .paginate_button:hover {
+  background: transparent !important;
+  border: none !important;
+}
+.dataTables_wrapper .dataTables_paginate .paginate_button.current,
+.dataTables_wrapper .dataTables_paginate .paginate_button.current:hover {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+.dataTables_wrapper .dataTables_paginate .paginate_button.disabled,
+.dataTables_wrapper .dataTables_paginate .paginate_button.disabled:hover {
+  background: transparent !important;
+  border: none !important;
+}
+
+/* Style the actual Bootstrap 5 page-link elements inside the pagination list */
+.dataTables_wrapper .dataTables_paginate .pagination .page-item .page-link {
+  background: #ffffff !important;
+  border: 1px solid #e2e8f0 !important;
+  color: #1e3a8a !important;
+  border-radius: 6px !important;
+  padding: 6px 14px !important;
+  margin: 0 2px !important;
+  font-weight: 600;
+  font-size: 0.875rem;
+  min-width: 36px;
+  height: 36px;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  transition: all 0.2s ease;
+  box-shadow: none !important;
+}
+.dataTables_wrapper .dataTables_paginate .pagination .page-item:not(.active):not(.disabled) .page-link:hover {
+  background: #f8fafc !important;
+  color: #0b3d91 !important;
+  border-color: #cbd5e1 !important;
+}
+.dataTables_wrapper .dataTables_paginate .pagination .page-item.active .page-link {
+  background: #1e3a8a !important; /* Solid dark blue */
+  border: 1px solid #1e3a8a !important; /* No white spacing border or outline */
+  color: #ffffff !important;
+  box-shadow: none !important;
+}
+.dataTables_wrapper .dataTables_paginate .pagination .page-item.disabled .page-link {
+  color: #94a3b8 !important;
+  background: #f8fafc !important;
+  border-color: #e2e8f0 !important;
+  cursor: not-allowed !important;
+}
+/* Previous & Next specific styling */
+.dataTables_wrapper .dataTables_paginate .pagination .page-item.previous .page-link,
+.dataTables_wrapper .dataTables_paginate .pagination .page-item.next .page-link {
+  padding: 6px 16px !important;
+}
+

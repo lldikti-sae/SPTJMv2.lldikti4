@@ -22,7 +22,7 @@ class RekapUsulanEligibleController extends Controller
     return array_keys($processed);
   }
 
-  private function applyExcludeProcessedToQuery($query, string $pencairan_ke, string $eligible_span): void
+  private function applyExcludeProcessedToQuery($query, string $pencairan_ke, string $eligible_span, string $tipe_sptjm): void
   {
     $tahun = session('tahun');
     if (!$tahun) {
@@ -32,7 +32,8 @@ class RekapUsulanEligibleController extends Controller
     try {
       $base = DB::table('r_proses_cair')
         ->where('tahun', $tahun)
-        ->where('eligible_span', $eligible_span);
+        ->where('eligible_span', $eligible_span)
+        ->where('tipe_sptjm', $tipe_sptjm);
 
       if ($pencairan_ke !== 'Semua') {
         $base->where('pencairan_ke', $pencairan_ke);
@@ -62,12 +63,18 @@ class RekapUsulanEligibleController extends Controller
     $status_pegawai = $request->status_pegawai;
     $eligible_span = $request->Eligible_span;
     $tunjangan = $request->tunjangan;
+    $tipe_sptjm = $request->input('tipe_sptjm', 'SPTJM');
     //base query
     $query = DB::table('s_transaksi_2')
       ->select('*')
       ->where('Aktif', '1')
       ->where('Tahun_Versi', session('tahun'))
       ->where('Eligible_span', $eligible_span);
+
+    // Jika tipe TUKIN, hanya tampilkan dosen PNS
+    if ($tipe_sptjm === 'TUKIN') {
+      $query->where('Jenis', 'PNS');
+    }
 
 
     //filter
@@ -121,7 +128,7 @@ class RekapUsulanEligibleController extends Controller
         $query->where('Bank', $bank);
       }
 
-      if ($status_pegawai != "Semua") {
+      if ($status_pegawai != "Semua" && $tipe_sptjm !== 'TUKIN') {
         $query->where('jenis', $status_pegawai);
       }
 
@@ -183,7 +190,7 @@ class RekapUsulanEligibleController extends Controller
     // Exclude identifiers already processed in r_proses_cair.
     // - If pencairan_ke is specific => exclude processed for that pencairan_ke.
     // - If pencairan_ke = Semua => exclude any already processed (so they don't reappear).
-    $this->applyExcludeProcessedToQuery($query, (string) $pencairan_ke, (string) $eligible_span);
+    $this->applyExcludeProcessedToQuery($query, (string) $pencairan_ke, (string) $eligible_span, (string) $tipe_sptjm);
 
     $cursor = $query->cursor();
     $data = []; // Do not pass the large dataset to the view
@@ -314,6 +321,7 @@ class RekapUsulanEligibleController extends Controller
     $status_pegawai = $request->status_pegawai ?? 'Semua';
     $eligible_span = $request->Eligible_span ?? 'YA';
     $tunjangan = $request->tunjangan ?? 'Semua';
+    $tipe_sptjm = $request->input('tipe_sptjm', 'SPTJM');
 
     // determine month from session (fallback to 12)
     $bulanSession = (int) session('bulan') ?: 12;
@@ -327,6 +335,11 @@ class RekapUsulanEligibleController extends Controller
       ->where('Aktif', '1')
       ->where('Tahun_Versi', session('tahun'))
       ->where('Eligible_span', $eligible_span);
+
+    // Jika tipe TUKIN, hanya tampilkan dosen PNS
+    if ($tipe_sptjm === 'TUKIN') {
+      $query->where('Jenis', 'PNS');
+    }
 
     // apply same filtering rules as index
     $bulanPendek  = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Ags', 'Sep', 'Okt', 'Nov', 'Des'];
@@ -354,13 +367,13 @@ class RekapUsulanEligibleController extends Controller
     }
 
     // Exclude identifiers already processed in r_proses_cair (see index() comment)
-    $this->applyExcludeProcessedToQuery($query, (string) $pencairan_ke, (string) $eligible_span);
+    $this->applyExcludeProcessedToQuery($query, (string) $pencairan_ke, (string) $eligible_span, (string) $tipe_sptjm);
 
     if ($bank != "Semua") {
       $query->where('Bank', $bank);
     }
 
-    if ($status_pegawai != "Semua") {
+    if ($status_pegawai != "Semua" && $tipe_sptjm !== 'TUKIN') {
       $query->where('jenis', $status_pegawai);
     }
 
@@ -426,11 +439,14 @@ class RekapUsulanEligibleController extends Controller
     }
 
     // records total / filtered
-    $recordsTotal = DB::table('s_transaksi_2')
+    $recordsTotalQuery = DB::table('s_transaksi_2')
       ->where('Aktif', '1')
       ->where('Tahun_Versi', session('tahun'))
-      ->where('Eligible_span', $eligible_span)
-      ->count();
+      ->where('Eligible_span', $eligible_span);
+    if ($tipe_sptjm === 'TUKIN') {
+      $recordsTotalQuery->where('Jenis', 'PNS');
+    }
+    $recordsTotal = $recordsTotalQuery->count();
 
     $recordsFiltered = $query->count();
 
@@ -567,6 +583,7 @@ class RekapUsulanEligibleController extends Controller
     DB::disableQueryLog();
 
     $rekap = json_decode($request->rekap_json, true);
+    $tipe_sptjm = (string) ($request->tipe_sptjm ?? 'SPTJM');
     $pencairan_ke = (string) $request->pencairan_ke;
     $eligible_span = (string) $request->eligible_span;
     $tahun = session('tahun');
@@ -619,6 +636,7 @@ class RekapUsulanEligibleController extends Controller
         $rows = DB::table('r_proses_cair')
           ->where('tahun', $tahun)
           ->where('eligible_span', $eligible_span)
+          ->where('tipe_sptjm', $tipe_sptjm)
           ->get(['pencairan_ke', 'nidns']);
 
         foreach ($rows as $row) {
@@ -638,7 +656,7 @@ class RekapUsulanEligibleController extends Controller
 
       // Accumulator for inserts with batas splitting
       $acc = []; // [$penc|$bank|$status|$tunj => [segments...]]
-      $addAcc = function (string $penc, string $bankLabel, string $statusPegawai, string $tunjLabel, string $identifier, float $kotor, float $pajak, float $bersih) use (&$acc, $batas, $eligible_span) {
+      $addAcc = function (string $penc, string $bankLabel, string $statusPegawai, string $tunjLabel, string $identifier, float $kotor, float $pajak, float $bersih) use (&$acc, $batas, $eligible_span, $tipe_sptjm) {
         $key = $penc . '|' . $bankLabel . '|' . $statusPegawai . '|' . $tunjLabel;
         if (!isset($acc[$key])) {
           $acc[$key] = [];
@@ -649,6 +667,7 @@ class RekapUsulanEligibleController extends Controller
             'jenis' => $tunjLabel,
             'bank' => $bankLabel,
             'eligible_span' => $eligible_span,
+            'tipe_sptjm' => $tipe_sptjm,
             'jumlah_kotor' => 0,
             'jumlah_pajak' => 0,
             'jumlah_bersih' => 0,
@@ -666,6 +685,7 @@ class RekapUsulanEligibleController extends Controller
             'jenis' => $tunjLabel,
             'bank' => $bankLabel,
             'eligible_span' => $eligible_span,
+            'tipe_sptjm' => $tipe_sptjm,
             'jumlah_kotor' => 0,
             'jumlah_pajak' => 0,
             'jumlah_bersih' => 0,
@@ -790,6 +810,7 @@ class RekapUsulanEligibleController extends Controller
             'jenis' => $seg['jenis'],
             'bank' => $seg['bank'],
             'eligible_span' => $seg['eligible_span'],
+            'tipe_sptjm' => $seg['tipe_sptjm'],
             'jumlah_kotor' => $seg['jumlah_kotor'],
             'jumlah_pajak' => $seg['jumlah_pajak'],
             'jumlah_bersih' => $seg['jumlah_bersih'],
@@ -835,6 +856,7 @@ class RekapUsulanEligibleController extends Controller
         "jenis" => $r['tunjangan'],
         "bank" => $r['bank'],
         "eligible_span" => $eligible_span,
+        "tipe_sptjm" => $tipe_sptjm,
         "jumlah_kotor" => $r['total_kotor'],
         "jumlah_pajak" => $r['total_pajak'],
         "jumlah_bersih" => $r['total_bersih'],

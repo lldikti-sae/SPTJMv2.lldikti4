@@ -1,46 +1,194 @@
 @extends('layouts/contentNavbarLayout')
 
-@section('title', 'SPTJM Online')
+@section('title', 'SPTJM Online - Hapus Dosen Tidak Aktif')
+
+@section('page-style')
+<style>
+/* ── Variables & Setup ── */
+:root {
+    --md-primary: #0b3d91;
+    --md-bg-gray: #f8fafc;
+    --md-border: #e2e8f0;
+    --md-text-main: #1e293b;
+    --md-text-muted: #64748b;
+    --md-radius-lg: 12px;
+    --md-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+}
+
+/* ── Page Header ── */
+.md-page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+    background: transparent;
+    padding: 0;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+.md-page-header .page-titles h4 {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--md-text-main);
+    margin: 0 0 4px 0;
+}
+.md-page-header .breadcrumb { margin: 0; padding: 0; background: transparent; font-size: 0.85rem; }
+.md-page-header .breadcrumb-item a { color: var(--md-text-muted); text-decoration: none; }
+.md-page-header .breadcrumb-item.active { color: var(--md-primary); font-weight: 600; }
+.md-page-header .breadcrumb-item + .breadcrumb-item::before { color: #cbd5e1; }
+
+/* ── Card & Table Container ── */
+.md-card {
+    background: #fff;
+    border-radius: var(--md-radius-lg);
+    box-shadow: var(--md-shadow);
+    border: 1px solid rgba(226, 232, 240, 0.8);
+    overflow: hidden;
+}
+.md-card-inner { padding: 20px 24px; }
+
+/* ── Filter Box ── */
+.md-filter-box {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: var(--md-bg-gray);
+    border: 1px solid var(--md-border);
+    padding: 10px 16px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+}
+.md-filter-box label {
+    font-size: 0.84rem;
+    font-weight: 600;
+    color: var(--md-text-main);
+    margin: 0;
+}
+.md-filter-box select {
+    border: 1px solid var(--md-border);
+    border-radius: 6px;
+    font-size: 0.88rem;
+    padding: 6px 12px;
+    color: var(--md-text-main);
+    background-color: #fff;
+    min-width: 250px;
+    outline: none;
+    transition: border-color 0.2s;
+}
+.md-filter-box select:focus {
+    border-color: var(--md-primary);
+}
+
+/* ── Toolbar ── */
+.md-toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-bottom: 16px;
+}
+.dataTables_length {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.84rem;
+    color: var(--md-text-muted);
+}
+.dataTables_length select {
+    border: 1px solid var(--md-border);
+    border-radius: 6px;
+    padding: 5px 10px;
+    font-size: 0.84rem;
+    color: var(--md-text-muted);
+    background: var(--md-bg-gray);
+    cursor: pointer;
+    outline: none;
+}
+.dataTables_filter {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.dataTables_filter label {
+    font-size: 0.84rem;
+    color: var(--md-text-muted);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.dataTables_filter input {
+    border: 1px solid var(--md-border);
+    border-radius: 6px;
+    padding: 6px 36px 6px 14px;
+    font-size: 0.84rem;
+    color: var(--md-text-main);
+    background: var(--md-bg-gray) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' fill='%238592a3' viewBox='0 0 16 16'%3E%3Cpath d='M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398l3.85 3.85a1 1 0 0 0 1.415-1.415l-3.868-3.833zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z'/%3E%3C/svg%3E") no-repeat calc(100% - 10px) center;
+    min-width: 240px;
+    outline: none;
+    transition: border-color 0.2s;
+}
+.dataTables_filter input:focus { border-color: var(--md-primary); background-color: #fff; }
+
+
+
+</style>
+@endsection
 
 @section('content')
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-<div class="card" style="width: 100%; padding: 10px;">
-    <h5 class="card-header text-start p-2">Data Dosen Tidak Aktif</h5>
-    <hr>
-    <div class="d-flex justify-content-end align-items-center mb-3 px-1">
-        <label class="me-2">Filter Keterangan:</label>
-        <select id="filterKeterangan" class="form-select form-select-sm" style="max-width: 250px;">
-            <option value="all">-- Semua Keterangan --</option>
-            @isset($keteranganOptions)
-            @foreach ($keteranganOptions as $opt)
-            <option value="{{ $opt }}">{{ $opt }}</option>
-            @endforeach
-            @endisset
-        </select>
-    </div>
-
-    <div class="table-responsive text-nowrap">
-        {{ auth()->user()->email }}
-        <table id="dosenTable" class="table table-sm table-hover">
-            <thead style="background-color: #dbdee0;">
-                <tr>
-                    <th>NIDN</th>
-                    <th>NUPTK</th>
-                    <th>Nama Dosen</th>
-                    <th>Kode PTS</th>
-                    <th>Nama PTS</th>
-                    <th>Status</th>
-                    <th>Keterangan</th>
-                    <th>Aksi</th>
-                </tr>
-            </thead>
-            <tbody class="table-border-bottom-0">
-                {{-- Data di load pakai ajax --}}
-            </tbody>
-        </table>
+{{-- Page Header --}}
+<div class="md-page-header">
+    <div class="page-titles">
+        <h4>Hapus Data Dosen Tidak Aktif</h4>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="#">Data Dosen</a></li>
+                <li class="breadcrumb-item active">Hapus Dosen Tidak Aktif</li>
+            </ol>
+        </nav>
     </div>
 </div>
+
+<div class="md-card">
+    <div class="md-card-inner">
+        {{-- Filter Box --}}
+        <div class="md-filter-box">
+            <i class="bx bx-filter-alt" style="color: var(--md-primary); font-size: 1.1rem;"></i>
+            <label for="filterKeterangan">Filter Keterangan:</label>
+            <select id="filterKeterangan">
+                <option value="all">-- Semua Keterangan --</option>
+                @isset($keteranganOptions)
+                @foreach ($keteranganOptions as $opt)
+                <option value="{{ $opt }}">{{ $opt }}</option>
+                @endforeach
+                @endisset
+            </select>
+        </div>
+
+        <div class="md-table-wrap table-responsive text-nowrap">
+            <table id="dosenTable" class="table table-hover" style="width: 100%;">
+                <thead>
+                    <tr>
+                        <th>NIDN</th>
+                        <th>NUPTK</th>
+                        <th>Nama Dosen</th>
+                        <th>Kode PTS</th>
+                        <th>Nama PTS</th>
+                        <th>Status</th>
+                        <th>Keterangan</th>
+                        <th>Aksi</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {{-- Data di load pakai ajax --}}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
 <script>
 $(document).ready(function() {
     @if(session('success'))
@@ -70,10 +218,10 @@ $(document).ready(function() {
         serverSide: true,
         processing: true,
         responsive: true,
-        scrollX: true,
-        scrollcollapse: true,
         pageLength: 15,
         lengthMenu: [15, 25, 75, 100],
+        dom: "<'md-toolbar'<'entries-wrap'l><'search-wrap'f>>" +
+             "rt<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
         ajax: {
             url: "{{ route('admin.data-dosen.tidak-aktif.data') }}",
             type: 'POST',
@@ -84,13 +232,16 @@ $(document).ready(function() {
                 d.keterangan = $('#filterKeterangan').val();
             }
         },
-        columns: [{
+        columns: [
+            {
                 data: 'nidn',
-                name: 'nidn'
+                name: 'nidn',
+                render: function(data) { return data ? data : '-'; }
             },
             {
                 data: 'nuptk',
-                name: 'nuptk'
+                name: 'nuptk',
+                render: function(data) { return data ? data : '-'; }
             },
             {
                 data: 'Nama',
@@ -102,17 +253,26 @@ $(document).ready(function() {
             },
             {
                 data: 'PTS',
-                name: 'pts'
+                name: 'pts',
+                render: function(data) {
+                    return `<div style="white-space: normal; max-width: 250px;">${data || '-'}</div>`;
+                }
             },
             {
                 data: 'status',
                 name: 'status',
                 orderable: false,
-                searchable: false
+                searchable: false,
+                render: function() {
+                    return '<span class="badge-tidak-aktif">TIDAK AKTIF</span>';
+                }
             },
             {
                 data: 'Keterangan',
-                name: 'keterangan'
+                name: 'keterangan',
+                render: function(data) {
+                    return data ? `<span class="badge-keterangan">${data}</span>` : '-';
+                }
             },
             {
                 data: null,
@@ -131,11 +291,11 @@ $(document).ready(function() {
                         url = url.replace(':id', identifier);
 
                         return `
-                            <form action="${url}" method="POST" class="form-delete-dosen">
+                            <form action="${url}" method="POST" class="form-delete-dosen d-inline">
                                 <input type="hidden" name="_token" value="{{ csrf_token() }}">
                                 <input type="hidden" name="_method" value="DELETE">
-                                <button type="button" class="btn btn-icon btn-sm btn-danger btn-can-delete" data-id="${identifier}">
-                                    <span class="tf-icons bx bx-trash"></span>
+                                <button type="button" class="sptjm-icon-btn sptjm-btn-delete btn-can-delete" data-id="${identifier}" title="Hapus Data">
+                                    <i class="bx bx-trash"></i>
                                 </button>
                             </form>
                         `;
@@ -143,15 +303,17 @@ $(document).ready(function() {
 
                     // Jika punya kode usulan/kode cair → tidak boleh dihapus, tampilkan tombol info yang memunculkan modal
                     return `
-                        <button type="button" class="btn btn-icon btn-sm btn-secondary btn-cannot-delete" data-id="${identifier}">
-                            <span class="tf-icons bx bx-info-circle"></span>
+                        <button type="button" class="sptjm-icon-btn sptjm-btn-info btn-cannot-delete" data-id="${identifier}" title="Informasi Penghapusan">
+                            <i class="bx bx-info-circle"></i>
                         </button>
                     `;
                 }
             }
         ],
         language: {
+            search: "Cari Data:",
             searchPlaceholder: "Cari disini...",
+            lengthMenu: "Show _MENU_ entries",
             paginate: {
                 "first": "Awal",
                 "last": "Akhir",
@@ -160,6 +322,7 @@ $(document).ready(function() {
             },
             zeroRecords: "Data tidak ditemukan",
             infoEmpty: "Tidak ada data tersedia",
+            info: "Menampilkan _START_ - _END_ dari _TOTAL_ entri"
         }
     });
 
@@ -210,3 +373,5 @@ $(document).ready(function() {
 });
 </script>
 @endsection
+
+

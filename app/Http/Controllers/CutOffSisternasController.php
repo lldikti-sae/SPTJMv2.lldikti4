@@ -42,7 +42,7 @@ class CutOffSisternasController extends Controller
             if (auth()->check() && auth()->user()->role === 'pic') {
                 return '<span class="text-muted">-</span>';
             }
-            return '<button class="btn btn-icon btn-sm btn-warning edit-btn">
+            return '<button class="sptjm-icon-btn sptjm-btn-edit edit-btn">
                                 <span class="tf-icons bx bx-edit"></span>
                             </button>';
           })

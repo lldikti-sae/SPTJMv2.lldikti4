@@ -102,9 +102,9 @@ class CekDataDosenPtsController extends Controller
           $identifier = $row->NIDN ?? $row->nidn ?? $row->NUPTK ?? $row->nuptk ?? null;
           if ($identifier) {
             $url = route('pts.detail-data-dosen', $identifier);
-            return '<a href="' . $url . '" class="btn btn-icon btn-sm btn-primary"><span class="tf-icons bx bx-show"></span></a>';;
+            return '<a href="' . $url . '" class="sptjm-icon-btn sptjm-btn-view" title="Lihat"><span class="tf-icons bx bx-show"></span></a>';
           }
-          return '<button class="btn btn-icon btn-sm btn-secondary" disabled><span class="tf-icons bx bx-show"></span></button>';
+          return '<span class="sptjm-icon-btn sptjm-btn-secondary disabled" title="Lihat"><span class="tf-icons bx bx-show"></span></span>';
         })
         ->rawColumns(['aktif', 'lihat'])
         ->make(true);

@@ -3,23 +3,66 @@
 @section('title', 'SPTJM Online')
 
 @section('content')
+<style>
+    .card {
+        border: 2px solid #1a56db !important;
+        box-shadow: 0 10px 25px rgba(26, 86, 219, 0.15) !important;
+        border-radius: 12px !important;
+        border-left: 6px solid #1a56db !important;
+    }
+</style>
 
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<style>
+    .card-cutoff {
+        border: 1.5px solid #dbeafe !important;
+        box-shadow: 0 10px 30px rgba(26, 86, 219, 0.15) !important;
+        border-radius: 12px !important;
+        background: #ffffff !important;
+    }
+</style>
+
+<script>
+function updateCutoffFileName(input, targetId) {
+    var fileName = input.files[0] ? input.files[0].name : "Tidak ada file dipilih";
+    document.getElementById(targetId).value = fileName;
+}
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
+    <div>
+        <h3 class="fw-bold text-dark mb-1" style="color: #0f2b5c !important;">Manajemen Cut Off Data Sisternas</h3>
+        <p class="text-muted mb-0">Kelola periode pelaporan dan sinkronisasi data dosen dari sistem nasional.</p>
+    </div>
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb mb-0" style="font-size: 0.85rem;">
+            <li class="breadcrumb-item"><a href="#" style="text-decoration: none; color: #64748b;"><i class="bx bx-home-alt"></i></a></li>
+            <li class="breadcrumb-item"><a href="#" style="text-decoration: none; color: #64748b;">Data Sisternas</a></li>
+            <li class="breadcrumb-item active text-primary fw-bold" aria-current="page">Cut Off</li>
+        </ol>
+    </nav>
+</div>
 
 <div class="row">
     <div class="col-12">
         @if(auth()->user()->role !== 'pic')
-        <div class="card mb-4">
-            <div class="card-body">
-                <h5 class="card-header text-start p-1 mb-3">Cut Off Data Sisternas</h5>
+        <div class="card card-cutoff mb-4">
+            <div class="card-body p-4">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h5 class="mb-0 fw-bold text-dark" style="font-size: 1.1rem;">Cut Off Data Sisternas</h5>
+                    <span class="badge bg-primary px-3 py-2 fw-semibold" style="background-color: #0f2b5c !important; font-size: 0.8rem; border-radius: 20px;">Sistem Sinkronisasi</span>
+                </div>
                 <div class="table-responsive text-nowrap">
-                    <table class="table table-bordered">
-                        <thead style="background-color: #dbdee0;">
+                    <table class="table table-hover md2-table" style="margin-bottom: 0 !important;">
+                        <thead>
                             <tr>
-                                <th>Pelaporan</th>
-                                <th>Untuk Pembayaran</th>
-                                <th>Upload</th>
-                                <th>Aksi</th>
+                                <th style="background-color: #f8fafc !important; color: #475569 !important; font-size: 0.75rem !important; letter-spacing: 0.05em !important; font-weight: 700 !important; width: 25%;">Pelaporan</th>
+                                <th style="background-color: #f8fafc !important; color: #475569 !important; font-size: 0.75rem !important; letter-spacing: 0.05em !important; font-weight: 700 !important; width: 25%;">Untuk Pembayaran</th>
+                                <th style="background-color: #f8fafc !important; color: #475569 !important; font-size: 0.75rem !important; letter-spacing: 0.05em !important; font-weight: 700 !important; width: 25%;">Upload Lampiran</th>
+                                <th style="background-color: #f8fafc !important; color: #475569 !important; font-size: 0.75rem !important; letter-spacing: 0.05em !important; font-weight: 700 !important; width: 25%;">Aksi Manajemen</th>
                             </tr>
                         </thead>
                         <tbody class="table-border-bottom-0">
@@ -29,18 +72,25 @@
                                     @csrf
                                     <td>
                                         <input name="table" value="o_sister_genap_tl" type="hidden">
-                                        <strong>Genap Tahun Lalu [Maret - Agustus]</strong>
+                                        <span class="fw-bold" style="color: #0f2b5c; font-size: 0.9rem;">Genap Tahun Lalu<br><span class="text-muted" style="font-size: 0.8rem;">[Maret - Agustus]</span></span>
                                     </td>
-                                    <td>Januari - Februari Berjalan</td>
+                                    <td class="text-dark fw-semibold" style="font-size: 0.85rem;">Januari - Februari Berjalan</td>
                                     <td>
-                                        <input class="form-control" type="file" name="dokumen" required>
+                                        <div class="input-group">
+                                            <input class="form-control" type="file" name="dokumen" required id="dok_o_sister_genap_tl" style="display:none;" onchange="updateCutoffFileName(this, 'val_o_sister_genap_tl')">
+                                            <button class="btn btn-outline-primary" type="button" onclick="document.getElementById('dok_o_sister_genap_tl').click()" style="border-color: #cbd5e1; color: #4b5563; font-weight: 600; font-size: 0.82rem; padding: 6px 12px; border-top-left-radius: 6px; border-bottom-left-radius: 6px; background-color: #f3f4f6;">Pilih File</button>
+                                            <input type="text" class="form-control" id="val_o_sister_genap_tl" value="Tidak ada file dipilih" readonly style="background: #ffffff; font-size: 0.82rem; color: #64748b; border-color: #cbd5e1;">
+                                        </div>
                                     </td>
                                     <td>
-                                        <div class="d-flex">
-                                            <button type="button" class="btn btn-sm btn-warning clear-data-btn"
-                                                data-table="o_sister_genap_tl">Clear
-                                                Data</button>
-                                            <button type="submit" class="btn btn-sm btn-success mx-2">Simpan</button>
+                                        <div class="d-flex align-items-center gap-2">
+                                            <button type="button" class="btn btn-warning btn-sm clear-data-btn fw-bold"
+                                                data-table="o_sister_genap_tl" style="background-color: #ff9f43; border-color: #ff9f43; color: white; display: inline-flex; align-items: center; gap: 4px; padding: 6px 12px; font-size: 0.82rem;">
+                                                <i class="bx bx-trash"></i> Clear Data
+                                            </button>
+                                            <button type="submit" class="btn btn-success btn-sm fw-bold" style="background-color: #28c76f; border-color: #28c76f; color: white; display: inline-flex; align-items: center; gap: 4px; padding: 6px 12px; font-size: 0.82rem;">
+                                                <i class="bx bx-save"></i> Simpan
+                                            </button>
                                         </div>
                                     </td>
                                 </form>
@@ -52,18 +102,25 @@
                                     @csrf
                                     <td>
                                         <input name="table" value="p_sister_ganjil_tl" type="hidden">
-                                        <strong>Ganjil Tahun Lalu [September - Desember]</strong>
+                                        <span class="fw-bold" style="color: #0f2b5c; font-size: 0.9rem;">Ganjil Tahun Lalu<br><span class="text-muted" style="font-size: 0.8rem;">[September - Desember]</span></span>
                                     </td>
-                                    <td>Maret - Agustus Berjalan</td>
+                                    <td class="text-dark fw-semibold" style="font-size: 0.85rem;">Maret - Agustus Berjalan</td>
                                     <td>
-                                        <input class="form-control" type="file" name="dokumen" required>
+                                        <div class="input-group">
+                                            <input class="form-control" type="file" name="dokumen" required id="dok_p_sister_ganjil_tl" style="display:none;" onchange="updateCutoffFileName(this, 'val_p_sister_ganjil_tl')">
+                                            <button class="btn btn-outline-primary" type="button" onclick="document.getElementById('dok_p_sister_ganjil_tl').click()" style="border-color: #cbd5e1; color: #4b5563; font-weight: 600; font-size: 0.82rem; padding: 6px 12px; border-top-left-radius: 6px; border-bottom-left-radius: 6px; background-color: #f3f4f6;">Pilih File</button>
+                                            <input type="text" class="form-control" id="val_p_sister_ganjil_tl" value="Tidak ada file dipilih" readonly style="background: #ffffff; font-size: 0.82rem; color: #64748b; border-color: #cbd5e1;">
+                                        </div>
                                     </td>
                                     <td>
-                                        <div class="d-flex">
-                                            <button type="button" class="btn btn-sm btn-warning clear-data-btn"
-                                                data-table="p_sister_ganjil_tl">Clear
-                                                Data</button>
-                                            <button type="submit" class="btn btn-sm btn-success mx-2">Simpan</button>
+                                        <div class="d-flex align-items-center gap-2">
+                                            <button type="button" class="btn btn-warning btn-sm clear-data-btn fw-bold"
+                                                data-table="p_sister_ganjil_tl" style="background-color: #ff9f43; border-color: #ff9f43; color: white; display: inline-flex; align-items: center; gap: 4px; padding: 6px 12px; font-size: 0.82rem;">
+                                                <i class="bx bx-trash"></i> Clear Data
+                                            </button>
+                                            <button type="submit" class="btn btn-success btn-sm fw-bold" style="background-color: #28c76f; border-color: #28c76f; color: white; display: inline-flex; align-items: center; gap: 4px; padding: 6px 12px; font-size: 0.82rem;">
+                                                <i class="bx bx-save"></i> Simpan
+                                            </button>
                                         </div>
                                     </td>
                                 </form>
@@ -75,18 +132,25 @@
                                     @csrf
                                     <td>
                                         <input name="table" value="n_sister_genap_bj" type="hidden">
-                                        <strong>Genap Berjalan [Maret - Agustus]</strong>
+                                        <span class="fw-bold" style="color: #0f2b5c; font-size: 0.9rem;">Genap Berjalan<br><span class="text-muted" style="font-size: 0.8rem;">[Maret - Agustus]</span></span>
                                     </td>
-                                    <td>September - Desember Berjalan</td>
+                                    <td class="text-dark fw-semibold" style="font-size: 0.85rem;">September - Desember Berjalan</td>
                                     <td>
-                                        <input class="form-control" type="file" name="dokumen" required>
+                                        <div class="input-group">
+                                            <input class="form-control" type="file" name="dokumen" required id="dok_n_sister_genap_bj" style="display:none;" onchange="updateCutoffFileName(this, 'val_n_sister_genap_bj')">
+                                            <button class="btn btn-outline-primary" type="button" onclick="document.getElementById('dok_n_sister_genap_bj').click()" style="border-color: #cbd5e1; color: #4b5563; font-weight: 600; font-size: 0.82rem; padding: 6px 12px; border-top-left-radius: 6px; border-bottom-left-radius: 6px; background-color: #f3f4f6;">Pilih File</button>
+                                            <input type="text" class="form-control" id="val_n_sister_genap_bj" value="Tidak ada file dipilih" readonly style="background: #ffffff; font-size: 0.82rem; color: #64748b; border-color: #cbd5e1;">
+                                        </div>
                                     </td>
                                     <td>
-                                        <div class="d-flex">
-                                            <button type="button" class="btn btn-sm btn-warning clear-data-btn"
-                                                data-table="n_sister_genap_bj">Clear
-                                                Data</button>
-                                            <button type="submit" class="btn btn-sm btn-success mx-2">Simpan</button>
+                                        <div class="d-flex align-items-center gap-2">
+                                            <button type="button" class="btn btn-warning btn-sm clear-data-btn fw-bold"
+                                                data-table="n_sister_genap_bj" style="background-color: #ff9f43; border-color: #ff9f43; color: white; display: inline-flex; align-items: center; gap: 4px; padding: 6px 12px; font-size: 0.82rem;">
+                                                <i class="bx bx-trash"></i> Clear Data
+                                            </button>
+                                            <button type="submit" class="btn btn-success btn-sm fw-bold" style="background-color: #28c76f; border-color: #28c76f; color: white; display: inline-flex; align-items: center; gap: 4px; padding: 6px 12px; font-size: 0.82rem;">
+                                                <i class="bx bx-save"></i> Simpan
+                                            </button>
                                         </div>
                                     </td>
                                 </form>
@@ -94,36 +158,35 @@
                         </tbody>
                     </table>
                 </div>
-                <div class="mt-1">
-                    <a href="{{ Storage::url('dokumen/contoh.csv') }}" target="_blank">Lihat contoh file CSV</a>
+                <div class="mt-3">
+                    <a href="{{ Storage::url('dokumen/contoh.csv') }}" target="_blank" class="text-primary fw-semibold" style="text-decoration: none; display: inline-flex; align-items: center; gap: 4px;">
+                        <i class="bx bx-download"></i> Lihat contoh file CSV
+                    </a>
                 </div>
             </div>
         </div>
         @endif
 
-        <div class="col-lg-12 col-md-6 mb-3">
-            <label class="form-label" for="selectTypeOpt">Pilih Data Sisternas</label>
-            <div class="d-flex align-items-center">
+        <div class="card mb-4 card-cutoff">
+            <div class="card-body p-4">
+                <label class="form-label fw-bold text-dark text-uppercase mb-2" style="font-size: 0.75rem; letter-spacing: 0.05em;" for="sisternasSelect">Pilih Data Sisternas</label>
+                <div class="d-flex align-items-center gap-2">
+                    <select name="sisternas" id="sisternasSelect" class="form-select w-50" required style="border-color: #cbd5e1;">
+                        <option value="">Pilih Data...</option>
+                        <option value="o_sister_genap_tl"
+                            {{ request('sisternas') == 'o_sister_genap_tl' ? 'selected' : '' }}>Genap Tahun Lalu [Januari - Februari]</option>
+                        <option value="p_sister_ganjil_tl"
+                            {{ request('sisternas') == 'p_sister_ganjil_tl' ? 'selected' : '' }}>Ganjil Tahun Lalu [Maret - Agustus]</option>
+                        <option value="n_sister_genap_bj"
+                            {{ request('sisternas') == 'n_sister_genap_bj' ? 'selected' : '' }}>Genap Berjalan [September - Desember]</option>
+                    </select>
 
-                <select name="sisternas" id="sisternasSelect" class="form-select me-2 w-25" required>
-                    <option value="">Pilih Data</option>
-                    <option value="o_sister_genap_tl"
-                        {{ request('sisternas') == 'o_sister_genap_tl' ? 'selected' : '' }}>Genap Tahun Lalu [Januari
-                        - Februari]</option>
-                    <option value="p_sister_ganjil_tl"
-                        {{ request('sisternas') == 'p_sister_ganjil_tl' ? 'selected' : '' }}>Ganjil Tahun Lalu
-                        [Maret - Agustus]</option>
-                    <option value="n_sister_genap_bj"
-                        {{ request('sisternas') == 'n_sister_genap_bj' ? 'selected' : '' }}>Genap Berjalan [September -
-                        Desember]</option>
-                </select>
-
-                @if(auth()->user()->role !== 'pic')
-                <button type="button" class="btn btn-primary ms-2" id="addDataBtn">
-                    Tambah Data
-                </button>
-                @endif
-
+                    @if(auth()->user()->role !== 'pic')
+                    <button type="button" class="btn btn-primary fw-bold" id="addDataBtn" style="background-color: #0f2b5c; border-color: #0f2b5c; display: inline-flex; align-items: center; gap: 6px; font-size: 0.85rem; padding: 8px 16px;">
+                        <i class="bx bx-plus-circle"></i> Tambah Data
+                    </button>
+                    @endif
+                </div>
             </div>
         </div>
 
@@ -137,18 +200,20 @@
         <!-- coba -->
         <div class="row">
             <div class="col-12">
-                <div class="card mb-4">
-                    <div class="card-header d-flex align-items-center justify-content-between">
-                        <h5 class="mb-0">Data Sisternas</h5>
+                <div class="card mb-4 card-cutoff">
+                    <div class="card-header d-flex align-items-center justify-content-between p-4 pb-2">
+                        <h5 class="mb-0 fw-bold text-dark" style="font-size: 1.1rem;">Data Sisternas</h5>
                         <div>
-                            <button type="button" id="exportBackupBtn" class="btn btn-outline-secondary btn-sm">Export Backup ODS</button>
+                            <button type="button" id="exportBackupBtn" class="btn btn-outline-primary btn-sm fw-semibold" style="border-color: #cbd5e1; color: #475569; display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px; font-size: 0.82rem;">
+                                <i class="bx bx-export"></i> Export Backup ODS
+                            </button>
                         </div>
                     </div>
-                    <div class="card-body">
+                    <div class="card-body p-4 pt-0">
                         <!-- Tabel Data -->
                         <div class="table-responsive text-nowrap" style="overflow-x: auto;">
-                            <table class="table table-sm table-bordered table-hover" id="cutoffTable">
-                                <thead style="background-color: #dbdee0;">
+                            <table class="table table-hover md2-table" id="cutoffTable" style="margin-bottom: 0 !important;">
+                                <thead>
                                     <tr>
                                         <th style="text-align: center;">NO</th>
                                         <th style="text-align: center;">NIDN</th>
@@ -450,8 +515,6 @@ document.addEventListener('DOMContentLoaded', function() {
     const cutOffTable = $('#cutoffTable').DataTable({
         processing: true,
         serverSide: true,
-        scrollX: true,
-        scrollCollapse: true,
         ajax: {
             url: '{{ route("admin.cutoff-sisternas") }}',
             data: function(d) {
@@ -540,7 +603,14 @@ document.addEventListener('DOMContentLoaded', function() {
                 next: "→",
                 previous: "←",
             },
-            zeroRecords: "Data tidak ditemukan",
+            zeroRecords: `<div class="text-center p-5">
+                <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='48' height='48' fill='%2394a3b8' viewBox='0 0 24 24'%3E%3Cpath d='M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z'/%3E%3C/svg%3E" alt="Empty" class="mb-3">
+                <p class="text-muted mb-0" style="font-size: 0.9rem;">Data tidak ditemukan dalam database periode ini</p>
+            </div>`,
+            emptyTable: `<div class="text-center p-5">
+                <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='48' height='48' fill='%2394a3b8' viewBox='0 0 24 24'%3E%3Cpath d='M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z'/%3E%3C/svg%3E" alt="Empty" class="mb-3">
+                <p class="text-muted mb-0" style="font-size: 0.9rem;">Data tidak ditemukan dalam database periode ini</p>
+            </div>`,
             infoEmpty: "Tidak ada data tersedia",
             searchPlaceholder: "Cari data...",
             search: "Cari Data:"

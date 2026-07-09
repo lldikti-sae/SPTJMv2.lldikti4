@@ -183,8 +183,6 @@
           paging: true,
           pageLength: 100,
           lengthChange: true,
-          scrollX: true,
-          scrollCollapse: true,
           lengthMenu: [[25, 50, 100], [25, 50, 100]],
           ajax: {
             url: '{{ route('auditor.dashboard.dosen-pensiun.data') }}'

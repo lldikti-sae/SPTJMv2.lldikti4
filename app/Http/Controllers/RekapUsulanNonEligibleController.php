@@ -81,6 +81,12 @@ class RekapUsulanNonEligibleController extends Controller
         ->where('Aktif', 1)
         ->where('Tahun_Versi', session('tahun'));
 
+      // Jika tipe TUKIN, hanya tampilkan dosen PNS
+      $tipe_sptjm = $request->input('tipe_sptjm', 'SPTJM');
+      if ($tipe_sptjm === 'TUKIN') {
+        $query->where('Jenis', 'PNS');
+      }
+
       if ($request->Eligible_span === 'TIDAK') {
         $query->where('Eligible_span', 'TIDAK');
       }
@@ -143,6 +149,7 @@ class RekapUsulanNonEligibleController extends Controller
   {
     $pencairanKe = $request->input('pencairan_ke', 'Semua');
     $eligibleSpan = $request->input('Eligible_span', 'TIDAK');
+    $tipe_sptjm = $request->input('tipe_sptjm', 'SPTJM');
 
     $bulanMap = [
       1 => 'Januari',
@@ -177,6 +184,11 @@ class RekapUsulanNonEligibleController extends Controller
       )
       ->where('Aktif', 1)
       ->where('Tahun_Versi', session('tahun'));
+
+    // Jika tipe TUKIN, hanya tampilkan dosen PNS
+    if ($tipe_sptjm === 'TUKIN') {
+      $query->where('Jenis', 'PNS');
+    }
 
     if ($eligibleSpan === 'TIDAK') {
       $query->where('Eligible_span', 'TIDAK');
@@ -225,6 +237,9 @@ class RekapUsulanNonEligibleController extends Controller
     $recordsTotalQuery = DB::table('s_transaksi_2')
       ->where('Aktif', 1)
       ->where('Tahun_Versi', session('tahun'));
+    if ($tipe_sptjm === 'TUKIN') {
+      $recordsTotalQuery->where('Jenis', 'PNS');
+    }
     if ($eligibleSpan === 'TIDAK') {
       $recordsTotalQuery->where('Eligible_span', 'TIDAK');
     }
@@ -309,7 +324,7 @@ class RekapUsulanNonEligibleController extends Controller
 
       $identifier = trim((string) ($item->nidn ?? '')) ?: trim((string) ($item->nuptk ?? ''));
       $url = $identifier !== '' ? route('admin.lengkapi-dosen', ['nidn' => $identifier]) : '#';
-      $row[] = '<a href="' . $url . '" class="btn btn-sm btn-warning"><i class="bx bx-edit"></i></a>';
+      $row[] = '<a href="' . $url . '" class="sptjm-icon-btn sptjm-btn-edit" title="Edit Data"><i class="bx bx-edit"></i></a>';
 
       $out[] = $row;
     }

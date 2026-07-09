@@ -597,7 +597,7 @@ class ComplainAdminController extends Controller
                     if ($status === 'setuju') $badge = 'bg-label-success';
                     if ($status === 'tolak') $badge = 'bg-label-danger';
 
-                    $detailBtn = '<button type="button" class="btn btn-sm btn-icon btn-primary view-complain" data-id="' . $r->id . '" title="Detail"><i class="bx bx-show"></i></button>';
+                    $detailBtn = '<button type="button" class="sptjm-icon-btn sptjm-btn-view view-complain" data-id="' . $r->id . '" title="Detail"><i class="bx bx-show"></i></button>';
 
                     // prepare truncated title (max 5 words)
                     $fullTitle = (string) ($r->judul ?? '');

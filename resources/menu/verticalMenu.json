@@ -3,7 +3,7 @@
     {
       "url": "/admin/dashboard",
       "name": "Dashboard",
-      "icon": "menu-icon tf-icons bx bx-home",
+      "icon": "menu-icon tf-icons bx bx-grid-alt",
       "slug": "dashboard"
     },
     {
@@ -193,6 +193,12 @@
       ]
     },
     {
+      "url": "admin/complain",
+      "name": "Complain",
+      "icon": "menu-icon tf-icons bx bx-message-square-dots",
+      "slug": "admin.complain"
+    },
+    {
       "name": "Pengaturan",
       "icon": "menu-icon tf-icons bx bx-cog",
       "slug": "pengaturan",
@@ -223,12 +229,6 @@
           "slug": "admin.background.index"
         }
       ]
-    },
-    {
-      "url": "admin/complain",
-      "name": "Complain",
-      "icon": "menu-icon tf-icons bx bx-message-square-dots",
-      "slug": "admin.complain"
     }
   ]
 }

@@ -79,12 +79,12 @@ class CGradeSerdosController extends Controller
             $rows = $query->get();
 
             $data = $rows->map(function ($r) {
-                $editBtn = '<button class="btn btn-sm btn-icon btn-warning edit-grade" data-id="' . $r->id . '" title="Edit">'
+                $editBtn = '<button class="sptjm-icon-btn sptjm-btn-edit edit-grade" data-id="' . $r->id . '" title="Edit">'
                     . '<i class="bx bx-edit"></i></button>';
                 $deleteBtn = '<form method="POST" action="/admin/grade-serdos/' . $r->id . '" class="d-inline delete-form" style="display:inline">'
                     . csrf_field()
                     . method_field('DELETE')
-                    . '<button type="button" class="btn btn-sm btn-icon btn-danger delete-grade" title="Hapus">'
+                    . '<button type="button" class="sptjm-icon-btn sptjm-btn-delete delete-grade" title="Hapus">'
                     . '<i class="bx bx-trash"></i></button></form>';
 
                 return [

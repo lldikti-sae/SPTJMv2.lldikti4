@@ -122,3 +122,216 @@
   text-align: center;
   margin-top: 1rem;
 }
+
+/* =============================================================
+ * SPTJM Login Page — Reset Sneat Template Defaults
+ * Memastikan halaman login tidak terpengaruh style global Sneat
+ * ============================================================= */
+
+/* Netralkan background body Sneat saat di halaman login */
+body:has(.sptjm-login-page) {
+  background: transparent !important;
+  overflow: hidden;
+}
+
+/* Pastikan .sptjm-input tidak terkena style .form-control dari Bootstrap/Sneat */
+.sptjm-input.form-control,
+.sptjm-input {
+  line-height: normal !important;
+}
+
+/* Hapus shadow bawaan Sneat pada .authentication-inner */
+.authentication-wrapper.authentication-basic .card {
+  box-shadow: none;
+}
+
+/* Pastikan html tidak ada zoom override dari commonMaster saat halaman login */
+body:has(.sptjm-login-page) html {
+  zoom: 1 !important;
+}
+
+/* =============================================================
+ * SPTJM Admin Dashboard & Layout Styles (Figma Redesign)
+ * ============================================================= */
+
+/* Main Background */
+.layout-page, .content-wrapper {
+  background-color: #F8FAFC !important;
+}
+
+/* Sidebar Navbar */
+.bg-menu-theme {
+  background-color: #ffffff !important;
+  border-right: 1px solid #E2E8F0;
+}
+
+.bg-navbar-theme {
+  background-color: #ffffff !important;
+  border-bottom: 1px solid #E2E8F0;
+}
+
+.menu-inner > .menu-item.active > .menu-link {
+  background-color: #F1F5F9 !important;
+  color: #1A56DB !important;
+  font-weight: 600;
+  border-right: 4px solid #1A56DB;
+  border-radius: 0;
+}
+
+.menu-inner > .menu-item.active > .menu-link i {
+  color: #1A56DB !important;
+}
+
+.menu-inner > .menu-item:not(.active) > .menu-link {
+  color: #64748B !important;
+}
+
+.menu-inner > .menu-item:not(.active) > .menu-link i {
+  color: #94A3B8 !important;
+}
+
+/* Dashboard Stat Cards */
+.sptjm-stat-card {
+  background: #ffffff;
+  border-radius: 16px;
+  border: 1px solid rgba(0,0,0,0.03);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+  padding: 1.5rem;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  height: 100%;
+}
+
+.sptjm-stat-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.08), 0 4px 6px -2px rgba(0, 0, 0, 0.04);
+}
+
+.sptjm-stat-title {
+  color: #64748B;
+  font-size: 0.9rem;
+  font-weight: 500;
+  margin-bottom: 0.5rem;
+}
+
+.sptjm-stat-value {
+  font-size: 2rem;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.val-primary { color: #1A56DB; }
+.val-success { color: #10B981; }
+.val-danger { color: #EF4444; }
+.val-warning { color: #D97706; }
+
+.sptjm-stat-icon-wrapper {
+  width: 54px;
+  height: 54px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.75rem;
+}
+
+.icon-bg-primary { background-color: #EFF6FF; color: #1A56DB; }
+.icon-bg-success { background-color: #ECFDF5; color: #10B981; }
+.icon-bg-danger { background-color: #FEF2F2; color: #EF4444; }
+.icon-bg-warning { background-color: #FFFBEB; color: #D97706; }
+
+/* Table Card */
+.sptjm-table-card {
+  background: #ffffff;
+  border-radius: 16px;
+  border: 1px solid rgba(0,0,0,0.03);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+  overflow: hidden;
+}
+
+.sptjm-table-header {
+  padding: 1.25rem 1.5rem;
+  border-bottom: 1px solid #E2E8F0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.sptjm-table-title {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: #0F172A;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 0;
+}
+
+.sptjm-table-actions {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.sptjm-search-input {
+  border: 1px solid #E2E8F0;
+  border-radius: 8px;
+  padding: 0.35rem 0.75rem;
+  font-size: 0.875rem;
+}
+
+/* Custom Table Styles inside Card */
+.sptjm-table-card .table {
+  margin-bottom: 0;
+}
+.sptjm-table-card .table > :not(caption) > * > * {
+  padding: 1rem 1.5rem;
+  color: #334155;
+  border-bottom-color: #F1F5F9;
+  vertical-align: middle;
+}
+
+.sptjm-table-card .table thead th {
+  background-color: #F8FAFC;
+  color: #64748B;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border-bottom: 1px solid #E2E8F0;
+}
+
+.sptjm-link {
+  color: #2563EB;
+  text-decoration: none;
+  font-weight: 500;
+}
+.sptjm-link:hover {
+  text-decoration: underline;
+}
+
+.sptjm-badge-active {
+  background-color: #EFF6FF;
+  color: #1A56DB;
+  padding: 0.35rem 0.75rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+/* DataTables Overrides for SPTJM Table */
+.sptjm-table-card .dataTables_wrapper .row {
+  padding: 1rem 1.5rem;
+}
+.sptjm-table-card .dataTables_wrapper .row:first-child {
+  display: none; /* Hide default length and search since we use custom or Figma design */
+}
+.sptjm-table-card .dataTables_info {
+  color: #64748B;
+  font-size: 0.875rem;
+}
+.sptjm-table-card .page-item.active .page-link {
+  background-color: #1A56DB;
+  border-color: #1A56DB;
+}

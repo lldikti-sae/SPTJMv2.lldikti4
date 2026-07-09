@@ -103,6 +103,179 @@
                 line-height: 1.2;
             }
     </style>
+
+
+    <style>
+        /* ─── SIDEBAR BACKGROUND ─────────────────────── */
+        .bg-menu-theme {
+            background-color: #ffffff !important;
+            border-right: 1px solid #e2e8f0 !important;
+        }
+
+        /* ─── Show sidebar hamburger toggle on ALL screen sizes ─── */
+        .layout-menu .app-brand .sptjm-hamburger.layout-menu-toggle {
+            display: flex !important;
+            opacity: 1 !important;
+            position: static !important;
+        }
+
+        /* ─── FORCE FULL-HIDE SIDEBAR for layout-menu-fixed + collapsed ─── */
+        /* Sneat excludes layout-menu-fixed from mini-collapse — we override
+           to fully hide the sidebar and expand content to full width. */
+        @media (min-width: 1200px) {
+            html.layout-menu-collapsed.layout-menu-fixed .layout-menu {
+                width: 0 !important;
+                min-width: 0 !important;
+                overflow: hidden !important;
+                transition: width 0.3s ease !important;
+            }
+            html.layout-menu-collapsed.layout-menu-fixed .layout-page {
+                padding-left: 0 !important;
+                transition: padding-left 0.3s ease !important;
+            }
+            html.layout-menu-collapsed.layout-menu-fixed .layout-navbar {
+                left: 0 !important;
+                transition: left 0.3s ease !important;
+            }
+        }
+
+        /* ─── TOP-LEVEL: Parent aktif atau terbuka (open) ─── */
+        .menu-vertical .menu-inner > .menu-item.active > .menu-link,
+        .menu-vertical .menu-inner > .menu-item.open > .menu-link {
+            background-color: #eef2ff !important;
+            color: #1a56db !important;
+            font-weight: 600 !important;
+            border-radius: 8px !important;
+        }
+        .menu-vertical .menu-inner > .menu-item.active > .menu-link i,
+        .menu-vertical .menu-inner > .menu-item.open > .menu-link i {
+            color: #1a56db !important;
+        }
+
+        /* Hilangkan strip/bar default bawaan template di parent */
+        .bg-menu-theme .menu-inner > .menu-item.active::before {
+            display: none !important;
+        }
+
+        /* ─── TOP-LEVEL: Parent biasa (non-aktif, tidak terbuka) ─── */
+        .menu-vertical .menu-inner > .menu-item:not(.active):not(.open) > .menu-link {
+            color: #4a5568 !important;
+        }
+        .menu-vertical .menu-inner > .menu-item:not(.active):not(.open) > .menu-link i {
+            color: #6b7a8d !important;
+        }
+
+        /* ─── TOP-LEVEL: Hover ─── */
+        .menu-vertical .menu-inner > .menu-item > .menu-link:hover {
+            background-color: #f1f5f9 !important;
+            border-radius: 8px !important;
+        }
+
+        /* ─── APP BRAND AREA (Logo Horizontal) ─── */
+        .layout-menu .app-brand.demo {
+            height: auto !important;
+            min-height: 64px !important;
+            padding: 10px 16px !important;
+            overflow: hidden !important;
+            border-bottom: 1px solid #eef0f4 !important;
+            display: flex !important;
+            flex-direction: row !important;
+            align-items: center !important;
+            justify-content: flex-start !important;
+            width: 100% !important;
+            box-sizing: border-box !important;
+            position: relative !important;
+        }
+        .layout-menu .app-brand.demo .app-brand-link {
+            display: flex !important;
+            flex-direction: row !important;
+            align-items: center !important;
+            gap: 10px !important;
+            overflow: hidden !important;
+            flex: 1 !important;
+        }
+
+        /* ─── MENU INNER: Kurangi padding atas/bawah ─── */
+        .menu-vertical .menu-inner {
+            padding-top: 0.5rem !important;
+            padding-bottom: 0.5rem !important;
+        }
+        /* Kurangi tinggi setiap menu link parent ─── */
+        .menu-vertical .menu-inner > .menu-item > .menu-link {
+            padding-top: 0.5rem !important;
+            padding-bottom: 0.5rem !important;
+        }
+
+        /* ─── MENU ITEM ICONS (Parent Level) ─── */
+        .menu-vertical .menu-inner > .menu-item > .menu-link .menu-icon {
+            font-size: 1.25rem !important;
+            color: #6b7a8d !important;
+            margin-right: 0.6rem !important;
+        }
+        .menu-vertical .menu-inner > .menu-item.active > .menu-link .menu-icon,
+        .menu-vertical .menu-inner > .menu-item.open > .menu-link .menu-icon {
+            color: #1a56db !important;
+        }
+
+        /* ─── SUBMENU WRAPPER (Garis Vertikal Kiri) ─── */
+        .menu-vertical .menu-sub {
+            border-left: 1.5px solid #dbeafe !important; /* garis vertikal tipis biru/abu */
+            margin-left: 2.15rem !important; /* diposisikan tepat di bawah ikon induk */
+            padding-left: 0 !important;
+            position: relative !important;
+        }
+
+        /* Hapus total bullet dot default */
+        .menu-vertical .menu-sub > .menu-item > .menu-link::before {
+            display: none !important;
+            content: none !important;
+        }
+
+        /* ─── SUBMENU: Item biasa ─── */
+        .menu-vertical .menu-sub > .menu-item > .menu-link {
+            color: #4a5568 !important;
+            font-size: 0.84rem !important;
+            position: relative !important;
+            padding-left: 0.9rem !important; /* jarak teks ke garis vertikal kiri */
+            margin-left: 0 !important;
+        }
+
+        /* ─── SUBMENU: Item AKTIF (sesuai screenshot 2) ─── */
+        .menu-vertical .menu-sub > .menu-item.active > .menu-link {
+            background-color: #e8f0fe !important;
+            color: #1a56db !important;
+            font-weight: 700 !important;
+            /* Bar vertikal biru di kanan — sesuai screenshot */
+            border-right: 4px solid #1a56db !important;
+            border-radius: 4px 0 0 4px !important;
+            padding-left: 0.9rem !important;
+        }
+
+        /* ─── SUBMENU: Hover ─── */
+        .menu-vertical .menu-sub > .menu-item > .menu-link:hover {
+            background-color: #f8fafc !important;
+            border-radius: 4px !important;
+        }
+
+        /* ─── SECTION HEADER LABEL (misal "MASTER DATA") ─── */
+        .menu-inner > .menu-header > span {
+            color: #9ca3af !important;
+            font-size: 0.68rem !important;
+            font-weight: 700 !important;
+            letter-spacing: 0.08em !important;
+            text-transform: uppercase !important;
+        }
+
+        /* ─── STATUS BADGE: AKTIF (Green label) ─── */
+        .badge.bg-label-primary {
+            background-color: rgba(40, 199, 111, 0.12) !important;
+            color: #28c76f !important;
+            font-weight: 600 !important;
+            text-transform: uppercase !important;
+            letter-spacing: 0.03em !important;
+        }
+    </style>
+
     <!-- Include Scripts for customizer, helper, analytics, config -->
     @include('layouts/sections/scriptsIncludes')
 </head>
@@ -120,6 +293,170 @@
 
     {{-- Page-level scripts (from @push('scripts')) --}}
     @stack('scripts')
+
+    <!-- ─── GLOBAL CARD ENHANCEMENT ─── -->
+    <style>
+        /* ─── GLOBAL SPTJM ICON BUTTONS (Rounded Circle Style) ─── */
+        .sptjm-icon-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            border: none;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: transform 0.15s ease, box-shadow 0.15s ease;
+            flex-shrink: 0;
+        }
+        .sptjm-icon-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+        .sptjm-icon-btn:active { transform: scale(0.97); }
+
+        /* Edit – soft blue */
+        .sptjm-btn-edit {
+            background-color: #e8f0fe;
+            color: #1a56db;
+        }
+        .sptjm-btn-edit:hover { background-color: #d0e1fd; color: #1a56db; }
+
+        /* Reset/Upload – soft green */
+        .sptjm-btn-reset {
+            background-color: #e8faf0;
+            color: #28a745;
+        }
+        .sptjm-btn-reset:hover { background-color: #c3f0d8; color: #1e7e34; }
+
+        /* Delete – soft red */
+        .sptjm-btn-delete {
+            background-color: #fde8e8;
+            color: #dc3545;
+        }
+        .sptjm-btn-delete:hover { background-color: #fcc8c8; color: #b02a37; }
+
+        /* Print – soft teal */
+        .sptjm-btn-print {
+            background-color: #e8f7fd;
+            color: #0d9488;
+        }
+        .sptjm-btn-print:hover { background-color: #c4eefa; color: #0a7a6e; }
+
+        /* View – soft purple */
+        .sptjm-btn-view {
+            background-color: #f0e8fe;
+            color: #7c3aed;
+        }
+        .sptjm-btn-view:hover { background-color: #e0cefc; color: #5b21b6; }
+
+        /* Wrap for spacing */
+        td .sptjm-icon-btn + .sptjm-icon-btn,
+        td .sptjm-icon-btn + form,
+        td form + .sptjm-icon-btn,
+        td form + form {
+            margin-left: 4px;
+        }
+    </style>
+
+    <style>
+        /* ─── GLOBAL CARD ENHANCEMENT ─── */
+        .card, 
+        .md-card,
+        .md2-card, 
+        .sptjm-table-card, 
+        .sptjm-stat-card {
+            border: 1.5px solid #dbeafe !important;
+            box-shadow: 0 10px 30px rgba(26, 86, 219, 0.15) !important;
+            border-radius: 12px !important;
+            background: #ffffff !important;
+            margin-bottom: 24px !important;
+            overflow: hidden !important;
+        }
+        .sptjm-stat-card {
+            margin-bottom: 0px !important;
+        }
+        .card-header, .md2-card-inner h5, .md-card-inner h5 {
+            font-weight: 700 !important;
+            color: #1e293b !important;
+            border-bottom: 1px solid #e2e8f0 !important;
+            padding-bottom: 12px !important;
+            margin-bottom: 16px !important;
+        }
+        .md-card-inner, .md2-card-inner {
+            padding: 24px !important;
+        }
+
+        /* ─── GLOBAL TABLE GRIDLINES & BORDERS ─── */
+        table.dataTable,
+        .table,
+        .md-table-wrap table,
+        .md2-table {
+            border: 1.5px solid #cbd5e1 !important;
+            border-collapse: collapse !important;
+            width: 100% !important;
+        }
+        table.dataTable thead th,
+        .table thead th,
+        .md-table-wrap table thead th,
+        .md2-table thead th {
+            border: 1.5px solid #cbd5e1 !important;
+            background-color: #f1f5f9 !important;
+            color: #1e293b !important;
+            font-weight: 700 !important;
+            text-transform: uppercase !important;
+            font-size: 0.76rem !important;
+            letter-spacing: 0.05em !important;
+            padding: 5px 10px !important;
+            vertical-align: middle !important;
+            line-height: 1.2 !important;
+        }
+        table.dataTable tbody td,
+        .table tbody td,
+        .md-table-wrap table tbody td,
+        .md2-table tbody td {
+            border: 1.5px solid #cbd5e1 !important;
+            padding: 6px 12px !important;
+            vertical-align: middle !important;
+            color: #334155 !important;
+            line-height: 1.2 !important;
+        }
+        
+        /* ─── DATATABLES PAGINATION FOOTER WRAPPER ─── */
+        .dataTables_wrapper > .row:last-child {
+            background-color: #edf2f9 !important;
+            padding: 12px 24px !important;
+            border-top: 1.5px solid #dbeafe !important;
+            margin-left: -24px !important;
+            margin-right: -24px !important;
+            margin-bottom: -24px !important;
+            margin-top: 16px !important;
+            border-bottom-left-radius: 12px !important;
+            border-bottom-right-radius: 12px !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: space-between !important;
+        }
+        .dataTables_wrapper .dataTables_paginate .paginate_button {
+            background: transparent !important;
+            border: none !important;
+            padding: 0 !important;
+            margin: 0 !important;
+            box-shadow: none !important;
+            cursor: pointer !important;
+        }
+        .dataTables_wrapper .dataTables_paginate .paginate_button:hover {
+            background: transparent !important;
+            border: none !important;
+        }
+        .dataTables_wrapper .dataTables_paginate .paginate_button.current,
+        .dataTables_wrapper .dataTables_paginate .paginate_button.current:hover {
+            background: transparent !important;
+            border: none !important;
+            box-shadow: none !important;
+        }
+    </style>
 
 </body>
 
