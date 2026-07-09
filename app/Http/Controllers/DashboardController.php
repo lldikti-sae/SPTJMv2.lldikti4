@@ -249,7 +249,7 @@ class DashboardController extends Controller
           return '';
         }
         $url = url('admin/view-data-dosen/' . $nidn);
-        return '<a href="' . $url . '" class="btn btn-icon btn-sm btn-primary"><span class="tf-icons bx bx-show"></span></a>';
+        return '<a href="' . $url . '" class="sptjm-icon-btn sptjm-btn-view" title="Lihat"><span class="tf-icons bx bx-show"></span></a>';
       })
       ->rawColumns(['status', 'aksi'])
       ->make(true);

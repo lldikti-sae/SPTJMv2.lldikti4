@@ -6,64 +6,87 @@
 
 @section('content')
 
-    <div class="card" style="width: 100%; padding: 10px;">
-        <h5 class="card-header text-start p-2">Hak Akses Modul Admin untuk PIC</h5>
-        <hr>
-        <div class="table-responsive text-nowrap">
-            <div class="d-flex justify-content-end align-items-center mb-3 px-3">
-                <div class="input-group me-3" style="max-width: 200px;">
-                    <span class="input-group-text"><i class="bx bx-search"></i></span>
-                    <input type="search" class="form-control" id="searchInput" placeholder="Search...">
+    {{-- Page Header --}}
+    <div class="md-page-header mb-4">
+        <div class="page-titles">
+            <h4 class="fw-bold mb-1" style="color: #0f2b5c;">Hak Akses PIC</h4>
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb mb-0">
+                    <li class="breadcrumb-item"><a href="#">Pengaturan</a></li>
+                    <li class="breadcrumb-item active">Hak Akses PIC</li>
+                </ol>
+            </nav>
+        </div>
+    </div>
+
+    {{-- Main Card --}}
+    <div class="md-card mt-4">
+        <div class="md-card-inner">
+            <div class="md-toolbar d-flex justify-content-between align-items-center mb-4">
+                {{-- Kiri: info --}}
+                <div class="dataTables_length">
+                    <span class="text-secondary fw-semibold" style="font-size: 0.875rem;">{{ count($users) }} PIC terdaftar</span>
+                </div>
+                {{-- Kanan: Search --}}
+                <div class="dataTables_filter">
+                    <label class="mb-0">
+                        <div class="input-group input-group-merge" style="min-width: 240px; border-radius: 8px; overflow: hidden; border: 1.5px solid #cbd5e1; height: 38px;">
+                            <span class="input-group-text border-0 bg-white" style="padding-left: 12px; padding-right: 8px;"><i class="bx bx-search text-muted" style="font-size: 1.1rem;"></i></span>
+                            <input type="search" class="form-control border-0 shadow-none" id="searchInput" placeholder="Cari PIC..." aria-controls="picTable" style="font-size: 0.875rem; padding-left: 0; height: 100%;">
+                        </div>
+                    </label>
                 </div>
             </div>
 
-            <table class="table table-sm table-hover" id="picTable">
-                <thead style="background-color: #dbdee0;">
-                    <tr>
-                        <th>No</th>
-                        <th>Email PIC</th>
-                        <th>Status</th>
-                        <th>Akses Saat Ini</th>
-                        <th>Aksi</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach ($users as $index => $user)
+            <div class="md-table-wrap table-responsive text-nowrap">
+                <table class="table table-hover" id="picTable">
+                    <thead>
                         <tr>
-                            <td>{{ $index + 1 }}</td>
-                            <td>{{ $user->email }}</td>
-                            <td>
-                                <span class="badge {{ $user->active == 1 ? 'bg-label-primary' : 'bg-label-danger' }} ">
-                                    {{ $user->active == 1 ? 'Aktif' : 'Tidak Aktif' }}
-                                </span>
-                            </td>
-                            <td>
-                                @php
-                                    $perms = $user->admin_permissions ?? [];
-                                @endphp
-                                @if(empty($perms))
-                                    <span class="text-muted"><i class="bx bx-x"></i> Tidak ada akses</span>
-                                @else
-                                    <div class="d-flex flex-wrap gap-1">
-                                        @foreach($perms as $perm)
-                                            <span class="badge bg-label-success">{{ ucwords(str_replace('-', ' ', $perm)) }}</span>
-                                        @endforeach
-                                    </div>
-                                @endif
-                            </td>
-                            <td>
-                                <button class="btn btn-sm btn-info edit-akses" data-id="{{ $user->id }}"
-                                    data-email="{{ $user->email }}"
-                                    data-permissions='{{ json_encode($user->admin_permissions ?? []) }}'
-                                    data-bs-toggle="modal"
-                                    data-bs-target="#modalAksesForm">
-                                    <i class="bx bx-check-shield"></i> Atur Akses
-                                </button>
-                            </td>
+                            <th>No</th>
+                            <th>Email PIC</th>
+                            <th>Status</th>
+                            <th>Akses Saat Ini</th>
+                            <th>Aksi</th>
                         </tr>
-                    @endforeach
-                </tbody>
-            </table>
+                    </thead>
+                    <tbody>
+                        @foreach ($users as $index => $user)
+                            <tr>
+                                <td>{{ $index + 1 }}</td>
+                                <td>{{ $user->email }}</td>
+                                <td>
+                                    <span class="badge rounded-pill {{ $user->active == 1 ? 'bg-label-success' : 'bg-label-danger' }}">
+                                        {{ $user->active == 1 ? 'Aktif' : 'Tidak Aktif' }}
+                                    </span>
+                                </td>
+                                <td>
+                                    @php
+                                        $perms = $user->admin_permissions ?? [];
+                                    @endphp
+                                    @if(empty($perms))
+                                        <span class="text-muted"><i class="bx bx-x"></i> Tidak ada akses</span>
+                                    @else
+                                        <div class="d-flex flex-wrap gap-1">
+                                            @foreach($perms as $perm)
+                                                <span class="badge bg-label-success">{{ ucwords(str_replace('-', ' ', $perm)) }}</span>
+                                            @endforeach
+                                        </div>
+                                    @endif
+                                </td>
+                                <td>
+                                    <button class="sptjm-icon-btn sptjm-btn-edit edit-akses" data-id="{{ $user->id }}"
+                                        data-email="{{ $user->email }}"
+                                        data-permissions='{{ json_encode($user->admin_permissions ?? []) }}'
+                                        data-bs-toggle="modal"
+                                        data-bs-target="#modalAksesForm" title="Atur Akses">
+                                        <i class="bx bx-check-shield"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 
@@ -231,8 +254,8 @@
                         </div>
                     </div>
 
-                    <div class="modal-footer">
-                        <button type="submit" class="btn btn-primary">Simpan Hak Akses</button>
+                    <div class="modal-footer mt-2">
+                        <button type="submit" class="btn btn-primary"><i class="bx bx-save me-1"></i> Simpan Hak Akses</button>
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
                     </div>
                 </form>

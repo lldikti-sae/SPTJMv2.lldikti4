@@ -2,6 +2,250 @@
 
 @section('title', 'SPTJM Online - SKPP')
 
+@section('page-style')
+<style>
+/* ── Variables & Setup ── */
+:root {
+    --md-primary: #0b3d91;
+    --md-primary-hover: #082d6b;
+    --md-bg-gray: #f8fafc;
+    --md-border: #e2e8f0;
+    --md-text-main: #1e293b;
+    --md-text-muted: #64748b;
+    --md-radius-lg: 12px;
+    --md-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+}
+
+/* ── Page Header ── */
+.md-page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+    background: transparent;
+    padding: 0;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+.md-page-header .page-titles h4 {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--md-text-main);
+    margin: 0 0 4px 0;
+}
+.md-page-header .breadcrumb { margin: 0; padding: 0; background: transparent; font-size: 0.85rem; }
+.md-page-header .breadcrumb-item a { color: var(--md-text-muted); text-decoration: none; }
+.md-page-header .breadcrumb-item.active { color: var(--md-primary); font-weight: 600; }
+.md-page-header .breadcrumb-item + .breadcrumb-item::before { color: #cbd5e1; }
+
+/* ── Header Action Buttons ── */
+.btn-buat-md {
+    background: linear-gradient(135deg, var(--md-primary) 0%, var(--md-primary-hover) 100%);
+    color: #fff;
+    border: none;
+    padding: 8px 18px;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 0.85rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-decoration: none;
+}
+.btn-buat-md:hover { opacity: 0.9; transform: translateY(-1px); color: #fff; }
+
+/* ── Card & Table Container ── */
+.md-card {
+    background: #fff;
+    border-radius: var(--md-radius-lg);
+    box-shadow: var(--md-shadow);
+    border: 1px solid rgba(226, 232, 240, 0.8);
+    overflow: hidden;
+}
+.md-card-inner { padding: 20px 24px; }
+
+/* ── Toolbar & Search ── */
+.md-toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    margin-bottom: 16px;
+}
+.md-search-box {
+    display: flex;
+    align-items: center;
+    position: relative;
+    width: 320px;
+}
+.md-search-box input {
+    width: 100%;
+    border: 1px solid var(--md-border);
+    border-radius: 8px;
+    padding: 8px 36px 8px 14px;
+    font-size: 0.85rem;
+    color: var(--md-text-main);
+    background: var(--md-bg-gray);
+    outline: none;
+    transition: border-color 0.2s;
+}
+.md-search-box input:focus { border-color: var(--md-primary); background-color: #fff; }
+.md-search-box button {
+    position: absolute;
+    right: 4px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: transparent;
+    border: none;
+    color: var(--md-text-muted);
+    cursor: pointer;
+    padding: 4px 8px;
+    border-radius: 4px;
+}
+.md-search-box button:hover { color: var(--md-primary); background: #f1f5f9; }
+
+
+
+/* ── Form & Modal ── */
+.modal-content {
+    border-radius: var(--md-radius-lg);
+    border: none;
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+}
+.modal-header {
+    border-bottom: 1px solid var(--md-border);
+    padding: 1.25rem 1.5rem;
+    background-color: var(--md-bg-gray);
+    border-radius: var(--md-radius-lg) var(--md-radius-lg) 0 0;
+}
+.modal-header .modal-title {
+    font-weight: 700;
+    color: var(--md-text-main);
+    font-size: 1.15rem;
+}
+.modal-body { padding: 1.5rem; }
+.modal-footer {
+    border-top: 1px solid var(--md-border);
+    padding: 1.25rem 1.5rem;
+    background-color: var(--md-bg-gray);
+    border-radius: 0 0 var(--md-radius-lg) var(--md-radius-lg);
+}
+
+.form-label {
+    font-weight: 600;
+    color: var(--md-text-main);
+    font-size: 0.85rem;
+    margin-bottom: 6px;
+}
+.form-control, .form-select {
+    border-radius: 8px;
+    border: 1px solid var(--md-border);
+    padding: 10px 14px;
+    font-size: 0.9rem;
+    color: var(--md-text-main);
+    transition: all 0.2s;
+}
+.form-control:focus, .form-select:focus {
+    border-color: var(--md-primary);
+    box-shadow: 0 0 0 3px rgba(11, 61, 145, 0.1);
+    outline: none;
+}
+.form-control[readonly] {
+    background-color: #f1f5f9;
+    color: var(--md-text-muted);
+}
+.input-group .form-control { border-top-right-radius: 0; border-bottom-right-radius: 0; }
+.input-group .btn { border-top-left-radius: 0; border-bottom-left-radius: 0; padding: 10px 18px; }
+
+.btn-primary {
+    background: linear-gradient(135deg, var(--md-primary) 0%, var(--md-primary-hover) 100%);
+    border: none;
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-weight: 600;
+    color: #fff;
+    transition: all 0.2s;
+}
+.btn-primary:hover { opacity: 0.9; transform: translateY(-1px); color: #fff; box-shadow: 0 4px 6px -1px rgba(11, 61, 145, 0.2); }
+.btn-secondary {
+    background-color: #f1f5f9;
+    color: #475569;
+    border: 1px solid #cbd5e1;
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-weight: 600;
+    transition: all 0.2s;
+}
+.btn-secondary:hover { background-color: #e2e8f0; color: #334155; transform: translateY(-1px); }
+.btn-success {
+    background: linear-gradient(135deg, #16a34a 0%, #15803d 100%);
+    border: none;
+    border-radius: 8px;
+    padding: 10px 20px;
+    font-weight: 600;
+    color: #fff;
+    transition: all 0.2s;
+}
+.btn-success:hover { opacity: 0.9; transform: translateY(-1px); box-shadow: 0 4px 6px -1px rgba(22, 163, 74, 0.2); }
+.btn-warning {
+    background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+    border: none;
+    border-radius: 8px;
+    padding: 10px 20px;
+    font-weight: 600;
+    color: #fff;
+    transition: all 0.2s;
+}
+.btn-warning:hover { opacity: 0.9; transform: translateY(-1px); box-shadow: 0 4px 6px -1px rgba(245, 158, 11, 0.2); }
+
+/* ── Custom Badges ── */
+.badge-md {
+    font-weight: 700;
+    font-size: 0.72rem;
+    padding: 5px 12px;
+    border-radius: 20px;
+    display: inline-block;
+    white-space: nowrap;
+}
+.badge-md.proses { background-color: #fef3c7; color: #92400e; }
+.badge-md.menunggu { background-color: #e0e7ff; color: #3730a3; }
+.badge-md.selesai { background-color: #dcfce3; color: #166534; }
+.badge-md.ditolak { background-color: #fee2e2; color: #b91c1c; }
+
+/* ── Action Buttons ── */
+.btn-aksi-circle {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-decoration: none;
+}
+.btn-aksi-circle.primary { background-color: #e0e7ff; color: #3730a3; }
+.btn-aksi-circle.primary:hover { background-color: #c7d2fe; color: #312e81; }
+.btn-aksi-circle.success { background-color: #dcfce3; color: #166534; }
+.btn-aksi-circle.success:hover { background-color: #bbf7d0; color: #14532d; }
+.btn-aksi-circle.danger { background-color: #fee2e2; color: #b91c1c; }
+.btn-aksi-circle.danger:hover { background-color: #fecaca; color: #991b1b; }
+.btn-aksi-circle.info { background-color: #e0f2fe; color: #0369a1; }
+.btn-aksi-circle.info:hover { background-color: #bae6fd; color: #075985; }
+
+
+
+/* Fix z-index issue where SweetAlert goes behind Bootstrap modal */
+.swal2-container { z-index: 99999 !important; }
+/* Sembunyikan panah (spin button) pada input number */
+input[type=number]::-webkit-inner-spin-button, 
+input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+input[type=number] { -moz-appearance: textfield; }
+</style>
+@endsection
+
 @section('content')
 
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
@@ -9,126 +253,128 @@
 <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/id.js"></script>
 
-<div class="card" style="width: 100%; padding: 10px;">
-    <h5 class="card-header text-start p-2">SKPP</h5>
-    <hr>
-    <div class="d-flex justify-content-between align-items-center mb-3 px-3">
-        {{-- Search --}}
-        <form class="d-flex align-items-center" method="GET" action="{{ route('admin.skpp') }}">
-            <div class="input-group" style="width: 320px;">
-                <input type="text" class="form-control form-control-sm" name="search"
-                    placeholder="Cari NIDN/Nama/PTS..." value="{{ request('search') }}">
-                <button type="submit" class="btn btn-sm btn-outline-primary"><i class="bx bx-search"></i></button>
-            </div>
-        </form>
-        {{-- Buat SKPP Button --}}
-        <button class="btn btn-sm btn-primary" id="btnBuatSkpp" data-bs-toggle="modal" data-bs-target="#modalSkpp" data-bs-backdrop="static" data-backdrop="static" data-bs-keyboard="false" data-keyboard="false">
-            <i class="bx bx-plus bx-sm me-1"></i> Buat SKPP
+{{-- Page Header --}}
+<div class="md-page-header">
+    <div class="page-titles">
+        <h4>Surat Keterangan & SKPP</h4>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="#">Data Dosen</a></li>
+                <li class="breadcrumb-item active">SKPP</li>
+            </ol>
+        </nav>
+    </div>
+    <div class="d-flex align-items-center gap-2">
+        <button class="btn-buat-md" id="btnBuatSkpp" data-bs-toggle="modal" data-bs-target="#modalSkpp" data-bs-backdrop="static" data-backdrop="static" data-bs-keyboard="false" data-keyboard="false">
+            <i class="bx bx-plus"></i> Buat SKPP
         </button>
-    </div>
-    <div class="table-responsive text-nowrap">
-        <table class="table table-sm table-hover" id="skppTable">
-            <thead style="background-color: #dbdee0;">
-                <tr>
-                    <th>No</th>
-                    <th>NIDN</th>
-                    <th>NUPTK</th>
-                    <th>Nama Dosen</th>
-                    <th>Kode PTS</th>
-                    <th>Nama PTS</th>
-                    <th>Tahun</th>
-                    <th>Jenis Surat</th>
-                    <th>Status</th>
-                    <th>Tanggal Dibuat</th>
-                    <th>Aksi</th>
-                </tr>
-            </thead>
-            <tbody>
-                @forelse ($skppList as $idx => $skpp)
-                @php 
-                    $detail = json_decode($skpp->pesan, true) ?? []; 
-                @endphp
-                <tr>
-                    <td class="text-center">{{ $skppList->firstItem() + $idx }}</td>
-                    <td>{{ $skpp->nidn ?: '-' }}</td>
-                    <td>{{ $skpp->nuptk ?: '-' }}</td>
-                    <td>{{ $detail['nama'] ?? '-' }}</td>
-                    <td class="text-center">{{ $skpp->kode_pts ?: '-' }}</td>
-                    <td>{{ $detail['pts'] ?? '-' }}</td>
-                    <td class="text-center">{{ $detail['tahun'] ?? '-' }}</td>
-                    <td>{{ $skpp->jenis_pengajuan }}</td>
-                    <td class="text-center">
-                        @if($skpp->status === 'open')
-                            <span class="badge bg-label-warning">Proses</span>
-                        @elseif($skpp->status === 'menunggu_konfirmasi')
-                            <span class="badge bg-label-info">Menunggu Konfirmasi</span>
-                        @elseif($skpp->status === 'setuju')
-                            <span class="badge bg-label-success">Selesai</span>
-                        @elseif($skpp->status === 'tolak')
-                            <span class="badge bg-label-danger">Ditolak</span>
-                        @else
-                            <span class="badge bg-label-secondary">{{ ucfirst($skpp->status) }}</span>
-                        @endif
-                    </td>
-                    <td class="text-center">{{ \Carbon\Carbon::parse($skpp->created_at)->format('d-m-Y H:i') }}</td>
-                    <td class="text-center">
-                        <div class="d-flex justify-content-center gap-1">
-                            <a href="{{ route('admin.skpp.cetak', $skpp->id) }}" class="btn btn-sm btn-outline-info" target="_blank" title="Cetak Surat">
-                                <i class="bx bx-printer"></i>
-                            </a>
-                            @if(!empty($skpp->lampiran))
-                                <a href="{{ asset('storage/Dokumen_Histori_Dosen2/' . $skpp->lampiran) }}" class="btn btn-sm {{ $skpp->status === 'setuju' ? 'btn-success' : 'btn-info' }}" target="_blank" title="Lihat PDF SKPP">
-                                    <i class="bx bx-file"></i>
-                                </a>
-                            @endif
-                            @if($skpp->status !== 'setuju')
-                            <button type="button" class="btn btn-sm btn-outline-primary" onclick="editSkpp({{ $skpp->id }})" title="Edit Surat">
-                                <i class="bx bx-edit"></i>
-                            </button>
-                            
-                            @if($skpp->status === 'open' || $skpp->status === 'tolak')
-                            <button type="button" class="btn btn-sm btn-outline-success" onclick="uploadPdf({{ $skpp->id }})" title="Upload PDF">
-                                <i class="bx bx-upload"></i>
-                            </button>
-                            @endif
-
-                            <button type="button" class="btn btn-sm btn-outline-danger" onclick="hapusSkpp({{ $skpp->id }})" title="Hapus Surat">
-                                <i class="bx bx-trash"></i>
-                            </button>
-                            @endif
-                        </div>
-                    </td>
-                </tr>
-                @empty
-                <tr>
-                    <td colspan="11" class="text-center text-muted">Belum ada data SKPP.</td>
-                </tr>
-                @endforelse
-            </tbody>
-        </table>
-    </div>
-    {{-- Pagination --}}
-    <div class="d-flex justify-content-end mt-3 me-3">
-        {{ $skppList->links('pagination::simple-bootstrap-5') }}
     </div>
 </div>
 
-<style>
-/* Fix z-index issue where SweetAlert goes behind Bootstrap modal */
-.swal2-container {
-    z-index: 99999 !important;
-}
+<div class="md-card">
+    <div class="md-card-inner">
+        {{-- Toolbar / Search --}}
+        <div class="md-toolbar">
+            <form class="md-search-box" method="GET" action="{{ route('admin.skpp') }}">
+                <input type="text" name="search" placeholder="Cari NIDN/Nama/PTS..." value="{{ request('search') }}">
+                <button type="submit" title="Cari"><i class="bx bx-search"></i></button>
+            </form>
+        </div>
 
-/* Sembunyikan panah (spin button) pada input number */
-input[type=number]::-webkit-inner-spin-button, 
-input[type=number]::-webkit-outer-spin-button { 
-    -webkit-appearance: none; 
-    margin: 0; 
-}
-input[type=number] {
-    -moz-appearance: textfield;
-}
-</style>
+        {{-- Data Table --}}
+        <div class="md-table-wrap table-responsive text-nowrap">
+            <table class="table table-hover" id="skppTable">
+                <thead>
+                    <tr>
+                        <th style="width: 50px;">No</th>
+                        <th>NIDN</th>
+                        <th>NUPTK</th>
+                        <th>Nama Dosen</th>
+                        <th>Kode PTS</th>
+                        <th>Nama PTS</th>
+                        <th>Tahun</th>
+                        <th>Jenis Surat</th>
+                        <th class="text-center">Status</th>
+                        <th>Tanggal Dibuat</th>
+                        <th class="text-center">Aksi</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @forelse ($skppList as $idx => $skpp)
+                    @php 
+                        $detail = json_decode($skpp->pesan, true) ?? []; 
+                    @endphp
+                    <tr>
+                        <td class="text-center">{{ $skppList->firstItem() + $idx }}</td>
+                        <td>{{ $skpp->nidn ?: '-' }}</td>
+                        <td>{{ $skpp->nuptk ?: '-' }}</td>
+                        <td style="white-space: normal; min-width: 200px;">{{ $detail['nama'] ?? '-' }}</td>
+                        <td class="text-center">{{ $skpp->kode_pts ?: '-' }}</td>
+                        <td style="white-space: normal; min-width: 200px;">{{ $detail['pts'] ?? '-' }}</td>
+                        <td class="text-center">{{ $detail['tahun'] ?? '-' }}</td>
+                        <td>{{ $skpp->jenis_pengajuan }}</td>
+                        <td class="text-center">
+                            @if($skpp->status === 'open')
+                                <span class="badge-md proses">Proses</span>
+                            @elseif($skpp->status === 'menunggu_konfirmasi')
+                                <span class="badge-md menunggu">Menunggu Konfirmasi</span>
+                            @elseif($skpp->status === 'setuju')
+                                <span class="badge-md selesai">Selesai</span>
+                            @elseif($skpp->status === 'tolak')
+                                <span class="badge-md ditolak">Ditolak</span>
+                            @else
+                                <span class="badge-md" style="background-color: #f1f5f9; color: #475569;">{{ ucfirst($skpp->status) }}</span>
+                            @endif
+                        </td>
+                        <td class="text-center">{{ \Carbon\Carbon::parse($skpp->created_at)->format('d-m-Y H:i') }}</td>
+                        <td>
+                            <div class="d-flex justify-content-center gap-2">
+                                <a href="{{ route('admin.skpp.cetak', $skpp->id) }}" class="btn-aksi-circle info" target="_blank" title="Cetak Surat">
+                                    <i class="bx bx-printer"></i>
+                                </a>
+                                @if(!empty($skpp->lampiran))
+                                    <a href="{{ asset('storage/Dokumen_Histori_Dosen2/' . $skpp->lampiran) }}" class="btn-aksi-circle {{ $skpp->status === 'setuju' ? 'success' : 'info' }}" target="_blank" title="Lihat PDF SKPP">
+                                        <i class="bx bx-file"></i>
+                                    </a>
+                                @endif
+                                @if($skpp->status !== 'setuju')
+                                <button type="button" class="btn-aksi-circle primary" onclick="editSkpp({{ $skpp->id }})" title="Edit Surat">
+                                    <i class="bx bx-edit"></i>
+                                </button>
+                                
+                                @if($skpp->status === 'open' || $skpp->status === 'tolak')
+                                <button type="button" class="btn-aksi-circle success" onclick="uploadPdf({{ $skpp->id }})" title="Upload PDF">
+                                    <i class="bx bx-upload"></i>
+                                </button>
+                                @endif
+    
+                                <button type="button" class="btn-aksi-circle danger" onclick="hapusSkpp({{ $skpp->id }})" title="Hapus Surat">
+                                    <i class="bx bx-trash"></i>
+                                </button>
+                                @endif
+                            </div>
+                        </td>
+                    </tr>
+                    @empty
+                    <tr>
+                        <td colspan="11" class="text-center" style="padding: 40px 16px; color: var(--md-text-muted);">
+                            <i class="bx bx-info-circle" style="font-size: 2rem; display: block; margin-bottom: 8px;"></i>
+                            Belum ada data SKPP.
+                        </td>
+                    </tr>
+                    @endforelse
+                </tbody>
+            </table>
+        </div>
+
+        {{-- Pagination --}}
+        @if($skppList->hasPages())
+        <div class="md-pagination">
+            {{ $skppList->links('pagination::simple-bootstrap-5') }}
+        </div>
+        @endif
+    </div>
+</div>
 
 {{-- Modal Buat SKPP --}}
 <div class="modal fade" id="modalSkpp" tabindex="-1" aria-labelledby="modalSkppLabel" aria-hidden="true" data-bs-backdrop="static" data-backdrop="static" data-bs-keyboard="false" data-keyboard="false">
@@ -472,8 +718,10 @@ input[type=number] {
                     </form>
                 </div>
             </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
+            <div class="modal-footer d-flex justify-content-end">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                    <i class="bx bx-x me-1"></i> Tutup
+                </button>
             </div>
         </div>
     </div>
@@ -1520,3 +1768,5 @@ document.getElementById('prev_wilayah_lldikti').addEventListener('change', funct
 });
 </script>
 @endsection
+
+

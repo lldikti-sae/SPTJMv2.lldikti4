@@ -97,8 +97,6 @@
 
     const table = $('#complainTable').DataTable({
       processing: true,
-      scrollX: true,
-      scrollCollapse: true,
       serverSide: true,
       responsive: true,
       ajax: {

@@ -149,8 +149,6 @@
     const table = $('#dataTable').DataTable({
       processing: true,
       serverSide: false,
-      scrollX: true,
-      scrollCollapse: true,
       pageLength: 10,
       lengthMenu: [[10, 25, 50, 100], [10, 25, 50, 100]],
       ajax: {

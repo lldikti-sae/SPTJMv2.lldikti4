@@ -35,8 +35,6 @@
         $('#riwayatTable').DataTable({
             processing: true,
             serverSide: true,
-            scrollX: true,
-            scrollCollapse: true,
             paging: true,
             pageLength: 10,
             lengthMenu: [

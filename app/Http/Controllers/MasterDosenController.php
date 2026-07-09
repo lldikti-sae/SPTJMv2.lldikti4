@@ -67,18 +67,18 @@ class MasterDosenController extends Controller
             $rows = $baseQuery->get();
 
             $data = $rows->map(function ($r) {
-                $editBtn = '<button class="btn btn-sm btn-icon btn-warning edit-dosen" data-id="' . $r->id . '" title="Edit">'
+                $editBtn = '<button class="sptjm-icon-btn sptjm-btn-edit edit-dosen" data-id="' . $r->id . '" title="Edit">'
                     . '<i class="bx bx-edit"></i></button>';
 
                 $resetBtn = '<form method="POST" action="/admin/master-dosen/' . $r->id . '/reset-password" class="d-inline reset-form" style="display:inline">'
                     . csrf_field()
-                    . '<button type="button" class="btn btn-sm btn-icon btn-info reset-password" title="Reset Password">'
-                    . '<i class="bx bx-key"></i></button></form>';
+                    . '<button type="button" class="sptjm-icon-btn sptjm-btn-reset reset-password" title="Reset Password">'
+                    . '<i class="bx bx-upload"></i></button></form>';
 
                 $deleteBtn = '<form method="POST" action="/admin/master-dosen/' . $r->id . '" class="d-inline delete-form" style="display:inline">'
                     . csrf_field()
                     . method_field('DELETE')
-                    . '<button type="button" class="btn btn-sm btn-icon btn-danger delete-dosen" title="Hapus">'
+                    . '<button type="button" class="sptjm-icon-btn sptjm-btn-delete delete-dosen" title="Hapus">'
                     . '<i class="bx bx-trash"></i></button></form>';
 
                 return [
@@ -91,7 +91,7 @@ class MasterDosenController extends Controller
                     'aktif' => $r->aktif,
                     'wilayah' => $r->wilayah,
                     'tanggal_update' => $r->tanggal_update,
-                    'aksi' => $editBtn . ' ' . $resetBtn . ' ' . $deleteBtn,
+                    'aksi' => '<div class="d-flex justify-content-center gap-1">' . $editBtn . $resetBtn . $deleteBtn . '</div>',
                 ];
             });
 

@@ -9,7 +9,7 @@
 @endsection
 
 @section('content')
-<div class="row g-4 mb-4">
+<div class="row g-3 mb-3">
     <!-- Jumlah Seluruh Dosen -->
     <div class="col-12 col-md-6 col-lg-4">
         <div class="sptjm-stat-card">
@@ -141,9 +141,6 @@ document.addEventListener('DOMContentLoaded', function () {
         serverSide: true,
         paging: true,
         pageLength: 10,
-        lengthChange: false, // hide length change
-        scrollX: true,
-        scrollCollapse: true,
         ajax: {
             url: '{{ route('admin.dashboard.dosen-pensiun.data') }}'
         },
@@ -190,25 +187,7 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         ],
         order: [[3, 'asc']],
-        pagingType: 'simple_numbers',
-        language: {
-            paginate: {
-                first: "Awal",
-                last: "Akhir",
-                next: "→",
-                previous: "←",
-            },
-            zeroRecords: "Data tidak ditemukan",
-            infoEmpty: "Tidak ada data tersedia",
-            info: "Menampilkan _START_ sampai _END_ dari _TOTAL_ entri",
-            searchPlaceholder: "Cari data...",
-            search: "", // Empty search label to match Figma
-        },
-        dom: '<"row"<"col-sm-12 col-md-6"l><"col-sm-12 col-md-6 d-flex justify-content-end"f>>t<"row"<"col-sm-12 col-md-6"i><"col-sm-12 col-md-6 d-flex justify-content-end"p>>',
-        initComplete: function() {
-            // Add custom classes to search input
-            $('.dataTables_filter input').addClass('sptjm-search-input').removeClass('form-control-sm');
-        }
+        pagingType: 'simple_numbers'
     });
 });
 </script>

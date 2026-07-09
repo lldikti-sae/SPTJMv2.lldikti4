@@ -35,8 +35,6 @@
     const table = $('#dosenTable').DataTable({
       processing: true,
       serverSide: true,
-      scrollX: true,
-      scrollCollapse: true,
       ajax: {
         url: '{{ route("pts.lihat-data-dosen") }}'
       },

@@ -324,7 +324,7 @@ class RekapUsulanNonEligibleController extends Controller
 
       $identifier = trim((string) ($item->nidn ?? '')) ?: trim((string) ($item->nuptk ?? ''));
       $url = $identifier !== '' ? route('admin.lengkapi-dosen', ['nidn' => $identifier]) : '#';
-      $row[] = '<a href="' . $url . '" class="btn btn-sm btn-warning"><i class="bx bx-edit"></i></a>';
+      $row[] = '<a href="' . $url . '" class="sptjm-icon-btn sptjm-btn-edit" title="Edit Data"><i class="bx bx-edit"></i></a>';
 
       $out[] = $row;
     }
