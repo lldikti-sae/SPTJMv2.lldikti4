@@ -2,8 +2,9 @@
 
 @section('title', 'SPTJM Online')
 
-@section('content')
-@section('content')
+@section('page-style')
+<!-- Select2 CSS CDN -->
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
 <style>
     .card-eligible {
         border: 1.5px solid #dbeafe !important;
@@ -19,7 +20,88 @@
         padding: 12px 20px !important;
         font-weight: 600 !important;
     }
+    /* Modern Select2 Styling to match Sneat template */
+    .select2-container--default .select2-selection--single {
+        border: 1px solid #cbd5e1 !important;
+        border-radius: 0.375rem !important;
+        height: 38px !important;
+        display: flex !important;
+        align-items: center !important;
+        background-color: #fff !important;
+        transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out !important;
+        width: 100% !important;
+    }
+    /* Focus State */
+    .select2-container--default.select2-container--focus .select2-selection--single,
+    .select2-container--default.select2-container--open .select2-selection--single {
+        border-color: #696cff !important;
+        box-shadow: 0 0 0.25rem 0.05rem rgba(105, 108, 255, 0.25) !important;
+        outline: 0 !important;
+    }
+    /* Text and Arrow spacing */
+    .select2-container--default .select2-selection--single .select2-selection__rendered {
+        color: #566a7f !important;
+        font-size: 0.9375rem !important;
+        padding-left: 12px !important;
+        padding-right: 30px !important;
+    }
+    .select2-container--default .select2-selection--single .select2-selection__arrow {
+        height: 36px !important;
+        right: 10px !important;
+        width: 20px !important;
+    }
+    .select2-container--default .select2-selection--single .select2-selection__arrow b {
+        border-color: #8592a3 transparent transparent transparent !important;
+        border-width: 5px 4px 0 4px !important;
+    }
+    .select2-container--default.select2-container--open .select2-selection--single .select2-selection__arrow b {
+        border-color: transparent transparent #8592a3 transparent !important;
+        border-width: 0 4px 5px 4px !important;
+    }
+    /* Dropdown container */
+    .select2-dropdown {
+        border: 1px solid #d9dee3 !important;
+        border-radius: 0.375rem !important;
+        box-shadow: 0 0.25rem 1rem rgba(161, 172, 184, 0.45) !important;
+        z-index: 1060 !important;
+    }
+    /* Search input */
+    .select2-container--default .select2-search--dropdown {
+        padding: 8px 12px !important;
+    }
+    .select2-container--default .select2-search--dropdown .select2-search__field {
+        border: 1px solid #d9dee3 !important;
+        border-radius: 0.375rem !important;
+        padding: 6px 10px !important;
+        outline: none !important;
+    }
+    .select2-container--default .select2-search--dropdown .select2-search__field:focus {
+        border-color: #696cff !important;
+    }
+    /* Options styling */
+    .select2-container--default .select2-results__option {
+        padding: 8px 12px !important;
+        font-size: 0.9375rem !important;
+        color: #566a7f !important;
+        border-radius: 0.25rem !important;
+        margin: 2px 4px !important;
+    }
+    .select2-container--default .select2-results__option--highlighted[aria-selected] {
+        background-color: #696cff !important;
+        color: #fff !important;
+    }
+    .select2-container--default .select2-results__option[aria-selected=true] {
+        background-color: #e7e7ff !important;
+        color: #696cff !important;
+        font-weight: 500 !important;
+    }
+    .select2-results__options {
+        max-height: 400px !important;
+    }
 </style>
+@endsection
+
+@section('content')
 
 <div class="content-wrapper">
     <!-- Breadcrumb -->
@@ -31,98 +113,11 @@
         </ol>
     </nav>
 
-<<<<<<< HEAD
-        @if (session('error'))
-        <div class="alert alert-danger">{{ session('error') }}</div>
-        @endif
-
-      </div>
-      <div class="card-body">
-        <form action="{{ route('admin.rekap-usulan-eligible') }}" method="GET">
-          <div class="row g-3">
-
-            <!-- Tipe SPTJM -->
-            <div class="col-md-2">
-              <label for="tipe_sptjm" class="form-label fw-semibold">Pilih Tipe SPTJM</label>
-              <select class="form-select" id="tipe_sptjm" name="tipe_sptjm" onchange="this.form.submit()">
-                <option value="SPTJM" {{ request('tipe_sptjm', 'SPTJM') == 'SPTJM' ? 'selected' : '' }}>SPTJM</option>
-                <option value="TUKIN" {{ request('tipe_sptjm') == 'TUKIN' ? 'selected' : '' }}>TUKIN</option>
-              </select>
-            </div>
-
-            <!-- Pencairan -->
-            <div class="col-md-2">
-              <label for="pencairan_ke" class="form-label fw-semibold">Pencairan ke-</label>
-              <select class="form-select" id="pencairan_ke" name="pencairan_ke">
-                <option value="Semua" {{ request('pencairan_ke') == 'Semua' ? 'selected' : '' }}>Semua
-                </option>
-                @for ($i = 1; $i <= 20; $i++)
-                  <option value="{{ $i }}" {{ request('pencairan_ke') == $i ? 'selected' : '' }}>{{ $i }}</option>
-                @endfor
-              </select>
-            </div>
-
-            <!-- Bank -->
-            <div class="col-md-2">
-              <label for="bank" class="form-label fw-semibold">Pilih Bank</label>
-              <select class="form-select" id="bank" name="bank">
-                <option value="Semua" {{ request('bank') == 'Semua' ? 'selected' : '' }}>Semua</option>
-                @foreach (['BRI', 'MANDIRI', 'BNI', 'BTN', 'BSI'] as $bank)
-                <option value="{{ $bank }}" {{ request('bank') == $bank ? 'selected' : '' }}>{{ $bank }}
-                </option>
-                @endforeach
-              </select>
-            </div>
-
-            <!-- Status Pegawai -->
-            <div class="col-md-2">
-              <label for="status_pegawai" class="form-label fw-semibold">Status Pegawai</label>
-              <select class="form-select" id="status_pegawai" name="status_pegawai">
-                @foreach (['Semua', 'NON PNS', 'PNS'] as $status)
-                <option value="{{ $status }}"
-                  {{ request('status_pegawai') == $status ? 'selected' : '' }}>
-                  {{ $status }}
-                </option>
-                @endforeach
-              </select>
-            </div>
-
-            <!-- Eligible -->
-            <div class="col-md-2">
-              <label for="Eligible_span" class="form-label fw-semibold">Eligible Span</label>
-              <select class="form-select" id="Eligible_span" name="Eligible_span">
-                <option value="YA" {{ request('Eligible_span') == 'YA' ? 'selected' : '' }}>YA
-                </option>
-              </select>
-            </div>
-
-            <!-- Tunjangan -->
-            <div class="col-md-2">
-              <label for="tunjangan" class="form-label fw-semibold">Tunjangan</label>
-              <select class="form-select" id="tunjangan" name="tunjangan">
-                @foreach (['Semua', 'tpd1' => 'TPD', 'tkgb1' => 'TKGB'] as $value => $label)
-                <option value="{{ is_int($value) ? $label : $value }}"
-                  {{ request('tunjangan') == (is_int($value) ? $label : $value) ? 'selected' : '' }}>
-                  {{ is_int($value) ? $label : $label }}
-                </option>
-                @endforeach
-              </select>
-            </div>
-
-            <!-- Submit -->
-            <div class="col-md-2 d-flex align-items-end">
-              <button type="submit" class="btn btn-primary w-100">Lihat</button>
-            </div>
-          </div>
-        </form>
-      </div>
-=======
     <!-- Header -->
     <div class="d-flex justify-content-between align-items-center mb-4">
         <div>
             <h4 class="fw-bold text-dark mb-1" style="color: #0f2b5c !important; font-size: 1.5rem;">Rekapitulasi Berjalan Eligible</h4>
         </div>
->>>>>>> feature/ui-admin-SPTJM
     </div>
 
     <!-- Filter Form -->
@@ -133,10 +128,19 @@
             </h6>
             <form action="{{ route('admin.rekap-usulan-eligible') }}" method="GET">
                 <div class="row g-3">
+                    <!-- Tipe SPTJM -->
+                    <div class="col-lg col-md-4 col-sm-6 mb-2">
+                        <label for="tipe_sptjm" class="form-label fw-bold text-dark text-uppercase" style="font-size: 0.68rem; letter-spacing: 0.05em;">Pilih Tipe SPTJM</label>
+                        <select class="select2 form-select" id="tipe_sptjm" name="tipe_sptjm" onchange="this.form.submit()">
+                            <option value="SPTJM" {{ request('tipe_sptjm', 'SPTJM') == 'SPTJM' ? 'selected' : '' }}>SPTJM</option>
+                            <option value="TUKIN" {{ request('tipe_sptjm') == 'TUKIN' ? 'selected' : '' }}>TUKIN</option>
+                        </select>
+                    </div>
+
                     <!-- Pencairan -->
-                    <div class="col">
+                    <div class="col-lg col-md-4 col-sm-6 mb-2">
                         <label for="pencairan_ke" class="form-label fw-bold text-dark text-uppercase" style="font-size: 0.68rem; letter-spacing: 0.05em;">Pencairan ke-</label>
-                        <select class="form-select" id="pencairan_ke" name="pencairan_ke" style="border-color: #cbd5e1;">
+                        <select class="select2 form-select" id="pencairan_ke" name="pencairan_ke">
                             <option value="Semua" {{ request('pencairan_ke') == 'Semua' ? 'selected' : '' }}>Semua</option>
                             @for ($i = 1; $i <= 20; $i++)
                                 <option value="{{ $i }}" {{ request('pencairan_ke') == $i ? 'selected' : '' }}>{{ $i }}</option>
@@ -145,9 +149,9 @@
                     </div>
 
                     <!-- Bank -->
-                    <div class="col">
+                    <div class="col-lg col-md-4 col-sm-6 mb-2">
                         <label for="bank" class="form-label fw-bold text-dark text-uppercase" style="font-size: 0.68rem; letter-spacing: 0.05em;">Pilih Bank</label>
-                        <select class="form-select" id="bank" name="bank" style="border-color: #cbd5e1;">
+                        <select class="select2 form-select" id="bank" name="bank">
                             <option value="Semua" {{ request('bank') == 'Semua' ? 'selected' : '' }}>Semua</option>
                             @foreach (['BRI', 'MANDIRI', 'BNI', 'BTN', 'BSI'] as $bank)
                                 <option value="{{ $bank }}" {{ request('bank') == $bank ? 'selected' : '' }}>{{ $bank }}</option>
@@ -156,27 +160,22 @@
                     </div>
 
                     <!-- Status Pegawai -->
-                    <div class="col">
+                    <div class="col-lg col-md-4 col-sm-6 mb-2">
                         <label for="status_pegawai" class="form-label fw-bold text-dark text-uppercase" style="font-size: 0.68rem; letter-spacing: 0.05em;">Status Pegawai</label>
-                        <select class="form-select" id="status_pegawai" name="status_pegawai" style="border-color: #cbd5e1;">
+                        <select class="select2 form-select" id="status_pegawai" name="status_pegawai">
                             @foreach (['Semua', 'NON PNS', 'PNS'] as $status)
                                 <option value="{{ $status }}" {{ request('status_pegawai') == $status ? 'selected' : '' }}>{{ $status }}</option>
                             @endforeach
                         </select>
                     </div>
 
-                    <!-- Eligible -->
-                    <div class="col">
-                        <label for="Eligible_span" class="form-label fw-bold text-dark text-uppercase" style="font-size: 0.68rem; letter-spacing: 0.05em;">Eligible Span</label>
-                        <select class="form-select" id="Eligible_span" name="Eligible_span" style="border-color: #cbd5e1;">
-                            <option value="YA" {{ request('Eligible_span') == 'YA' ? 'selected' : '' }}>YA</option>
-                        </select>
-                    </div>
+                    <!-- Hidden Eligible Span (YA) -->
+                    <input type="hidden" name="Eligible_span" value="YA">
 
                     <!-- Tunjangan -->
-                    <div class="col">
+                    <div class="col-lg col-md-4 col-sm-6 mb-2">
                         <label for="tunjangan" class="form-label fw-bold text-dark text-uppercase" style="font-size: 0.68rem; letter-spacing: 0.05em;">Tunjangan</label>
-                        <select class="form-select" id="tunjangan" name="tunjangan" style="border-color: #cbd5e1;">
+                        <select class="select2 form-select" id="tunjangan" name="tunjangan">
                             @foreach (['Semua', 'tpd1' => 'TPD', 'tkgb1' => 'TKGB'] as $value => $label)
                                 <option value="{{ is_int($value) ? $label : $value }}" {{ request('tunjangan') == (is_int($value) ? $label : $value) ? 'selected' : '' }}>
                                     {{ is_int($value) ? $label : $label }}
@@ -421,5 +420,18 @@
     }, 1000);
   });
 </script>
-
 @endsection
+
+@push('scripts')
+<!-- Select2 JS CDN -->
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+<script>
+  $(document).ready(function() {
+    if (typeof $ !== 'undefined' && $.fn.select2) {
+      $('.select2').select2({
+        width: '100%'
+      });
+    }
+  });
+</script>
+@endpush
