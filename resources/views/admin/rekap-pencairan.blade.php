@@ -15,7 +15,16 @@
         <hr>
         <form method="GET" action="{{ route('rekap-pencairan') }}">
           <div class="row g-2 align-items-end mb-3">
-            <!-- Dropdown -->
+            <!-- Tipe SPTJM -->
+            <div class="col-md-3">
+              <label for="tipe_sptjm" class="form-label fw-semibold">Pilih Tipe SPTJM</label>
+              <select class="form-select h-100" id="tipe_sptjm" name="tipe_sptjm">
+                <option value="SPTJM" {{ request('tipe_sptjm', 'SPTJM') == 'SPTJM' ? 'selected' : '' }}>SPTJM</option>
+                <option value="TUKIN" {{ request('tipe_sptjm') == 'TUKIN' ? 'selected' : '' }}>TUKIN</option>
+              </select>
+            </div>
+
+            <!-- Dropdown Pencairan ke -->
             <div class="col-md-3">
               <label for="pencairan_ke" class="form-label fw-semibold">Pencairan ke-</label>
               <select class="form-select h-100" id="pencairan_ke" name="pencairan_ke"

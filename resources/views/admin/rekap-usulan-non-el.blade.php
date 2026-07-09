@@ -15,6 +15,14 @@
                     <form action="{{ route('admin.rekap-usulan-non-el') }}" method="GET">
                         <div class="row g-3">
                             <div class="col-md-2">
+                                <label for="tipe_sptjm" class="form-label fw-semibold">Pilih Tipe SPTJM</label>
+                                <select class="form-select" id="tipe_sptjm" name="tipe_sptjm" onchange="this.form.submit()">
+                                    <option value="SPTJM" {{ request('tipe_sptjm', 'SPTJM') == 'SPTJM' ? 'selected' : '' }}>SPTJM</option>
+                                    <option value="TUKIN" {{ request('tipe_sptjm') == 'TUKIN' ? 'selected' : '' }}>TUKIN</option>
+                                </select>
+                            </div>
+
+                            <div class="col-md-2">
                                 <label for="pencairan_ke" class="form-label fw-semibold">Pencairan ke-</label>
                                 <select class="form-select" id="pencairan_ke" name="pencairan_ke">
                                     <option value="Semua" {{ request('pencairan_ke') == 'Semua' ? 'selected' : '' }}>Semua
@@ -90,6 +98,7 @@
     <script>
         $(document).ready(function() {
             const ajaxUrl = "{{ route('admin.rekap-usulan-non-el.data') }}";
+            const tipeSptjm = "{{ request('tipe_sptjm', 'SPTJM') }}";
             const pencairanKe = "{{ request('pencairan_ke', 'Semua') }}";
             const eligibleSpan = "{{ request('Eligible_span', 'TIDAK') }}";
 
@@ -103,6 +112,7 @@
                 ajax: {
                     url: ajaxUrl,
                     data: {
+                        tipe_sptjm: tipeSptjm,
                         pencairan_ke: pencairanKe,
                         Eligible_span: eligibleSpan,
                     }

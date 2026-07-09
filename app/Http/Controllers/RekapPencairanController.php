@@ -16,6 +16,7 @@ class RekapPencairanController extends Controller
   {
     $status = $request->input('status'); // "Proses" atau "Selesai"
     $pencairanKe = $request->input('pencairan_ke');
+    $tipeSptjm = $request->input('tipe_sptjm', 'SPTJM');
 
     $data = [];
 
@@ -34,10 +35,15 @@ class RekapPencairanController extends Controller
         $query->whereNotNull('no_sp2d');
       }
 
+      // Filter berdasarkan tipe_sptjm jika kolom tersedia
+      if ($tipeSptjm) {
+        $query->where('tipe_sptjm', $tipeSptjm);
+      }
+
       $data = $query->get();
     }
 
-    return view('admin.rekap-pencairan', compact('data', 'status', 'pencairanKe'));
+    return view('admin.rekap-pencairan', compact('data', 'status', 'pencairanKe', 'tipeSptjm'));
   }
 
   public function store(Request $request)

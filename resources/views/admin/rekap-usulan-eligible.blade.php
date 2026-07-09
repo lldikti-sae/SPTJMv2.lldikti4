@@ -24,6 +24,15 @@
         <form action="{{ route('admin.rekap-usulan-eligible') }}" method="GET">
           <div class="row g-3">
 
+            <!-- Tipe SPTJM -->
+            <div class="col-md-2">
+              <label for="tipe_sptjm" class="form-label fw-semibold">Pilih Tipe SPTJM</label>
+              <select class="form-select" id="tipe_sptjm" name="tipe_sptjm" onchange="this.form.submit()">
+                <option value="SPTJM" {{ request('tipe_sptjm', 'SPTJM') == 'SPTJM' ? 'selected' : '' }}>SPTJM</option>
+                <option value="TUKIN" {{ request('tipe_sptjm') == 'TUKIN' ? 'selected' : '' }}>TUKIN</option>
+              </select>
+            </div>
+
             <!-- Pencairan -->
             <div class="col-md-2">
               <label for="pencairan_ke" class="form-label fw-semibold">Pencairan ke-</label>
@@ -179,6 +188,7 @@
         <form id="formProses" method="POST" action="{{ route('admin.rekap-usulan-eligible.proses') }}">
           @csrf
           <input type="hidden" name="rekap_json" id="rekap_json">
+          <input type="hidden" name="tipe_sptjm" value="{{ request('tipe_sptjm', 'SPTJM') }}">
           <input type="hidden" name="pencairan_ke" value="{{ request('pencairan_ke') }}">
           <input type="hidden" name="eligible_span" value="{{ request('Eligible_span')}}">
           <div class="text-center mt-4">
@@ -269,6 +279,7 @@
 
   $(document).ready(function() {
     const ajaxUrl = "{{ route('admin.rekap-usulan-eligible.data') }}";
+    const tipeSptjm = "{{ request('tipe_sptjm', 'SPTJM') }}";
     const pencairanKe = "{{ request('pencairan_ke', 'Semua') }}";
     const bank = "{{ request('bank', 'Semua') }}";
     const statusPegawai = "{{ request('status_pegawai', 'Semua') }}";
@@ -285,6 +296,7 @@
       ajax: {
         url: ajaxUrl,
         data: {
+          tipe_sptjm: tipeSptjm,
           pencairan_ke: pencairanKe,
           bank: bank,
           status_pegawai: statusPegawai,
