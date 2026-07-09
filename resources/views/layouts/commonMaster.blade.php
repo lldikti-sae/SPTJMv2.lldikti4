@@ -296,6 +296,29 @@
 
     <!-- ─── GLOBAL CARD ENHANCEMENT ─── -->
     <style>
+        /* ─── GLOBAL MASTER DATA TOOLBAR BUTTONS ─── */
+        /* Override all page-level .btn-md2-tambah to pill shape matching data-dosen */
+        .btn-md2-tambah {
+            background-color: #0b3d91 !important;
+            border: none !important;
+            color: #fff !important;
+            font-weight: 600 !important;
+            font-size: 0.82rem !important;
+            padding: 8px 20px !important;
+            border-radius: 20px !important;
+            display: inline-flex !important;
+            align-items: center !important;
+            gap: 6px !important;
+            transition: all 0.2s !important;
+            white-space: nowrap !important;
+            cursor: pointer !important;
+        }
+        .btn-md2-tambah:hover {
+            background-color: #082f73 !important;
+            color: #fff !important;
+            box-shadow: 0 4px 14px rgba(11, 61, 145, 0.35) !important;
+        }
+
         /* ─── GLOBAL SPTJM ICON BUTTONS (Rounded Circle Style) ─── */
         .sptjm-icon-btn {
             display: inline-flex;
@@ -307,14 +330,15 @@
             border: none;
             cursor: pointer;
             font-size: 1rem;
-            transition: transform 0.15s ease, box-shadow 0.15s ease;
+            transition: box-shadow 0.15s ease, opacity 0.15s ease;
             flex-shrink: 0;
+            will-change: auto;
         }
         .sptjm-icon-btn:hover {
-            transform: scale(1.1);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            box-shadow: 0 3px 10px rgba(0,0,0,0.18);
+            opacity: 0.88;
         }
-        .sptjm-icon-btn:active { transform: scale(0.97); }
+        .sptjm-icon-btn:active { opacity: 0.7; }
 
         /* Edit – soft blue */
         .sptjm-btn-edit {
@@ -351,12 +375,27 @@
         }
         .sptjm-btn-view:hover { background-color: #e0cefc; color: #5b21b6; }
 
+        /* Info – soft yellow */
+        .sptjm-btn-info {
+            background-color: #fef9e7;
+            color: #d97706;
+        }
+        .sptjm-btn-info:hover { background-color: #fef3c7; color: #b45309; }
+
         /* Wrap for spacing */
         td .sptjm-icon-btn + .sptjm-icon-btn,
         td .sptjm-icon-btn + form,
         td form + .sptjm-icon-btn,
         td form + form {
             margin-left: 4px;
+        }
+
+        /* Disable all transitions during page navigation to prevent icon ghost */
+        .page-transitioning *,
+        .page-transitioning *::before,
+        .page-transitioning *::after {
+            transition: none !important;
+            animation: none !important;
         }
     </style>
 

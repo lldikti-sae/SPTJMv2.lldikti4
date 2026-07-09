@@ -49,7 +49,7 @@
           deferRender: true,
           pageLength: 25,
           lengthChange: true,
-          lengthMenu: [[25, 50, 100], [25, 50, 100]],
+          lengthMenu: [[25, 50, 100, 500], [25, 50, 100, 500]],
           dom: "<'row align-items-center mb-3'<'col-sm-12 col-md-6'l><'col-sm-12 col-md-6 d-flex justify-content-md-end justify-content-start mt-2 mt-md-0'f>>" +
                "rt<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
           ajax: {
@@ -73,7 +73,7 @@
             zeroRecords: 'Data tidak ditemukan',
             infoEmpty: 'Tidak ada data tersedia',
             info: 'Menampilkan _START_ sampai _END_ dari _TOTAL_ data',
-            lengthMenu: 'Tampilkan _MENU_ data',
+            lengthMenu: 'Show _MENU_ entries',
             search: 'Cari:'
           }
         });

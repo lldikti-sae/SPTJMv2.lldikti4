@@ -219,7 +219,7 @@ $(document).ready(function() {
         processing: true,
         responsive: true,
         pageLength: 15,
-        lengthMenu: [15, 25, 75, 100],
+        lengthMenu: [15, 25, 75, 100, 500],
         dom: "<'md-toolbar'<'entries-wrap'l><'search-wrap'f>>" +
              "rt<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
         ajax: {

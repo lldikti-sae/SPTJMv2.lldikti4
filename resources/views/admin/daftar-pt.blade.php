@@ -39,42 +39,42 @@
 
 /* ── Header Buttons ── */
 .btn-sync {
-    background-color: #ff9f43;
-    border-color: #ff9f43;
+    background-color: #d97706;
+    border: none;
     color: #fff;
     font-weight: 600;
     font-size: 0.82rem;
-    padding: 8px 16px;
-    border-radius: 6px;
+    padding: 8px 20px;
+    border-radius: 20px;
     display: inline-flex;
     align-items: center;
     gap: 6px;
-    transition: background 0.2s, box-shadow 0.2s;
+    transition: all 0.2s;
+    white-space: nowrap;
 }
 .btn-sync:hover {
-    background-color: #f08030;
-    border-color: #f08030;
+    background-color: #b45309;
     color: #fff;
-    box-shadow: 0 4px 12px rgba(255,159,67,0.35);
+    box-shadow: 0 4px 14px rgba(217,119,6,0.35);
 }
 .btn-tambah {
-    background-color: #1a56db;
-    border-color: #1a56db;
+    background-color: #0b3d91;
+    border: none;
     color: #fff;
     font-weight: 600;
     font-size: 0.82rem;
-    padding: 8px 16px;
-    border-radius: 6px;
+    padding: 8px 20px;
+    border-radius: 20px;
     display: inline-flex;
     align-items: center;
     gap: 6px;
-    transition: background 0.2s, box-shadow 0.2s;
+    transition: all 0.2s;
+    white-space: nowrap;
 }
 .btn-tambah:hover {
-    background-color: #1648c0;
-    border-color: #1648c0;
+    background-color: #082f73;
     color: #fff;
-    box-shadow: 0 4px 12px rgba(26,86,219,0.35);
+    box-shadow: 0 4px 14px rgba(11,61,145,0.35);
 }
 
 /* ── Card ── */
@@ -226,14 +226,15 @@ div.dataTables_wrapper div.dataTables_length {
         {{-- Toolbar --}}
         <div class="pt-toolbar">
             <div class="entries-wrap">
-                Tampilkan
+                Show
                 <select id="entriesSelect">
                     <option value="10" selected>10</option>
                     <option value="25">25</option>
                     <option value="50">50</option>
                     <option value="100">100</option>
+                    <option value="500">500</option>
                 </select>
-                data per halaman
+                entries
             </div>
             <div class="search-wrap">
                 <input type="text" id="ptSearchInput" placeholder="Cari NPSN, Nama, atau Wilayah...">

@@ -173,13 +173,18 @@ table thead th {
 .dataTables_wrapper .dataTables_filter input {
     border: 1.5px solid #e2e8f0 !important;
     border-radius: 8px !important;
-    padding: 6px 12px !important;
+    padding: 6px 36px 6px 12px !important;
     font-size: 0.84rem !important;
+    color: #2d3748 !important;
+    background: #f8fafc url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' fill='%238592a3' viewBox='0 0 16 16'%3E%3Cpath d='M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398l3.85 3.85a1 1 0 0 0 1.415-1.415l-3.868-3.833zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z'/%3E%3C/svg%3E") no-repeat calc(100% - 10px) center !important;
+    min-width: 180px;
+    height: 32px !important;
     outline: none !important;
 }
 .dataTables_wrapper .dataTables_filter input:focus {
     border-color: #1a56db !important;
     box-shadow: 0 0 0 3px rgba(26, 86, 219, 0.1) !important;
+    background-color: #fff !important;
 }
 
 /* Length select */

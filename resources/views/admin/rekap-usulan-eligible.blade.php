@@ -428,8 +428,22 @@
 <script>
   $(document).ready(function() {
     if (typeof $ !== 'undefined' && $.fn.select2) {
-      $('.select2').select2({
+      $('#pencairan_ke').select2({
         width: '100%'
+      });
+      $('#tipe_sptjm, #bank, #status_pegawai, #tunjangan').select2({
+        width: '100%',
+        minimumResultsForSearch: Infinity
+      });
+
+      // Auto-focus search input when Select2 is opened
+      $(document).on('select2:open', function() {
+        setTimeout(function() {
+          const searchField = document.querySelector('.select2-container--open .select2-search__field');
+          if (searchField) {
+            searchField.focus();
+          }
+        }, 50);
       });
     }
   });

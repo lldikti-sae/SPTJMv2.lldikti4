@@ -43,7 +43,7 @@ class CutOffSisternasController extends Controller
                 return '<span class="text-muted">-</span>';
             }
             return '<button class="sptjm-icon-btn sptjm-btn-edit edit-btn">
-                                <span class="tf-icons bx bx-edit"></span>
+                                <i class="bx bx-edit"></i>
                             </button>';
           })
           ->rawColumns(['aksi'])
