@@ -47,11 +47,12 @@ table.md2-table thead th,
     text-transform: uppercase !important;
     font-size: 0.75rem !important;
     letter-spacing: 0.05em !important;
-    padding: 10px 14px !important;
+    padding: 4px 12px !important;
     vertical-align: middle !important;
     border: 1px solid #e2e8f0 !important;
     white-space: nowrap;
-    line-height: 1.4;
+    line-height: 1.1;
+    height: 30px !important;
 }
 
 /* ── TABLE BODY ── */
@@ -64,7 +65,35 @@ table.md2-table tbody td,
     padding: 8px 14px !important;
     vertical-align: middle !important;
     border: 1px solid #e2e8f0 !important;
-    line-height: 1.5;
+    line-height: 1.2;
+}
+
+/* ── COMPACT ELEMENTS INSIDE TABLE BODY ── */
+table.dataTable tbody td .btn-icon,
+.table tbody td .btn-icon {
+    height: 28px !important;
+    width: 28px !important;
+    padding: 0 !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+}
+
+table.dataTable tbody td .badge,
+.table tbody td .badge {
+    padding: 2px 6px !important;
+    line-height: 1.1 !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+}
+
+table.dataTable tbody td .form-check,
+table.dataTable tbody td .form-check-input {
+    margin-top: 0 !important;
+    margin-bottom: 0 !important;
+    display: inline-block !important;
+    vertical-align: middle !important;
 }
 
 /* ── HOVER EFFECT ── */
@@ -77,12 +106,48 @@ table.md2-table tbody tr:hover,
 }
 
 /* ── SORTING ICONS ── */
+table.dataTable thead .sorting,
+table.dataTable thead .sorting_asc,
+table.dataTable thead .sorting_desc {
+    position: relative;
+    cursor: pointer;
+    padding-right: 24px !important;
+}
+
+table.dataTable thead .sorting::before,
+table.dataTable thead .sorting::after,
+table.dataTable thead .sorting_asc::before,
+table.dataTable thead .sorting_asc::after,
+table.dataTable thead .sorting_desc::before,
+table.dataTable thead .sorting_desc::after {
+    position: absolute;
+    bottom: 50%;
+    transform: translateY(50%);
+    display: block;
+    opacity: 0.3;
+    font-size: 0.7rem;
+    color: #64748b;
+}
+
+table.dataTable thead .sorting::before,
+table.dataTable thead .sorting_asc::before,
+table.dataTable thead .sorting_desc::before {
+    right: 12px;
+    content: "▲";
+}
+
 table.dataTable thead .sorting::after,
 table.dataTable thead .sorting_asc::after,
 table.dataTable thead .sorting_desc::after {
-    opacity: 0.6;
+    right: 4px;
+    content: "▼";
 }
-table.dataTable thead .sorting_asc::after,
+
+table.dataTable thead .sorting_asc::before {
+    opacity: 1;
+    color: #1a56db;
+}
+
 table.dataTable thead .sorting_desc::after {
     opacity: 1;
     color: #1a56db;
@@ -93,6 +158,11 @@ table.dataTable thead .sorting_desc::after {
     width: 100%;
     overflow-x: auto;
 }
+
+.dataTables_wrapper .md-toolbar {
+    padding: 4px 24px 4px 24px;
+}
+
 .dataTables_wrapper .row {
     margin: 0;
     padding: 0;
@@ -110,20 +180,30 @@ table.dataTable thead .sorting_desc::after {
 .dataTables_wrapper .dataTables_length {
     display: flex;
     align-items: center;
-    gap: 8px;
-    font-size: 0.84rem !important;
+    gap: 6px;
+    font-size: 0.8rem !important;
     color: #4a5568 !important;
 }
+
+.dataTables_wrapper .dataTables_length label {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 0 !important;
+}
+
 .dataTables_wrapper .dataTables_length select {
     border: 1.5px solid #e2e8f0 !important;
-    border-radius: 8px !important;
-    padding: 5px 10px !important;
-    font-size: 0.84rem !important;
+    border-radius: 6px !important;
+    padding: 2px 8px !important;
+    font-size: 0.8rem !important;
     color: #4a5568 !important;
     background: #f8fafc !important;
     cursor: pointer;
     outline: none;
+    height: 28px !important;
 }
+
 .dataTables_wrapper .dataTables_length select:focus {
     border-color: #1a56db !important;
     box-shadow: 0 0 0 3px rgba(26, 86, 219, 0.1) !important;
@@ -133,28 +213,53 @@ table.dataTable thead .sorting_desc::after {
 .dataTables_wrapper .dataTables_filter {
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 6px;
+    margin-bottom: 0 !important;
 }
+
 .dataTables_wrapper .dataTables_filter label {
-    font-size: 0.84rem !important;
+    font-size: 0.8rem !important;
     color: #4a5568 !important;
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 6px;
+    margin-bottom: 0 !important;
 }
+
 .dataTables_wrapper .dataTables_filter input {
-    border: 1.5px solid #e2e8f0 !important;
-    border-radius: 8px !important;
-    padding: 6px 12px !important;
-    font-size: 0.84rem !important;
-    color: #334155 !important;
+    border: 1px solid #e2e8f0 !important;
+    border-radius: 6px !important;
+    padding: 4px 12px 4px 30px !important;
+    font-size: 0.8rem !important;
+    color: #2d3748 !important;
+    background: #f8fafc url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' fill='%238592a3' viewBox='0 0 16 16'%3E%3Cpath d='M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398l3.85 3.85a1 1 0 0 0 1.415-1.415l-3.868-3.833zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z'/%3E%3C/svg%3E") no-repeat 8px center !important;
+    min-width: 180px;
+    height: 28px !important;
     outline: none !important;
     transition: border-color 0.2s, box-shadow 0.2s;
 }
+
+/* Hide native webkit search icon */
+.dataTables_wrapper .dataTables_filter input[type="search"]::-webkit-search-decoration,
+.dataTables_wrapper .dataTables_filter input[type="search"]::-webkit-search-cancel-button,
+.dataTables_wrapper .dataTables_filter input[type="search"]::-webkit-search-results-button,
+.dataTables_wrapper .dataTables_filter input[type="search"]::-webkit-search-results-decoration {
+    -webkit-appearance: none;
+    display: none;
+}
+
 .dataTables_wrapper .dataTables_filter input:focus {
     border-color: #1a56db !important;
     box-shadow: 0 0 0 3px rgba(26, 86, 219, 0.1) !important;
     background-color: #fff !important;
+}
+
+/* ── COMPACT THEAD ── */
+table.dataTable thead th,
+.table thead th {
+    height: 30px !important;
+    padding-top: 4px !important;
+    padding-bottom: 4px !important;
 }
 
 /* =====================================================
@@ -248,6 +353,7 @@ table.dataTable thead .sorting_desc::after {
     margin: 0 1px !important;
     transition: all 0.2s ease !important;
 }
+
 .dataTables_wrapper .pagination .page-item.active .page-link,
 .md-pagination .pagination .page-item.active .page-link,
 .md-pagination .page-item.active .page-link,
@@ -257,6 +363,7 @@ table.dataTable thead .sorting_desc::after {
     color: #ffffff !important;
     box-shadow: 0 2px 8px rgba(26, 86, 219, 0.25) !important;
 }
+
 .dataTables_wrapper .pagination .page-link:hover,
 .md-pagination .pagination .page-link:hover,
 .md-pagination .page-link:hover,
@@ -265,6 +372,7 @@ table.dataTable thead .sorting_desc::after {
     border-color: #1a56db !important;
     color: #1a56db !important;
 }
+
 .dataTables_wrapper .pagination .page-item:first-child .page-link,
 .dataTables_wrapper .pagination .page-item:last-child .page-link,
 .md-pagination .pagination .page-item:first-child .page-link,
@@ -276,6 +384,7 @@ table.dataTable thead .sorting_desc::after {
     border-radius: 20px !important;
     padding: 5px 16px !important;
 }
+
 .dataTables_wrapper .pagination .page-item.disabled .page-link,
 .md-pagination .pagination .page-item.disabled .page-link,
 .md-pagination .page-item.disabled .page-link,
@@ -286,7 +395,7 @@ table.dataTable thead .sorting_desc::after {
 }
 
 /* ── PAGINATION FOOTER WRAPPER ── */
-.dataTables_wrapper > .row:last-child {
+.dataTables_wrapper>.row:last-child {
     padding: 8px 0 !important;
     margin-top: 8px !important;
     display: flex !important;
@@ -300,6 +409,7 @@ table.dataTable thead .sorting_desc::after {
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
 }
+
 table th:last-child,
 table td:last-child {
     white-space: nowrap;

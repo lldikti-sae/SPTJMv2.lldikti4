@@ -301,8 +301,8 @@
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            width: 36px;
-            height: 36px;
+            width: 28px;
+            height: 28px;
             border-radius: 50%;
             border: none;
             cursor: pointer;
@@ -408,17 +408,19 @@
             text-transform: uppercase !important;
             font-size: 0.76rem !important;
             letter-spacing: 0.05em !important;
-            padding: 10px 12px !important;
+            padding: 5px 10px !important;
             vertical-align: middle !important;
+            line-height: 1.2 !important;
         }
         table.dataTable tbody td,
         .table tbody td,
         .md-table-wrap table tbody td,
         .md2-table tbody td {
             border: 1.5px solid #cbd5e1 !important;
-            padding: 8px 12px !important;
+            padding: 6px 12px !important;
             vertical-align: middle !important;
             color: #334155 !important;
+            line-height: 1.2 !important;
         }
         
         /* ─── DATATABLES PAGINATION FOOTER WRAPPER ─── */

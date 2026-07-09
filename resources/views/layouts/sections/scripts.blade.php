@@ -8,6 +8,28 @@
 <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
 <script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
 <script src="https://cdn.datatables.net/fixedheader/3.4.0/js/dataTables.fixedHeader.min.js"></script>
+<!-- ─── SPTJM GLOBAL DATATABLE DEFAULTS ─── -->
+<script>
+    if (typeof $ !== 'undefined' && $.fn && $.fn.dataTable) {
+        $.extend(true, $.fn.dataTable.defaults, {
+            dom: '<"md-toolbar d-flex justify-content-between align-items-center mb-0"<"entries-wrap"l><"search-wrap"f>>rt<"dataTables_bottom mt-3"ip>',
+            language: {
+                search: "",
+                searchPlaceholder: "Cari data...",
+                lengthMenu: "Show _MENU_ Entries",
+                paginate: {
+                    first: 'Awal',
+                    last: 'Akhir',
+                    next: '→',
+                    previous: '←'
+                },
+                zeroRecords: 'Data tidak ditemukan',
+                infoEmpty: 'Tidak ada data tersedia',
+                info: 'Menampilkan _START_-_END_ dari _TOTAL_ entri'
+            }
+        });
+    }
+</script>
 <!-- Vendors JS -->
 @yield('vendor-script')
 <!-- END: Page Vendor JS-->

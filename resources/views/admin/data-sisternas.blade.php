@@ -158,17 +158,8 @@ function updateFileName(input) {
 document.addEventListener('DOMContentLoaded', function() {
     // Initialize DataTable
     $('#sisternasTable').DataTable({
-        searching: false,
-        lengthChange: false,
-        info: false,
-        pageLength: 6,
-        order: [[0, 'asc']],
-        language: {
-            paginate: {
-                next: "→",
-                previous: "←",
-            }
-        }
+        pageLength: 10,
+        order: [[0, 'asc']]
     });
 
     //tahun select
