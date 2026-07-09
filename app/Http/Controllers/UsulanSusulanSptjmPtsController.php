@@ -419,9 +419,9 @@ class UsulanSusulanSptjmPtsController extends Controller
     // $alamatPts = $user->alamat;
 
   $tahun = session('tahun');
-  // Gunakan bulan yang DIPILIH DI DROPDOWN untuk prefix ID usulan
-  // Misal: Dropdown Maret -> 03 (S 03...)
-  $bulanAngka = str_pad($request->bulan, 2, '0', STR_PAD_LEFT);
+  // Gunakan BULAN SAAT INI (Bulan Pengajuan) untuk prefix ID usulan
+  $currentMonth = \Carbon\Carbon::now()->month;
+  $bulanAngka = str_pad($currentMonth, 2, '0', STR_PAD_LEFT);
 
     $namaBulan = [
       1 => 'Januari',
@@ -439,11 +439,10 @@ class UsulanSusulanSptjmPtsController extends Controller
     ];
     $bulanTeks = $namaBulan[intval($request->bulan)]; // ✅ Bulan yang DIUSULKAN tetap pakai $request
 
-    // Hitung jumlah usulan SUSULAN (id_usulan diawali 'S ') untuk bulan dropdown yang dipilih
-    // sehingga jika dropdown bulan berbeda, penomoran mulai dari 1; jika sama, bertambah +1
+    // Hitung jumlah usulan SUSULAN pada bulan pengajuan ini untuk mendapatkan nomor urut
     $countUsulan = DB::table('q_sptjm')
       ->where('kode_pts', $kodePts)
-      ->where('bulan', $bulanTeks)
+      ->whereMonth('tanggal_usulan', $currentMonth)
       ->where('tahun', $tahun)
       ->where('id_usulan', 'LIKE', 'S %')
       ->count();

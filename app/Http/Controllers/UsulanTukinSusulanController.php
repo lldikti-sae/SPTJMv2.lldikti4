@@ -312,15 +312,16 @@ class UsulanTukinSusulanController extends Controller
         // - Susulan boleh lebih dari 1 usulan pada periode yang sama
         // - Penomoran berbasis kode_pts + bulan + tahun
         // Referensi penomoran memakai s_tunjangan_kinerja agar percobaan gagal tidak menaikkan nomor.
+        $currentMonth = \Carbon\Carbon::now()->month;
         $countUsulan = DB::table('s_tunjangan_kinerja')
             ->where('Kode_PTS', $kodePts)
-            ->where('Bulan', $bulanTeks)
+            ->whereMonth('Tanggal_Usulan', $currentMonth)
             ->where('Tahun', (string) $tahun)
             ->where('Kode_Usulan', 'like', 'ST %')
             ->distinct()
             ->count('Kode_Usulan');
         $noUsulan = $countUsulan + 1;
-        $idUsulan = 'ST ' . str_pad((string)$bulan, 2, '0', STR_PAD_LEFT) . $kodePts . ' ' . $noUsulan;
+        $idUsulan = 'ST ' . str_pad((string)$currentMonth, 2, '0', STR_PAD_LEFT) . $kodePts . ' ' . $noUsulan;
         // Simpan tanggal usulan sebagai date (YYYY-MM-DD)
         $TanggalUsulan = now()->toDateString();
         $mapNilai = [

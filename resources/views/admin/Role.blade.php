@@ -85,6 +85,25 @@
                         <div class="accordion" id="accordionHakAkses">
                             
 
+                            <!-- Master Data -->
+                            <div class="accordion-item">
+                                <h2 class="accordion-header" id="headingMasterData">
+                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseMasterData" aria-expanded="false" aria-controls="collapseMasterData">
+                                        <strong>Master Data</strong>
+                                    </button>
+                                </h2>
+                                <div id="collapseMasterData" class="accordion-collapse collapse" aria-labelledby="headingMasterData" data-bs-parent="#accordionHakAkses">
+                                    <div class="accordion-body p-0">
+                                        <div class="list-group list-group-flush">
+                                            <label class="list-group-item d-flex gap-2 bg-lighter ps-4">
+                                                <input class="form-check-input flex-shrink-0 admin-permission-cb" type="checkbox" name="admin_permissions[]" value="data-perguruan-tinggi">
+                                                <span>Data Perguruan Tinggi</span>
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
                             <!-- Data Dosen -->
                             <div class="accordion-item">
                                 <h2 class="accordion-header" id="headingDataDosen">
@@ -96,19 +115,19 @@
                                     <div class="accordion-body p-0">
                                         <div class="list-group list-group-flush">
                                             <label class="list-group-item d-flex gap-2 bg-lighter ps-4">
-                                                <input class="form-check-input flex-shrink-0 admin-permission-cb" type="checkbox" name="admin_permissions[]" value="data-dosen-lihat">
+                                                <input class="form-check-input flex-shrink-0 admin-permission-cb" type="checkbox" name="admin_permissions[]" value="lihat-data-dosen">
                                                 <span>Lihat Data Dosen</span>
                                             </label>
                                             <label class="list-group-item d-flex gap-2 bg-lighter ps-4">
-                                                <input class="form-check-input flex-shrink-0 admin-permission-cb" type="checkbox" name="admin_permissions[]" value="data-dosen-histori">
+                                                <input class="form-check-input flex-shrink-0 admin-permission-cb" type="checkbox" name="admin_permissions[]" value="histori-data-dosen">
                                                 <span>Histori Data Dosen</span>
                                             </label>
                                             <label class="list-group-item d-flex gap-2 bg-lighter ps-4">
-                                                <input class="form-check-input flex-shrink-0 admin-permission-cb" type="checkbox" name="admin_permissions[]" value="data-dosen-monitoring">
+                                                <input class="form-check-input flex-shrink-0 admin-permission-cb" type="checkbox" name="admin_permissions[]" value="monitoring-data-dosen">
                                                 <span>Monitoring Usulan Dosen</span>
                                             </label>
                                             <label class="list-group-item d-flex gap-2 bg-lighter ps-4">
-                                                <input class="form-check-input flex-shrink-0 admin-permission-cb" type="checkbox" name="admin_permissions[]" value="data-dosen-hapus">
+                                                <input class="form-check-input flex-shrink-0 admin-permission-cb" type="checkbox" name="admin_permissions[]" value="hapus-data-dosen">
                                                 <span>Hapus Data Dosen Tidak Aktif</span>
                                             </label>
                                             <label class="list-group-item d-flex gap-2 bg-lighter ps-4">
@@ -208,8 +227,6 @@
                                     </div>
                                 </div>
                             </div>
-
-
 
                         </div>
                     </div>

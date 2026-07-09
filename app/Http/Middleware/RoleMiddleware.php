@@ -42,7 +42,7 @@ class RoleMiddleware
           // Using prefixes, e.g., 'admin/skpp' matches all subroutes of skpp
           $permissionMap = [
               // Master Data
-              'admin/daftar-pt' => 'master-pt',
+              'admin/daftar-pt' => 'data-perguruan-tinggi',
               'admin/master-dosen' => 'master-dosen',
               'admin/data-bank' => 'master-bank',
               'admin/data-grade' => 'master-grade',
@@ -54,12 +54,12 @@ class RoleMiddleware
               'admin/status-perubahan' => 'master-perubahan',
 
               // Data Dosen
-              'admin/data-dosen' => 'data-dosen-lihat',
-              'admin/ubah-data-dosen' => 'data-dosen-lihat',
-              'admin/perubahan-data-dosen' => 'data-dosen-lihat',
-              'admin/histori-dosen' => 'data-dosen-histori',
-              'admin/monitoring-usulan-dosen' => 'data-dosen-monitoring',
-              'admin/hapus-data-dosen-tidak-aktif' => 'data-dosen-hapus',
+              'admin/data-dosen' => 'lihat-data-dosen',
+              'admin/ubah-data-dosen' => 'lihat-data-dosen',
+              'admin/perubahan-data-dosen' => 'lihat-data-dosen',
+              'admin/histori-dosen' => 'histori-data-dosen',
+              'admin/monitoring-usulan-dosen' => 'monitoring-data-dosen',
+              'admin/hapus-data-dosen-tidak-aktif' => 'hapus-data-dosen',
               'admin/skpp' => 'skpp',
 
               // Data Sisternas
