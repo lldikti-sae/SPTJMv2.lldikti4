@@ -181,7 +181,7 @@
                                 ],
                                 lengthChange: true,
                                 pageLength: 100,
-                                lengthMenu: [[25, 50, 100, 250], [25, 50, 100, 250]],
+                                lengthMenu: [[25, 50, 100, 250, 500], [25, 50, 100, 250, 500]],
                                 language: {
                                     paginate: { first: 'Awal', last: 'Akhir', next: '→', previous: '←' },
                                     zeroRecords: 'Data tidak ditemukan',

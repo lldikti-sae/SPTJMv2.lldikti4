@@ -183,7 +183,7 @@
           paging: true,
           pageLength: 100,
           lengthChange: true,
-          lengthMenu: [[25, 50, 100], [25, 50, 100]],
+          lengthMenu: [[25, 50, 100, 500], [25, 50, 100, 500]],
           ajax: {
             url: '{{ route('auditor.dashboard.dosen-pensiun.data') }}'
           },

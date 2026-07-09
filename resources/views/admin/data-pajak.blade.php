@@ -13,9 +13,11 @@
 
 .md2-card { background:#fff; border-radius:10px; box-shadow:0 2px 12px rgba(44,62,80,0.07); overflow:hidden; margin-bottom:24px; }
 .md2-card-inner { padding:20px 24px 24px; }
-
 .md2-toolbar { display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:12px; margin-bottom:16px; }
-.md2-toolbar .right-wrap { display:flex; align-items:center; gap:12px; margin-left:auto; }
+.md2-toolbar .entries-wrap { display:flex; align-items:center; gap:8px; font-size:0.84rem; color:#4a5568; }
+.md2-toolbar .entries-wrap select { border:1px solid #e2e8f0; border-radius:6px; padding:5px 10px; font-size:0.84rem; color:#4a5568; background:#f8fafc; cursor:pointer; outline:none; }
+.md2-toolbar .entries-wrap select:focus { border-color:#1a56db; }
+.md2-toolbar .right-wrap { display:flex; align-items:center; gap:12px; }
 .md2-toolbar .search-wrap input { border:1px solid #e2e8f0; border-radius:6px; padding:6px 14px 6px 36px; font-size:0.84rem; color:#2d3748; min-width:210px; outline:none; transition:border-color 0.2s; background:#f8fafc url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' fill='%238592a3' viewBox='0 0 16 16'%3E%3Cpath d='M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398l3.85 3.85a1 1 0 0 0 1.415-1.415l-3.868-3.833zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z'/%3E%3C/svg%3E") no-repeat 10px center; }
 .md2-toolbar .search-wrap input:focus { border-color:#1a56db; background-color:#fff; }
 
@@ -44,8 +46,18 @@
 {{-- Card 1: Data Pajak --}}
 <div class="md2-card">
     <div class="md2-card-inner">
-        <h5 class="mb-3 text-dark fw-bold" style="font-size:1.1rem;">Data Pajak</h5>
         <div class="md2-toolbar">
+            <div class="entries-wrap">
+                <span>Show</span>
+                <select id="pajakLengthSelect">
+                    <option value="10">10</option>
+                    <option value="25">25</option>
+                    <option value="50">50</option>
+                    <option value="100">100</option>
+                    <option value="500">500</option>
+                </select>
+                <span>entries</span>
+            </div>
             <div class="right-wrap">
                 <div class="search-wrap"><input type="text" id="pajakSearchInput" placeholder="Cari data pajak..."></div>
                 <button class="btn-md2-tambah" type="button" id="addPajakBtn" data-bs-toggle="modal" data-bs-target="#modalPajakForm">
@@ -92,7 +104,19 @@
     <div class="md2-card-inner">
         <h5 class="mb-3 text-dark fw-bold" style="font-size:1.1rem;">Identitas Pemotong</h5>
         <div class="md2-toolbar">
+            <div class="entries-wrap">
+                <span>Show</span>
+                <select id="pemotongLengthSelect">
+                    <option value="10">10</option>
+                    <option value="25">25</option>
+                    <option value="50">50</option>
+                    <option value="100">100</option>
+                    <option value="500">500</option>
+                </select>
+                <span>entries</span>
+            </div>
             <div class="right-wrap">
+                <div class="search-wrap"><input type="text" id="pemotongSearchInput" placeholder="Cari data pemotong..."></div>
                 <button class="btn-md2-tambah" type="button" id="addPemotongBtn" data-bs-toggle="modal" data-bs-target="#modalPemotongForm">
                     <i class="bx bx-plus"></i> Tambah Identitas
                 </button>
@@ -338,16 +362,50 @@ document.addEventListener('DOMContentLoaded', function() {
         document.getElementById('pemotong_cap_preview_wrapper').style.display = 'block';
     });
 
-    document.getElementById("pajakSearchInput").addEventListener("keyup", function() {
-        var filter = this.value.toLowerCase();
-        document.querySelectorAll("#pajakTable tbody tr").forEach(function(row) {
-            row.style.display = row.textContent.toLowerCase().includes(filter) ? "" : "none";
-        });
+    const tablePajak = $('#pajakTable').DataTable({
+        pageLength: 10,
+        dom: '<"d-none"l><"d-none"f>rtip',
+        lengthMenu: [[10, 25, 50, 100, 500, -1], [10, 25, 50, 100, 500, 'All']],
+        language: {
+            paginate: { first: "«", last: "»", next: "›", previous: "‹" },
+            zeroRecords: "Data tidak ditemukan",
+            infoEmpty: "Tidak ada data tersedia",
+            info: "Menampilkan _START_-_END_ dari _TOTAL_ entri",
+        }
     });
 
-    document.querySelectorAll('.delete-pajak').forEach(button => {
-        button.addEventListener('click', function() {
-            let form = this.closest('.delete-form');
+    document.getElementById('pajakLengthSelect').addEventListener('change', function() {
+        tablePajak.page.len(parseInt(this.value)).draw();
+    });
+
+    document.getElementById("pajakSearchInput").addEventListener("input", function() {
+        tablePajak.search(this.value).draw();
+    });
+
+    const tablePemotong = $('#pemotongTable').DataTable({
+        pageLength: 10,
+        dom: '<"d-none"l><"d-none"f>rtip',
+        lengthMenu: [[10, 25, 50, 100, 500, -1], [10, 25, 50, 100, 500, 'All']],
+        language: {
+            paginate: { first: "«", last: "»", next: "›", previous: "‹" },
+            zeroRecords: "Data tidak ditemukan",
+            infoEmpty: "Tidak ada data tersedia",
+            info: "Menampilkan _START_-_END_ dari _TOTAL_ entri",
+        }
+    });
+
+    document.getElementById('pemotongLengthSelect').addEventListener('change', function() {
+        tablePemotong.page.len(parseInt(this.value)).draw();
+    });
+
+    document.getElementById("pemotongSearchInput").addEventListener("input", function() {
+        tablePemotong.search(this.value).draw();
+    });
+
+    document.body.addEventListener('click', function(event) {
+        if (event.target.closest('.delete-pajak')) {
+            let button = event.target.closest('.delete-pajak');
+            let form = button.closest('.delete-form');
             Swal.fire({
                 title: 'Apakah Anda Yakin?', text: "Data yang dihapus tidak bisa dikembalikan!", icon: 'warning',
                 showCancelButton: true, confirmButtonText: 'Ya, Hapus!', cancelButtonText: 'Batal',
@@ -355,12 +413,13 @@ document.addEventListener('DOMContentLoaded', function() {
             }).then((result) => {
                 if (result.isConfirmed) { loadingAlert(); form.submit(); }
             });
-        });
+        }
     });
 
-    document.querySelectorAll('.delete-pemotong').forEach(button => {
-        button.addEventListener('click', function() {
-            let form = this.closest('.delete-form-pemotong');
+    document.body.addEventListener('click', function(event) {
+        if (event.target.closest('.delete-pemotong')) {
+            let button = event.target.closest('.delete-pemotong');
+            let form = button.closest('.delete-form-pemotong');
             Swal.fire({
                 title: 'Apakah Anda Yakin?', text: "Data yang dihapus tidak bisa dikembalikan!", icon: 'warning',
                 showCancelButton: true, confirmButtonText: 'Ya, Hapus!', cancelButtonText: 'Batal',
@@ -368,7 +427,7 @@ document.addEventListener('DOMContentLoaded', function() {
             }).then((result) => {
                 if (result.isConfirmed) { loadingAlert(); form.submit(); }
             });
-        });
+        }
     });
 });
 </script>

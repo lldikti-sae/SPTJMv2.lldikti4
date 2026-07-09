@@ -21,6 +21,37 @@
         border-radius: 12px !important;
         background: #ffffff !important;
     }
+    .sptjm-btn-text-action {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 6px 14px;
+        font-size: 0.82rem;
+        font-weight: 700;
+        border-radius: 6px;
+        border: none;
+        transition: all 0.2s ease-in-out;
+        cursor: pointer;
+    }
+    .sptjm-btn-text-action:active {
+        transform: scale(0.97);
+    }
+    .sptjm-btn-text-delete {
+        background-color: #fde8e8 !important;
+        color: #dc3545 !important;
+    }
+    .sptjm-btn-text-delete:hover {
+        background-color: #fcc8c8 !important;
+        color: #b02a37 !important;
+    }
+    .sptjm-btn-text-save {
+        background-color: #e8faf0 !important;
+        color: #28a745 !important;
+    }
+    .sptjm-btn-text-save:hover {
+        background-color: #c3f0d8 !important;
+        color: #1e7e34 !important;
+    }
 </style>
 
 <script>
@@ -62,7 +93,7 @@ function updateCutoffFileName(input, targetId) {
                                 <th style="background-color: #f8fafc !important; color: #475569 !important; font-size: 0.75rem !important; letter-spacing: 0.05em !important; font-weight: 700 !important; width: 25%;">Pelaporan</th>
                                 <th style="background-color: #f8fafc !important; color: #475569 !important; font-size: 0.75rem !important; letter-spacing: 0.05em !important; font-weight: 700 !important; width: 25%;">Untuk Pembayaran</th>
                                 <th style="background-color: #f8fafc !important; color: #475569 !important; font-size: 0.75rem !important; letter-spacing: 0.05em !important; font-weight: 700 !important; width: 25%;">Upload Lampiran</th>
-                                <th style="background-color: #f8fafc !important; color: #475569 !important; font-size: 0.75rem !important; letter-spacing: 0.05em !important; font-weight: 700 !important; width: 25%;">Aksi Manajemen</th>
+                                <th style="background-color: #f8fafc !important; color: #475569 !important; font-size: 0.75rem !important; letter-spacing: 0.05em !important; font-weight: 700 !important; width: 25%; text-align: center;">Aksi Manajemen</th>
                             </tr>
                         </thead>
                         <tbody class="table-border-bottom-0">
@@ -82,13 +113,13 @@ function updateCutoffFileName(input, targetId) {
                                             <input type="text" class="form-control" id="val_o_sister_genap_tl" value="Tidak ada file dipilih" readonly style="background: #ffffff; font-size: 0.82rem; color: #64748b; border-color: #cbd5e1;">
                                         </div>
                                     </td>
-                                    <td>
-                                        <div class="d-flex align-items-center gap-2">
-                                            <button type="button" class="btn btn-warning btn-sm clear-data-btn fw-bold"
-                                                data-table="o_sister_genap_tl" style="background-color: #ff9f43; border-color: #ff9f43; color: white; display: inline-flex; align-items: center; gap: 4px; padding: 6px 12px; font-size: 0.82rem;">
+                                    <td style="text-align: center;">
+                                        <div class="d-flex align-items-center justify-content-center gap-2">
+                                            <button type="button" class="sptjm-btn-text-action sptjm-btn-text-delete clear-data-btn"
+                                                data-table="o_sister_genap_tl" title="Clear Data">
                                                 <i class="bx bx-trash"></i> Clear Data
                                             </button>
-                                            <button type="submit" class="btn btn-success btn-sm fw-bold" style="background-color: #28c76f; border-color: #28c76f; color: white; display: inline-flex; align-items: center; gap: 4px; padding: 6px 12px; font-size: 0.82rem;">
+                                            <button type="submit" class="sptjm-btn-text-action sptjm-btn-text-save" title="Simpan">
                                                 <i class="bx bx-save"></i> Simpan
                                             </button>
                                         </div>
@@ -112,13 +143,13 @@ function updateCutoffFileName(input, targetId) {
                                             <input type="text" class="form-control" id="val_p_sister_ganjil_tl" value="Tidak ada file dipilih" readonly style="background: #ffffff; font-size: 0.82rem; color: #64748b; border-color: #cbd5e1;">
                                         </div>
                                     </td>
-                                    <td>
-                                        <div class="d-flex align-items-center gap-2">
-                                            <button type="button" class="btn btn-warning btn-sm clear-data-btn fw-bold"
-                                                data-table="p_sister_ganjil_tl" style="background-color: #ff9f43; border-color: #ff9f43; color: white; display: inline-flex; align-items: center; gap: 4px; padding: 6px 12px; font-size: 0.82rem;">
+                                    <td style="text-align: center;">
+                                        <div class="d-flex align-items-center justify-content-center gap-2">
+                                            <button type="button" class="sptjm-btn-text-action sptjm-btn-text-delete clear-data-btn"
+                                                data-table="p_sister_ganjil_tl" title="Clear Data">
                                                 <i class="bx bx-trash"></i> Clear Data
                                             </button>
-                                            <button type="submit" class="btn btn-success btn-sm fw-bold" style="background-color: #28c76f; border-color: #28c76f; color: white; display: inline-flex; align-items: center; gap: 4px; padding: 6px 12px; font-size: 0.82rem;">
+                                            <button type="submit" class="sptjm-btn-text-action sptjm-btn-text-save" title="Simpan">
                                                 <i class="bx bx-save"></i> Simpan
                                             </button>
                                         </div>
@@ -142,13 +173,13 @@ function updateCutoffFileName(input, targetId) {
                                             <input type="text" class="form-control" id="val_n_sister_genap_bj" value="Tidak ada file dipilih" readonly style="background: #ffffff; font-size: 0.82rem; color: #64748b; border-color: #cbd5e1;">
                                         </div>
                                     </td>
-                                    <td>
-                                        <div class="d-flex align-items-center gap-2">
-                                            <button type="button" class="btn btn-warning btn-sm clear-data-btn fw-bold"
-                                                data-table="n_sister_genap_bj" style="background-color: #ff9f43; border-color: #ff9f43; color: white; display: inline-flex; align-items: center; gap: 4px; padding: 6px 12px; font-size: 0.82rem;">
+                                    <td style="text-align: center;">
+                                        <div class="d-flex align-items-center justify-content-center gap-2">
+                                            <button type="button" class="sptjm-btn-text-action sptjm-btn-text-delete clear-data-btn"
+                                                data-table="n_sister_genap_bj" title="Clear Data">
                                                 <i class="bx bx-trash"></i> Clear Data
                                             </button>
-                                            <button type="submit" class="btn btn-success btn-sm fw-bold" style="background-color: #28c76f; border-color: #28c76f; color: white; display: inline-flex; align-items: center; gap: 4px; padding: 6px 12px; font-size: 0.82rem;">
+                                            <button type="submit" class="sptjm-btn-text-action sptjm-btn-text-save" title="Simpan">
                                                 <i class="bx bx-save"></i> Simpan
                                             </button>
                                         </div>

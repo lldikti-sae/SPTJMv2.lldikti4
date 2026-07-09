@@ -2,6 +2,82 @@
 
 @section('title', 'SPTJM Online')
 
+@section('vendor-style')
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+<link href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css" rel="stylesheet" />
+@endsection
+
+@section('vendor-script')
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+@endsection
+
+@section('page-style')
+<style>
+/* ── Select2 Custom Theme for SPTJM ── */
+.select2-container--bootstrap-5 .select2-selection {
+    border: 1.5px solid #cbd5e1 !important;
+    border-radius: 8px !important;
+    font-size: 0.9rem !important;
+    color: #374151 !important;
+    min-height: 40px !important;
+    padding: 5px 10px !important;
+    font-family: 'Public Sans', sans-serif !important;
+    background-color: #fff !important;
+    box-shadow: none !important;
+}
+.select2-container--bootstrap-5.select2-container--focus .select2-selection {
+    border-color: #1a56db !important;
+    box-shadow: 0 0 0 3px rgba(26, 86, 219, 0.1) !important;
+}
+.select2-container--bootstrap-5 .select2-search__field {
+    border: 1.5px solid #e2e8f0 !important;
+    border-radius: 6px !important;
+    font-size: 0.85rem !important;
+    font-family: 'Public Sans', sans-serif !important;
+    padding: 5px 10px !important;
+    outline: none !important;
+    color: #374151 !important;
+}
+.select2-container--bootstrap-5 .select2-search__field:focus {
+    border-color: #1a56db !important;
+    box-shadow: 0 0 0 2px rgba(26,86,219,0.12) !important;
+}
+.select2-container--bootstrap-5 .select2-dropdown {
+    border: 1.5px solid #e2e8f0 !important;
+    border-radius: 8px !important;
+    box-shadow: 0 8px 24px rgba(11, 61, 145, 0.12) !important;
+    font-family: 'Public Sans', sans-serif !important;
+    font-size: 0.88rem !important;
+    overflow: hidden;
+}
+.select2-container--bootstrap-5 .select2-results__option {
+    padding: 7px 14px !important;
+    color: #374151 !important;
+}
+.select2-container--bootstrap-5 .select2-results__option--highlighted {
+    background-color: #eff6ff !important;
+    color: #0b3d91 !important;
+    font-weight: 500 !important;
+}
+.select2-container--bootstrap-5 .select2-results__option[aria-selected=true] {
+    background-color: #0b3d91 !important;
+    color: #fff !important;
+}
+.select2-container--bootstrap-5 .select2-selection__rendered {
+    color: #374151 !important;
+    font-size: 0.9rem !important;
+    line-height: 1.6 !important;
+    padding: 0 !important;
+}
+.select2-container--bootstrap-5 .select2-selection__placeholder {
+    color: #94a3b8 !important;
+}
+.select2-container {
+    width: 100% !important;
+}
+</style>
+@endsection
+
 @section('content')
 
 <style>
@@ -47,8 +123,7 @@
                     <div class="col-md-4">
                         <label for="basic-default-kodept" class="form-label fw-bold text-uppercase mb-1"
                             style="font-size: 0.68rem; letter-spacing: 0.06em; color: #64748b;">Pilih Perguruan Tinggi</label>
-                        <select class="form-select" id="basic-default-kodept" name="kode_pt"
-                            style="border: 1.5px solid #cbd5e1; border-radius: 8px; font-size: 0.9rem; color: #374151;">
+                        <select class="form-select" id="basic-default-kodept" name="kode_pt" data-select2-kodept>
                             <option value="">- Pilih Kode PT (opsional) -</option>
                             <option value="Semua" {{ $kode_pt === 'Semua' ? 'selected' : '' }}>Semua</option>
                             @foreach ($ptsList as $pt)
@@ -294,4 +369,30 @@
         </div>
     </div>
 </div>
+
+@push('scripts')
+<script>
+$(document).ready(function () {
+    if (typeof $.fn.select2 === 'undefined') return;
+
+    $('#basic-default-kodept').select2({
+        theme: 'bootstrap-5',
+        placeholder: 'Cari Kode PT/Nama Perguruan Tinggi',
+        allowClear: true,
+        width: '100%',
+        language: {
+            noResults: function() { return 'Tidak ditemukan'; },
+            searching: function() { return 'Mencari...'; }
+        },
+        matcher: function(params, data) {
+            if (!params.term || params.term.trim() === '') return data;
+            var term = params.term.toLowerCase();
+            var text = (data.text || '').toLowerCase();
+            if (text.indexOf(term) >= 0) return data;
+            return null;
+        }
+    });
+});
+</script>
+@endpush
 @endsection

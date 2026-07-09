@@ -119,12 +119,12 @@
   $(document).ready(function() {
     var table = $('#monitoringTable').DataTable({
       pageLength: 10,
-      lengthMenu: [[10, 25, 50, 100], [10, 25, 50, 100]],
+      lengthMenu: [[10, 25, 50, 100, 500], [10, 25, 50, 100, 500]],
       columnDefs: [
         { orderable: false, targets: [6] }
       ],
       language: {
-        lengthMenu: "Tampilkan _MENU_ entri",
+        lengthMenu: "Show _MENU_ entries",
         zeroRecords: "Tidak ada data yang cocok",
         info: "Menampilkan _START_ sampai _END_ dari _TOTAL_ entri",
         infoEmpty: "Menampilkan 0 sampai 0 dari 0 entri",

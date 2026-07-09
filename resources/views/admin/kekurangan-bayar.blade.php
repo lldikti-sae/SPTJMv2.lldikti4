@@ -1,6 +1,17 @@
 @extends('layouts/contentNavbarLayout')
 
-@section('title', 'SPTJM Online')
+@section('title', 'Kurang/Lebih Bayar - SPTJM Online')
+
+@section('page-style')
+<style>
+.md2-page-header { display:flex; align-items:flex-start; justify-content:space-between; flex-wrap:wrap; gap:12px; margin-bottom:24px; }
+.md2-page-header .page-titles h4 { font-size:1.35rem; font-weight:700; color:#2c3e50; margin:0 0 4px; }
+.md2-page-header .breadcrumb { margin:0; font-size:0.8rem; background:none; padding:0; }
+.md2-page-header .breadcrumb-item a { color:#696cff; text-decoration:none; }
+.md2-page-header .breadcrumb-item.active { color:#8592a3; }
+.md2-page-header .breadcrumb-item+.breadcrumb-item::before { color:#8592a3; }
+</style>
+@endsection
 
 @section('content')
 
@@ -45,12 +56,21 @@
     };
 @endphp
 
+<div class="md2-page-header">
+    <div class="page-titles">
+        <h4>Kurang/Lebih Bayar - Tahun {{ $versi }}</h4>
+        <nav aria-label="breadcrumb"><ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="#">Monitoring</a></li>
+            <li class="breadcrumb-item active">Kurang/Lebih Bayar</li>
+        </ol></nav>
+    </div>
+</div>
+
 <div class="content-wrapper">
     <div class="row">
         <div class="col-12">
             <div class="card mb-4">
-                <h5 class="card-header">Proses Kurang/Lebih Bayar - Tahun {{ $versi }}</h5>
-                <div class="card-body">
+                <div class="card-body pt-3">
                     <form method="POST" action="{{ route('admin.kekurangan-bayar.proses') }}" id="formProsesKekurangan">
                         @csrf
                         <div class="row mb-0">

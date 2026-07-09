@@ -210,7 +210,7 @@
         pageLength: 15,
         lengthChange: true, // Use native length
         searching: true, // Use native search
-        lengthMenu: [[15, 25, 50, 100], [15, 25, 50, 100]],
+        lengthMenu: [[15, 25, 50, 100, 500], [15, 25, 50, 100, 500]],
         dom: "<'md-toolbar'<'entries-wrap'l><'search-wrap'f>>" +
              "rt<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
         order: [[6, 'desc']],

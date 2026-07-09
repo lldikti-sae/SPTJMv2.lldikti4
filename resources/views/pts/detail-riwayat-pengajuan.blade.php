@@ -101,8 +101,8 @@
             paging: true,
             pageLength: 50,
             lengthMenu: [
-                [25, 50, 100],
-                [25, 50, 100]
+                [25, 50, 100, 500],
+                [25, 50, 100, 500]
             ],
             ajax: '{{ route('pts.detail-riwayat-pengajuan', ['no' => $pengajuan->no ?? request()->route("no")]) }}',
             columns: [

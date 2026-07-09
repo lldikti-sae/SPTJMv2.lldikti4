@@ -1,11 +1,167 @@
 @extends((auth()->check() && method_exists(auth()->user(), 'isPIC') && auth()->user()->isPIC()) ? 'layouts/contentNavbarLayoutPic' : 'layouts/contentNavbarLayout')
 
-@php
-  $isPic = auth()->check() && method_exists(auth()->user(), 'isPIC') && auth()->user()->isPIC();
-  $routePrefix = $isPic ? 'pic' : 'admin';
-@endphp
+@section('title', 'Sinkronisasi Data - SPTJM Online')
 
-@section('title', 'SPTJM Online')
+@section('page-style')
+<style>
+.md2-page-header { display:flex; align-items:flex-start; justify-content:space-between; flex-wrap:wrap; gap:12px; margin-bottom:24px; }
+.md2-page-header .page-titles h4 { font-size:1.35rem; font-weight:700; color:#2c3e50; margin:0 0 4px; }
+.md2-page-header .breadcrumb { margin:0; font-size:0.8rem; background:none; padding:0; }
+.md2-page-header .breadcrumb-item a { color:#696cff; text-decoration:none; }
+.md2-page-header .breadcrumb-item.active { color:#8592a3; }
+.md2-page-header .breadcrumb-item+.breadcrumb-item::before { color:#8592a3; }
+
+/* Modern tab styling as pill buttons */
+.nav-tabs.custom-tabs {
+  border-bottom: none !important;
+  display: flex !important;
+  gap: 10px !important;
+  margin-bottom: 6px !important;
+  padding: 0 !important;
+}
+.nav-tabs.custom-tabs .nav-item {
+  margin-bottom: 0 !important;
+}
+.nav-tabs.custom-tabs .nav-link {
+  background-color: #fff !important;
+  border: 1.5px solid #e2e8f0 !important;
+  color: #4a5568 !important;
+  font-weight: 600 !important;
+  font-size: 0.82rem !important;
+  padding: 8px 24px !important;
+  border-radius: 24px !important;
+  transition: all 0.2s ease !important;
+  cursor: pointer !important;
+}
+.nav-tabs.custom-tabs .nav-link:hover:not(.active) {
+  background-color: #f8fafc !important;
+  border-color: #cbd5e1 !important;
+  color: #1a56db !important;
+}
+.nav-tabs.custom-tabs .nav-link.active {
+  background-color: #0b3d91 !important; /* Dark blue matching Figma / data-dosen */
+  border-color: #0b3d91 !important;
+  color: #fff !important;
+  font-weight: 700 !important;
+  box-shadow: 0 4px 10px rgba(11, 61, 145, 0.25) !important;
+}
+
+/* Modern buttons styling */
+.btn-sptjm-primary, .btn-sptjm-warning, .btn-sptjm-success {
+  border: none;
+  color: #fff !important;
+  font-weight: 600;
+  font-size: 0.82rem;
+  padding: 8px 18px;
+  border-radius: 6px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.2s;
+  cursor: pointer;
+}
+.btn-sptjm-primary {
+  background: #1a56db;
+}
+.btn-sptjm-primary:hover {
+  background: #1648c0;
+  box-shadow: 0 4px 12px rgba(26,86,219,0.35);
+}
+.btn-sptjm-warning {
+  background: #ffab00;
+}
+.btn-sptjm-warning:hover {
+  background: #e09600;
+  box-shadow: 0 4px 12px rgba(255,171,0,0.35);
+}
+.btn-sptjm-success {
+  background: #28c76f;
+}
+.btn-sptjm-success:hover {
+  background: #20a65b;
+  box-shadow: 0 4px 12px rgba(40,199,111,0.35);
+}
+.btn-sptjm-success:disabled {
+  background: #a8ebd0;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+/* Action buttons in tables styling */
+.btn-sptjm-action {
+  padding: 5px 12px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  border-radius: 4px;
+  border: none;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.btn-sptjm-action-success {
+  background-color: #e8faf0;
+  color: #28c76f !important;
+}
+.btn-sptjm-action-success:hover {
+  background-color: #c3f0d8;
+  color: #1e7e34 !important;
+}
+.btn-sptjm-action-primary {
+  background-color: #e8f0fe;
+  color: #1a56db !important;
+}
+.btn-sptjm-action-primary:hover {
+  background-color: #d0e1fd;
+  color: #1a56db !important;
+}
+
+/* Modern form controls styling */
+.form-control-sptjm {
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  padding: 8px 14px;
+  font-size: 0.84rem;
+  color: #2d3748;
+  outline: none;
+  transition: border-color 0.2s;
+  background: #f8fafc;
+  width: 100%;
+}
+.form-control-sptjm:focus {
+  border-color: #1a56db;
+  background-color: #fff;
+}
+.form-select-sptjm {
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  padding: 8px 28px 8px 12px;
+  font-size: 0.84rem;
+  color: #2d3748;
+  outline: none;
+  transition: border-color 0.2s;
+  background: #f8fafc url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath fill='none' stroke='%23343a40' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M2 5l6 6 6-6'/%3E%3C/svg%3E") no-repeat right 12px center;
+  background-size: 10px 10px;
+  appearance: none;
+  cursor: pointer;
+  width: 100%;
+}
+.form-select-sptjm:focus {
+  border-color: #1a56db;
+  background-color: #fff;
+}
+
+/* Modern instruction text styling */
+.sptjm-instruction-text {
+  font-size: 0.9rem !important;
+  font-weight: 600 !important;
+  color: #2c3e50 !important;
+  margin-bottom: 6px !important;
+  line-height: 1.5 !important;
+}
+</style>
+@endsection
 
 @section('content')
 <style>
@@ -17,6 +173,8 @@
   .golmasa-mismatch{ background-color:#ffecec !important; }
 </style>
 @php
+  $isPic = auth()->check() && method_exists(auth()->user(), 'isPIC') && auth()->user()->isPIC();
+  $routePrefix = $isPic ? 'pic' : 'admin';
   $months = [
     1 => 'Januari',
     2 => 'Februari',
@@ -33,49 +191,58 @@
   ];
 @endphp
 
+<div class="md2-page-header">
+    <div class="page-titles">
+        <h4>Sinkronisasi Data</h4>
+        <nav aria-label="breadcrumb"><ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="#">Monitoring</a></li>
+            <li class="breadcrumb-item active">Sinkronisasi Data</li>
+        </ol></nav>
+    </div>
+</div>
+
 <div id="alertBox" class="alert d-none" role="alert"></div>
 
 <!-- Combined card: Gaji + Pajak (tabs) -->
 <div class="card" style="width: 100%; padding: 10px; margin-top: 1rem;">
-  <div class="d-flex flex-wrap align-items-center justify-content-between">
-    <h5 class="card-header text-start p-2 mb-0">Sinkronisasi Tidak Sesuai</h5>
-    <div class="px-2 pt-2">
-      <ul class="nav nav-tabs" role="tablist">
+  <div class="d-flex flex-wrap align-items-center">
+    <div class="px-2 pt-2 pb-0 w-100">
+      <ul class="nav nav-tabs custom-tabs" role="tablist">
         <li class="nav-item" role="presentation">
-          <button class="nav-link active border" id="tab-gaji-btn" data-bs-toggle="tab" data-bs-target="#tab-gaji" type="button" role="tab" aria-controls="tab-gaji" aria-selected="true">Gaji</button>
+          <button class="nav-link active" id="tab-gaji-btn" data-bs-toggle="tab" data-bs-target="#tab-gaji" type="button" role="tab" aria-controls="tab-gaji" aria-selected="true">Gaji</button>
         </li>
         <li class="nav-item" role="presentation">
-          <button class="nav-link border" id="tab-pajak-btn" data-bs-toggle="tab" data-bs-target="#tab-pajak" type="button" role="tab" aria-controls="tab-pajak" aria-selected="false">Pajak</button>
+          <button class="nav-link" id="tab-pajak-btn" data-bs-toggle="tab" data-bs-target="#tab-pajak" type="button" role="tab" aria-controls="tab-pajak" aria-selected="false">Pajak</button>
         </li>
         <li class="nav-item" role="presentation">
-          <button class="nav-link border" id="tab-golmasa-btn" data-bs-toggle="tab" data-bs-target="#tab-golmasa" type="button" role="tab" aria-controls="tab-golmasa" aria-selected="false">Gol/Masa Kerja</button>
+          <button class="nav-link" id="tab-golmasa-btn" data-bs-toggle="tab" data-bs-target="#tab-golmasa" type="button" role="tab" aria-controls="tab-golmasa" aria-selected="false">Gol/Masa Kerja</button>
         </li>
       </ul>
     </div>
   </div>
-  <hr>
-  <div class="card-body p-2">
+  <hr style="margin: 6px 0 0 0;">
+  <div class="card-body px-2 pb-2 pt-1">
     <div class="tab-content">
       <div class="tab-pane fade show active" id="tab-gaji" role="tabpanel" aria-labelledby="tab-gaji-btn">
-    <p class="mb-2" style="font-size: 12px;">
+    <p class="sptjm-instruction-text">
       Gunakan tombol di bawah untuk mengecek gaji yang tidak sesuai untuk semua NIDN/NUPTK pada tahun versi aktif.
     </p>
     <div class="row mb-2" style="font-size: 12px;">
       <div class="col-sm-4">
         <label class="col-form-label mb-1"><b>Cek Data Gaji per NIDN/NUPTK (Semua Bulan)</b></label>
-        <input type="text" id="gajiSingleNidn" class="form-control form-control-sm" placeholder="Masukkan NIDN/NUPTK untuk cek data gaji (semua bulan)" />
+        <input type="text" id="gajiSingleNidn" class="form-control-sptjm" placeholder="Masukkan NIDN/NUPTK untuk cek data gaji (semua bulan)" />
       </div>
       <div class="col-sm-3 d-flex align-items-end mt-2 mt-sm-0">
-        <button type="button" id="btnSyncGajiNidnAll" class="btn btn-primary btn-sm">
+        <button type="button" id="btnSyncGajiNidnAll" class="btn-sptjm-primary">
           <span class="tf-icons bx bx-search"></span>&nbsp; Cek data
         </button>
       </div>
     </div>
     <div class="d-flex flex-wrap gap-2 mb-2">
-      <button type="button" id="btnCheckGajiMismatch" class="btn btn-warning btn-sm">
+      <button type="button" id="btnCheckGajiMismatch" class="btn-sptjm-warning">
         <span class="tf-icons bx bx-search"></span>&nbsp; Cek Gaji Tidak Sesuai
       </button>
-      <button type="button" id="btnSyncGajiAll" class="btn btn-success btn-sm">
+      <button type="button" id="btnSyncGajiAll" class="btn-sptjm-success">
         <span class="tf-icons bx bx-refresh"></span>&nbsp; Sinkronisasi Gaji ke Semua NIDN/NUPTK
       </button>
     </div>
@@ -102,25 +269,25 @@
       </div>
 
       <div class="tab-pane fade" id="tab-pajak" role="tabpanel" aria-labelledby="tab-pajak-btn">
-    <p class="mb-2" style="font-size: 12px;">
+    <p class="sptjm-instruction-text">
       Gunakan tombol di bawah untuk mengecek pajak yang tidak sesuai untuk semua NIDN/NUPTK pada tahun versi aktif.
     </p>
     <div class="row mb-2" style="font-size: 12px;">
       <div class="col-sm-4">
         <label class="col-form-label mb-1"><b>Cek Data Pajak per NIDN/NUPTK (Semua Bulan)</b></label>
-        <input type="text" id="pajakSingleNidn" class="form-control form-control-sm" placeholder="Masukkan NIDN/NUPTK untuk cek data pajak (semua bulan)" />
+        <input type="text" id="pajakSingleNidn" class="form-control-sptjm" placeholder="Masukkan NIDN/NUPTK untuk cek data pajak (semua bulan)" />
       </div>
       <div class="col-sm-3 d-flex align-items-end mt-2 mt-sm-0">
-        <button type="button" id="btnSyncPajakNidnAll" class="btn btn-primary btn-sm">
+        <button type="button" id="btnSyncPajakNidnAll" class="btn-sptjm-primary">
           <span class="tf-icons bx bx-search"></span>&nbsp; Cek data
         </button>
       </div>
     </div>
     <div class="d-flex flex-wrap gap-2 mb-2">
-      <button type="button" id="btnCheckMismatch" class="btn btn-warning btn-sm">
+      <button type="button" id="btnCheckMismatch" class="btn-sptjm-warning">
         <span class="tf-icons bx bx-search"></span>&nbsp; Cek Pajak Tidak Sesuai
       </button>
-      <button type="button" id="btnSyncAllMonths" class="btn btn-success btn-sm" disabled>
+      <button type="button" id="btnSyncAllMonths" class="btn-sptjm-success" disabled>
         <span class="tf-icons bx bx-refresh"></span>&nbsp; Sinkronisasi Pajak ke Semua NIDN/NUPTK
       </button>
     </div>
@@ -146,26 +313,26 @@
       </div>
 
       <div class="tab-pane fade" id="tab-golmasa" role="tabpanel" aria-labelledby="tab-golmasa-btn">
-        <p class="mb-2" style="font-size: 12px;">
+        <p class="sptjm-instruction-text">
           Gunakan tombol di bawah untuk mengecek data Golongan/Masa Kerja yang tidak sesuai untuk semua NIDN/NUPTK pada tahun versi aktif.
         </p>
         <div class="row mb-2" style="font-size: 12px;">
           <div class="col-sm-4">
             <label class="col-form-label mb-1"><b>Cek Data Gol/Masa Kerja per NIDN/NUPTK (Semua Bulan)</b></label>
-            <input type="text" id="golmasaSingleNidn" class="form-control form-control-sm" placeholder="Masukkan NIDN/NUPTK untuk cek data Gol/Masa Kerja (semua bulan)" />
+            <input type="text" id="golmasaSingleNidn" class="form-control-sptjm" placeholder="Masukkan NIDN/NUPTK untuk cek data Gol/Masa Kerja (semua bulan)" />
           </div>
           <div class="col-sm-3 d-flex align-items-end mt-2 mt-sm-0">
-            <select id="golmasaSyncScope" class="form-select form-select-sm" title="Pilih data yang disinkronisasi">
+            <select id="golmasaSyncScope" class="form-select-sptjm" title="Pilih data yang disinkronisasi">
               <option value="both" selected>Keduanya (Golongan + Masa Kerja)</option>
               <option value="gol">Hanya Golongan</option>
               <option value="masa">Hanya Masa Kerja</option>
             </select>
           </div>
           <div class="col-sm-5 d-flex align-items-end gap-2 mt-2 mt-sm-0">
-            <button type="button" id="btnSyncGolmasaNidnAll" class="btn btn-primary btn-sm">
+            <button type="button" id="btnSyncGolmasaNidnAll" class="btn-sptjm-primary">
               <span class="tf-icons bx bx-search"></span>&nbsp; Cek data
             </button>
-            <button type="button" id="btnSyncGolmasaNow" class="btn btn-success btn-sm" disabled onclick="if(window.syncGolmasaTrigger) window.syncGolmasaTrigger();">
+            <button type="button" id="btnSyncGolmasaNow" class="btn-sptjm-success" disabled onclick="if(window.syncGolmasaTrigger) window.syncGolmasaTrigger();">
               <span class="tf-icons bx bx-refresh"></span>&nbsp; Sinkronisasi
             </button>
           </div>
@@ -590,7 +757,7 @@
 
           const canSync = !!row.can_sync;
           const actionBtn = canSync
-            ? `<button type="button" class="btn btn-xs btn-success btn-sync-gaji-month" data-nidn="${identifier}" data-bulan="${row.bulan_index}">Sinkron</button>`
+            ? `<button type="button" class="btn-sptjm-action btn-sptjm-action-success btn-sync-gaji-month" data-nidn="${identifier}" data-bulan="${row.bulan_index}">Sinkron</button>`
             : '';
 
           html += `<tr data-bulan="${row.bulan_index}">` +
@@ -722,7 +889,7 @@
             cell(`<div class="text-end">${formatNumber(row.bersih_tpd_calc)}</div>`, m_bersih_tpd) +
             cell(`<div class="text-end">${formatNumber(row.bersih_tkgb_db)}</div>`, m_bersih_tkgb) +
             cell(`<div class="text-end">${formatNumber(row.bersih_tkgb_calc)}</div>`, m_bersih_tkgb) +
-            cell(`<div class="text-center"><button type="button" class="btn btn-xs btn-success btn-sync-month" data-nidn="${identifier}" data-bulan="${row.bulan_index}">Sinkron</button></div>`, false) +
+            cell(`<div class="text-center"><button type="button" class="btn-sptjm-action btn-sptjm-action-success btn-sync-month" data-nidn="${identifier}" data-bulan="${row.bulan_index}">Sinkron</button></div>`, false) +
           `</tr>`;
         });
 
@@ -1180,7 +1347,7 @@
               const nuptk = (data.nuptk || '').trim();
               const identifier = nidn || nuptk;
               return identifier
-                ? `<button type="button" class="btn btn-xs btn-primary btn-detail-mismatch" data-nidn="${identifier}">Detail</button>`
+                ? `<button type="button" class="btn-sptjm-action btn-sptjm-action-primary btn-detail-mismatch" data-nidn="${identifier}">Detail</button>`
                 : '';
             }
           }
@@ -1236,7 +1403,7 @@
               const nuptk = (data.nuptk || '').trim();
               const identifier = nidn || nuptk;
               return identifier
-                ? `<button type="button" class="btn btn-xs btn-primary btn-detail-gaji-mismatch" data-nidn="${identifier}">Detail</button>`
+                ? `<button type="button" class="btn-sptjm-action btn-sptjm-action-primary btn-detail-gaji-mismatch" data-nidn="${identifier}">Detail</button>`
                 : '';
             }
           }

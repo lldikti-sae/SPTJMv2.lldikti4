@@ -150,7 +150,7 @@
       processing: true,
       serverSide: false,
       pageLength: 10,
-      lengthMenu: [[10, 25, 50, 100], [10, 25, 50, 100]],
+      lengthMenu: [[10, 25, 50, 100, 500], [10, 25, 50, 100, 500]],
       ajax: {
         url: "{{ route('pic.validasi-usulan.data') }}",
         type: 'POST',
@@ -199,7 +199,7 @@
         }
       ],
       language: {
-        lengthMenu: "Tampilkan _MENU_ entri",
+        lengthMenu: "Show _MENU_ entries",
         zeroRecords: "Tidak ada data yang cocok",
         info: "Menampilkan _START_ sampai _END_ dari _TOTAL_ entri",
         infoEmpty: "Menampilkan 0 sampai 0 dari 0 entri",

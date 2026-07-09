@@ -13,6 +13,7 @@
     if (typeof $ !== 'undefined' && $.fn && $.fn.dataTable) {
         $.extend(true, $.fn.dataTable.defaults, {
             dom: '<"md-toolbar d-flex justify-content-between align-items-center mb-0"<"entries-wrap"l><"search-wrap"f>>rt<"dataTables_bottom mt-3"ip>',
+            lengthMenu: [[10, 25, 50, 100, 500], [10, 25, 50, 100, 500]],
             language: {
                 search: "",
                 searchPlaceholder: "Cari data...",
@@ -29,6 +30,20 @@
             }
         });
     }
+</script>
+<!-- ─── SPTJM: Prevent hover-ghost icon effect across page navigation ─── -->
+<script>
+    (function() {
+        window.addEventListener('beforeunload', function() {
+            document.documentElement.classList.add('page-transitioning');
+        });
+        document.addEventListener('click', function(e) {
+            var link = e.target && e.target.closest ? e.target.closest('a[href], button[type="submit"]') : null;
+            if (link && !link.getAttribute('data-bs-toggle')) {
+                document.documentElement.classList.add('page-transitioning');
+            }
+        }, true);
+    })();
 </script>
 <!-- Vendors JS -->
 @yield('vendor-script')
