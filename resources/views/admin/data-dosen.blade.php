@@ -154,51 +154,7 @@
 }
 .dataTables_filter input:focus { border-color: #0b3d91; background-color: #fff; }
 
-<<<<<<< HEAD
 /* ── Table: dipindahkan ke global sptjm-datatable.css ── */
-=======
-/* ── Table ── */
-.md-table-wrap table.dataTable { border-collapse: collapse !important; width: 100% !important; margin-top: 0 !important; }
-.md-table-wrap table.dataTable thead th {
-    background: #ffffff !important;
-    color: #64748b !important;
-    font-size: 0.72rem !important;
-    font-weight: 700 !important;
-    text-transform: uppercase !important;
-    letter-spacing: 0.05em !important;
-    border-bottom: 1px solid #e2e8f0 !important;
-    padding: 12px 14px !important;
-    white-space: nowrap;
-}
-.md-table-wrap table.dataTable tbody td {
-    font-size: 0.84rem;
-    color: #374151;
-    padding: 12px 14px !important;
-    vertical-align: middle;
-    border-bottom: 1px solid #f1f5f9 !important;
-}
-.md-table-wrap table.dataTable tbody tr:hover { background-color: #f8fafc !important; }
-
-/* DataTables overrides - Footer Row Layout */
-.dataTables_wrapper .row:last-child { 
-    background-color: #f1f5f9; 
-    padding: 12px 24px; 
-    border-top: 1px solid #e2e8f0; 
-    border-radius: 0 0 10px 10px;
-    align-items: center;
-    display: flex !important;
-    justify-content: space-between !important;
-}
-/* Paginate on right */
-.dataTables_wrapper .dataTables_paginate { margin-top: 0; display: flex; align-items: center; justify-content: flex-end; }
-.dataTables_wrapper .pagination { gap: 6px; margin: 0; }
-.dataTables_wrapper .dataTables_info { font-size: 0.82rem; color: #8592a3; padding-top: 0; }
-/* Pull info column to left, paginate column to right */
-.dataTables_wrapper .row:last-child > div:first-child { order: 1; }
-.dataTables_wrapper .row:last-child > div:last-child { order: 2; margin-left: auto; }
-
-
->>>>>>> origin/feature/ui-masterdata
 
 /* ── Custom Elements ── */
 .text-link-nidn {

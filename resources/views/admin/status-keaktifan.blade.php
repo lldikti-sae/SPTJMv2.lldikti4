@@ -19,9 +19,6 @@
 .btn-md2-tambah { background:#1a56db; border:none; color:#fff; font-weight:600; font-size:0.82rem; padding:8px 18px; border-radius:6px; display:inline-flex; align-items:center; gap:6px; transition:background 0.2s; cursor:pointer; }
 .btn-md2-tambah:hover { background:#1648c0; color:#fff; box-shadow:0 4px 12px rgba(26,86,219,0.35); }
 /* Table header/body/pagination: dipindahkan ke global sptjm-datatable.css */
-.btn-aksi-edit   { background:#fd9f10; border:none; color:#fff; border-radius:6px; padding:5px 9px; font-size:0.82rem; cursor:pointer; }
-.btn-aksi-delete { background:#dc3545; border:none; color:#fff; border-radius:6px; padding:5px 9px; font-size:0.82rem; cursor:pointer; }
-.btn-aksi-edit:hover { background:#e68a00; } .btn-aksi-delete:hover { background:#bb2d3b; }
 .badge-status { display:inline-block; padding:3px 12px; border-radius:20px; font-size:0.75rem; font-weight:700; }
 .badge-aktif   { background:rgba(40,199,111,0.12); color:#28c76f; }
 .badge-nonaktif { background:rgba(234,84,85,0.12); color:#ea5455; }
@@ -69,14 +66,14 @@
                             <span class="badge-status {{ $badgeClass }}">{{ $keaktifan->aktif }}</span>
                         </td>
                         <td>
-                            <button class="btn-aksi-edit edit-keaktifan" data-id="{{ $keaktifan->kode }}"
+                            <button class="sptjm-icon-btn sptjm-btn-edit edit-keaktifan" data-id="{{ $keaktifan->kode }}"
                               data-kode="{{ $keaktifan->kode }}" data-aktif="{{ $keaktifan->aktif }}"
-                              data-bs-toggle="modal" data-bs-target="#modalKeaktifanForm">
+                              data-bs-toggle="modal" data-bs-target="#modalKeaktifanForm" title="Edit">
                                 <i class="bx bx-edit"></i>
                             </button>
                             <form action="{{ route('admin/data-keaktifan.destroy', $keaktifan->kode) }}" method="POST" class="d-inline delete-form">
                                 @csrf @method('DELETE')
-                                <button type="button" class="btn-aksi-delete delete-keaktifan" data-id="{{ $keaktifan->kode }}">
+                                <button type="button" class="sptjm-icon-btn sptjm-btn-delete delete-keaktifan" data-id="{{ $keaktifan->kode }}" title="Hapus">
                                     <i class="bx bx-trash"></i>
                                 </button>
                             </form>

@@ -294,7 +294,7 @@ $(document).ready(function() {
                             <form action="${url}" method="POST" class="form-delete-dosen d-inline">
                                 <input type="hidden" name="_token" value="{{ csrf_token() }}">
                                 <input type="hidden" name="_method" value="DELETE">
-                                <button type="button" class="btn-aksi-circle btn-aksi-delete btn-can-delete" data-id="${identifier}" title="Hapus Data">
+                                <button type="button" class="sptjm-icon-btn sptjm-btn-delete btn-can-delete" data-id="${identifier}" title="Hapus Data">
                                     <i class="bx bx-trash"></i>
                                 </button>
                             </form>
@@ -303,7 +303,7 @@ $(document).ready(function() {
 
                     // Jika punya kode usulan/kode cair → tidak boleh dihapus, tampilkan tombol info yang memunculkan modal
                     return `
-                        <button type="button" class="btn-aksi-circle btn-aksi-info btn-cannot-delete" data-id="${identifier}" title="Informasi Penghapusan">
+                        <button type="button" class="sptjm-icon-btn sptjm-btn-info btn-cannot-delete" data-id="${identifier}" title="Informasi Penghapusan">
                             <i class="bx bx-info-circle"></i>
                         </button>
                     `;

@@ -390,20 +390,10 @@
     }
 
     // Bind click events on all .layout-menu-toggle elements
+    // Note: main.js already binds these — we only need the Helpers patch above.
+    // We intentionally skip re-binding here to avoid double-fire.
     function bindToggles() {
-        var togglers = document.querySelectorAll('.layout-menu-toggle');
-        togglers.forEach(function(toggler) {
-            toggler.addEventListener('click', function(e) {
-                e.preventDefault();
-                if (isDesktop()) {
-                    toggleDesktop();
-                } else {
-                    if (window.Helpers && typeof window.Helpers.toggleCollapsed === 'function') {
-                        window.Helpers.toggleCollapsed();
-                    }
-                }
-            });
-        });
+        // no-op: main.js handles .layout-menu-toggle clicks via patched Helpers.toggleCollapsed
     }
 
     // Run

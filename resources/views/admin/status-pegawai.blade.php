@@ -18,18 +18,8 @@
 .md2-toolbar .search-wrap input:focus { border-color:#1a56db; background-color:#fff; }
 .btn-md2-tambah { background:#1a56db; border:none; color:#fff; font-weight:600; font-size:0.82rem; padding:8px 18px; border-radius:6px; display:inline-flex; align-items:center; gap:6px; transition:background 0.2s; cursor:pointer; }
 .btn-md2-tambah:hover { background:#1648c0; color:#fff; box-shadow:0 4px 12px rgba(26,86,219,0.35); }
-<<<<<<< HEAD
 /* Table header/body/pagination: dipindahkan ke global sptjm-datatable.css */
-.btn-aksi-edit   { background:#fd9f10; border:none; color:#fff; border-radius:6px; padding:5px 9px; font-size:0.82rem; cursor:pointer; }
-.btn-aksi-delete { background:#dc3545; border:none; color:#fff; border-radius:6px; padding:5px 9px; font-size:0.82rem; cursor:pointer; }
-.btn-aksi-edit:hover { background:#e68a00; } .btn-aksi-delete:hover { background:#bb2d3b; }
-=======
-table.md2-table thead th { background:#f1f3f5!important; color:#374151!important; font-size:0.75rem!important; font-weight:700!important; text-transform:uppercase!important; letter-spacing:0.05em!important; border-bottom:2px solid #e5e7eb!important; padding:12px 14px!important; white-space:nowrap; }
-table.md2-table tbody td { font-size:0.84rem; color:#374151; padding:10px 14px!important; vertical-align:middle; border-bottom:1px solid #f1f3f5; }
-table.md2-table tbody tr:hover { background:#f8fafc!important; }
-table.md2-table { border-collapse:collapse!important; width:100%; }
 /* Action buttons now use sptjm-icon-btn from demo.css */
->>>>>>> origin/feature/ui-masterdata
 </style>
 @endsection
 

@@ -19,9 +19,6 @@
 .btn-md2-tambah { background:#1a56db; border:none; color:#fff; font-weight:600; font-size:0.82rem; padding:8px 18px; border-radius:6px; display:inline-flex; align-items:center; gap:6px; transition:background 0.2s; cursor:pointer; }
 .btn-md2-tambah:hover { background:#1648c0; color:#fff; box-shadow:0 4px 12px rgba(26,86,219,0.35); }
 /* Table header/body/pagination: dipindahkan ke global sptjm-datatable.css */
-.btn-aksi-edit   { background:#fd9f10; border:none; color:#fff; border-radius:6px; padding:5px 9px; font-size:0.82rem; cursor:pointer; }
-.btn-aksi-delete { background:#dc3545; border:none; color:#fff; border-radius:6px; padding:5px 9px; font-size:0.82rem; cursor:pointer; }
-.btn-aksi-edit:hover { background:#e68a00; } .btn-aksi-delete:hover { background:#bb2d3b; }
 </style>
 @endsection
 
@@ -59,15 +56,15 @@
                         <td><span class="fw-semibold text-primary">{{ $perubahan->kode }}</span></td>
                         <td><span class="fw-bold text-dark">{{ $perubahan->status_perubahan }}</span></td>
                         <td>
-                            <button class="btn-aksi-edit edit-perubahan" data-id="{{ $perubahan->kode }}"
+                            <button class="sptjm-icon-btn sptjm-btn-edit edit-perubahan" data-id="{{ $perubahan->kode }}"
                               data-kode="{{ $perubahan->kode }}"
                               data-status_perubahan="{{ $perubahan->status_perubahan }}"
-                              data-bs-toggle="modal" data-bs-target="#modalPerubahanForm">
+                              data-bs-toggle="modal" data-bs-target="#modalPerubahanForm" title="Edit">
                                 <i class="bx bx-edit"></i>
                             </button>
                             <form action="{{ route('admin/data-perubahan.destroy', $perubahan->kode) }}" method="POST" class="d-inline delete-form">
                                 @csrf @method('DELETE')
-                                <button type="button" class="btn-aksi-delete delete-perubahan" data-id="{{ $perubahan->kode }}">
+                                <button type="button" class="sptjm-icon-btn sptjm-btn-delete delete-perubahan" data-id="{{ $perubahan->kode }}" title="Hapus">
                                     <i class="bx bx-trash"></i>
                                 </button>
                             </form>

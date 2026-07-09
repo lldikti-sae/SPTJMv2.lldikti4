@@ -7,11 +7,35 @@ $navbarDetached = $navbarDetached ?? '';
 
 <style>
 /* ─── NAVBAR REDESIGN ─────────────────────────── */
+/* ─── Navbar hamburger toggle — always visible ─── */
+.sptjm-nav-hamburger {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    width: 40px !important;
+    height: 40px !important;
+    border-radius: 8px !important;
+    background: transparent !important;
+    border: none !important;
+    cursor: pointer !important;
+    text-decoration: none !important;
+    transition: background 0.18s ease !important;
+    flex-shrink: 0 !important;
+    margin-right: 8px !important;
+}
+.sptjm-nav-hamburger:hover {
+    background: rgba(15, 57, 148, 0.07) !important;
+}
+.sptjm-nav-hamburger i {
+    font-size: 1.55rem !important;
+    color: #0f3994 !important;
+}
+
 #layout-navbar {
     background: #ffffff !important;
     border-bottom: 1px solid #e8ecf4 !important;
     box-shadow: 0 2px 12px rgba(0,0,0,0.06) !important;
-    padding: 0 24px !important;
+    padding: 0 16px !important;
     min-height: 64px !important;
 }
 #layout-navbar .navbar-nav-right {
@@ -20,8 +44,8 @@ $navbarDetached = $navbarDetached ?? '';
     align-items: center !important;
 }
 #layout-navbar .sptjm-nav-title {
-    font-size: 1.1rem;
-    font-weight: 700;
+    font-size: 1.4rem;
+    font-weight: 800;
     color: #0f2b5c;
     letter-spacing: -0.3px;
     white-space: nowrap;
@@ -71,11 +95,12 @@ $navbarDetached = $navbarDetached ?? '';
         <div class="{{ $containerNav }}">
             @endif
 
-                <div class="layout-menu-toggle navbar-nav align-items-xl-center me-3 me-xl-0">
-                    <a class="nav-item nav-link px-0" href="javascript:void(0);" aria-label="Toggle menu">
-                        <i class="bx bx-menu bx-sm" aria-hidden="true"></i>
-                    </a>
-                </div>
+                <!-- Hamburger — always visible, toggles sidebar on all screen sizes -->
+                <a href="javascript:void(0);"
+                   class="sptjm-nav-hamburger layout-menu-toggle"
+                   aria-label="Toggle sidebar">
+                    <i class="bx bx-menu"></i>
+                </a>
 
                 <div class="navbar-nav-right d-flex align-items-center" id="navbar-collapse">
                     <!-- Title -->

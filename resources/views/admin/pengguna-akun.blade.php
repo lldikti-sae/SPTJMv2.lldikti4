@@ -24,9 +24,9 @@
             <div class="md-toolbar d-flex justify-content-between align-items-center mb-4">
                 {{-- Kiri: Show Entries --}}
                 <div class="dataTables_length d-flex align-items-center gap-2">
-                    <label class="mb-0 d-flex align-items-center gap-2 text-muted" style="font-size: 0.85rem; white-space: nowrap;">
+                    <label class="mb-0 d-flex align-items-center gap-2 text-secondary" style="font-size: 0.875rem; white-space: nowrap; font-weight: 500;">
                         Show
-                        <select id="entriesPerPage" class="form-select form-select-sm" style="width: auto; border-radius: 6px; border: 1px solid #d9dee3; font-size: 0.85rem;">
+                        <select id="entriesPerPage" class="form-select" style="width: auto; min-width: 75px; border-radius: 8px; border: 1.5px solid #cbd5e1; font-size: 0.875rem; height: 38px; padding-top: 4px; padding-bottom: 4px;">
                             <option value="10">10</option>
                             <option value="25">25</option>
                             <option value="50">50</option>
@@ -37,17 +37,17 @@
                 </div>
 
                 {{-- Kanan: Search + Tombol Tambah --}}
-                <div class="d-flex align-items-center gap-3">
+                <div class="d-flex align-items-center gap-2">
                     <div class="dataTables_filter">
                         <label class="mb-0">
-                            <div class="input-group input-group-merge" style="min-width: 220px; border-radius: 8px; overflow: hidden; border: 1px solid #d9dee3;">
-                                <span class="input-group-text border-0 bg-white" id="basic-addon-search31"><i class="bx bx-search text-muted"></i></span>
-                                <input type="search" class="form-control border-0 shadow-none" id="searchInput" placeholder="Cari data pengguna..." aria-controls="userTable" aria-describedby="basic-addon-search31" style="font-size: 0.85rem;">
+                            <div class="input-group input-group-merge" style="min-width: 240px; border-radius: 8px; overflow: hidden; border: 1.5px solid #cbd5e1; height: 38px;">
+                                <span class="input-group-text border-0 bg-white" id="basic-addon-search31" style="padding-left: 12px; padding-right: 8px;"><i class="bx bx-search text-muted" style="font-size: 1.1rem;"></i></span>
+                                <input type="search" class="form-control border-0 shadow-none" id="searchInput" placeholder="Cari data pengguna..." aria-controls="userTable" aria-describedby="basic-addon-search31" style="font-size: 0.875rem; padding-left: 0; height: 100%;">
                             </div>
                         </label>
                     </div>
-                    <button type="button" class="btn btn-primary rounded-2 d-inline-flex align-items-center fw-semibold px-4" id="addPenggunaBtn" data-bs-toggle="modal" data-bs-target="#modalPenggunaForm" style="background-color: #0f2b5c; border-color: #0f2b5c; white-space: nowrap; font-size: 0.85rem;">
-                        <i class="bx bx-plus me-1"></i> Tambah
+                    <button type="button" class="btn btn-primary rounded-2 d-inline-flex align-items-center justify-content-center fw-semibold px-4" id="addPenggunaBtn" data-bs-toggle="modal" data-bs-target="#modalPenggunaForm" style="background-color: #0f2b5c; border-color: #0f2b5c; white-space: nowrap; font-size: 0.875rem; height: 38px;">
+                        <i class="bx bx-plus me-1" style="font-size: 1.1rem;"></i> Tambah
                     </button>
                 </div>
             </div>

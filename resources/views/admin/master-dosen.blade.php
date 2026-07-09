@@ -133,14 +133,6 @@
     display: inline-block;
 }
 
-/* Aksi buttons */
-.btn-aksi-edit   { background:#fd9f10; border:none; color:#fff; border-radius:6px; padding:5px 8px; font-size:0.82rem; }
-.btn-aksi-reset  { background:#0d6efd; border:none; color:#fff; border-radius:6px; padding:5px 8px; font-size:0.82rem; }
-.btn-aksi-delete { background:#dc3545; border:none; color:#fff; border-radius:6px; padding:5px 8px; font-size:0.82rem; }
-.btn-aksi-edit:hover   { background:#e68a00; color:#fff; }
-.btn-aksi-reset:hover  { background:#0b5ed7; color:#fff; }
-.btn-aksi-delete:hover { background:#bb2d3b; color:#fff; }
-
 /* Modal inputs readonly */
 #modalDosenForm input.form-control[readonly] {
     background-color: #eceef1 !important;

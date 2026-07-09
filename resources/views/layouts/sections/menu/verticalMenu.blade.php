@@ -1,21 +1,30 @@
 <aside id="layout-menu" class="layout-menu menu-vertical menu bg-menu-theme">
 
-    <!-- ! Hide app brand if navbar-full -->
-    <div class="app-brand demo" style="height: auto; min-height: 80px; padding: 12px 16px; display: flex; flex-direction: row; align-items: center; justify-content: flex-start; gap: 10px; border-bottom: 1px solid #eef0f4; width: 100%; box-sizing: border-box; overflow: hidden; position: relative;">
-        <a href="{{ url('/') }}" class="app-brand-link d-flex align-items-center text-decoration-none" style="gap: 10px; overflow: hidden;">
-            {{-- Crop hanya bagian logo bulat dari gambar yang landscape --}}
-            <div style="width: 46px; height: 46px; overflow: hidden; flex-shrink: 0; border-radius: 50%;">
+    <style>
+        /* --- Brand area layout --- */
+        .layout-menu .app-brand.demo {
+            padding: 0 1.2rem !important;
+            min-height: 72px !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: flex-start !important;
+            gap: 10px !important;
+            border-bottom: 1px solid #eef0f4 !important;
+        }
+    </style>
+
+    <!-- App Brand (logo only — toggle is in navbar) -->
+    <div class="app-brand demo">
+        <a href="{{ url('/') }}" class="app-brand-link" style="text-decoration:none; display:flex; align-items:center; gap:10px; overflow:hidden;">
+            <div class="app-brand-logo" style="width:44px; height:44px; border-radius:50%; overflow:hidden; flex-shrink:0;">
                 <img src="{{ asset('assets/img/favicon/logo-lldikti-4.png') }}"
                      alt="LLDIKTI 4"
-                     style="height: 46px; width: auto; object-fit: cover; object-position: left center; display: block;">
+                     style="height:44px; width:auto; object-fit:cover; object-position:left center; display:block;">
             </div>
-            <div class="d-flex flex-column" style="line-height: 1.15; overflow: hidden;">
-                <span style="color: #0f3994; font-size: 1.1rem; font-weight: 800; letter-spacing: 0.3px; font-family: 'Public Sans', sans-serif; white-space: nowrap;">LLDIKTI<span style="color:#d97706;">4</span></span>
-                <span style="color: #64748b; font-size: 0.65rem; font-weight: 600; letter-spacing: 0.8px; font-family: 'Public Sans', sans-serif; text-transform: uppercase; white-space: nowrap;">SPTJM ONLINE</span>
+            <div class="app-brand-text d-flex flex-column" style="line-height:1.2; overflow:hidden;">
+                <span style="color:#0f3994; font-size:1.2rem; font-weight:800; font-family:'Public Sans',sans-serif; white-space:nowrap; letter-spacing:0.3px;">LLDIKTI<span style="color:#d97706;">4</span></span>
+                <span style="color:#64748b; font-size:0.68rem; font-weight:700; font-family:'Public Sans',sans-serif; text-transform:uppercase; letter-spacing:0.8px; white-space:nowrap;">SPTJM ONLINE</span>
             </div>
-        </a>
-        <a href="javascript:void(0);" class="layout-menu-toggle menu-link text-large d-block d-xl-none" style="position:absolute; right:8px; top:50%; transform:translateY(-50%);">
-            <i class="bx bx-chevron-left bx-sm align-middle"></i>
         </a>
     </div>
 

@@ -112,6 +112,33 @@
             border-right: 1px solid #e2e8f0 !important;
         }
 
+        /* ─── Show sidebar hamburger toggle on ALL screen sizes ─── */
+        .layout-menu .app-brand .sptjm-hamburger.layout-menu-toggle {
+            display: flex !important;
+            opacity: 1 !important;
+            position: static !important;
+        }
+
+        /* ─── FORCE FULL-HIDE SIDEBAR for layout-menu-fixed + collapsed ─── */
+        /* Sneat excludes layout-menu-fixed from mini-collapse — we override
+           to fully hide the sidebar and expand content to full width. */
+        @media (min-width: 1200px) {
+            html.layout-menu-collapsed.layout-menu-fixed .layout-menu {
+                width: 0 !important;
+                min-width: 0 !important;
+                overflow: hidden !important;
+                transition: width 0.3s ease !important;
+            }
+            html.layout-menu-collapsed.layout-menu-fixed .layout-page {
+                padding-left: 0 !important;
+                transition: padding-left 0.3s ease !important;
+            }
+            html.layout-menu-collapsed.layout-menu-fixed .layout-navbar {
+                left: 0 !important;
+                transition: left 0.3s ease !important;
+            }
+        }
+
         /* ─── TOP-LEVEL: Parent aktif atau terbuka (open) ─── */
         .menu-vertical .menu-inner > .menu-item.active > .menu-link,
         .menu-vertical .menu-inner > .menu-item.open > .menu-link {
@@ -347,6 +374,9 @@
             margin-bottom: 24px !important;
             overflow: hidden !important;
         }
+        .sptjm-stat-card {
+            margin-bottom: 0px !important;
+        }
         .card-header, .md2-card-inner h5, .md-card-inner h5 {
             font-weight: 700 !important;
             color: #1e293b !important;
@@ -354,8 +384,9 @@
             padding-bottom: 12px !important;
             margin-bottom: 16px !important;
         }
-<<<<<<< HEAD
-=======
+        .md-card-inner, .md2-card-inner {
+            padding: 24px !important;
+        }
 
         /* ─── GLOBAL TABLE GRIDLINES & BORDERS ─── */
         table.dataTable,
@@ -423,7 +454,6 @@
             border: none !important;
             box-shadow: none !important;
         }
->>>>>>> origin/feature/ui-masterdata
     </style>
 
 </body>

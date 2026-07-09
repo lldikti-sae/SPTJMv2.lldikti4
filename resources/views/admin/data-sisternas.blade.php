@@ -31,22 +31,6 @@
         font-size: 0.85rem;
         color: #334155;
     }
-    .btn-aksi-delete {
-        background: #dc3545;
-        border: none;
-        color: #fff;
-        border-radius: 6px;
-        padding: 6px 10px;
-        font-size: 0.85rem;
-        cursor: pointer;
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        transition: background-color 0.2s;
-    }
-    .btn-aksi-delete:hover {
-        background: #bb2d3b;
-    }
 </style>
 
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
@@ -152,7 +136,7 @@
                             class="delete-form d-inline" onsubmit="return false;">
                             @csrf
                             @method('DELETE')
-                            <button type="button" class="btn-aksi-delete delete-sisternas">
+                            <button type="button" class="sptjm-icon-btn sptjm-btn-delete delete-sisternas" title="Hapus">
                                 <i class="bx bx-trash"></i>
                             </button>
                         </form>

@@ -28,8 +28,6 @@
 <!-- Page Styles -->
 @yield('page-style')
 
-<<<<<<< HEAD
-=======
 <!-- =====================================================
      GLOBAL: DataTables Premium Pagination Styling
      Berlaku di semua halaman admin
@@ -98,6 +96,7 @@ table thead th {
     padding: 0 !important;
     margin: 0 !important;
     box-shadow: none !important;
+    cursor: pointer !important;
 }
 .dataTables_wrapper .dataTables_paginate .paginate_button:hover {
     background: transparent !important;
@@ -191,5 +190,3 @@ table thead th {
     font-size: 0.84rem !important;
 }
 </style>
-
->>>>>>> origin/feature/ui-masterdata

@@ -9,7 +9,7 @@
 @endsection
 
 @section('content')
-<div class="row g-4 mb-4">
+<div class="row g-3 mb-3">
     <!-- Jumlah Seluruh Dosen -->
     <div class="col-12 col-md-6 col-lg-4">
         <div class="sptjm-stat-card">
