@@ -1,4 +1,4 @@
-@extends('layouts/contentNavbarLayoutAuditor')
+﻿@extends('layouts/contentNavbarLayoutAuditor')
 
 @section('title', 'SPTJM Online')
 
@@ -181,9 +181,7 @@
           processing: true,
           serverSide: true,
           paging: true,
-          pageLength: 100,
           lengthChange: true,
-          lengthMenu: [[25, 50, 100, 500], [25, 50, 100, 500]],
           ajax: {
             url: '{{ route('auditor.dashboard.dosen-pensiun.data') }}'
           },
@@ -203,8 +201,8 @@
             paginate: {
               first: 'Awal',
               last: 'Akhir',
-              next: '→',
-              previous: '←'
+              next: 'â†’',
+              previous: 'â†'
             },
             zeroRecords: 'Data tidak ditemukan',
             infoEmpty: 'Tidak ada data tersedia',

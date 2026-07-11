@@ -3,14 +3,15 @@
     <style>
         /* --- Brand area layout --- */
         .layout-menu .app-brand.demo {
-            padding: 0 1.2rem !important;
-            min-height: 72px !important;
-            display: flex !important;
-            align-items: center !important;
-            justify-content: flex-start !important;
-            gap: 10px !important;
-            border-bottom: 1px solid #eef0f4 !important;
-        }
+    padding: 12px 1.2rem 22px !important;
+    min-height: 90px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: flex-start !important;
+    gap: 10px !important;
+    border-bottom: 1px solid #eef0f4 !important;
+    margin-bottom: 12px !important;
+}
     </style>
 
     <!-- App Brand -->
@@ -19,7 +20,18 @@
             <img src="{{ asset('assets/img/favicon/logo-lldikti-4.png') }}"
                  alt="LLDIKTI 4"
                  style="height: 38px; width: auto; display: block; max-width: 100%; object-fit: contain;">
-            <span class="sptjm-logo-subtitle" style="color:#64748b; font-size:0.6rem; font-weight:700; font-family:'Public Sans',sans-serif; text-transform:uppercase; letter-spacing:1.2px; margin-left: 45px; margin-top: -4px;">SPTJM ONLINE</span>
+           <span class="sptjm-logo-subtitle"
+           style="color:#64748b;
+           font-size:1rem;
+           font-weight:700;
+           letter-spacing:2px;
+           text-transform:uppercase;
+           text-align:center;
+           display:block;
+           margin-top:2px;
+           margin-left:45px ;">
+    SPTJM ONLINE
+</span>
         </a>
         <a href="javascript:void(0);" class="layout-menu-toggle menu-link text-large ms-auto d-block">
             <i class="bx bx-chevron-left align-middle" style="font-size: 1.4rem !important; color: #1a56db !important;"></i>
@@ -28,7 +40,7 @@
 
     <div class="menu-inner-shadow"></div>
 
-    <ul class="menu-inner py-3">
+    <ul class="menu-inner pt-5 pb-3">
         @foreach ($menuData[0]->menu as $menu)
             {{-- adding active and open class if child is active --}}
 

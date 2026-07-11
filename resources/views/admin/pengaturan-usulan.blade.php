@@ -1,4 +1,4 @@
-@extends('layouts/contentNavbarLayout')
+﻿@extends('layouts/contentNavbarLayout')
 
 @section('title', 'SPTJM Online')
 
@@ -193,10 +193,8 @@
                                     { orderable: false, searchable: false, targets: 7 } // disable sorting/search on Aksi column
                                 ],
                                 lengthChange: true,
-                                pageLength: 100,
-                                lengthMenu: [[25, 50, 100, 250, 500], [25, 50, 100, 250, 500]],
                                 language: {
-                                    paginate: { first: 'Awal', last: 'Akhir', next: '→', previous: '←' },
+                                    paginate: { first: 'Awal', last: 'Akhir', next: 'â†’', previous: 'â†' },
                                     zeroRecords: 'Data tidak ditemukan',
                                     infoEmpty: 'Tidak ada data tersedia',
                                     searchPlaceholder: 'Cari data...',
@@ -372,7 +370,7 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 </script>
 <script>
-// Prevent activating if tanggal_selesai is in the past — show modal warning via SweetAlert
+// Prevent activating if tanggal_selesai is in the past â€” show modal warning via SweetAlert
 function isDateBeforeToday(dateStr) {
     if (!dateStr) return false;
     const d = new Date(dateStr);

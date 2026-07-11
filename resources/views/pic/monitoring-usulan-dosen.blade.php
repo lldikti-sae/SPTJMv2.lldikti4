@@ -1,4 +1,4 @@
-@extends('layouts/contentNavbarLayoutPic')
+﻿@extends('layouts/contentNavbarLayoutPic')
 
 @section('title', 'SPTJM Online')
 
@@ -118,8 +118,6 @@
 <script>
   $(document).ready(function() {
     var table = $('#monitoringTable').DataTable({
-      pageLength: 10,
-      lengthMenu: [[10, 25, 50, 100, 500], [10, 25, 50, 100, 500]],
       columnDefs: [
         { orderable: false, targets: [6] }
       ],

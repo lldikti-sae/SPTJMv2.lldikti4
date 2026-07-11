@@ -1,223 +1,17 @@
-@extends('layouts/contentNavbarLayout')
+﻿@extends('layouts/contentNavbarLayout')
 
 @section('title', 'Data Perguruan Tinggi - SPTJM Online')
 
-@section('page-style')
-<style>
-/* ── Page Header ── */
-.pt-page-header {
-    display: flex;
-    align-items: flex-start;
-    justify-content: space-between;
-    flex-wrap: wrap;
-    gap: 12px;
-    margin-bottom: 24px;
-}
-.pt-page-header .page-titles h4 {
-    font-size: 1.35rem;
-    font-weight: 700;
-    color: #2c3e50;
-    margin: 0 0 4px 0;
-    line-height: 1.2;
-}
-.pt-page-header .breadcrumb {
-    margin: 0;
-    font-size: 0.8rem;
-    background: none;
-    padding: 0;
-}
-.pt-page-header .breadcrumb-item a {
-    color: #696cff;
-    text-decoration: none;
-}
-.pt-page-header .breadcrumb-item.active {
-    color: #8592a3;
-}
-.pt-page-header .breadcrumb-item + .breadcrumb-item::before {
-    color: #8592a3;
-}
 
-/* ── Header Buttons ── */
-.btn-sinkron-md {
-    background-color: #d97706;
-    border: none;
-    color: #fff;
-    font-weight: 600;
-    font-size: 0.82rem;
-    padding: 8px 18px;
-    border-radius: 20px;
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    transition: all 0.2s;
-    white-space: nowrap;
-}
-.btn-sinkron-md:hover {
-    background-color: #b45309;
-    color: #fff;
-    box-shadow: 0 4px 14px rgba(217,119,6,0.35);
-}
-.btn-tambah-md {
-    background-color: #0b3d91;
-    border: none;
-    color: #fff;
-    font-weight: 600;
-    font-size: 0.82rem;
-    padding: 8px 18px;
-    border-radius: 20px;
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    transition: all 0.2s;
-    white-space: nowrap;
-}
-.btn-tambah-md:hover {
-    background-color: #082f73;
-    color: #fff;
-    box-shadow: 0 4px 14px rgba(11,61,145,0.35);
-}
-
-/* ── Card ── */
-.pt-card {
-    background: #fff;
-    border-radius: 10px;
-    box-shadow: 0 2px 12px rgba(44,62,80,0.07);
-    overflow: hidden;
-}
-.pt-card .pt-card-inner {
-    padding: 20px 24px 24px;
-}
-
-/* Enforce font family on everything inside Perguruan Tinggi page */
-.container-xxl,
-.pt-page-header,
-.pt-card,
-.btn-sinkron-md,
-.btn-tambah-md,
-.pt-toolbar,
-.pt-toolbar *,
-.modal-content,
-.modal-content * {
-    font-family: 'Public Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif !important;
-}
-
-/* ── Toolbar (entries + search) ── */
-.pt-toolbar {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    flex-wrap: wrap;
-    gap: 10px;
-    margin-bottom: 16px;
-}
-.pt-toolbar .entries-wrap {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    font-size: 0.84rem !important;
-    color: #4a5568 !important;
-}
-.pt-toolbar .entries-wrap select {
-    width: 70px;
-    padding: 5px 10px;
-    border: 1.5px solid #e2e8f0 !important;
-    border-radius: 8px !important;
-    font-size: 0.84rem !important;
-    color: #4a5568 !important;
-    background: #f8fafc !important;
-    cursor: pointer;
-    outline: none;
-}
-.pt-toolbar .search-wrap {
-    display: block;
-    background: transparent;
-    border: none;
-    border-radius: 0;
-    overflow: visible;
-}
-.pt-toolbar .search-wrap input {
-    border: 1.5px solid #e2e8f0 !important;
-    border-radius: 8px !important;
-    padding: 6px 36px 6px 12px !important;
-    font-size: 0.84rem !important;
-    color: #2d3748 !important;
-    background: #f8fafc url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' fill='%238592a3' viewBox='0 0 16 16'%3E%3Cpath d='M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398l3.85 3.85a1 1 0 0 0 1.415-1.415l-3.868-3.833zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z'/%3E%3C/svg%3E") no-repeat calc(100% - 10px) center !important;
-    min-width: 240px;
-    height: 32px !important;
-    outline: none !important;
-    transition: border-color 0.2s, box-shadow 0.2s;
-}
-.pt-toolbar .search-wrap input:focus {
-    border-color: #1a56db !important;
-    box-shadow: 0 0 0 3px rgba(26, 86, 219, 0.1) !important;
-    background-color: #fff !important;
-}
-
-/* ── Table: dipindahkan ke global sptjm-datatable.css ── */
-#ptsTable { border-collapse: separate; border-spacing: 0; }
-#ptsTable tbody tr { transition: background 0.15s; }
-#ptsTable tbody tr:last-child td { border-bottom: none; }
-
-/* ── Badge Status ── */
-.badge-aktif {
-    display: inline-block;
-    padding: 3px 10px;
-    border-radius: 20px;
-    font-size: 0.72rem;
-    font-weight: 600;
-    letter-spacing: 0.03em;
-    background: rgba(26, 86, 219, 0.1);
-    color: #1a56db;
-    border: 1px solid rgba(26, 86, 219, 0.25);
-}
-.badge-nonaktif {
-    display: inline-block;
-    padding: 3px 10px;
-    border-radius: 20px;
-    font-size: 0.72rem;
-    font-weight: 600;
-    letter-spacing: 0.03em;
-    background: rgba(234,84,85,0.1);
-    color: #ea5455;
-    border: 1px solid rgba(234,84,85,0.25);
-}
-
-/* ── Edit Button ── */
-.btn-edit-pt {
-    background: #ff9f43;
-    border: none;
-    color: #fff;
-    width: 32px;
-    height: 32px;
-    border-radius: 6px;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 0.95rem;
-    cursor: pointer;
-    transition: background 0.2s, transform 0.15s;
-}
-.btn-edit-pt:hover {
-    background: #f08030;
-    transform: scale(1.07);
-}
-
-/* ── DataTables Override: dipindahkan ke global sptjm-datatable.css ── */
-div.dataTables_wrapper div.dataTables_filter,
-div.dataTables_wrapper div.dataTables_length {
-    display: none; /* kita pakai toolbar custom */
-}
-</style>
-@endsection
 
 @section('content')
 
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-{{-- ── Page Header ── --}}
+{{-- â”€â”€ Page Header â”€â”€ --}}
 <div class="pt-page-header">
     <div class="page-titles">
-        <h4>Data Perguruan Tinggi</h4>
+        <h1>Data Perguruan Tinggi</h1>
         <nav aria-label="breadcrumb">
             <ol class="breadcrumb">
                 <li class="breadcrumb-item"><a href="#">Master Data</a></li>
@@ -235,7 +29,7 @@ div.dataTables_wrapper div.dataTables_length {
     </div>
 </div>
 
-{{-- ── Card ── --}}
+{{-- â”€â”€ Card â”€â”€ --}}
 <div class="pt-card">
     <div class="pt-card-inner">
 
@@ -275,7 +69,7 @@ div.dataTables_wrapper div.dataTables_length {
     </div>
 </div>
 
-{{-- ── Modal Tambah/Edit PT ── --}}
+{{-- â”€â”€ Modal Tambah/Edit PT â”€â”€ --}}
 <div class="modal fade" id="modalPTForm" tabindex="-1" aria-labelledby="modalPTFormLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content" style="border-radius:10px; border:none; box-shadow:0 8px 30px rgba(0,0,0,0.12);">
@@ -359,7 +153,7 @@ div.dataTables_wrapper div.dataTables_length {
     </div>
 </div>
 
-{{-- ── Modal Sync ── --}}
+{{-- â”€â”€ Modal Sync â”€â”€ --}}
 <div class="modal fade" id="modalSync" tabindex="-1" aria-labelledby="modalSyncFormLabel" aria-hidden="true">
     <div class="modal-dialog modal-md modal-dialog-centered">
         <div class="modal-content" style="border-radius:10px; border:none; box-shadow:0 8px 30px rgba(0,0,0,0.12);">
@@ -417,7 +211,7 @@ div.dataTables_wrapper div.dataTables_length {
 <script>
 document.addEventListener('DOMContentLoaded', function () {
 
-    // ── SweetAlert helpers ──
+    // â”€â”€ SweetAlert helpers â”€â”€
     const alert = (text = "Data berhasil tersimpan!", title = "Berhasil", icon = "success", warnaBtn = "btn btn-primary") => {
         return Swal.fire({
             title, text, icon,
@@ -441,20 +235,20 @@ document.addEventListener('DOMContentLoaded', function () {
         backdrop: true
     });
 
-    // ── Reset form saat Tambah ──
+    // â”€â”€ Reset form saat Tambah â”€â”€
     document.getElementById('addPTBtn').addEventListener('click', function () {
         document.getElementById('modalPTTitle').innerHTML = '<i class="bx bx-buildings me-2" style="color:#696cff;"></i>Tambah Perguruan Tinggi';
         document.getElementById('ptForm').reset();
         document.getElementById('ptForm').setAttribute('action', "{{ route('admin/daftar-pt.store') }}");
     });
 
-    // ── Validasi kode PT ──
+    // â”€â”€ Validasi kode PT â”€â”€
     document.getElementById('kodePTS').addEventListener('input', function () {
         const pattern = /^[1-9][0-9]*$/;
         this.classList.toggle('is-invalid', !pattern.test(this.value));
     });
 
-    // ── Sync form ──
+    // â”€â”€ Sync form â”€â”€
     const syncForm = document.getElementById('syncPtForm');
     syncForm.addEventListener('submit', (e) => {
         e.preventDefault();
@@ -492,7 +286,7 @@ document.addEventListener('DOMContentLoaded', function () {
     setNamaFromSelected();
     kodePtsSync.addEventListener('change', setNamaFromSelected);
 
-    // ── Simpan PT form ──
+    // â”€â”€ Simpan PT form â”€â”€
     const ptForm = document.getElementById('ptForm');
     ptForm.addEventListener('submit', (e) => {
         e.preventDefault();
@@ -527,16 +321,15 @@ document.addEventListener('DOMContentLoaded', function () {
         })();
     });
 
-    // ── Custom toolbar → DataTable ──
+    // â”€â”€ Custom toolbar â†’ DataTable â”€â”€
     const entriesSelect = document.getElementById('entriesSelect');
     const searchInput   = document.getElementById('ptSearchInput');
 
-    // ── DataTable init ──
+    // â”€â”€ DataTable init â”€â”€
     const table = $('#ptsTable').DataTable({
         processing: true,
         serverSide: true,
         responsive: true,
-        pageLength: 10,
         ajax: { url: "{{ route('admin.daftar-pt') }}" },
         columns: [
             { data: "kode_pts",  name: "kode_pts" },
@@ -546,7 +339,7 @@ document.addEventListener('DOMContentLoaded', function () {
             { data: "aksi",      name: "aksi",    orderable: false, searchable: false }
         ],
         language: {
-            paginate: { first: "«", last: "»", next: "›", previous: "‹" },
+            paginate: { first: "Â«", last: "Â»", next: "â€º", previous: "â€¹" },
             zeroRecords: "Data tidak ditemukan",
             infoEmpty: "Tidak ada data tersedia",
             info: "Menampilkan _START_ - _END_ dari _TOTAL_ entri",

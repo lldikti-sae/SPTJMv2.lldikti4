@@ -1,4 +1,4 @@
-@extends('layouts/contentNavbarLayoutPic')
+﻿@extends('layouts/contentNavbarLayoutPic')
 
 @section('title', 'SPTJM Online')
 
@@ -149,8 +149,6 @@
     const table = $('#dataTable').DataTable({
       processing: true,
       serverSide: false,
-      pageLength: 10,
-      lengthMenu: [[10, 25, 50, 100, 500], [10, 25, 50, 100, 500]],
       ajax: {
         url: "{{ route('pic.validasi-usulan.data') }}",
         type: 'POST',

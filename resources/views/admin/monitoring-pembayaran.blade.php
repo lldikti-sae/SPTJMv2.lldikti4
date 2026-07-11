@@ -1,11 +1,11 @@
-@extends('layouts/contentNavbarLayout')
+﻿@extends('layouts/contentNavbarLayout')
 
 @section('title', 'Monitoring Pembayaran - SPTJM Online')
 
 @section('page-style')
 <style>
 .md2-page-header { display:flex; align-items:flex-start; justify-content:space-between; flex-wrap:wrap; gap:12px; margin-bottom:24px; }
-.md2-page-header .page-titles h4 { font-size:1.35rem; font-weight:700; color:#2c3e50; margin:0 0 4px; }
+
 .md2-page-header .breadcrumb { margin:0; font-size:0.8rem; background:none; padding:0; }
 .md2-page-header .breadcrumb-item a { color:#696cff; text-decoration:none; }
 .md2-page-header .breadcrumb-item.active { color:#8592a3; }
@@ -35,7 +35,7 @@ $months = [
 
 <div class="md2-page-header">
     <div class="page-titles">
-        <h4>Monitoring Pembayaran</h4>
+        <h1>Monitoring Pembayaran</h1>
         <nav aria-label="breadcrumb"><ol class="breadcrumb">
             <li class="breadcrumb-item"><a href="#">Monitoring</a></li>
             <li class="breadcrumb-item active">Monitoring Pembayaran</li>

@@ -1,4 +1,4 @@
-@extends('layouts/contentNavbarLayoutPts')
+﻿@extends('layouts/contentNavbarLayoutPts')
 
 @section('title', 'SPTJM Online')
 
@@ -212,7 +212,6 @@
         $('#myTable').DataTable({
             processing: true,
             serverSide: true,
-            pageLength: 10,
             order: [],
             ajax: {
                 url: "{{ url('pts/laporan-keuangan') }}",

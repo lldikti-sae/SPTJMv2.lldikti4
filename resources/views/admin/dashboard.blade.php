@@ -1,4 +1,4 @@
-@extends('layouts/contentNavbarLayout')
+﻿@extends('layouts/contentNavbarLayout')
 
 @section('title', 'SPTJM Online - Dashboard')
 
@@ -140,7 +140,6 @@ document.addEventListener('DOMContentLoaded', function () {
         processing: true,
         serverSide: true,
         paging: true,
-        pageLength: 10,
         ajax: {
             url: '{{ route('admin.dashboard.dosen-pensiun.data') }}'
         },

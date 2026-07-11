@@ -1,10 +1,10 @@
-@extends('layouts/contentNavbarLayout')
+﻿@extends('layouts/contentNavbarLayout')
 
 @section('title', 'SPTJM Online - Monitoring Usulan Dosen')
 
 @section('page-style')
 <style>
-/* ── Variables & Setup ── */
+/* â”€â”€ Variables & Setup â”€â”€ */
 :root {
     --md-primary: #0b3d91;
     --md-primary-hover: #082d6b;
@@ -16,7 +16,7 @@
     --md-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
 }
 
-/* ── Page Header ── */
+/* â”€â”€ Page Header â”€â”€ */
 .md-page-header {
     display: flex;
     justify-content: space-between;
@@ -27,18 +27,13 @@
     flex-wrap: wrap;
     gap: 12px;
 }
-.md-page-header .page-titles h4 {
-    font-size: 1.25rem;
-    font-weight: 700;
-    color: var(--md-text-main);
-    margin: 0 0 4px 0;
-}
+
 .md-page-header .breadcrumb { margin: 0; padding: 0; background: transparent; font-size: 0.85rem; }
 .md-page-header .breadcrumb-item a { color: var(--md-text-muted); text-decoration: none; }
 .md-page-header .breadcrumb-item.active { color: var(--md-primary); font-weight: 600; }
 .md-page-header .breadcrumb-item + .breadcrumb-item::before { color: #cbd5e1; }
 
-/* ── Header Action Buttons ── */
+/* â”€â”€ Header Action Buttons â”€â”€ */
 .btn-export-md {
     background: linear-gradient(135deg, #059669 0%, #047857 100%);
     color: #fff;
@@ -72,7 +67,7 @@
 }
 .btn-tampilkan-md:hover { opacity: 0.9; transform: translateY(-1px); }
 
-/* ── Card & Table Container ── */
+/* â”€â”€ Card & Table Container â”€â”€ */
 .md-card {
     background: #fff;
     border-radius: var(--md-radius-lg);
@@ -82,7 +77,7 @@
 }
 .md-card-inner { padding: 20px 24px; }
 
-/* ── Filter Card ── */
+/* â”€â”€ Filter Card â”€â”€ */
 .md-filter-card {
     background: var(--md-bg-gray);
     border: 1px solid var(--md-border);
@@ -131,7 +126,7 @@
     padding-bottom: 10px;
 }
 
-/* ── Toolbar ── */
+/* â”€â”€ Toolbar â”€â”€ */
 .md-toolbar {
     display: flex;
     align-items: center;
@@ -160,7 +155,7 @@
 
 
 
-/* ── Custom Badges ── */
+/* â”€â”€ Custom Badges â”€â”€ */
 .badge-bulan {
     background-color: #fef3c7;
     color: #92400e;
@@ -199,7 +194,7 @@
 
 
 
-/* ── Modal ── */
+/* â”€â”€ Modal â”€â”€ */
 .modal-content {
     border-radius: 12px;
     border: none;
@@ -253,7 +248,7 @@
 {{-- Page Header --}}
 <div class="md-page-header">
     <div class="page-titles">
-        <h4>Monitoring Usulan Dosen</h4>
+        <h1>Monitoring Usulan Dosen</h1>
         <nav aria-label="breadcrumb">
             <ol class="breadcrumb">
                 <li class="breadcrumb-item"><a href="#">Data Dosen</a></li>
@@ -422,7 +417,7 @@ function showDetailModal(nama, kodeBelum) {
         const index = nmBulan.indexOf(bulan);
         const kodeUsulan = index !== -1 ? `KodeUsulan${index+1}` : `????`;
         const padded = `${kodeUsulan} (${bulan})`.padEnd(28, ' ');
-        return `${padded}  ⚠ Belum Diusulkan`;
+        return `${padded}  âš  Belum Diusulkan`;
     }).join('\n');
     document.getElementById('modalListBulan').innerHTML = formatted;
     const modal = new bootstrap.Modal(document.getElementById('modalDetail'));

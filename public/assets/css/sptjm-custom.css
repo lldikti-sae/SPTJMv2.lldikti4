@@ -1,0 +1,471 @@
+/* =====================================================
+   SPTJM GLOBAL CUSTOM MODERN SYSTEM (sptjm-custom.css)
+   Berlaku di seluruh halaman admin, PIC, PTS, Dosen, Auditor
+   ===================================================== */
+
+/* ─── GLOBAL FONT & CORE OVERRIDES ─── */
+.container-xxl,
+.sptjm-page-header,
+.sptjm-card,
+.modal-content {
+    font-family: 'Public Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif !important;
+}
+
+/* =====================================================
+   TYPOGRAPHY — Aturan penggunaan bold
+   Bold hanya untuk: judul halaman, header tabel,
+   dan informasi penting. TIDAK untuk isi tabel biasa.
+   ===================================================== */
+
+/* Isi tabel — NORMAL, hitam, tidak bold */
+table.dataTable tbody td,
+.table tbody td {
+    font-weight: 400 !important;
+    color: #111827 !important;
+}
+
+/* Paksa semua child element di dalam sel tabel:
+   normal + hitam, kecuali badge & icon btn */
+table.dataTable tbody td *:not(.badge):not([class*="sptjm-btn"]):not([class*="sptjm-icon"]):not([class*="badge-"]):not(.btn):not(i),
+.table tbody td *:not(.badge):not([class*="sptjm-btn"]):not([class*="sptjm-icon"]):not([class*="badge-"]):not(.btn):not(i) {
+    font-weight: 400 !important;
+    color: #111827 !important;
+}
+
+/* Nama dosen, nama PT, fw-bold di dalam sel tabel: tidak bold, tidak berwarna */
+table.dataTable tbody td .fw-bold,
+table.dataTable tbody td .fw-semibold,
+table.dataTable tbody td strong,
+.table tbody td .fw-bold,
+.table tbody td .fw-semibold,
+.table tbody td strong {
+    font-weight: 400 !important;
+    color: #111827 !important;
+}
+
+/* Header tabel — tetap bold */
+table.dataTable thead th,
+.table thead th {
+    font-weight: 700 !important;
+}
+
+/* Disable all transitions during page navigation */
+.page-transitioning *,
+.page-transitioning *::before,
+.page-transitioning *::after {
+    transition: none !important;
+    animation: none !important;
+}
+
+/* ─── PAGE HEADER STANDARDIZATION ─── */
+.sptjm-page-header,
+.md-page-header,
+.md2-page-header,
+.pt-page-header {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    flex-wrap: wrap !important;
+    gap: 12px !important;
+    margin-top: 8px !important; /* Memberikan sedikit jarak dari navbar agar proporsional */
+    margin-bottom: 20px !important;
+    padding: 0 !important;
+}
+.sptjm-page-header .page-titles,
+.md-page-header .page-titles,
+.md2-page-header .page-titles,
+.pt-page-header .page-titles {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 4px !important;
+}
+.sptjm-page-header .page-titles h1,
+.md-page-header .page-titles h1,
+.md2-page-header .page-titles h1,
+.pt-page-header .page-titles h1,
+.sptjm-page-header .page-titles h3,
+.md-page-header .page-titles h3,
+.md2-page-header .page-titles h3,
+.pt-page-header .page-titles h3,
+.sptjm-page-header .page-titles h4,
+.md-page-header .page-titles h4,
+.md2-page-header .page-titles h4,
+.pt-page-header .page-titles h4 {
+    font-size: 1.0rem !important; /* Disamakan dengan navbar title Dashboard Admin */
+    font-weight: 600 !important;  /* semibold */
+    color: #1e293b !important;    
+    margin: 0 !important;
+    line-height: 1.25 !important;
+    letter-spacing: -0.1px !important;
+}
+.sptjm-page-header .breadcrumb,
+.md-page-header .breadcrumb,
+.md2-page-header .breadcrumb,
+.pt-page-header .breadcrumb {
+    margin: 0 !important;
+    font-size: 0.75rem !important; /* Dikecilkan proporsional dengan judul 1.0rem */
+    background: none !important;
+    padding: 0 !important;
+    display: flex !important;
+    align-items: center !important;
+}
+.sptjm-page-header .breadcrumb-item a,
+.md-page-header .breadcrumb-item a,
+.md2-page-header .breadcrumb-item a,
+.pt-page-header .breadcrumb-item a { 
+    color: #64748b !important; /* abu-abu */
+    text-decoration: none !important; 
+}
+.sptjm-page-header .breadcrumb-item a:hover,
+.md-page-header .breadcrumb-item a:hover,
+.md2-page-header .breadcrumb-item a:hover,
+.pt-page-header .breadcrumb-item a:hover { 
+    color: #0b3d91 !important;
+}
+.sptjm-page-header .breadcrumb-item.active,
+.md-page-header .breadcrumb-item.active,
+.md2-page-header .breadcrumb-item.active,
+.pt-page-header .breadcrumb-item.active { 
+    color: #1a56db !important; /* biru standard (seperti di image) */
+    font-weight: 500 !important;
+}
+.sptjm-page-header .breadcrumb-item + .breadcrumb-item::before,
+.md-page-header .breadcrumb-item + .breadcrumb-item::before,
+.md2-page-header .breadcrumb-item + .breadcrumb-item::before,
+.pt-page-header .breadcrumb-item + .breadcrumb-item::before { 
+    color: #cbd5e1 !important; 
+    padding-right: 0.5rem !important;
+    padding-left: 0.5rem !important;
+    content: "/" !important;
+}
+
+/* ─── CARD STANDARDIZATION ─── */
+.card,
+.md-card,
+.md2-card,
+.pt-card,
+.sptjm-card,
+.sptjm-table-card,
+.sptjm-stat-card {
+    border: 1.5px solid #dbeafe !important;
+    box-shadow: 0 10px 30px rgba(26, 86, 219, 0.15) !important;
+    border-radius: 12px !important;
+    background: #ffffff !important;
+    margin-bottom: 24px !important;
+    overflow: hidden !important;
+}
+.sptjm-stat-card {
+    margin-bottom: 0px !important;
+}
+.card-header,
+.md2-card-inner h5,
+.md-card-inner h5,
+.pt-card-inner h5,
+.sptjm-card-inner h5 {
+    font-weight: 700 !important;
+    color: #1e293b !important;
+    border-bottom: 1px solid #e2e8f0 !important;
+    padding-bottom: 12px !important;
+    margin-bottom: 16px !important;
+}
+.md-card-inner,
+.md2-card-inner,
+.pt-card-inner,
+.sptjm-card-inner {
+    padding: 24px !important;
+}
+
+/* ─── TOOLBAR STANDARDIZATION ─── */
+.md-toolbar,
+.md2-toolbar,
+.pt-toolbar,
+.sptjm-toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 12px;
+}
+.md-toolbar .entries-wrap,
+.md2-toolbar .entries-wrap,
+.pt-toolbar .entries-wrap,
+.sptjm-toolbar .entries-wrap {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.79rem;
+    font-weight: 400;
+    color: #475569;
+}
+.md-toolbar .entries-wrap select,
+.md2-toolbar .entries-wrap select,
+.pt-toolbar .entries-wrap select,
+.sptjm-toolbar .entries-wrap select {
+    border: 1.5px solid #dde3ed !important;
+    border-radius: 6px !important;
+    padding: 2px 8px !important;
+    font-size: 0.79rem !important;
+    color: #475569 !important;
+    background: #f8fafc !important;
+    cursor: pointer !important;
+    outline: none !important;
+    height: 28px !important;
+    min-width: 58px !important;
+}
+.md-toolbar .entries-wrap select:focus,
+.md2-toolbar .entries-wrap select:focus,
+.pt-toolbar .entries-wrap select:focus,
+.sptjm-toolbar .entries-wrap select:focus { border-color: #1a56db !important; }
+
+.md-toolbar .search-wrap,
+.md2-toolbar .search-wrap,
+.pt-toolbar .search-wrap,
+.sptjm-toolbar .search-wrap {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    position: relative;
+}
+.md-toolbar .search-wrap input,
+.md2-toolbar .search-wrap input,
+.pt-toolbar .search-wrap input,
+.sptjm-toolbar .search-wrap input {
+    border: 1.5px solid #dde3ed !important;
+    border-radius: 7px !important;
+    padding: 4px 32px 4px 10px !important;
+    font-size: 0.82rem !important;
+    font-weight: 400 !important;
+    color: #1a1a2e !important;
+    background: #f8fafc url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='13' height='13' fill='%238592a3' viewBox='0 0 16 16'%3E%3Cpath d='M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398l3.85 3.85a1 1 0 0 0 1.415-1.415l-3.868-3.833zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z'/%3E%3C/svg%3E") no-repeat calc(100% - 9px) center !important;
+    min-width: 200px;
+    outline: none !important;
+    height: 30px !important;
+    transition: all 0.18s ease !important;
+}
+.md-toolbar .search-wrap input:focus,
+.md2-toolbar .search-wrap input:focus,
+.pt-toolbar .search-wrap input:focus,
+.sptjm-toolbar .search-wrap input:focus {
+    border-color: #1a56db !important;
+    background-color: #fff !important;
+    box-shadow: 0 0 0 3px rgba(26, 86, 219, 0.08) !important;
+}
+
+/* ─── BUTTON STANDARDIZATION ─── */
+.btn-md2-tambah,
+.btn-tambah-md,
+.btn-export-md,
+.btn-sptjm-primary {
+    background-color: #0b3d91 !important;
+    border: none !important;
+    color: #ffffff !important;
+    font-weight: 600 !important;
+    font-size: 0.82rem !important;
+    padding: 8px 20px !important;
+    border-radius: 20px !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 6px !important;
+    transition: all 0.2s !important;
+    white-space: nowrap !important;
+    cursor: pointer !important;
+    box-shadow: none !important;
+}
+.btn-md2-tambah:hover,
+.btn-tambah-md:hover,
+.btn-export-md:hover,
+.btn-sptjm-primary:hover {
+    background-color: #082f73 !important;
+    color: #ffffff !important;
+    box-shadow: 0 4px 14px rgba(11, 61, 145, 0.35) !important;
+}
+
+/* ─── BUTTON SINKRONISASI (KUNING/ORANGE KONSISTEN) ─── */
+.btn-sinkron-md,
+.btn-sptjm-sinkron,
+.btn-sptjm-warning {
+    background-color: #d97706 !important;
+    border: none !important;
+    color: #ffffff !important;
+    font-weight: 600 !important;
+    font-size: 0.82rem !important;
+    padding: 8px 20px !important;
+    border-radius: 20px !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 6px !important;
+    transition: all 0.2s !important;
+    white-space: nowrap !important;
+    cursor: pointer !important;
+    box-shadow: none !important;
+}
+.btn-sinkron-md:hover,
+.btn-sptjm-sinkron:hover,
+.btn-sptjm-warning:hover {
+    background-color: #b45309 !important;
+    color: #ffffff !important;
+    box-shadow: 0 4px 14px rgba(217, 119, 6, 0.35) !important;
+}
+
+/* ─── IKON AKSI LIHAT (MATA) - BIRU ─── */
+.bx-show, .bx-bullseye {
+    color: #1a56db !important;
+}
+.sptjm-btn-view, .btn-aksi-view {
+    background-color: #e8f0fe !important;
+    color: #1a56db !important;
+    border-color: transparent !important;
+}
+.sptjm-btn-view:hover, .btn-aksi-view:hover {
+    background-color: #d0e1fd !important;
+}
+
+/* ─── LINK LIHAT DOKUMEN - BIRU ─── */
+.link-lihat-dokumen {
+    color: #1a56db !important;
+    font-weight: 600 !important;
+    text-decoration: none !important;
+}
+.link-lihat-dokumen:hover {
+    text-decoration: underline !important;
+}
+
+.btn-filter-md,
+.btn-sptjm-secondary {
+    background-color: #ffffff !important;
+    border: 1px solid #cbd5e1 !important;
+    color: #475569 !important;
+    font-weight: 500 !important;
+    font-size: 0.82rem !important;
+    padding: 8px 20px !important;
+    border-radius: 20px !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 6px !important;
+    transition: all 0.2s !important;
+    white-space: nowrap !important;
+    cursor: pointer !important;
+}
+.btn-filter-md:hover,
+.btn-sptjm-secondary:hover {
+    background-color: #f8fafc !important;
+    color: #1e293b !important;
+    border-color: #94a3b8 !important;
+}
+
+.btn-sptjm-warning {
+    background-color: #d97706 !important;
+    border: none !important;
+    color: #ffffff !important;
+    font-weight: 600 !important;
+    font-size: 0.82rem !important;
+    padding: 8px 20px !important;
+    border-radius: 20px !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 6px !important;
+    transition: all 0.2s !important;
+    white-space: nowrap !important;
+    cursor: pointer !important;
+}
+.btn-sptjm-warning:hover {
+    background-color: #b45309 !important;
+    color: #ffffff !important;
+    box-shadow: 0 4px 14px rgba(217, 119, 6, 0.35) !important;
+}
+
+/* ─── GLOBAL SPTJM ICON BUTTONS ─── */
+.sptjm-icon-btn,
+.btn-edit-pt {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    width: 28px !important;
+    height: 28px !important;
+    border-radius: 50% !important;
+    border: none !important;
+    cursor: pointer !important;
+    font-size: 1rem !important;
+    transition: box-shadow 0.15s ease, opacity 0.15s ease, transform 0.15s ease !important;
+    flex-shrink: 0 !important;
+}
+.sptjm-icon-btn:hover,
+.btn-edit-pt:hover {
+    box-shadow: 0 3px 10px rgba(0,0,0,0.18) !important;
+    opacity: 0.88 !important;
+    transform: scale(1.05) !important;
+}
+.sptjm-icon-btn:active,
+.btn-edit-pt:active { opacity: 0.7 !important; }
+
+.sptjm-btn-edit { background-color: #e8f0fe !important; color: #1a56db !important; }
+.sptjm-btn-edit:hover { background-color: #d0e1fd !important; color: #1a56db !important; }
+
+.sptjm-btn-active { background-color: #e8f0fe !important; color: #1a56db !important; }
+.sptjm-btn-active:hover { background-color: #d0e1fd !important; color: #1a56db !important; }
+
+.sptjm-btn-reset { background-color: #e8faf0 !important; color: #28a745 !important; }
+.sptjm-btn-reset:hover { background-color: #c3f0d8 !important; color: #1e7e34 !important; }
+
+.sptjm-btn-delete { background-color: #fde8e8 !important; color: #dc3545 !important; }
+.sptjm-btn-delete:hover { background-color: #fcc8c8 !important; color: #b02a37 !important; }
+
+.sptjm-btn-print { background-color: #e8f7fd !important; color: #0d9488 !important; }
+.sptjm-btn-print:hover { background-color: #c4eefa !important; color: #0a7a6e !important; }
+
+.sptjm-btn-view { background-color: #f0e8fe !important; color: #7c3aed !important; }
+.sptjm-btn-view:hover { background-color: #e0cefc !important; color: #5b21b6 !important; }
+
+.sptjm-btn-info { background-color: #fef9e7 !important; color: #d97706 !important; }
+.sptjm-btn-info:hover { background-color: #fef3c7 !important; color: #b45309 !important; }
+
+.btn-edit-pt { background-color: #fef9e7 !important; color: #d97706 !important; }
+.btn-edit-pt:hover { background-color: #fef3c7 !important; color: #b45309 !important; }
+
+td .sptjm-icon-btn + .sptjm-icon-btn,
+td .sptjm-icon-btn + form,
+td form + .sptjm-icon-btn,
+td form + form {
+    margin-left: 4px !important;
+}
+
+/* ─── BADGES STANDARDIZATION ─── */
+.badge-aktif,
+.sptjm-badge-active {
+    background-color: rgba(26, 86, 219, 0.1) !important;
+    color: #1a56db !important;
+    font-weight: 600 !important;
+    font-size: 0.7rem !important;
+    padding: 3px 9px !important;
+    border-radius: 20px !important;
+    letter-spacing: 0.03em !important;
+    text-transform: uppercase !important;
+    display: inline-block !important;
+    border: 1px solid rgba(26, 86, 219, 0.2) !important;
+}
+.badge-nonaktif,
+.badge-tidak-aktif,
+.sptjm-badge-inactive {
+    background-color: rgba(234, 84, 85, 0.1) !important;
+    color: #ea5455 !important;
+    font-weight: 600 !important;
+    font-size: 0.7rem !important;
+    padding: 3px 9px !important;
+    border-radius: 20px !important;
+    letter-spacing: 0.03em !important;
+    text-transform: uppercase !important;
+    display: inline-block !important;
+    border: 1px solid rgba(234, 84, 85, 0.2) !important;
+}
+
+/* ─── MODAL FORM READONLY / DISABLED ─── */
+.modal-content input.form-control[readonly],
+.modal-content input.form-control:disabled,
+.modal-content select.form-select:disabled,
+.modal-content textarea.form-control:disabled {
+    background-color: #eceef1 !important;
+    cursor: not-allowed !important;
+    pointer-events: none !important;
+    color: #495057 !important;
+}

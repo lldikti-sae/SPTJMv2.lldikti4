@@ -1,4 +1,4 @@
-@extends('layouts/contentNavbarLayout')
+﻿@extends('layouts/contentNavbarLayout')
 
 @section('title', 'SPTJM Online')
 
@@ -13,7 +13,7 @@
 
 @section('page-style')
 <style>
-/* ── Select2 Custom Theme for SPTJM ── */
+/* â”€â”€ Select2 Custom Theme for SPTJM â”€â”€ */
 .select2-container--bootstrap-5 .select2-selection {
     border: 1.5px solid #cbd5e1 !important;
     border-radius: 8px !important;
@@ -299,7 +299,6 @@
     $('#myTable').DataTable({
       processing: true,
       serverSide: true,
-      pageLength: 10,
       order: [],
       ajax: {
         url: "{{ url('admin/laporan-keuangan') }}",

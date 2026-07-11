@@ -1,4 +1,4 @@
-@extends(
+﻿@extends(
     \Illuminate\Support\Facades\Auth::guard('pts')->check()
         ? 'layouts/contentNavbarLayoutPts'
         : ((auth()->check() && method_exists(auth()->user(), 'isPIC') && auth()->user()->isPIC())
@@ -10,7 +10,7 @@
 
 @section('page-style')
 <style>
-/* ── Page Header ── */
+/* â”€â”€ Page Header â”€â”€ */
 .vdd-page-header {
     display: flex;
     align-items: flex-start;
@@ -19,13 +19,7 @@
     gap: 12px;
     margin-bottom: 24px;
 }
-.vdd-page-header .page-titles h4 {
-    font-size: 1.35rem;
-    font-weight: 700;
-    color: #2c3e50;
-    margin: 0 0 4px 0;
-    line-height: 1.2;
-}
+
 .vdd-page-header .breadcrumb {
     margin: 0;
     font-size: 0.8rem;
@@ -36,7 +30,7 @@
 .vdd-page-header .breadcrumb-item.active { color: #8592a3; }
 .vdd-page-header .breadcrumb-item + .breadcrumb-item::before { color: #8592a3; }
 
-/* ── Card ── */
+/* â”€â”€ Card â”€â”€ */
 .vdd-card {
     background: #fff;
     border-radius: 10px;
@@ -45,7 +39,7 @@
 }
 .vdd-card-inner { padding: 20px 24px 24px; }
 
-/* ── Section Divider ── */
+/* â”€â”€ Section Divider â”€â”€ */
 .vdd-section-title {
     font-size: 0.82rem;
     font-weight: 700;
@@ -63,7 +57,7 @@
     font-size: 1rem;
 }
 
-/* ── Detail Field ── */
+/* â”€â”€ Detail Field â”€â”€ */
 .vdd-field {
     margin-bottom: 14px;
 }
@@ -93,7 +87,7 @@
     font-weight: 500;
 }
 
-/* ── Status Badges ── */
+/* â”€â”€ Status Badges â”€â”€ */
 .vdd-badge-aktif {
     background-color: rgba(26, 86, 219, 0.1);
     color: #1a56db;
@@ -150,7 +144,7 @@
     display: inline-block;
 }
 
-/* ── Profile Header ── */
+/* â”€â”€ Profile Header â”€â”€ */
 .vdd-profile-header {
     display: flex;
     align-items: center;
@@ -184,7 +178,7 @@
     margin: 0;
 }
 
-/* ── Back Button ── */
+/* â”€â”€ Back Button â”€â”€ */
 .btn-kembali-vdd {
     background-color: #f1f3f5;
     border: 1px solid #e2e8f0;
@@ -287,7 +281,7 @@
 {{-- Page Header --}}
 <div class="vdd-page-header">
     <div class="page-titles">
-        <h4>Detail Data Dosen</h4>
+        <h1>Detail Data Dosen</h1>
         <nav aria-label="breadcrumb">
             <ol class="breadcrumb">
                 <li class="breadcrumb-item"><a href="#">Data Dosen</a></li>
@@ -314,7 +308,7 @@
                 <p class="vdd-profile-subtitle">
                     {{ $__displayOrNA($dosen->NIDN ?? null) }}
                     @if(!$__isNA($dosen->Jenis ?? null))
-                        &nbsp;·&nbsp; {{ $dosen->Jenis }}
+                        &nbsp;Â·&nbsp; {{ $dosen->Jenis }}
                     @endif
                     &nbsp;&nbsp;
                     <span class="vdd-badge-{{ $__statusType }}">{{ $__statusDisplay }}</span>

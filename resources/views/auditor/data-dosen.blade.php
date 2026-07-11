@@ -1,4 +1,4 @@
-@extends('layouts/contentNavbarLayoutAuditor')
+﻿@extends('layouts/contentNavbarLayoutAuditor')
 
 @section('title', 'SPTJM Online')
 
@@ -47,9 +47,7 @@
           serverSide: true,
           paging: true,
           deferRender: true,
-          pageLength: 25,
           lengthChange: true,
-          lengthMenu: [[25, 50, 100, 500], [25, 50, 100, 500]],
           dom: "<'row align-items-center mb-3'<'col-sm-12 col-md-6'l><'col-sm-12 col-md-6 d-flex justify-content-md-end justify-content-start mt-2 mt-md-0'f>>" +
                "rt<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
           ajax: {
@@ -69,7 +67,7 @@
           responsive: true,
           pagingType: 'simple_numbers',
           language: {
-            paginate: { first: 'Awal', last: 'Akhir', next: '→', previous: '←' },
+            paginate: { first: 'Awal', last: 'Akhir', next: 'â†’', previous: 'â†' },
             zeroRecords: 'Data tidak ditemukan',
             infoEmpty: 'Tidak ada data tersedia',
             info: 'Menampilkan _START_ sampai _END_ dari _TOTAL_ data',

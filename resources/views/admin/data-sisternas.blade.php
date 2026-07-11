@@ -1,4 +1,4 @@
-@php
+﻿@php
     $layout = 'layouts/contentNavbarLayout';
     if(auth()->user() instanceof \App\Models\APts) {
         $layout = 'layouts/contentNavbarLayoutPts';
@@ -184,12 +184,10 @@ function updateFileName(input) {
 document.addEventListener('DOMContentLoaded', function() {
     // Initialize DataTable
     const table = $('#sisternasTable').DataTable({
-        pageLength: 10,
         dom: '<"d-none"l><"d-none"f>rtip',
-        lengthMenu: [[10, 25, 50, 100, 500, -1], [10, 25, 50, 100, 500, 'All']],
         order: [[0, 'asc']],
         language: {
-            paginate: { first: "«", last: "»", next: "›", previous: "‹" },
+            paginate: { first: "Â«", last: "Â»", next: "â€º", previous: "â€¹" },
             zeroRecords: "Data tidak ditemukan",
             infoEmpty: "Tidak ada data tersedia",
             info: "Menampilkan _START_-_END_ dari _TOTAL_ entri",

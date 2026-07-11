@@ -1,4 +1,4 @@
-@extends('layouts/contentNavbarLayoutPts')
+﻿@extends('layouts/contentNavbarLayoutPts')
 
 @php
     // PTS-specific wrapper view (separated from admin).
@@ -167,7 +167,7 @@
                                 <label class="form-label">Dokumen (PDF, max 10MB)</label>
                                 @if(!empty($dosen->dokumen_path))
                                     <div class="mb-2">
-                                        <a href="{{ $dosen->dokumen_path }}" target="_blank" class="btn btn-sm btn-outline-primary">Lihat Dokumen Saat Ini</a>
+                                        <a href="{{ $dosen->dokumen_path }}" target="_blank" class="link-lihat-dokumen">Lihat Dokumen Saat Ini</a>
                                     </div>
                                 @endif
                                 <input type="file" class="form-control dokumen-input" name="dokumen" accept="application/pdf" required />
@@ -269,7 +269,7 @@
                             $__namaPtsCurrent = trim((string)($dosen->PTS ?? ''));
                             $__ptsList = collect($ptsList ?? [])
                                 ->filter(fn($p) => isset($p->kode_pts, $p->nama_pts))
-                                ->sortBy(fn($p) => (int) $p->kode_pts) // ← URUT TERKECIL
+                                ->sortBy(fn($p) => (int) $p->kode_pts) // â† URUT TERKECIL
                                 ->values();
                             $__kodePtsInList = $__kodePtsCurrent !== '' && $__ptsList->contains(function($p) use ($__kodePtsCurrent) {
                                 return isset($p->kode_pts) && (string)$p->kode_pts === (string)$__kodePtsCurrent;
@@ -607,7 +607,7 @@
                                 <label class="form-label">Dokumen (PDF, max 10MB)</label>
                                 @if(!empty($dosen->dokumen_path))
                                     <div class="mb-2">
-                                        <a href="{{ $dosen->dokumen_path }}" target="_blank" class="btn btn-sm btn-outline-primary">Lihat Dokumen Saat Ini</a>
+                                        <a href="{{ $dosen->dokumen_path }}" target="_blank" class="link-lihat-dokumen">Lihat Dokumen Saat Ini</a>
                                     </div>
                                 @endif
                                 <input type="file" class="form-control dokumen-input" name="dokumen" accept="application/pdf" required />
@@ -710,7 +710,7 @@
                             $__namaPtsCurrent = trim((string)($dosen->PTS ?? ''));
                             $__ptsList = collect($ptsList ?? [])
                                 ->filter(fn($p) => isset($p->kode_pts, $p->nama_pts))
-                                ->sortBy(fn($p) => (int) $p->kode_pts) // ← URUT TERKECIL
+                                ->sortBy(fn($p) => (int) $p->kode_pts) // â† URUT TERKECIL
                                 ->values();
                             $__kodePtsInList = $__kodePtsCurrent !== '' && $__ptsList->contains(function($p) use ($__kodePtsCurrent) {
                                 return isset($p->kode_pts) && (string)$p->kode_pts === (string)$__kodePtsCurrent;
@@ -1398,7 +1398,7 @@ document.addEventListener('DOMContentLoaded', function () {
     try {
         const __errors = {!! json_encode($errors->all() ?? []) !!};
         if (Array.isArray(__errors) && __errors.length) {
-            const html = '<div style="text-align:left">' + __errors.map(e => '<div>• ' + String(e) + '</div>').join('') + '</div>';
+            const html = '<div style="text-align:left">' + __errors.map(e => '<div>â€¢ ' + String(e) + '</div>').join('') + '</div>';
             Alert.warning('Validasi gagal', html, { confirmButtonText: 'Tutup' });
         }
     } catch (e) {}
@@ -1447,7 +1447,7 @@ document.addEventListener('DOMContentLoaded', function () {
         try {
             const invalid = form ? Array.from(form.querySelectorAll(':invalid')) : [];
             if (invalid.length) {
-                const html = '<div style="text-align:left">' + invalid.map((el) => '• ' + getFieldLabel(el)).join('<br>') + '</div>';
+                const html = '<div style="text-align:left">' + invalid.map((el) => 'â€¢ ' + getFieldLabel(el)).join('<br>') + '</div>';
                 await Alert.warning('Periksa input', html, { confirmButtonText: 'Tutup' });
             } else {
                 await Alert.warning('Periksa input', 'Pastikan semua field wajib sudah diisi.', { confirmButtonText: 'Tutup' });

@@ -1,4 +1,4 @@
-@extends('layouts/contentNavbarLayoutPts')
+﻿@extends('layouts/contentNavbarLayoutPts')
 
 @section('title', 'SPTJM Online')
 
@@ -75,7 +75,6 @@
                     { data: 'actions', orderable: false, searchable: false },
                 ],
                 order: [[3, 'asc']],
-                lengthMenu: [[10, 25, 50, 100, 500], [10, 25, 50, 100, 500]],
                 drawCallback: function(settings) {
                     // nothing here; we use delegated event handlers below
                 },

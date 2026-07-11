@@ -8,12 +8,21 @@
 <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
 <script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
 <script src="https://cdn.datatables.net/fixedheader/3.4.0/js/dataTables.fixedHeader.min.js"></script>
-<!-- ─── SPTJM GLOBAL DATATABLE DEFAULTS ─── -->
+<!-- ——— SPTJM GLOBAL DATATABLE DEFAULTS ——— -->
 <script>
     if (typeof $ !== 'undefined' && $.fn && $.fn.dataTable) {
         $.extend(true, $.fn.dataTable.defaults, {
-            dom: '<"md-toolbar d-flex justify-content-between align-items-center mb-0"<"entries-wrap"l><"search-wrap"f>>rt<"dataTables_bottom mt-3"ip>',
-            lengthMenu: [[10, 25, 50, 100, 500], [10, 25, 50, 100, 500]],
+            /* DOM layout:
+               l = length (Show Entries) — kiri
+               f = filter (Search)       — kanan
+               r = processing
+               t = table
+               i = info
+               p = pagination
+            */
+            dom: '<"d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3"lf>rt<"d-flex justify-content-between align-items-center flex-wrap gap-2 mt-3"ip>',
+            lengthMenu: [[10, 25, 50, 100, 250, 500], [10, 25, 50, 100, 250, 500]],
+            pageLength: 10,
             language: {
                 search: "",
                 searchPlaceholder: "Cari data...",
@@ -26,12 +35,12 @@
                 },
                 zeroRecords: 'Data tidak ditemukan',
                 infoEmpty: 'Tidak ada data tersedia',
-                info: 'Menampilkan _START_-_END_ dari _TOTAL_ entri'
+                info: 'Menampilkan _START_–_END_ dari _TOTAL_ entri'
             }
         });
     }
 </script>
-<!-- ─── SPTJM: Prevent hover-ghost icon effect across page navigation ─── -->
+<!-- ——— SPTJM: Prevent hover-ghost icon effect across page navigation ——— -->
 <script>
     (function() {
         window.addEventListener('beforeunload', function() {
@@ -427,7 +436,7 @@
     }
 
     // Bind click events on all .layout-menu-toggle elements
-    // Note: main.js already binds these — we only need the Helpers patch above.
+    // Note: main.js already binds these â€” we only need the Helpers patch above.
     // We intentionally skip re-binding here to avoid double-fire.
     function bindToggles() {
         // no-op: main.js handles .layout-menu-toggle clicks via patched Helpers.toggleCollapsed
@@ -439,5 +448,67 @@
         patchHelpers();
         bindToggles();
     });
+
+    // --- SPTJM GLOBAL UI STANDARDIZATION ---
+    function applySptjmGlobalStyles() {
+        // 1. Badge Status / Jenis Coloring
+        $('span.badge, span.badge-jenis, button.badge-bulan').each(function() {
+            var text = $(this).text().trim().toLowerCase();
+            // Aktif = Biru
+            if (text === 'aktif' || text === 'ya' || text === 'eligible') {
+                $(this).css({
+                    'background-color': '#e0e7ff',
+                    'color': '#1a56db',
+                    'border': '1px solid rgba(26,86,219,0.2)'
+                }).removeClass('bg-label-danger bg-label-warning bg-label-secondary bg-label-primary');
+            } 
+            // Tidak Aktif / Merah
+            else if (text.includes('tidak') || text.includes('non') || text === 'tolak' || text.includes('gagal') || text.includes('belum')) {
+                $(this).css({
+                    'background-color': '#fee2e2',
+                    'color': '#dc2626',
+                    'border': '1px solid rgba(220,38,38,0.2)'
+                }).removeClass('bg-label-primary bg-label-success bg-label-info bg-label-warning bg-label-secondary');
+            }
+        });
+
+        // 2. Link Lihat Dokumen -> Teks biru
+        $('a').each(function() {
+            if ($(this).text().trim().toLowerCase().includes('lihat dokumen')) {
+                $(this).addClass('link-lihat-dokumen').removeClass('text-white btn-primary btn-outline-primary');
+                $(this).css({'color': '#1a56db', 'font-weight': '600', 'border': 'none', 'background': 'transparent', 'box-shadow': 'none'});
+                $(this).find('i').css('color', '#1a56db');
+            }
+        });
+
+        // 3. Tombol Sinkronisasi -> Kuning/Orange
+        $('button, a').each(function() {
+            var text = $(this).text().trim().toLowerCase();
+            if (text.includes('sinkronisasi') || text.includes('sinkron')) {
+                if ($(this).hasClass('btn') || $(this).attr('type') === 'button' || $(this).attr('class') && $(this).attr('class').includes('sptjm-')) {
+                    $(this).removeClass('btn-primary btn-success btn-sptjm-primary btn-sptjm-success btn-outline-primary bg-primary bg-success');
+                    $(this).addClass('btn-sptjm-sinkron');
+                }
+            }
+        });
+    }
+
+    if (typeof $ !== 'undefined') {
+        $(document).ready(function() {
+            applySptjmGlobalStyles();
+            
+            // Ensure styles apply after any ajax calls or datatable renders
+            $(document).ajaxComplete(function() {
+                applySptjmGlobalStyles();
+            });
+            
+            if ($.fn.dataTable) {
+                // Ensure drawCallback triggers the function globally for all DataTables
+                $(document).on('draw.dt', function() {
+                    applySptjmGlobalStyles();
+                });
+            }
+        });
+    }
 })();
 </script>

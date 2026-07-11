@@ -22,6 +22,7 @@
         border-radius: 12px !important;
         background: #ffffff !important;
     }
+    .status-card { transition: all 0.25s ease; cursor: pointer; }
     .status-card:hover {
         transform: translateY(-2px);
         border-color: #1a56db !important;
@@ -29,25 +30,31 @@
     }
 </style>
 
-<div class="content-wrapper">
-    <!-- Header -->
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <div>
-            <h4 class="fw-bold text-dark mb-1" style="color: #0f2b5c !important; font-size: 1.5rem;">Usulan SPTJM</h4>
-            <p class="text-muted mb-0" style="font-size: 0.875rem;">Kelola dan pantau seluruh pengajuan SPTJM (Surat Pernyataan Tanggung Jawab Mutlak).</p>
-        </div>
+{{-- Page Header (uses global md-page-header) --}}
+<div class="md-page-header">
+    <div class="page-titles">
+        <h1>Usulan SPTJM</h1>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="#">Usulan</a></li>
+                <li class="breadcrumb-item active">Usulan SPTJM</li>
+            </ol>
+        </nav>
     </div>
+</div>
+
+<div class="content-wrapper" style="padding: 0;">
 
     <!-- Filters Card -->
-    <div class="card card-sptjm mb-4">
-        <div class="card-body p-4">
+    <div class="card card-sptjm" style="margin-bottom: 12px;">
+        <div class="card-body" style="padding: 14px 20px;">
             <form id="filterForm" method="POST">
                 @csrf
-                <div class="row align-items-end g-3">
+                <div class="row align-items-end g-2">
                     <!-- Pilih Tipe SPTJM -->
                     <div class="col-lg-4 col-md-5">
-                        <label class="form-label fw-bold text-dark text-uppercase" style="font-size: 0.72rem; letter-spacing: 0.05em;" for="pilihsptjm">Pilih Tipe SPTJM</label>
-                        <select id="pilihsptjm" class="form-select" name="pilihsptjm" style="border-color: #cbd5e1;">
+                        <label class="form-label fw-bold text-dark text-uppercase" style="font-size: 0.7rem; letter-spacing: 0.05em; margin-bottom: 2px;" for="pilihsptjm">Pilih Tipe SPTJM</label>
+                        <select id="pilihsptjm" class="form-select form-select-sm" name="pilihsptjm" style="border-color: #cbd5e1;">
                             <option value="SPTJM Berjalan">SPTJM Berjalan</option>
                             <option value="SPTJM Susulan">SPTJM Susulan</option>
                             <option value="TUKIN Berjalan">TUKIN Berjalan</option>
@@ -57,8 +64,8 @@
 
                     <!-- Pilih Bulan -->
                     <div class="col-lg-3 col-md-4">
-                        <label class="form-label fw-bold text-dark text-uppercase" style="font-size: 0.72rem; letter-spacing: 0.05em;" for="selectTypeOptBulan">Bulan</label>
-                        <select name="bulan" id="selectTypeOptBulan" class="form-select" style="border-color: #cbd5e1;">
+                        <label class="form-label fw-bold text-dark text-uppercase" style="font-size: 0.7rem; letter-spacing: 0.05em; margin-bottom: 2px;" for="selectTypeOptBulan">Bulan</label>
+                        <select name="bulan" id="selectTypeOptBulan" class="form-select form-select-sm" style="border-color: #cbd5e1;">
                             <option value="All">All</option>
                             <option value="Januari">Januari</option>
                             <option value="Februari">Februari</option>
@@ -77,9 +84,9 @@
 
                     <!-- Search -->
                     <div class="col-lg-5 col-md-3 d-flex justify-content-md-end">
-                        <div class="w-100" style="max-width: 320px;">
-                            <label class="form-label fw-bold text-dark text-uppercase" style="font-size: 0.72rem; letter-spacing: 0.05em;">Search</label>
-                            <div class="input-group">
+                        <div class="w-100" style="max-width: 300px;">
+                            <label class="form-label fw-bold text-dark text-uppercase" style="font-size: 0.7rem; letter-spacing: 0.05em; margin-bottom: 2px;">Search</label>
+                            <div class="input-group input-group-sm">
                                 <span class="input-group-text" style="border-color: #cbd5e1; background: #f8fafc;"><i class="bx bx-search"></i></span>
                                 <input type="search" class="form-control" id="searchInput" placeholder="Search..." style="border-color: #cbd5e1;">
                             </div>
@@ -91,73 +98,73 @@
     </div>
 
     <!-- Cards Stats & Status Buttons -->
-    <div class="row row-cols-1 row-cols-md-5 g-3 mb-4">
+   <div class="row g-2 mb-3">
         <!-- Card Usulan -->
         <div class="col">
-            <div class="card status-card status-btn cursor-pointer p-3" data-status="Usulan" style="border-radius: 12px; border: 1.5px solid #dbeafe; box-shadow: 0 4px 12px rgba(26, 86, 219, 0.05); background: white; transition: all 0.25s ease;">
-                <div class="d-flex align-items-center gap-3">
-                    <div class="avatar flex-shrink-0 d-flex align-items-center justify-content-center" style="width: 44px; height: 44px; border-radius: 10px; background-color: #eef2f6;">
-                        <i class="bx bx-folder" style="font-size: 1.35rem; color: #475569;"></i>
+            <div class="card status-card status-btn p-2" data-status="Usulan" style="border-radius: 10px; border: 1.5px solid #dbeafe; box-shadow: 0 2px 8px rgba(26, 86, 219, 0.05); background: white;">
+                <div class="d-flex align-items-center gap-2">
+                    <div class="d-flex align-items-center justify-content-center flex-shrink-0" style="width: 32px; height: 32px;" border-radius: 8px; background-color: #eef2f6;">
+                        <i class="bx bx-folder" style="font-size: 1.1rem; color: #475569;"></i>
                     </div>
                     <div>
-                        <span class="d-block mb-1 text-uppercase fw-bold text-muted" style="font-size: 0.65rem; letter-spacing: 0.05em;">Usulan</span>
-                        <h4 class="card-title mb-0 fw-bold" style="color: #0f2b5c;">{{ $countUsulan }}</h4>
+                        <span class="d-block text-uppercase fw-bold text-muted" style="font-size: 0.6rem; letter-spacing: 0.04em; line-height: 1.2;">Usulan</span>
+                        <span class="fw-bold" style="color: #0f2b5c; font-size: 1rem; line-height: 1.2;">{{ $countUsulan }}</span>
                     </div>
                 </div>
             </div>
         </div>
         <!-- Card Validasi -->
         <div class="col">
-            <div class="card status-card status-btn cursor-pointer p-3" data-status="Validasi" style="border-radius: 12px; border: 1.5px solid #dbeafe; box-shadow: 0 4px 12px rgba(26, 86, 219, 0.05); background: white; transition: all 0.25s ease;">
-                <div class="d-flex align-items-center gap-3">
-                    <div class="avatar flex-shrink-0 d-flex align-items-center justify-content-center" style="width: 44px; height: 44px; border-radius: 10px; background-color: #fff8eb;">
-                        <i class="bx bx-hourglass" style="font-size: 1.35rem; color: #f59e0b;"></i>
+            <div class="card status-card status-btn p-2" data-status="Validasi" style="border-radius: 10px; border: 1.5px solid #dbeafe; box-shadow: 0 2px 8px rgba(26, 86, 219, 0.05); background: white;">
+                <div class="d-flex align-items-center gap-2">
+                    <div class="d-flex align-items-center justify-content-center flex-shrink-0" style="width: 32px; height: 32px;" border-radius: 8px; background-color: #fff8eb;">
+                        <i class="bx bx-hourglass" style="font-size: 1.1rem; color: #f59e0b;"></i>
                     </div>
                     <div>
-                        <span class="d-block mb-1 text-uppercase fw-bold text-muted" style="font-size: 0.65rem; letter-spacing: 0.05em;">Validasi</span>
-                        <h4 class="card-title mb-0 fw-bold" style="color: #0f2b5c;">{{ $countValidasi }}</h4>
+                        <span class="d-block text-uppercase fw-bold text-muted" style="font-size: 0.6rem; letter-spacing: 0.04em; line-height: 1.2;">Validasi</span>
+                        <span class="fw-bold" style="color: #0f2b5c; font-size: 1rem; line-height: 1.2;">{{ $countValidasi }}</span>
                     </div>
                 </div>
             </div>
         </div>
         <!-- Card Proses -->
-        <div class="col">
-            <div class="card status-card status-btn cursor-pointer p-3" data-status="Proses" style="border-radius: 12px; border: 1.5px solid #dbeafe; box-shadow: 0 4px 12px rgba(26, 86, 219, 0.05); background: white; transition: all 0.25s ease;">
-                <div class="d-flex align-items-center gap-3">
-                    <div class="avatar flex-shrink-0 d-flex align-items-center justify-content-center" style="width: 44px; height: 44px; border-radius: 10px; background-color: #eff6ff;">
-                        <i class="bx bx-sync" style="font-size: 1.35rem; color: #3b82f6;"></i>
+       <div class="col">
+            <div class="card status-card status-btn p-2" data-status="Proses" style="border-radius: 10px; border: 1.5px solid #dbeafe; box-shadow: 0 2px 8px rgba(26, 86, 219, 0.05); background: white;">
+                <div class="d-flex align-items-center gap-2">
+                    <div class="d-flex align-items-center justify-content-center flex-shrink-0" style="width: 32px; height: 32px;" border-radius: 8px; background-color: #eff6ff;">
+                        <i class="bx bx-sync" style="font-size: 1.1rem; color: #3b82f6;"></i>
                     </div>
                     <div>
-                        <span class="d-block mb-1 text-uppercase fw-bold text-muted" style="font-size: 0.65rem; letter-spacing: 0.05em;">Proses</span>
-                        <h4 class="card-title mb-0 fw-bold" style="color: #0f2b5c;">{{ $countProses }}</h4>
+                        <span class="d-block text-uppercase fw-bold text-muted" style="font-size: 0.6rem; letter-spacing: 0.04em; line-height: 1.2;">Proses</span>
+                        <span class="fw-bold" style="color: #0f2b5c; font-size: 1rem; line-height: 1.2;">{{ $countProses }}</span>
                     </div>
                 </div>
             </div>
         </div>
         <!-- Card Selesai -->
         <div class="col">
-            <div class="card status-card status-btn cursor-pointer p-3" data-status="Selesai" style="border-radius: 12px; border: 1.5px solid #dbeafe; box-shadow: 0 4px 12px rgba(26, 86, 219, 0.05); background: white; transition: all 0.25s ease;">
-                <div class="d-flex align-items-center gap-3">
-                    <div class="avatar flex-shrink-0 d-flex align-items-center justify-content-center" style="width: 44px; height: 44px; border-radius: 10px; background-color: #ecfdf5;">
-                        <i class="bx bx-check-circle" style="font-size: 1.35rem; color: #10b981;"></i>
+            <div class="card status-card status-btn p-2" data-status="Selesai" style="border-radius: 10px; border: 1.5px solid #dbeafe; box-shadow: 0 2px 8px rgba(26, 86, 219, 0.05); background: white;">
+                <div class="d-flex align-items-center gap-2">
+                    <div class="d-flex align-items-center justify-content-center flex-shrink-0" style="width: 32px; height: 32px;" border-radius: 8px; background-color: #ecfdf5;">
+                        <i class="bx bx-check-circle" style="font-size: 1.1rem; color: #10b981;"></i>
                     </div>
                     <div>
-                        <span class="d-block mb-1 text-uppercase fw-bold text-muted" style="font-size: 0.65rem; letter-spacing: 0.05em;">Selesai</span>
-                        <h4 class="card-title mb-0 fw-bold" style="color: #0f2b5c;">{{ $countSelesai }}</h4>
+                        <span class="d-block text-uppercase fw-bold text-muted" style="font-size: 0.6rem; letter-spacing: 0.04em; line-height: 1.2;">Selesai</span>
+                        <span class="fw-bold" style="color: #0f2b5c; font-size: 1rem; line-height: 1.2;">{{ $countSelesai }}</span>
                     </div>
                 </div>
             </div>
         </div>
         <!-- Card Tolak -->
-        <div class="col">
-            <div class="card status-card status-btn cursor-pointer p-3" data-status="Tolak" style="border-radius: 12px; border: 1.5px solid #dbeafe; box-shadow: 0 4px 12px rgba(26, 86, 219, 0.05); background: white; transition: all 0.25s ease;">
-                <div class="d-flex align-items-center gap-3">
-                    <div class="avatar flex-shrink-0 d-flex align-items-center justify-content-center" style="width: 44px; height: 44px; border-radius: 10px; background-color: #fef2f2;">
-                        <i class="bx bx-x-circle" style="font-size: 1.35rem; color: #ef4444;"></i>
+       <div class="col">
+            <div class="card status-card status-btn p-2" data-status="Tolak" style="border-radius: 10px; border: 1.5px solid #dbeafe; box-shadow: 0 2px 8px rgba(26, 86, 219, 0.05); background: white;">
+                <div class="d-flex align-items-center gap-2">
+                    <div class="d-flex align-items-center justify-content-center flex-shrink-0" style="width: 32px; height: 32px;" border-radius: 8px; background-color: #fef2f2;">
+                        <i class="bx bx-x-circle" style="font-size: 1.1rem; color: #ef4444;"></i>
                     </div>
                     <div>
-                        <span class="d-block mb-1 text-uppercase fw-bold text-muted" style="font-size: 0.65rem; letter-spacing: 0.05em;">Ditolak</span>
-                        <h4 class="card-title mb-0 fw-bold" style="color: #0f2b5c;">{{ $countTolak }}</h4>
+                        <span class="d-block text-uppercase fw-bold text-muted" style="font-size: 0.6rem; letter-spacing: 0.04em; line-height: 1.2;">Ditolak</span>
+                        <span class="fw-bold" style="color: #0f2b5c; font-size: 1rem; line-height: 1.2;">{{ $countTolak }}</span>
                     </div>
                 </div>
             </div>
@@ -165,22 +172,22 @@
     </div>
 
     <!-- Table Card -->
-    <div class="card card-sptjm mb-4">
-        <div class="card-body p-4">
+    <div class="card card-sptjm">
+        <div class="card-body" style="padding: 14px 20px 16px;">
             <div class="table-responsive text-nowrap">
-                <table class="table table-hover md2-table" id="dataTable" style="width:100%; margin-bottom: 0 !important;">
+                <table class="table table-hover" id="dataTable" style="width:100%; margin-bottom: 0 !important;">
                     <thead>
                         <tr>
-                            <th style="background-color: #f8fafc !important; color: #475569 !important; font-size: 0.75rem !important; letter-spacing: 0.05em !important; font-weight: 700 !important;">ID Usulan</th>
-                            <th style="background-color: #f8fafc !important; color: #475569 !important; font-size: 0.75rem !important; letter-spacing: 0.05em !important; font-weight: 700 !important;">Tahun</th>
-                            <th style="background-color: #f8fafc !important; color: #475569 !important; font-size: 0.75rem !important; letter-spacing: 0.05em !important; font-weight: 700 !important;">Kode PT</th>
-                            <th style="background-color: #f8fafc !important; color: #475569 !important; font-size: 0.75rem !important; letter-spacing: 0.05em !important; font-weight: 700 !important;">Nama PT</th>
-                            <th style="background-color: #f8fafc !important; color: #475569 !important; font-size: 0.75rem !important; letter-spacing: 0.05em !important; font-weight: 700 !important;">Bulan</th>
-                            <th style="background-color: #f8fafc !important; color: #475569 !important; font-size: 0.75rem !important; letter-spacing: 0.05em !important; font-weight: 700 !important;">Nama Penandatangan</th>
-                            <th style="background-color: #f8fafc !important; color: #475569 !important; font-size: 0.75rem !important; letter-spacing: 0.05em !important; font-weight: 700 !important;">Jabatan</th>
-                            <th style="background-color: #f8fafc !important; color: #475569 !important; font-size: 0.75rem !important; letter-spacing: 0.05em !important; font-weight: 700 !important;">Wilayah</th>
-                            <th style="background-color: #f8fafc !important; color: #475569 !important; font-size: 0.75rem !important; letter-spacing: 0.05em !important; font-weight: 700 !important;">File</th>
-                            <th style="background-color: #f8fafc !important; color: #475569 !important; font-size: 0.75rem !important; letter-spacing: 0.05em !important; font-weight: 700 !important;">Keterangan</th>
+                            <th>ID Usulan</th>
+                            <th>Tahun</th>
+                            <th>Kode PT</th>
+                            <th>Nama PT</th>
+                            <th>Bulan</th>
+                            <th>Nama Penandatangan</th>
+                            <th>Jabatan</th>
+                            <th>Wilayah</th>
+                            <th>File</th>
+                            <th>Keterangan</th>
                         </tr>
                     </thead>
                     <tbody></tbody>
@@ -201,7 +208,6 @@ document.addEventListener('DOMContentLoaded', function() {
         processing: true,
         serverSide: false,
         paging: true,
-        pageLength: 10,
         lengthChange: true,
         searching: true,
         responsive: true,

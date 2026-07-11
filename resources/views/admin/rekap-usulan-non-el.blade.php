@@ -1,4 +1,4 @@
-@extends('layouts/contentNavbarLayout')
+﻿@extends('layouts/contentNavbarLayout')
 
 @section('title', 'SPTJM Online')
 
@@ -120,8 +120,6 @@
             processing: true,
             serverSide: true,
             paging: true,
-            pageLength: 100,
-            lengthMenu: [[50, 100, 200, 500], [50, 100, 200, 500]],
             ajax: {
                 url: ajaxUrl,
                 data: {
@@ -134,8 +132,8 @@
                 paginate: {
                     first: "Awal",
                     last: "Akhir",
-                    next: "→",
-                    previous: "←",
+                    next: "â†’",
+                    previous: "â†",
                 },
                 zeroRecords: "Data tidak ditemukan",
                 infoEmpty: "Tidak ada data tersedia",
