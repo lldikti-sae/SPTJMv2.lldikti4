@@ -13,24 +13,14 @@
         border-radius: 12px !important;
         background: #ffffff !important;
     }
-
+    .md2-table th, .md2-table td {
+        padding: 6px 12px !important;
+        font-size: 0.82rem !important;
+        line-height: 1.2 !important;
+    }
 </style>
 
 <div class="content-wrapper">
-    <!-- Breadcrumb -->
-    <nav aria-label="breadcrumb" class="mb-3">
-        <ol class="breadcrumb" style="font-size: 0.85rem; padding: 0; background: transparent;">
-            <li class="breadcrumb-item"><a href="#" style="color: #64748b;">Proses Pembayaran</a></li>
-            <li class="breadcrumb-item active fw-bold" aria-current="page" style="color: #1a56db;">Rekapitulasi Pencairan</li>
-        </ol>
-    </nav>
-
-    <!-- Header -->
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <div>
-            <h4 class="fw-bold text-dark mb-1" style="color: #0f2b5c !important; font-size: 1.5rem;">Proses Rekapitulasi Pencairan</h4>
-        </div>
-    </div>
 
     <!-- Filter Form -->
     <div class="card card-pencairan mb-4">

@@ -92,7 +92,7 @@ class LihatDataDosenController extends Controller
             $isActive = ($val === 1 || $val === '1' || strcasecmp((string) $val, 'YA') === 0 || strcasecmp((string) $val, 'Y') === 0);
           }
           if ($isActive) {
-            $statusBtn = '<a href="' . $urlPengaktifan . '" class="sptjm-icon-btn sptjm-btn-reset" title="Pengaktifan"><i class="bx bx-check-circle"></i></a>';
+            $statusBtn = '<a href="' . $urlPengaktifan . '" class="sptjm-icon-btn sptjm-btn-active" title="Pengaktifan"><i class="bx bx-check-circle"></i></a>';
           } else {
             $statusBtn = '<a href="' . $urlPengaktifan . '" class="sptjm-icon-btn sptjm-btn-delete" title="Tidak Aktif"><i class="bx bx-block"></i></a>';
           }

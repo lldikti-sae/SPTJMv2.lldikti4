@@ -30,6 +30,28 @@ $navbarDetached = $navbarDetached ?? '';
     font-size: 1.55rem !important;
     color: #0f3994 !important;
 }
+html:not(.layout-menu-collapsed) .navbar-toggle-icon-open {
+    display: inline-block !important;
+}
+html:not(.layout-menu-collapsed) .navbar-toggle-icon-closed {
+    display: none !important;
+}
+html.layout-menu-collapsed .navbar-toggle-icon-open {
+    display: none !important;
+}
+html.layout-menu-collapsed .navbar-toggle-icon-closed {
+    display: inline-block !important;
+}
+
+/* On desktop (1200px and up): hide navbar toggle when sidebar is expanded */
+@media (min-width: 1200px) {
+    html:not(.layout-menu-collapsed) .sptjm-nav-hamburger {
+        display: none !important;
+    }
+    html.layout-menu-collapsed .sptjm-nav-hamburger {
+        display: flex !important;
+    }
+}
 
 #layout-navbar {
     background: #ffffff !important;
@@ -44,11 +66,11 @@ $navbarDetached = $navbarDetached ?? '';
     align-items: center !important;
 }
 #layout-navbar .sptjm-nav-title {
-    font-size: 1.4rem;
-    font-weight: 800;
-    color: #0f2b5c;
-    letter-spacing: -0.3px;
-    white-space: nowrap;
+    font-size: 1.12rem !important;
+    font-weight: 700 !important;
+    color: #0f2b5c !important;
+    letter-spacing: -0.15px !important;
+    white-space: nowrap !important;
 }
 /* User info inline display (name + role stacked, then avatar) */
 .sptjm-user-info-wrap {
@@ -99,7 +121,8 @@ $navbarDetached = $navbarDetached ?? '';
                 <a href="javascript:void(0);"
                    class="sptjm-nav-hamburger layout-menu-toggle"
                    aria-label="Toggle sidebar">
-                    <i class="bx bx-menu"></i>
+                    <i class="bx bx-chevron-left navbar-toggle-icon-open"></i>
+                    <i class="bx bx-chevron-right navbar-toggle-icon-closed" style="display: none;"></i>
                 </a>
 
                 <div class="navbar-nav-right d-flex align-items-center" id="navbar-collapse">

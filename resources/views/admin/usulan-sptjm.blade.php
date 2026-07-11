@@ -38,6 +38,58 @@
         </div>
     </div>
 
+    <!-- Filters Card -->
+    <div class="card card-sptjm mb-4">
+        <div class="card-body p-4">
+            <form id="filterForm" method="POST">
+                @csrf
+                <div class="row align-items-end g-3">
+                    <!-- Pilih Tipe SPTJM -->
+                    <div class="col-lg-4 col-md-5">
+                        <label class="form-label fw-bold text-dark text-uppercase" style="font-size: 0.72rem; letter-spacing: 0.05em;" for="pilihsptjm">Pilih Tipe SPTJM</label>
+                        <select id="pilihsptjm" class="form-select" name="pilihsptjm" style="border-color: #cbd5e1;">
+                            <option value="SPTJM Berjalan">SPTJM Berjalan</option>
+                            <option value="SPTJM Susulan">SPTJM Susulan</option>
+                            <option value="TUKIN Berjalan">TUKIN Berjalan</option>
+                            <option value="TUKIN Susulan">TUKIN Susulan</option>
+                        </select>
+                    </div>
+
+                    <!-- Pilih Bulan -->
+                    <div class="col-lg-3 col-md-4">
+                        <label class="form-label fw-bold text-dark text-uppercase" style="font-size: 0.72rem; letter-spacing: 0.05em;" for="selectTypeOptBulan">Bulan</label>
+                        <select name="bulan" id="selectTypeOptBulan" class="form-select" style="border-color: #cbd5e1;">
+                            <option value="All">All</option>
+                            <option value="Januari">Januari</option>
+                            <option value="Februari">Februari</option>
+                            <option value="Maret">Maret</option>
+                            <option value="April">April</option>
+                            <option value="Mei">Mei</option>
+                            <option value="Juni">Juni</option>
+                            <option value="Juli">Juli</option>
+                            <option value="Agustus">Agustus</option>
+                            <option value="September">September</option>
+                            <option value="Oktober">Oktober</option>
+                            <option value="November">November</option>
+                            <option value="Desember">Desember</option>
+                        </select>
+                    </div>
+
+                    <!-- Search -->
+                    <div class="col-lg-5 col-md-3 d-flex justify-content-md-end">
+                        <div class="w-100" style="max-width: 320px;">
+                            <label class="form-label fw-bold text-dark text-uppercase" style="font-size: 0.72rem; letter-spacing: 0.05em;">Search</label>
+                            <div class="input-group">
+                                <span class="input-group-text" style="border-color: #cbd5e1; background: #f8fafc;"><i class="bx bx-search"></i></span>
+                                <input type="search" class="form-control" id="searchInput" placeholder="Search..." style="border-color: #cbd5e1;">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <!-- Cards Stats & Status Buttons -->
     <div class="row row-cols-1 row-cols-md-5 g-3 mb-4">
         <!-- Card Usulan -->
@@ -109,58 +161,6 @@
                     </div>
                 </div>
             </div>
-        </div>
-    </div>
-
-    <!-- Filters Card -->
-    <div class="card card-sptjm mb-4">
-        <div class="card-body p-4">
-            <form id="filterForm" method="POST">
-                @csrf
-                <div class="row align-items-end g-3">
-                    <!-- Pilih Tipe SPTJM -->
-                    <div class="col-lg-4 col-md-5">
-                        <label class="form-label fw-bold text-dark text-uppercase" style="font-size: 0.72rem; letter-spacing: 0.05em;" for="pilihsptjm">Pilih Tipe SPTJM</label>
-                        <select id="pilihsptjm" class="form-select" name="pilihsptjm" style="border-color: #cbd5e1;">
-                            <option value="SPTJM Berjalan">SPTJM Berjalan</option>
-                            <option value="SPTJM Susulan">SPTJM Susulan</option>
-                            <option value="TUKIN Berjalan">TUKIN Berjalan</option>
-                            <option value="TUKIN Susulan">TUKIN Susulan</option>
-                        </select>
-                    </div>
-
-                    <!-- Pilih Bulan -->
-                    <div class="col-lg-3 col-md-4">
-                        <label class="form-label fw-bold text-dark text-uppercase" style="font-size: 0.72rem; letter-spacing: 0.05em;" for="selectTypeOptBulan">Bulan</label>
-                        <select name="bulan" id="selectTypeOptBulan" class="form-select" style="border-color: #cbd5e1;">
-                            <option value="All">All</option>
-                            <option value="Januari">Januari</option>
-                            <option value="Februari">Februari</option>
-                            <option value="Maret">Maret</option>
-                            <option value="April">April</option>
-                            <option value="Mei">Mei</option>
-                            <option value="Juni">Juni</option>
-                            <option value="Juli">Juli</option>
-                            <option value="Agustus">Agustus</option>
-                            <option value="September">September</option>
-                            <option value="Oktober">Oktober</option>
-                            <option value="November">November</option>
-                            <option value="Desember">Desember</option>
-                        </select>
-                    </div>
-
-                    <!-- Search -->
-                    <div class="col-lg-5 col-md-3 d-flex justify-content-md-end">
-                        <div class="w-100" style="max-width: 320px;">
-                            <label class="form-label fw-bold text-dark text-uppercase" style="font-size: 0.72rem; letter-spacing: 0.05em;">Search</label>
-                            <div class="input-group">
-                                <span class="input-group-text" style="border-color: #cbd5e1; background: #f8fafc;"><i class="bx bx-search"></i></span>
-                                <input type="search" class="form-control" id="searchInput" placeholder="Search..." style="border-color: #cbd5e1;">
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </form>
         </div>
     </div>
 

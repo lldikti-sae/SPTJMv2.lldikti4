@@ -38,13 +38,13 @@
 }
 
 /* ── Header Buttons ── */
-.btn-sync {
+.btn-sinkron-md {
     background-color: #d97706;
     border: none;
     color: #fff;
     font-weight: 600;
     font-size: 0.82rem;
-    padding: 8px 20px;
+    padding: 8px 18px;
     border-radius: 20px;
     display: inline-flex;
     align-items: center;
@@ -52,18 +52,18 @@
     transition: all 0.2s;
     white-space: nowrap;
 }
-.btn-sync:hover {
+.btn-sinkron-md:hover {
     background-color: #b45309;
     color: #fff;
     box-shadow: 0 4px 14px rgba(217,119,6,0.35);
 }
-.btn-tambah {
+.btn-tambah-md {
     background-color: #0b3d91;
     border: none;
     color: #fff;
     font-weight: 600;
     font-size: 0.82rem;
-    padding: 8px 20px;
+    padding: 8px 18px;
     border-radius: 20px;
     display: inline-flex;
     align-items: center;
@@ -71,7 +71,7 @@
     transition: all 0.2s;
     white-space: nowrap;
 }
-.btn-tambah:hover {
+.btn-tambah-md:hover {
     background-color: #082f73;
     color: #fff;
     box-shadow: 0 4px 14px rgba(11,61,145,0.35);
@@ -88,6 +88,19 @@
     padding: 20px 24px 24px;
 }
 
+/* Enforce font family on everything inside Perguruan Tinggi page */
+.container-xxl,
+.pt-page-header,
+.pt-card,
+.btn-sinkron-md,
+.btn-tambah-md,
+.pt-toolbar,
+.pt-toolbar *,
+.modal-content,
+.modal-content * {
+    font-family: 'Public Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif !important;
+}
+
 /* ── Toolbar (entries + search) ── */
 .pt-toolbar {
     display: flex;
@@ -101,40 +114,43 @@
     display: flex;
     align-items: center;
     gap: 8px;
-    font-size: 0.82rem;
-    color: #5c6877;
+    font-size: 0.84rem !important;
+    color: #4a5568 !important;
 }
 .pt-toolbar .entries-wrap select {
     width: 70px;
-    padding: 4px 8px;
-    border: 1px solid #d9dee3;
-    border-radius: 5px;
-    font-size: 0.82rem;
-    color: #2c3e50;
-    background: #f8f9fa;
+    padding: 5px 10px;
+    border: 1.5px solid #e2e8f0 !important;
+    border-radius: 8px !important;
+    font-size: 0.84rem !important;
+    color: #4a5568 !important;
+    background: #f8fafc !important;
+    cursor: pointer;
+    outline: none;
 }
 .pt-toolbar .search-wrap {
-    display: flex;
-    align-items: center;
-    border: 1px solid #d9dee3;
-    border-radius: 6px;
-    overflow: hidden;
-    background: #fff;
+    display: block;
+    background: transparent;
+    border: none;
+    border-radius: 0;
+    overflow: visible;
 }
 .pt-toolbar .search-wrap input {
-    border: none;
-    outline: none;
-    padding: 6px 12px;
-    font-size: 0.82rem;
-    min-width: 220px;
-    color: #2c3e50;
+    border: 1.5px solid #e2e8f0 !important;
+    border-radius: 8px !important;
+    padding: 6px 36px 6px 12px !important;
+    font-size: 0.84rem !important;
+    color: #2d3748 !important;
+    background: #f8fafc url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' fill='%238592a3' viewBox='0 0 16 16'%3E%3Cpath d='M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398l3.85 3.85a1 1 0 0 0 1.415-1.415l-3.868-3.833zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z'/%3E%3C/svg%3E") no-repeat calc(100% - 10px) center !important;
+    min-width: 240px;
+    height: 32px !important;
+    outline: none !important;
+    transition: border-color 0.2s, box-shadow 0.2s;
 }
-.pt-toolbar .search-wrap .search-icon {
-    padding: 6px 10px;
-    color: #8592a3;
-    font-size: 1rem;
-    background: #f8f9fa;
-    border-left: 1px solid #d9dee3;
+.pt-toolbar .search-wrap input:focus {
+    border-color: #1a56db !important;
+    box-shadow: 0 0 0 3px rgba(26, 86, 219, 0.1) !important;
+    background-color: #fff !important;
 }
 
 /* ── Table: dipindahkan ke global sptjm-datatable.css ── */
@@ -150,9 +166,9 @@
     font-size: 0.72rem;
     font-weight: 600;
     letter-spacing: 0.03em;
-    background: rgba(40,199,111,0.12);
-    color: #28c76f;
-    border: 1px solid rgba(40,199,111,0.3);
+    background: rgba(26, 86, 219, 0.1);
+    color: #1a56db;
+    border: 1px solid rgba(26, 86, 219, 0.25);
 }
 .badge-nonaktif {
     display: inline-block;
@@ -210,11 +226,11 @@ div.dataTables_wrapper div.dataTables_length {
         </nav>
     </div>
     <div class="d-flex align-items-center gap-2">
-        <button class="btn btn-sync" id="addSyncPTBtn" data-bs-toggle="modal" data-bs-target="#modalSync">
-            <i class="bx bx-sync"></i> Sync
+        <button class="btn-sinkron-md" id="addSyncPTBtn" data-bs-toggle="modal" data-bs-target="#modalSync">
+            <i class="bx bx-transfer-alt"></i> Sinkronisasi
         </button>
-        <button class="btn btn-tambah" id="addPTBtn" data-bs-toggle="modal" data-bs-target="#modalPTForm">
-            <i class="bx bx-plus"></i> Tambah Perguruan Tinggi
+        <button class="btn-tambah-md" id="addPTBtn" data-bs-toggle="modal" data-bs-target="#modalPTForm">
+            <i class="bx bx-plus"></i> Tambah Data
         </button>
     </div>
 </div>
@@ -238,7 +254,6 @@ div.dataTables_wrapper div.dataTables_length {
             </div>
             <div class="search-wrap">
                 <input type="text" id="ptSearchInput" placeholder="Cari NPSN, Nama, atau Wilayah...">
-                <span class="search-icon"><i class="bx bx-search"></i></span>
             </div>
         </div>
 

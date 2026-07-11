@@ -27,21 +27,6 @@
 </style>
 
 <div class="content-wrapper">
-    <!-- Breadcrumb -->
-    <nav aria-label="breadcrumb" class="mb-3">
-        <ol class="breadcrumb" style="font-size: 0.85rem; padding: 0; background: transparent;">
-            <li class="breadcrumb-item"><a href="#" style="color: #64748b;">Proses Pembayaran</a></li>
-            <li class="breadcrumb-item"><a href="#" style="color: #64748b;">Rekapitulasi Usulan</a></li>
-            <li class="breadcrumb-item active fw-bold" aria-current="page" style="color: #dc2626;">Non Eligible</li>
-        </ol>
-    </nav>
-
-    <!-- Header -->
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <div>
-            <h4 class="fw-bold text-dark mb-1" style="color: #7f1d1d !important; font-size: 1.5rem;">Rekapitulasi Berjalan Non Eligible</h4>
-        </div>
-    </div>
 
     <!-- Filter Form -->
     <div class="card card-non-el mb-4">

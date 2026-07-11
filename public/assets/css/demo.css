@@ -154,9 +154,116 @@ body:has(.sptjm-login-page) html {
  * SPTJM Admin Dashboard & Layout Styles (Figma Redesign)
  * ============================================================= */
 
+/* ═══════════════════════════════════════════════════
+   HIDE PAGE HEADERS — Judul cukup di dalam card saja
+   Supaya tabel langsung terlihat tanpa harus scroll
+   Berlaku di seluruh halaman (Admin, PIC, PTS, Dosen, Auditor)
+   ═══════════════════════════════════════════════════ */
+
+/* 1. Page header wrapper classes: keep the container but align action buttons to the right */
+.md2-page-header,
+.md-page-header,
+.vdd-page-header,
+.pt-page-header {
+  display: flex !important;
+  justify-content: flex-end !important;
+  align-items: center !important;
+  margin-top: 0 !important;
+  margin-bottom: 12px !important;
+  padding: 0 !important;
+}
+
+/* Hide only the titles and breadcrumbs inside these headers */
+.md2-page-header .page-titles,
+.md-page-header .page-titles,
+.vdd-page-header .page-titles,
+.pt-page-header .page-titles,
+.md2-page-header .breadcrumb,
+.md-page-header .breadcrumb,
+.vdd-page-header .breadcrumb,
+.pt-page-header .breadcrumb {
+  display: none !important;
+}
+
+/* If the header has no buttons or other action content, hide it completely to save space */
+.md2-page-header:not(:has(> div:not(.page-titles))):not(:has(> button)):not(:has(> a)),
+.md-page-header:not(:has(> div:not(.page-titles))):not(:has(> button)):not(:has(> a)),
+.vdd-page-header:not(:has(> div:not(.page-titles))):not(:has(> button)):not(:has(> a)),
+.pt-page-header:not(:has(> div:not(.page-titles))):not(:has(> button)):not(:has(> a)) {
+  display: none !important;
+}
+
+/* 2. Standalone breadcrumbs (direct in container or nested content-wrapper) */
+.container-xxl > nav[aria-label="breadcrumb"],
+.container-xxl > .content-wrapper > nav[aria-label="breadcrumb"],
+.container-xxl nav[aria-label="breadcrumb"]:not(.card nav):not(.modal nav) {
+  display: none !important;
+}
+
+/* 3. Page title blocks with h3/h4 (standalone, not inside card/modal) */
+.container-xxl > .mb-4:has(> h3),
+.container-xxl > .mb-4:has(> h4),
+.container-xxl > .content-wrapper > .mb-4:has(> h3),
+.container-xxl > .content-wrapper > .mb-4:has(> h4) {
+  display: none !important;
+}
+
+/* 4. Flex header bars with breadcrumb + title */
+.container-xxl > .d-flex.justify-content-between.align-items-center.mb-4,
+.container-xxl > .content-wrapper > .d-flex.justify-content-between.align-items-center.mb-4 {
+  display: none !important;
+}
+
+/* 5. Standalone page title h4 with specific styling (rekap-pencairan etc.) */
+.container-xxl > .d-flex.justify-content-between.align-items-center.mb-4:has(> div > h4),
+.container-xxl > .content-wrapper > .d-flex.justify-content-between.align-items-center.mb-4:has(> div > h4) {
+  display: none !important;
+}
+
+/* Reduce top padding to move content up */
+.container-xxl.flex-grow-1.container-p-y {
+  padding-top: 1rem !important;
+}
+
 /* Main Background */
 .layout-page, .content-wrapper {
   background-color: #F8FAFC !important;
+}
+
+/* Force table body cell text/links/spans to be pure black and table headers bold */
+table tbody td,
+table tbody td span:not(.badge):not(.badge-status):not(.badge-ya):not(.badge-tidak):not(.badge-aktif):not(.badge-nonaktif):not(.badge-belajar),
+table tbody td a:not(.btn):not(.sptjm-icon-btn):not(.badge):not(.badge-status):not(.badge-ya):not(.badge-tidak):not(.badge-aktif):not(.badge-nonaktif):not(.badge-belajar) {
+  color: #000000 !important;
+}
+
+table thead th,
+table.dataTable thead th,
+.table thead th {
+  font-weight: 700 !important;
+  color: #000000 !important;
+}
+
+/* Force all export buttons to be green */
+.btn-export-md,
+.btn-export,
+button.btn-export,
+a.btn-export,
+#btnExportCSV,
+#exportBackupBtn {
+  background-color: #28c76f !important;
+  background: #28c76f !important;
+  border-color: #28c76f !important;
+  color: #ffffff !important;
+}
+.btn-export-md:hover,
+.btn-export:hover,
+#btnExportCSV:hover,
+#exportBackupBtn:hover {
+  background-color: #20a65b !important;
+  background: #20a65b !important;
+  border-color: #20a65b !important;
+  color: #ffffff !important;
 }
 
 /* ── Sidebar Base ── */
@@ -293,15 +400,15 @@ td form { display: inline; }
 
 /* ── Sidebar Active Item (top-level) ── */
 .menu-inner > .menu-item.active > .menu-link {
-  background-color: rgba(105, 108, 255, 0.1) !important;
-  color: #696cff !important;
+  background-color: rgba(26, 86, 219, 0.1) !important;
+  color: #1A56DB !important;
   font-weight: 600;
   border-radius: 6px;
   position: relative;
 }
 
 .menu-inner > .menu-item.active > .menu-link i {
-  color: #696cff !important;
+  color: #1A56DB !important;
 }
 
 /* ── Sidebar Non-active Items ── */
@@ -315,7 +422,7 @@ td form { display: inline; }
 
 /* ── Sidebar Active marker bar (kanan) ── */
 .layout-wrapper:not(.layout-horizontal) .bg-menu-theme .menu-inner > .menu-item.active::before {
-  background: #696cff !important;
+  background: #1A56DB !important;
   border-radius: 6px 0 0 6px !important;
 }
 
@@ -327,22 +434,22 @@ td form { display: inline; }
 
 /* ── Open (expanded parent) ── */
 .bg-menu-theme .menu-item.open:not(.menu-item-closing) > .menu-toggle {
-  color: #696cff !important;
-  background-color: rgba(105, 108, 255, 0.06) !important;
+  color: #1A56DB !important;
+  background-color: rgba(26, 86, 219, 0.06) !important;
 }
 
 /* ── Submenu active item ── */
 .bg-menu-theme .menu-sub > .menu-item.active > .menu-link {
-  color: #696cff !important;
+  color: #1A56DB !important;
   font-weight: 600;
 }
 
 /* ── Submenu active bullet ── */
 .bg-menu-theme .menu-sub > .menu-item.active > .menu-link:not(.menu-toggle)::before {
-  background-color: #696cff !important;
+  background-color: #1A56DB !important;
   width: 0.5rem !important;
   height: 0.5rem !important;
-  box-shadow: 0 0 0 2px rgba(105, 108, 255, 0.2) !important;
+  box-shadow: 0 0 0 2px rgba(26, 86, 219, 0.2) !important;
 }
 
 /* ── Submenu non-active bullet ── */
@@ -581,3 +688,27 @@ td form { display: inline; }
   padding: 6px 16px !important;
 }
 
+/* ═══════════════════════════════════════════════════
+   TABLE BODY — Remove bold, keep black text
+   fw-bold di dalam tabel cukup hitam, tanpa bold
+   ═══════════════════════════════════════════════════ */
+table td .fw-bold,
+table td span.fw-bold,
+table.dataTable tbody td .fw-bold,
+.table tbody td .fw-bold,
+table.md2-table tbody td .fw-bold,
+.md-table-wrap table tbody td .fw-bold {
+  font-weight: 400 !important;
+  color: #1e293b !important;
+}
+
+/* text-primary di dalam tabel → hitam biasa */
+table td .text-primary,
+table td span.text-primary,
+table.dataTable tbody td .text-primary,
+.table tbody td .text-primary,
+table.md2-table tbody td .text-primary,
+.md-table-wrap table tbody td .text-primary {
+  color: #1e293b !important;
+  font-weight: 400 !important;
+}

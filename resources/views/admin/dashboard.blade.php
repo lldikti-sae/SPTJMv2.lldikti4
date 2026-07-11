@@ -31,9 +31,9 @@
             <div class="d-flex justify-content-between align-items-start">
                 <div>
                     <div class="sptjm-stat-title">Dosen PNS Aktif</div>
-                    <div class="sptjm-stat-value val-success">{{ number_format($jumlahDosenPNSAktif, 0, ',', '.') }}</div>
+                    <div class="sptjm-stat-value val-primary">{{ number_format($jumlahDosenPNSAktif, 0, ',', '.') }}</div>
                 </div>
-                <div class="sptjm-stat-icon-wrapper icon-bg-success">
+                <div class="sptjm-stat-icon-wrapper icon-bg-primary">
                     <i class="bx bx-user-check"></i>
                 </div>
             </div>
@@ -76,9 +76,9 @@
             <div class="d-flex justify-content-between align-items-start">
                 <div>
                     <div class="sptjm-stat-title">Dosen Non-PNS Aktif</div>
-                    <div class="sptjm-stat-value val-success">{{ number_format($jumlahDosenNonPNSAktif, 0, ',', '.') }}</div>
+                    <div class="sptjm-stat-value val-primary">{{ number_format($jumlahDosenNonPNSAktif, 0, ',', '.') }}</div>
                 </div>
-                <div class="sptjm-stat-icon-wrapper icon-bg-success">
+                <div class="sptjm-stat-icon-wrapper icon-bg-primary">
                     <i class="bx bx-user-check"></i>
                 </div>
             </div>
@@ -149,7 +149,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 data: 'nidn', 
                 name: 'nidn',
                 render: function(data, type, row) {
-                    return '<span class="fw-semibold text-primary">' + data + '</span>';
+                    return '<span class="text-dark">' + data + '</span>';
                 }
             },
             { data: 'nuptk', name: 'nuptk' },
@@ -164,7 +164,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 data: 'pts', 
                 name: 'pts',
                 render: function(data, type, row) {
-                    return '<span class="fw-semibold text-primary">' + data + '</span>';
+                    return '<span class="text-dark">' + data + '</span>';
                 }
             },
             { data: 'tmt_pensiun', name: 'tmt_pensiun' },

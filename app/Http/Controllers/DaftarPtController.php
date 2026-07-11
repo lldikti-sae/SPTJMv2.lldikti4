@@ -30,7 +30,7 @@ class DaftarPtController extends Controller
         ->addColumn('aksi', function ($row) {
           return "<a href='" . route('admin.daftar-pt.edit', ['id' => $row->id]) . "'
                                     class='sptjm-icon-btn sptjm-btn-edit'>
-                                    <i class='bx bx-edit'></i>
+                                    <i class='bx bx-edit-alt'></i>
                                 </a>
 ";
         })

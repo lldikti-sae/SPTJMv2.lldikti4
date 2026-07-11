@@ -23,9 +23,9 @@
 .btn-md2-tambah:hover { background:#1648c0; color:#fff; box-shadow:0 4px 12px rgba(26,86,219,0.35); }
 /* Table header/body/pagination: dipindahkan ke global sptjm-datatable.css */
 .badge-status { display:inline-block; padding:3px 12px; border-radius:20px; font-size:0.75rem; font-weight:700; }
-.badge-aktif   { background:rgba(40,199,111,0.12); color:#28c76f; }
+.badge-aktif   { background:rgba(26, 86, 219, 0.1); color:#1a56db; }
 .badge-nonaktif { background:rgba(234,84,85,0.12); color:#ea5455; }
-.badge-belajar  { background:rgba(0,123,255,0.12); color:#0d6efd; }
+.badge-belajar  { background:rgba(40,199,111,0.12); color:#28c76f; }
 </style>
 @endsection
 

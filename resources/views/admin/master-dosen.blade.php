@@ -111,8 +111,8 @@
 
 /* Badge status */
 .badge-aktif {
-    background-color: rgba(40,199,111,0.12);
-    color: #28c76f;
+    background-color: rgba(26, 86, 219, 0.1);
+    color: #1a56db;
     font-weight: 700;
     font-size: 0.72rem;
     padding: 4px 10px;
@@ -198,9 +198,9 @@
                     <tr>
                         <th>NIDN</th>
                         <th>NUPTK</th>
+                        <th>Nama Dosen</th>
                         <th>Kode PTS</th>
                         <th>Nama PTS</th>
-                        <th>Nama Dosen</th>
                         <th>Aktif</th>
                         <th>Wilayah</th>
                         <th>Tanggal Update</th>
@@ -449,20 +449,20 @@
       columns: [
         { 
           data: 'nidn', name: 'nidn',
-          render: function(data) { return '<span class="fw-semibold text-primary">' + (data || '-') + '</span>'; }
+          render: function(data) { return '<span class="fw-semibold text-dark">' + (data || '-') + '</span>'; }
         },
         { data: 'nuptk', name: 'nuptk' },
         { 
+          data: 'nama_dosen', name: 'nama_dosen',
+          render: function(data) { return '<span class="fw-bold text-dark">' + (data || '-') + '</span>'; }
+        },
+        { 
           data: 'kode_pts', name: 'kode_pts',
-          render: function(data) { return '<span class="fw-semibold text-primary">' + (data || '-') + '</span>'; }
+          render: function(data) { return '<span class="fw-semibold text-dark">' + (data || '-') + '</span>'; }
         },
         { 
           data: 'nama_pts', name: 'nama_pts',
-          render: function(data) { return '<span class="fw-semibold text-primary">' + (data || '-') + '</span>'; }
-        },
-        { 
-          data: 'nama_dosen', name: 'nama_dosen',
-          render: function(data) { return '<span class="fw-bold text-dark">' + (data || '-') + '</span>'; }
+          render: function(data) { return '<span class="fw-semibold text-dark">' + (data || '-') + '</span>'; }
         },
         {
           data: 'aktif', name: 'aktif',

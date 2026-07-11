@@ -117,7 +117,20 @@
                             <tbody class="table-border-bottom-0">
                                 @foreach ($pengaturanUsulan as $data)
                                 <tr>
-                                    <td><span class="fw-bold text-primary">{{ $data->jenis_usulan ?? '-' }}</span></td>
+                                    <td>
+                                        @php
+                                            $jenisUsulan = strtolower($data->jenis_usulan ?? '');
+                                            $badgeStyle = '';
+                                            if (str_contains($jenisUsulan, 'sptjm')) {
+                                                $badgeStyle = 'background-color: #e0e7ff !important; color: #3730a3 !important; font-weight: 700; font-size: 0.72rem; padding: 6px 12px; border-radius: 20px; text-transform: uppercase; display: inline-block;';
+                                            } elseif (str_contains($jenisUsulan, 'tukin')) {
+                                                $badgeStyle = 'background-color: #fef3c7 !important; color: #d97706 !important; font-weight: 700; font-size: 0.72rem; padding: 6px 12px; border-radius: 20px; text-transform: uppercase; display: inline-block;';
+                                            } else {
+                                                $badgeStyle = 'background-color: #f1f5f9 !important; color: #475569 !important; font-weight: 700; font-size: 0.72rem; padding: 6px 12px; border-radius: 20px; text-transform: uppercase; display: inline-block;';
+                                            }
+                                        @endphp
+                                        <span class="badge" style="{{ $badgeStyle }}">{{ $data->jenis_usulan ?? '-' }}</span>
+                                    </td>
                                     <td><span class="fw-semibold text-dark">{{ $data->tahun }}</span></td>
                                     <td><span class="fw-semibold text-dark">{{ $data->bulan }}</span></td>
                                     <td><span class="fw-semibold text-dark">{{ $data->pencairan_ke }}</span></td>

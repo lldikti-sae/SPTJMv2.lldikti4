@@ -87,25 +87,14 @@
         border-radius: 12px !important;
         background: #ffffff !important;
     }
+    #myTable th, #myTable td {
+        padding: 5px 8px !important;
+        font-size: 0.8rem !important;
+        line-height: 1.2 !important;
+    }
 </style>
 
 <div class="content-wrapper">
-    <!-- Breadcrumb -->
-    <nav aria-label="breadcrumb" class="mb-3">
-        <ol class="breadcrumb" style="font-size: 0.85rem; padding: 0; background: transparent;">
-            <li class="breadcrumb-item"><a href="#" style="color: #64748b;">Proses Pembayaran</a></li>
-            <li class="breadcrumb-item active fw-bold" aria-current="page" style="color: #1a56db;">Laporan Keuangan</li>
-        </ol>
-    </nav>
-
-    <!-- Header -->
-    <div class="mb-4">
-        <h4 class="fw-bold mb-1" style="color: #0f2b5c; font-size: 1.5rem;">Laporan Keuangan</h4>
-        <p class="text-muted mb-0" style="font-size: 0.875rem;">
-            Rekapitulasi <span class="fw-semibold" style="color:#1a56db;">pembayaran gaji</span> dan
-            <span class="fw-semibold" style="color:#1a56db;">tunjangan</span> dosen tahun berjalan.
-        </p>
-    </div>
 
     @if (session('error'))
     <div class="alert alert-danger alert-dismissible fade show mb-4" role="alert" style="border-radius: 10px;">

@@ -53,7 +53,7 @@
   font-weight: 600;
   font-size: 0.82rem;
   padding: 8px 18px;
-  border-radius: 6px;
+  border-radius: 20px;
   display: inline-flex;
   align-items: center;
   gap: 6px;

@@ -79,7 +79,7 @@ class DataDosenController extends Controller
           }
 
           if ($isActive) {
-            $statusBtn = '<a href="' . $urlPengaktifan . '" class="sptjm-icon-btn sptjm-btn-reset" title="Pengaktifan"><i class="bx bx-check-circle"></i></a>';
+            $statusBtn = '<a href="' . $urlPengaktifan . '" class="sptjm-icon-btn sptjm-btn-active" title="Pengaktifan"><i class="bx bx-check-circle"></i></a>';
           } else {
             $statusBtn = '<a href="' . $urlPengaktifan . '" class="sptjm-icon-btn sptjm-btn-delete" title="Tidak Aktif"><i class="bx bx-block"></i></a>';
           }

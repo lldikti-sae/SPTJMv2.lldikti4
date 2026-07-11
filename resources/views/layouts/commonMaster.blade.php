@@ -116,11 +116,33 @@
             border-right: 1px solid #e2e8f0 !important;
         }
 
-        /* ─── Show sidebar hamburger toggle on ALL screen sizes ─── */
-        .layout-menu .app-brand .sptjm-hamburger.layout-menu-toggle {
+        /* ─── Sidebar Toggle Button (Chevron Left) ─── */
+        .layout-menu .app-brand .layout-menu-toggle {
             display: flex !important;
-            opacity: 1 !important;
-            position: static !important;
+            align-items: center !important;
+            justify-content: center !important;
+            width: 28px !important;
+            height: 28px !important;
+            border-radius: 50% !important;
+            background: #eef2ff !important;
+            border: 1px solid #e2e8f0 !important;
+            transition: all 0.2s ease !important;
+            cursor: pointer !important;
+            text-decoration: none !important;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05) !important;
+        }
+        .layout-menu .app-brand .layout-menu-toggle:hover {
+            background: #1a56db !important;
+            border-color: #1a56db !important;
+        }
+        .layout-menu .app-brand .layout-menu-toggle:hover i {
+            color: #ffffff !important;
+        }
+        
+        /* Hide logo subtitle when sidebar collapsed */
+        html.layout-menu-collapsed .sptjm-logo-subtitle {
+            opacity: 0 !important;
+            pointer-events: none !important;
         }
 
         /* ─── FORCE FULL-HIDE SIDEBAR for layout-menu-fixed + collapsed ─── */
@@ -178,23 +200,23 @@
         /* ─── APP BRAND AREA (Logo Horizontal) ─── */
         .layout-menu .app-brand.demo {
             height: auto !important;
-            min-height: 64px !important;
-            padding: 10px 16px !important;
+            min-height: 72px !important;
+            padding: 12px 16px !important;
             overflow: hidden !important;
             border-bottom: 1px solid #eef0f4 !important;
             display: flex !important;
             flex-direction: row !important;
             align-items: center !important;
-            justify-content: flex-start !important;
+            justify-content: space-between !important;
             width: 100% !important;
             box-sizing: border-box !important;
             position: relative !important;
         }
         .layout-menu .app-brand.demo .app-brand-link {
             display: flex !important;
-            flex-direction: row !important;
-            align-items: center !important;
-            gap: 10px !important;
+            flex-direction: column !important;
+            align-items: flex-start !important;
+            gap: 2px !important;
             overflow: hidden !important;
             flex: 1 !important;
         }
@@ -270,10 +292,10 @@
             text-transform: uppercase !important;
         }
 
-        /* ─── STATUS BADGE: AKTIF (Green label) ─── */
+        /* ─── STATUS BADGE: AKTIF (Blue label) ─── */
         .badge.bg-label-primary {
-            background-color: rgba(40, 199, 111, 0.12) !important;
-            color: #28c76f !important;
+            background-color: rgba(26, 86, 219, 0.1) !important;
+            color: #1a56db !important;
             font-weight: 600 !important;
             text-transform: uppercase !important;
             letter-spacing: 0.03em !important;
@@ -350,6 +372,13 @@
             color: #1a56db;
         }
         .sptjm-btn-edit:hover { background-color: #d0e1fd; color: #1a56db; }
+
+        /* Active – blue */
+        .sptjm-btn-active {
+            background-color: #e8f0fe;
+            color: #1a56db;
+        }
+        .sptjm-btn-active:hover { background-color: #d0e1fd; color: #1a56db; }
 
         /* Reset/Upload – soft green */
         .sptjm-btn-reset {

@@ -95,8 +95,8 @@
 
 /* ── Status Badges ── */
 .vdd-badge-aktif {
-    background-color: rgba(40,199,111,0.12);
-    color: #28c76f;
+    background-color: rgba(26, 86, 219, 0.1);
+    color: #1a56db;
     font-weight: 700;
     font-size: 0.72rem;
     padding: 4px 10px;
@@ -117,8 +117,8 @@
     display: inline-block;
 }
 .vdd-badge-ya {
-    background-color: rgba(40,199,111,0.12);
-    color: #28c76f;
+    background-color: rgba(26, 86, 219, 0.1);
+    color: #1a56db;
     font-weight: 700;
     font-size: 0.72rem;
     padding: 4px 10px;
