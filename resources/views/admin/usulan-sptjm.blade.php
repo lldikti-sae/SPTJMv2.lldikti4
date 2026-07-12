@@ -22,7 +22,7 @@
         border-radius: 12px !important;
         background: #ffffff !important;
     }
-    .status-card { transition: all 0.25s ease; cursor: pointer; }
+    .status-card { transition: all 0.25s ease; cursor: pointer; margin-bottom: 0 !important; }
     .status-card:hover {
         transform: translateY(-2px);
         border-color: #1a56db !important;
@@ -30,10 +30,10 @@
     }
 </style>
 
-{{-- Page Header (uses global md-page-header) --}}
-<div class="md-page-header">
+{{-- Page Header --}}
+<div class="md2-page-header">
     <div class="page-titles">
-        <h1>Usulan SPTJM</h1>
+        <h3>Usulan SPTJM</h3>
         <nav aria-label="breadcrumb">
             <ol class="breadcrumb">
                 <li class="breadcrumb-item"><a href="#">Usulan</a></li>
@@ -43,18 +43,18 @@
     </div>
 </div>
 
-<div class="content-wrapper" style="padding: 0;">
+<div class="card md2-card mb-4">
+    <div class="card-body px-4 pb-4 pt-0">
 
-    <!-- Filters Card -->
-    <div class="card card-sptjm" style="margin-bottom: 12px;">
-        <div class="card-body" style="padding: 14px 20px;">
+        <!-- Filters Section -->
+        <div class="pt-3 pb-3 mb-3 border-bottom">
             <form id="filterForm" method="POST">
                 @csrf
-                <div class="row align-items-end g-2">
+                <div class="row align-items-end g-3">
                     <!-- Pilih Tipe SPTJM -->
-                    <div class="col-lg-4 col-md-5">
-                        <label class="form-label fw-bold text-dark text-uppercase" style="font-size: 0.7rem; letter-spacing: 0.05em; margin-bottom: 2px;" for="pilihsptjm">Pilih Tipe SPTJM</label>
-                        <select id="pilihsptjm" class="form-select form-select-sm" name="pilihsptjm" style="border-color: #cbd5e1;">
+                    <div class="col-md-6">
+                        <label class="form-label fw-bold text-dark text-uppercase mb-1" style="font-size: 0.68rem; letter-spacing: 0.05em; color: #64748b;" for="pilihsptjm">Pilih Tipe SPTJM</label>
+                        <select id="pilihsptjm" class="form-select form-select-sm" name="pilihsptjm" style="border: 1.5px solid #cbd5e1; border-radius: 8px; font-size: 0.88rem; color: #374151; height: 38px;">
                             <option value="SPTJM Berjalan">SPTJM Berjalan</option>
                             <option value="SPTJM Susulan">SPTJM Susulan</option>
                             <option value="TUKIN Berjalan">TUKIN Berjalan</option>
@@ -63,9 +63,9 @@
                     </div>
 
                     <!-- Pilih Bulan -->
-                    <div class="col-lg-3 col-md-4">
-                        <label class="form-label fw-bold text-dark text-uppercase" style="font-size: 0.7rem; letter-spacing: 0.05em; margin-bottom: 2px;" for="selectTypeOptBulan">Bulan</label>
-                        <select name="bulan" id="selectTypeOptBulan" class="form-select form-select-sm" style="border-color: #cbd5e1;">
+                    <div class="col-md-6">
+                        <label class="form-label fw-bold text-dark text-uppercase mb-1" style="font-size: 0.68rem; letter-spacing: 0.05em; color: #64748b;" for="selectTypeOptBulan">Bulan</label>
+                        <select name="bulan" id="selectTypeOptBulan" class="form-select form-select-sm" style="border: 1.5px solid #cbd5e1; border-radius: 8px; font-size: 0.88rem; color: #374151; height: 38px;">
                             <option value="All">All</option>
                             <option value="Januari">Januari</option>
                             <option value="Februari">Februari</option>
@@ -81,119 +81,105 @@
                             <option value="Desember">Desember</option>
                         </select>
                     </div>
-
-                    <!-- Search -->
-                    <div class="col-lg-5 col-md-3 d-flex justify-content-md-end">
-                        <div class="w-100" style="max-width: 300px;">
-                            <label class="form-label fw-bold text-dark text-uppercase" style="font-size: 0.7rem; letter-spacing: 0.05em; margin-bottom: 2px;">Search</label>
-                            <div class="input-group input-group-sm">
-                                <span class="input-group-text" style="border-color: #cbd5e1; background: #f8fafc;"><i class="bx bx-search"></i></span>
-                                <input type="search" class="form-control" id="searchInput" placeholder="Search..." style="border-color: #cbd5e1;">
-                            </div>
-                        </div>
-                    </div>
                 </div>
             </form>
         </div>
-    </div>
 
-    <!-- Cards Stats & Status Buttons -->
-   <div class="row g-2 mb-3">
-        <!-- Card Usulan -->
-        <div class="col">
-            <div class="card status-card status-btn p-2" data-status="Usulan" style="border-radius: 10px; border: 1.5px solid #dbeafe; box-shadow: 0 2px 8px rgba(26, 86, 219, 0.05); background: white;">
-                <div class="d-flex align-items-center gap-2">
-                    <div class="d-flex align-items-center justify-content-center flex-shrink-0" style="width: 32px; height: 32px;" border-radius: 8px; background-color: #eef2f6;">
-                        <i class="bx bx-folder" style="font-size: 1.1rem; color: #475569;"></i>
+        <!-- Cards Stats / Status Buttons -->
+        <div class="row g-2 mb-4">
+            <!-- Card Usulan -->
+            <div class="col">
+                <div class="card status-card status-btn p-2" data-status="Usulan" style="border-radius: 10px; border: 1.5px solid #cbd5e1; box-shadow: 0 2px 8px rgba(0,0,0,0.02); background: white;">
+                    <div class="d-flex align-items-center gap-2">
+                        <div class="d-flex align-items-center justify-content-center flex-shrink-0" style="width: 32px; height: 32px; border-radius: 8px; background-color: #f1f5f9;">
+                            <i class="bx bx-folder" style="font-size: 1.1rem; color: #475569;"></i>
+                        </div>
+                        <div>
+                            <span class="d-block text-uppercase fw-bold text-muted" style="font-size: 0.6rem; letter-spacing: 0.04em; line-height: 1.2;">Usulan</span>
+                            <span class="fw-bold text-dark" style="font-size: 1rem; line-height: 1.2;">{{ $countUsulan }}</span>
+                        </div>
                     </div>
-                    <div>
-                        <span class="d-block text-uppercase fw-bold text-muted" style="font-size: 0.6rem; letter-spacing: 0.04em; line-height: 1.2;">Usulan</span>
-                        <span class="fw-bold" style="color: #0f2b5c; font-size: 1rem; line-height: 1.2;">{{ $countUsulan }}</span>
+                </div>
+            </div>
+            <!-- Card Validasi -->
+            <div class="col">
+                <div class="card status-card status-btn p-2" data-status="Validasi" style="border-radius: 10px; border: 1.5px solid #cbd5e1; box-shadow: 0 2px 8px rgba(0,0,0,0.02); background: white;">
+                    <div class="d-flex align-items-center gap-2">
+                        <div class="d-flex align-items-center justify-content-center flex-shrink-0" style="width: 32px; height: 32px; border-radius: 8px; background-color: #fff8eb;">
+                            <i class="bx bx-hourglass" style="font-size: 1.1rem; color: #d97706;"></i>
+                        </div>
+                        <div>
+                            <span class="d-block text-uppercase fw-bold text-muted" style="font-size: 0.6rem; letter-spacing: 0.04em; line-height: 1.2;">Validasi</span>
+                            <span class="fw-bold text-dark" style="font-size: 1rem; line-height: 1.2;">{{ $countValidasi }}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Card Proses -->
+            <div class="col">
+                <div class="card status-card status-btn p-2" data-status="Proses" style="border-radius: 10px; border: 1.5px solid #cbd5e1; box-shadow: 0 2px 8px rgba(0,0,0,0.02); background: white;">
+                    <div class="d-flex align-items-center gap-2">
+                        <div class="d-flex align-items-center justify-content-center flex-shrink-0" style="width: 32px; height: 32px; border-radius: 8px; background-color: #eff6ff;">
+                            <i class="bx bx-sync" style="font-size: 1.1rem; color: #2563eb;"></i>
+                        </div>
+                        <div>
+                            <span class="d-block text-uppercase fw-bold text-muted" style="font-size: 0.6rem; letter-spacing: 0.04em; line-height: 1.2;">Proses</span>
+                            <span class="fw-bold text-dark" style="font-size: 1rem; line-height: 1.2;">{{ $countProses }}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Card Selesai -->
+            <div class="col">
+                <div class="card status-card status-btn p-2" data-status="Selesai" style="border-radius: 10px; border: 1.5px solid #cbd5e1; box-shadow: 0 2px 8px rgba(0,0,0,0.02); background: white;">
+                    <div class="d-flex align-items-center gap-2">
+                        <div class="d-flex align-items-center justify-content-center flex-shrink-0" style="width: 32px; height: 32px; border-radius: 8px; background-color: #f0fdf4;">
+                            <i class="bx bx-check-circle" style="font-size: 1.1rem; color: #16a34a;"></i>
+                        </div>
+                        <div>
+                            <span class="d-block text-uppercase fw-bold text-muted" style="font-size: 0.6rem; letter-spacing: 0.04em; line-height: 1.2;">Selesai</span>
+                            <span class="fw-bold text-dark" style="font-size: 1rem; line-height: 1.2;">{{ $countSelesai }}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Card Tolak -->
+            <div class="col">
+                <div class="card status-card status-btn p-2" data-status="Tolak" style="border-radius: 10px; border: 1.5px solid #cbd5e1; box-shadow: 0 2px 8px rgba(0,0,0,0.02); background: white;">
+                    <div class="d-flex align-items-center gap-2">
+                        <div class="d-flex align-items-center justify-content-center flex-shrink-0" style="width: 32px; height: 32px; border-radius: 8px; background-color: #fef2f2;">
+                            <i class="bx bx-x-circle" style="font-size: 1.1rem; color: #dc2626;"></i>
+                        </div>
+                        <div>
+                            <span class="d-block text-uppercase fw-bold text-muted" style="font-size: 0.6rem; letter-spacing: 0.04em; line-height: 1.2;">Ditolak</span>
+                            <span class="fw-bold text-dark" style="font-size: 1rem; line-height: 1.2;">{{ $countTolak }}</span>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
-        <!-- Card Validasi -->
-        <div class="col">
-            <div class="card status-card status-btn p-2" data-status="Validasi" style="border-radius: 10px; border: 1.5px solid #dbeafe; box-shadow: 0 2px 8px rgba(26, 86, 219, 0.05); background: white;">
-                <div class="d-flex align-items-center gap-2">
-                    <div class="d-flex align-items-center justify-content-center flex-shrink-0" style="width: 32px; height: 32px;" border-radius: 8px; background-color: #fff8eb;">
-                        <i class="bx bx-hourglass" style="font-size: 1.1rem; color: #f59e0b;"></i>
-                    </div>
-                    <div>
-                        <span class="d-block text-uppercase fw-bold text-muted" style="font-size: 0.6rem; letter-spacing: 0.04em; line-height: 1.2;">Validasi</span>
-                        <span class="fw-bold" style="color: #0f2b5c; font-size: 1rem; line-height: 1.2;">{{ $countValidasi }}</span>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <!-- Card Proses -->
-       <div class="col">
-            <div class="card status-card status-btn p-2" data-status="Proses" style="border-radius: 10px; border: 1.5px solid #dbeafe; box-shadow: 0 2px 8px rgba(26, 86, 219, 0.05); background: white;">
-                <div class="d-flex align-items-center gap-2">
-                    <div class="d-flex align-items-center justify-content-center flex-shrink-0" style="width: 32px; height: 32px;" border-radius: 8px; background-color: #eff6ff;">
-                        <i class="bx bx-sync" style="font-size: 1.1rem; color: #3b82f6;"></i>
-                    </div>
-                    <div>
-                        <span class="d-block text-uppercase fw-bold text-muted" style="font-size: 0.6rem; letter-spacing: 0.04em; line-height: 1.2;">Proses</span>
-                        <span class="fw-bold" style="color: #0f2b5c; font-size: 1rem; line-height: 1.2;">{{ $countProses }}</span>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <!-- Card Selesai -->
-        <div class="col">
-            <div class="card status-card status-btn p-2" data-status="Selesai" style="border-radius: 10px; border: 1.5px solid #dbeafe; box-shadow: 0 2px 8px rgba(26, 86, 219, 0.05); background: white;">
-                <div class="d-flex align-items-center gap-2">
-                    <div class="d-flex align-items-center justify-content-center flex-shrink-0" style="width: 32px; height: 32px;" border-radius: 8px; background-color: #ecfdf5;">
-                        <i class="bx bx-check-circle" style="font-size: 1.1rem; color: #10b981;"></i>
-                    </div>
-                    <div>
-                        <span class="d-block text-uppercase fw-bold text-muted" style="font-size: 0.6rem; letter-spacing: 0.04em; line-height: 1.2;">Selesai</span>
-                        <span class="fw-bold" style="color: #0f2b5c; font-size: 1rem; line-height: 1.2;">{{ $countSelesai }}</span>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <!-- Card Tolak -->
-       <div class="col">
-            <div class="card status-card status-btn p-2" data-status="Tolak" style="border-radius: 10px; border: 1.5px solid #dbeafe; box-shadow: 0 2px 8px rgba(26, 86, 219, 0.05); background: white;">
-                <div class="d-flex align-items-center gap-2">
-                    <div class="d-flex align-items-center justify-content-center flex-shrink-0" style="width: 32px; height: 32px;" border-radius: 8px; background-color: #fef2f2;">
-                        <i class="bx bx-x-circle" style="font-size: 1.1rem; color: #ef4444;"></i>
-                    </div>
-                    <div>
-                        <span class="d-block text-uppercase fw-bold text-muted" style="font-size: 0.6rem; letter-spacing: 0.04em; line-height: 1.2;">Ditolak</span>
-                        <span class="fw-bold" style="color: #0f2b5c; font-size: 1rem; line-height: 1.2;">{{ $countTolak }}</span>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
 
-    <!-- Table Card -->
-    <div class="card card-sptjm">
-        <div class="card-body" style="padding: 14px 20px 16px;">
-            <div class="table-responsive text-nowrap">
-                <table class="table table-hover" id="dataTable" style="width:100%; margin-bottom: 0 !important;">
-                    <thead>
-                        <tr>
-                            <th>ID Usulan</th>
-                            <th>Tahun</th>
-                            <th>Kode PT</th>
-                            <th>Nama PT</th>
-                            <th>Bulan</th>
-                            <th>Nama Penandatangan</th>
-                            <th>Jabatan</th>
-                            <th>Wilayah</th>
-                            <th>File</th>
-                            <th>Keterangan</th>
-                        </tr>
-                    </thead>
-                    <tbody></tbody>
-                </table>
-            </div>
+        <!-- Table Section -->
+        <div class="table-responsive text-nowrap">
+            <table class="table table-hover md2-table text-center" id="dataTable" style="width:100%;">
+                <thead>
+                    <tr>
+                        <th>ID Usulan</th>
+                        <th>Tahun</th>
+                        <th>Kode PT</th>
+                        <th>Nama PT</th>
+                        <th>Bulan</th>
+                        <th>Nama Penandatangan</th>
+                        <th>Jabatan</th>
+                        <th>Wilayah</th>
+                        <th>File</th>
+                        <th>Keterangan</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
         </div>
+
     </div>
 </div>
 
@@ -326,11 +312,6 @@ document.addEventListener('DOMContentLoaded', function() {
                     });
                 });
         });
-    });
-
-    // Fitur Pencarian
-    document.getElementById("searchInput").addEventListener("keyup", function() {
-        $('#dataTable').DataTable().search(this.value).draw();
     });
 
     // User clicks a status card to load data

@@ -18,7 +18,8 @@
 
     {{-- Flash messages will be shown using SptjmAlert modal --}}
 
-    <div class="md-card mt-4 mb-4">
+    {{-- Main Unified Card --}}
+    <div class="md-card">
         <div class="md-card-inner">
             <h5 class="mb-4">Upload Background</h5>
             <form action="{{ route('admin.background.upload') }}" method="POST" enctype="multipart/form-data">
@@ -35,11 +36,9 @@
                     </div>
                 </div>
             </form>
-        </div>
-    </div>
 
-    <div class="md-card mb-4">
-        <div class="md-card-inner">
+            <hr class="my-4">
+
             <h5 class="mb-4">Pengaturan Login</h5>
             <form id="settingsForm" action="{{ route('admin.background.settings') }}" method="POST">
                 @csrf

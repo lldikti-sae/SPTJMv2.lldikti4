@@ -469,3 +469,189 @@ td form + form {
     pointer-events: none !important;
     color: #495057 !important;
 }
+
+/* ─── SIDEBAR TOGGLE BUTTON ─── */
+.layout-menu-toggle {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    width: 32px !important;
+    height: 32px !important;
+    border-radius: 50% !important;
+    background-color: transparent !important;
+    transition: background-color 0.2s !important;
+}
+.layout-menu-toggle:hover {
+    background-color: rgba(26, 86, 219, 0.08) !important;
+}
+.layout-menu-toggle i {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    line-height: 1 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+/* ─── CUSTOM DATATABLES & BOOTSTRAP PAGINATION ─── */
+/* Align pagination container to the far right */
+.dataTables_wrapper .dataTables_paginate,
+.pagination {
+    margin-left: auto !important;
+    float: right !important;
+}
+
+.dataTables_wrapper .pagination,
+ul.pagination {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: flex-end !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    gap: 6px !important;
+    list-style: none !important;
+    background: transparent !important;
+    background-color: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+}
+
+/* Strip all background, border, padding, and margins from page-item to avoid double boxes */
+.dataTables_wrapper .pagination .page-item,
+ul.pagination .page-item {
+    margin: 0 !important;
+    padding: 0 !important;
+    background: transparent !important;
+    background-color: transparent !important;
+    border: none !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+}
+
+/* Base style for every pagination item link */
+.dataTables_wrapper .pagination .page-link,
+ul.pagination .page-link {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    width: 36px !important;
+    height: 36px !important;
+    padding: 0 !important;
+    border-radius: 8px !important;
+    font-size: 0.875rem !important;
+    font-weight: 600 !important;
+    transition: all 0.2s ease !important;
+    outline: none !important;
+    box-shadow: none !important;
+    /* Clean styles - Inactive */
+    background: #ffffff !important;
+    background-color: #ffffff !important;
+    border: 1.5px solid #dbeafe !important;
+    color: #1a56db !important;
+}
+
+/* Hover style for inactive buttons */
+.dataTables_wrapper .pagination .page-item:not(.active):not(.disabled) .page-link:hover,
+ul.pagination .page-item:not(.active):not(.disabled) .page-link:hover {
+    background: #eff6ff !important;
+    background-color: #eff6ff !important;
+    border-color: #1a56db !important;
+    color: #1a56db !important;
+}
+
+/* Active style */
+.dataTables_wrapper .pagination .page-item.active .page-link,
+ul.pagination .page-item.active .page-link {
+    background: #1a56db !important;
+    background-color: #1a56db !important;
+    border-color: #1a56db !important;
+    color: #ffffff !important;
+}
+
+/* Previous & Next Arrow Buttons */
+.dataTables_wrapper .pagination .page-item.previous .page-link,
+.dataTables_wrapper .pagination .page-item.next .page-link,
+ul.pagination .page-item:first-child .page-link,
+ul.pagination .page-item:last-child .page-link {
+    background: #f8fafc !important;
+    background-color: #f8fafc !important;
+    border-color: #e2e8f0 !important;
+    color: #475569 !important;
+    font-size: 0 !important;
+}
+
+/* Force arrow symbols for previous and next buttons */
+.dataTables_wrapper .pagination .page-item.previous .page-link::before,
+ul.pagination .page-item:first-child .page-link::before {
+    content: "←" !important;
+    font-size: 1.1rem !important;
+}
+
+.dataTables_wrapper .pagination .page-item.next .page-link::before,
+ul.pagination .page-item:last-child .page-link::before {
+    content: "→" !important;
+    font-size: 1.1rem !important;
+}
+
+/* Hover for Arrows */
+.dataTables_wrapper .pagination .page-item.previous:not(.disabled) .page-link:hover,
+.dataTables_wrapper .pagination .page-item.next:not(.disabled) .page-link:hover,
+ul.pagination .page-item:first-child:not(.disabled) .page-link:hover,
+ul.pagination .page-item:last-child:not(.disabled) .page-link:hover {
+    background: #eff6ff !important;
+    background-color: #eff6ff !important;
+    border-color: #1a56db !important;
+    color: #1a56db !important;
+}
+
+/* Disabled style for Arrows */
+.dataTables_wrapper .pagination .page-item.disabled .page-link,
+ul.pagination .page-item.disabled .page-link {
+    opacity: 0.45 !important;
+    cursor: not-allowed !important;
+    background: #f8fafc !important;
+    background-color: #f8fafc !important;
+    border-color: #e2e8f0 !important;
+    color: #94a3b8 !important;
+}
+
+/* Ellipsis style */
+.dataTables_wrapper .pagination .page-item.disabled:not(.previous):not(.next) .page-link,
+ul.pagination .page-item.disabled:not(:first-child):not(:last-child) .page-link {
+    background: #f8fafc !important;
+    background-color: #f8fafc !important;
+    border-color: #e2e8f0 !important;
+    color: #64748b !important;
+    cursor: default !important;
+    opacity: 1 !important;
+}
+
+/* ─── MERGED CARD HEADER SYSTEM ─── */
+.merged-card-header {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    flex-wrap: wrap !important;
+    gap: 12px !important;
+    padding: 18px 24px 4px 24px !important;
+    background-color: #ffffff !important;
+    border: none !important;
+    margin: 0 !important;
+    box-shadow: none !important;
+    border-radius: 12px 12px 0 0 !important;
+    width: 100% !important;
+}
+
+.merged-card-header .page-titles h1,
+.merged-card-header .page-titles h3,
+.merged-card-header .page-titles h4 {
+    font-size: 0.95rem !important;
+    font-weight: 600 !important;
+    color: #1e293b !important;
+    margin: 0 !important;
+}
+
+.merged-card-header .breadcrumb {
+    margin: 0 !important;
+    margin-top: 1px !important;
+}

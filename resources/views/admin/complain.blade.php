@@ -3,38 +3,56 @@
 @section('title', 'SPTJM Online')
 
 @section('content')
-<div class="card" style="width: 100%; padding: 10px;">
-  <h5 class="card-header text-start p-2">Complain (Admin)</h5>
-  <hr>
-  <div class="table-responsive text-nowrap">
-    <div class="d-flex gap-2 mb-2 align-items-center">
-      <label class="mb-0"><strong>Status:</strong></label>
-      <select id="filterStatus" class="form-select form-select-sm" style="width:220px;">
-        <option value="">Semua</option>
-        <option value="open">OPEN</option>
-        <option value="setuju">SETUJU</option>
-        <option value="tolak">TOLAK</option>
-      </select>
+<div class="md2-page-header">
+    <div class="page-titles">
+        <h3>Complain (Admin)</h3>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="#">Pusat Bantuan</a></li>
+                <li class="breadcrumb-item active">Complain</li>
+            </ol>
+        </nav>
     </div>
-    <table class="table table-sm table-hover" id="complainTable">
-      <thead style="background-color: #dbdee0;">
-        <tr>
-          <th>ID</th>
-          <th>Tipe</th>
-          <th>Kode PTS</th>
-          <th>NIDN</th>
-          <th>NUPTK</th>
-          <th>PIC</th>
-          <th>Nama</th>
-          <th>Judul</th>
-          <th>Status</th>
-          <th>Tanggal Handle</th>
-          <th>Tanggal</th>
-          <th>Aksi</th>
-        </tr>
-      </thead>
-    </table>
-  </div>
+</div>
+
+<div class="card md2-card mb-4">
+    <div class="card-body px-4 pb-4 pt-0">
+        <!-- Filter Status & Toolbar Wrapper -->
+        <div class="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-3 pt-3">
+            <div class="d-flex align-items-center gap-2">
+                <label class="mb-0 fw-bold text-dark text-uppercase" style="font-size: 0.68rem; letter-spacing: 0.05em; color: #64748b;">Filter Status:</label>
+                <select id="filterStatus" class="form-select form-select-sm" style="width:180px; border: 1.5px solid #cbd5e1; border-radius: 8px; font-size: 0.84rem; color: #374151; height: 32px;">
+                    <option value="">Semua Status</option>
+                    <option value="open">OPEN</option>
+                    <option value="setuju">SETUJU</option>
+                    <option value="tolak">TOLAK</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="table-responsive text-nowrap">
+            <table class="table table-hover md2-table text-center" id="complainTable" style="width:100%">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Tipe</th>
+                        <th>Kode PTS</th>
+                        <th>NIDN</th>
+                        <th>NUPTK</th>
+                        <th>PIC</th>
+                        <th>Nama</th>
+                        <th>Judul</th>
+                        <th>Status</th>
+                        <th>Tanggal Handle</th>
+                        <th>Tanggal</th>
+                        <th>Aksi</th>
+                    </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+        </div>
+    </div>
 </div>
 
 <!-- Modal Detail (View Only) -->
@@ -99,6 +117,7 @@
       processing: true,
       serverSide: true,
       responsive: true,
+      dom: "<'md-toolbar'<'entries-wrap'l><'search-wrap'f>>rt<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
       ajax: {
         url: "{{ route('admin.complain.index') }}",
         data: function (d) {
@@ -125,12 +144,18 @@
       // Default sort: newest first by Created At (column index 10)
       order: [[10, 'desc']],
       language: {
-        paginate: { first: 'Awal', last: 'Akhir', next: '→', previous: '←' },
-        emptyTable: 'Data Tidak Tersedia',
-        zeroRecords: 'Data Tidak Tersedia',
-        infoEmpty: 'Data Tidak Tersedia',
-        searchPlaceholder: 'Cari data...',
-        search: 'Cari:'
+        paginate: {
+          first: "Awal",
+          last: "Akhir",
+          next: "→",
+          previous: "←",
+        },
+        zeroRecords: "Data tidak ditemukan",
+        infoEmpty: "Tidak ada data tersedia",
+        info: "Menampilkan _START_ - _END_ dari _TOTAL_ entri",
+        search: "Filter Data:",
+        searchPlaceholder: "Cari data...",
+        lengthMenu: "Show _MENU_ entries"
       },
     });
 

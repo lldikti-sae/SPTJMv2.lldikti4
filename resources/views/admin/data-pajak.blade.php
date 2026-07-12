@@ -1,4 +1,4 @@
-﻿@extends('layouts/contentNavbarLayout')
+@extends('layouts/contentNavbarLayout')
 
 @section('title', 'Data Pajak - SPTJM Online')
 
@@ -96,12 +96,9 @@
                 </tbody>
             </table>
         </div>
-    </div>
-</div>
 
-{{-- Card 2: Identitas Pemotong --}}
-<div class="md2-card">
-    <div class="md2-card-inner">
+        <hr class="my-4">
+
         <h5 class="mb-3 text-dark fw-bold" style="font-size:1.1rem;">Identitas Pemotong</h5>
         <div class="md2-toolbar">
             <div class="entries-wrap">

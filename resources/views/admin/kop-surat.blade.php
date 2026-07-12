@@ -7,8 +7,6 @@
 @section('content')
 
 <div class="card" style="width: 100%; padding: 10px;">
-  <h5 class="card-header text-start p-2">Master Data Kop Surat</h5>
-  <hr>
   <div class="card-body">
     <form action="{{ route('admin.master-kop-surat.update') }}" method="POST" enctype="multipart/form-data">
         @csrf

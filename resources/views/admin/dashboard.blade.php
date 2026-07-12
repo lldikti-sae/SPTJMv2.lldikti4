@@ -1,4 +1,4 @@
-﻿@extends('layouts/contentNavbarLayout')
+@extends('layouts/contentNavbarLayout')
 
 @section('title', 'SPTJM Online - Dashboard')
 
@@ -9,11 +9,11 @@
 @endsection
 
 @section('content')
-<div class="row g-3 mb-3">
+<div class="row g-2 mb-2">
     <!-- Jumlah Seluruh Dosen -->
     <div class="col-12 col-md-6 col-lg-4">
         <div class="sptjm-stat-card">
-            <div class="d-flex justify-content-between align-items-start">
+            <div class="d-flex justify-content-between align-items-center">
                 <div>
                     <div class="sptjm-stat-title">Jumlah Seluruh Dosen</div>
                     <div class="sptjm-stat-value val-primary">{{ number_format($totalDosen, 0, ',', '.') }}</div>
@@ -28,7 +28,7 @@
     <!-- Dosen PNS Aktif -->
     <div class="col-12 col-md-6 col-lg-4">
         <div class="sptjm-stat-card">
-            <div class="d-flex justify-content-between align-items-start">
+            <div class="d-flex justify-content-between align-items-center">
                 <div>
                     <div class="sptjm-stat-title">Dosen PNS Aktif</div>
                     <div class="sptjm-stat-value val-primary">{{ number_format($jumlahDosenPNSAktif, 0, ',', '.') }}</div>
@@ -43,7 +43,7 @@
     <!-- Dosen PNS Tidak Aktif -->
     <div class="col-12 col-md-6 col-lg-4">
         <div class="sptjm-stat-card">
-            <div class="d-flex justify-content-between align-items-start">
+            <div class="d-flex justify-content-between align-items-center">
                 <div>
                     <div class="sptjm-stat-title">Dosen PNS Tidak Aktif</div>
                     <div class="sptjm-stat-value val-danger">{{ number_format($jumlahDosenPNSNon, 0, ',', '.') }}</div>
@@ -58,7 +58,7 @@
     <!-- Perguruan Tinggi Swasta -->
     <div class="col-12 col-md-6 col-lg-4">
         <div class="sptjm-stat-card">
-            <div class="d-flex justify-content-between align-items-start">
+            <div class="d-flex justify-content-between align-items-center">
                 <div>
                     <div class="sptjm-stat-title">Perguruan Tinggi Swasta</div>
                     <div class="sptjm-stat-value val-warning">{{ number_format($ptsCount, 0, ',', '.') }}</div>
@@ -73,7 +73,7 @@
     <!-- Dosen Non-PNS Aktif -->
     <div class="col-12 col-md-6 col-lg-4">
         <div class="sptjm-stat-card">
-            <div class="d-flex justify-content-between align-items-start">
+            <div class="d-flex justify-content-between align-items-center">
                 <div>
                     <div class="sptjm-stat-title">Dosen Non-PNS Aktif</div>
                     <div class="sptjm-stat-value val-primary">{{ number_format($jumlahDosenNonPNSAktif, 0, ',', '.') }}</div>
@@ -88,7 +88,7 @@
     <!-- Dosen Non-PNS Tidak Aktif -->
     <div class="col-12 col-md-6 col-lg-4">
         <div class="sptjm-stat-card">
-            <div class="d-flex justify-content-between align-items-start">
+            <div class="d-flex justify-content-between align-items-center">
                 <div>
                     <div class="sptjm-stat-title">Dosen Non-PNS Tidak Aktif</div>
                     <div class="sptjm-stat-value val-danger">{{ number_format($jumlahDosenNonPNSNon, 0, ',', '.') }}</div>
@@ -175,7 +175,9 @@ document.addEventListener('DOMContentLoaded', function () {
                 searchable: false,
                 render: function(data, type, row) {
                     // Figma design uses active pill
-                    return '<span class="sptjm-badge-active">' + (data || 'AKTIF') + '</span>';
+                    // Strip HTML if present to prevent nesting
+                    var text = (data || 'AKTIF').toString().replace(/<[^>]*>/g, '');
+                    return '<span class="sptjm-badge-active">' + text + '</span>';
                 }
             },
             { 

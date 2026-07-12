@@ -1,4 +1,4 @@
-﻿@extends('layouts/contentNavbarLayout')
+@extends('layouts/contentNavbarLayout')
 
 @section('title', 'Kurang/Lebih Bayar - SPTJM Online')
 
@@ -10,6 +10,41 @@
 .md2-page-header .breadcrumb-item a { color:#696cff; text-decoration:none; }
 .md2-page-header .breadcrumb-item.active { color:#8592a3; }
 .md2-page-header .breadcrumb-item+.breadcrumb-item::before { color:#8592a3; }
+
+/* Custom Tabs styling matching other pages */
+.nav-tabs.custom-tabs {
+  border-bottom: none !important;
+  display: flex !important;
+  gap: 10px !important;
+  margin-bottom: 16px !important;
+  padding: 0 !important;
+}
+.nav-tabs.custom-tabs .nav-item {
+  margin-bottom: 0 !important;
+}
+.nav-tabs.custom-tabs .nav-link {
+  background-color: #fff !important;
+  border: 1.5px solid #e2e8f0 !important;
+  color: #4a5568 !important;
+  font-weight: 600 !important;
+  font-size: 0.82rem !important;
+  padding: 8px 24px !important;
+  border-radius: 24px !important;
+  transition: all 0.2s ease !important;
+  cursor: pointer !important;
+}
+.nav-tabs.custom-tabs .nav-link:hover:not(.active) {
+  background-color: #f8fafc !important;
+  border-color: #cbd5e1 !important;
+  color: #1a56db !important;
+}
+.nav-tabs.custom-tabs .nav-link.active {
+  background-color: #0b3d91 !important;
+  border-color: #0b3d91 !important;
+  color: #fff !important;
+  font-weight: 700 !important;
+  box-shadow: 0 4px 10px rgba(11, 61, 145, 0.25) !important;
+}
 </style>
 @endsection
 
@@ -115,11 +150,10 @@
                             </div>
                         </div>
                     </form>
-                </div>
-            </div>
+                    <div class="border-bottom my-4"></div>
 
             {{-- Navigasi Tabs --}}
-            <ul class="nav nav-tabs mb-3" role="tablist">
+            <ul class="nav nav-tabs custom-tabs mb-3" role="tablist">
                 <li class="nav-item" role="presentation">
                     <button class="nav-link active" id="tab-kurang-btn" data-bs-toggle="tab" data-bs-target="#tab-data-kurang" type="button" role="tab" aria-selected="true">
                         Data Kurang Bayar
@@ -146,9 +180,8 @@
                 
                 {{-- TAB 1: DATA KURANG BAYAR --}}
                 <div class="tab-pane fade show active" id="tab-data-kurang" role="tabpanel" tabindex="0">
-                    <div class="card mb-4">
-                        <div class="card-header d-flex justify-content-between align-items-center">
-                            <h5 class="mb-0">Data Kurang Bayar</h5>
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h5 class="mb-0 fw-bold" style="color: #0b3d91;">Data Kurang Bayar</h5>
                             <div class="d-flex align-items-center gap-2">
                                 <form action="" method="GET" class="m-0 d-flex gap-2">
                                     @if(request('lebih_page')) <input type="hidden" name="lebih_page" value="{{ request('lebih_page') }}"> @endif
@@ -178,7 +211,6 @@
                                 </form>
                             </div>
                         </div>
-                        <div class="card-body">
                             <div class="table-responsive text-nowrap">
                                 <table class="table table-bordered">
                                     <thead>
@@ -315,15 +347,12 @@
                                 {{ $kurangRows->appends(request()->query())->links('pagination::bootstrap-5') }}
                             </div>
                             @endif
-                        </div>
-                    </div>
                 </div>
 
                 {{-- TAB 2: DATA LEBIH BAYAR --}}
                 <div class="tab-pane fade" id="tab-data-lebih" role="tabpanel" tabindex="0">
-                    <div class="card mb-4">
-                        <div class="card-header d-flex justify-content-between align-items-center">
-                            <h5 class="mb-0">Data Lebih Bayar</h5>
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h5 class="mb-0 fw-bold" style="color: #0b3d91;">Data Lebih Bayar</h5>
                             <div class="d-flex align-items-center gap-2">
                                 <form action="" method="GET" class="m-0 d-flex gap-2">
                                     @if(request('kurang_page')) <input type="hidden" name="kurang_page" value="{{ request('kurang_page') }}"> @endif
@@ -347,13 +376,12 @@
                                 <form action="{{ route('admin.kekurangan-bayar.destroy-lebih') }}" method="POST" id="formDestroyLebih" class="m-0">
                                     @csrf
                                     @method('DELETE')
-                                    <button type="submit" class="btn btn-sm btn-primary">
+                                    <button type="submit" class="btn btn-sm btn-danger">
                                         <span class="tf-icons bx bx-trash"></span>&nbsp; Hapus Lebih Bayar
                                     </button>
                                 </form>
                             </div>
                         </div>
-                        <div class="card-body">
                             <div class="table-responsive text-nowrap">
                                 <table class="table table-bordered">
                                     <thead>
@@ -494,15 +522,12 @@
             {{ $lebihRows->appends(request()->query())->links('pagination::bootstrap-5') }}
         </div>
     @endif
-                        </div>
-                    </div>
                 </div>
 
                 {{-- TAB 3: DATA SELESAI (LUNAS) --}}
                 <div class="tab-pane fade" id="tab-data-selesai" role="tabpanel" tabindex="0">
-                    <div class="card mb-4">
-                        <div class="card-header d-flex justify-content-between align-items-center">
-                            <h5 class="mb-0">Data Selesai</h5>
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h5 class="mb-0 fw-bold" style="color: #0b3d91;">Data Selesai</h5>
                             <div class="d-flex align-items-center gap-2">
                                 <form action="" method="GET" class="m-0 d-flex gap-2">
                                     @if(request('kurang_page')) <input type="hidden" name="kurang_page" value="{{ request('kurang_page') }}"> @endif
@@ -533,7 +558,6 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="card-body">
                             <div class="table-responsive text-nowrap">
                                 <table class="table table-bordered">
                                     <thead>
@@ -692,15 +716,12 @@
             {{ $selesaiRows->appends(request()->query())->links('pagination::bootstrap-5') }}
         </div>
     @endif
-                        </div>
-                    </div>
                 </div>
 
                 {{-- TAB 3: REKAP GABUNGAN --}}
                 <div class="tab-pane fade" id="tab-rekap" role="tabpanel" tabindex="0">
-                    <div class="card mb-4">
-                        <div class="card-header d-flex justify-content-between align-items-center">
-                            <h5 class="mb-0">Rekap Kurang & Lebih Bayar</h5>
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h5 class="mb-0 fw-bold" style="color: #0b3d91;">Rekap Kurang & Lebih Bayar</h5>
                             <form action="{{ route('admin.kekurangan-bayar.destroy-semua-rekap') }}" method="POST" class="d-inline form-hapus-semua-rekap">
                                 @csrf
                                 @method('DELETE')
@@ -709,7 +730,6 @@
                                 </button>
                             </form>
                         </div>
-                        <div class="card-body pt-2">
                             <style>
                                 .rekap-tbl { font-size: 12px; line-height: 1.35; }
                                 .rekap-tbl th, .rekap-tbl td { padding: 4px 8px !important; vertical-align: middle; }
@@ -810,9 +830,10 @@
                                     </tbody>
                                 </table>
                             </div>
-                        </div>
-                    </div>
                 </div>
+            </div> <!-- Close tab-content -->
+        </div> <!-- Close main card-body -->
+    </div> <!-- Close main card -->
 
 {{-- Modal Input SP2D --}}
 <div class="modal fade" id="modalSp2d" tabindex="-1" aria-labelledby="modalSp2dLabel" aria-hidden="true">
@@ -1002,7 +1023,6 @@
             </div>
         </div>
     </div>
-</div>
 
 @endsection
 

@@ -8,8 +8,8 @@
              style="height: 38px; width: auto; display: block; max-width: 100%; object-fit: contain;">
         <span class="sptjm-logo-subtitle" style="color:#64748b; font-size:0.6rem; font-weight:700; font-family:'Public Sans',sans-serif; text-transform:uppercase; letter-spacing:1.2px; margin-left: 45px; margin-top: -4px;">SPTJM ONLINE</span>
     </a>
-    <a href="javascript:void(0);" class="layout-menu-toggle menu-link text-large ms-auto d-block">
-        <i class="bx bx-chevron-left align-middle" style="font-size: 1.4rem !important; color: #1a56db !important;"></i>
+    <a href="javascript:void(0);" class="layout-menu-toggle menu-link text-large ms-auto">
+        <i class="bx bx-chevron-left" style="font-size: 1.9rem !important; color: #1a56db !important;"></i>
     </a>
   </div>
 

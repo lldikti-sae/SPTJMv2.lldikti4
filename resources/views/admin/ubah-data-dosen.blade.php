@@ -96,14 +96,8 @@
                 <input type="text" class="form-control" id="keterangan" name="keterangan" required value="{{ $defaultKeterangan }}">
               </div>
             </div>
-          </div>
-        </div>
-
-        <hr class="my-3">
-
-        <div class="card mb-4">
-          <div class="card-header">Data Dosen</div>
-          <div class="card-body">
+            <hr class="my-4">
+            <h5 class="fw-bold mb-4" style="color: #0f2b5c;">Data Dosen</h5>
             <input type="hidden" name="pk" value="">
             <div class="row mb-3">
               <label class="col-sm-2 col-form-label" for="basic-default-name">NIDN</label>

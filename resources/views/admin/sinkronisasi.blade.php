@@ -1,4 +1,4 @@
-﻿@extends((auth()->check() && method_exists(auth()->user(), 'isPIC') && auth()->user()->isPIC()) ? 'layouts/contentNavbarLayoutPic' : 'layouts/contentNavbarLayout')
+@extends((auth()->check() && method_exists(auth()->user(), 'isPIC') && auth()->user()->isPIC()) ? 'layouts/contentNavbarLayoutPic' : 'layouts/contentNavbarLayout')
 
 @section('title', 'Sinkronisasi Data - SPTJM Online')
 
@@ -16,7 +16,7 @@
   border-bottom: none !important;
   display: flex !important;
   gap: 10px !important;
-  margin-bottom: 6px !important;
+  margin-bottom: 12px !important;
   padding: 0 !important;
 }
 .nav-tabs.custom-tabs .nav-item {
@@ -204,41 +204,28 @@
 <div id="alertBox" class="alert d-none" role="alert"></div>
 
 <!-- Combined card: Gaji + Pajak (tabs) -->
-<div class="card" style="width: 100%; padding: 10px; margin-top: 1rem;">
-  <div class="d-flex flex-wrap align-items-center">
-    <div class="px-2 pt-2 pb-0 w-100">
-      <ul class="nav nav-tabs custom-tabs" role="tablist">
-        <li class="nav-item" role="presentation">
-          <button class="nav-link active" id="tab-gaji-btn" data-bs-toggle="tab" data-bs-target="#tab-gaji" type="button" role="tab" aria-controls="tab-gaji" aria-selected="true">Gaji</button>
-        </li>
-        <li class="nav-item" role="presentation">
-          <button class="nav-link" id="tab-pajak-btn" data-bs-toggle="tab" data-bs-target="#tab-pajak" type="button" role="tab" aria-controls="tab-pajak" aria-selected="false">Pajak</button>
-        </li>
-        <li class="nav-item" role="presentation">
-          <button class="nav-link" id="tab-golmasa-btn" data-bs-toggle="tab" data-bs-target="#tab-golmasa" type="button" role="tab" aria-controls="tab-golmasa" aria-selected="false">Gol/Masa Kerja</button>
-        </li>
-      </ul>
-    </div>
-  </div>
-  <hr style="margin: 6px 0 0 0;">
+<div class="card" style="width: 100%; padding: 10px;">
   <div class="card-body px-2 pb-2 pt-1">
+    <ul class="nav nav-tabs custom-tabs mb-0" role="tablist">
+      <li class="nav-item" role="presentation">
+        <button class="nav-link active" id="tab-gaji-btn" data-bs-toggle="tab" data-bs-target="#tab-gaji" type="button" role="tab" aria-controls="tab-gaji" aria-selected="true">Gaji</button>
+      </li>
+      <li class="nav-item" role="presentation">
+        <button class="nav-link" id="tab-pajak-btn" data-bs-toggle="tab" data-bs-target="#tab-pajak" type="button" role="tab" aria-controls="tab-pajak" aria-selected="false">Pajak</button>
+      </li>
+      <li class="nav-item" role="presentation">
+        <button class="nav-link" id="tab-golmasa-btn" data-bs-toggle="tab" data-bs-target="#tab-golmasa" type="button" role="tab" aria-controls="tab-golmasa" aria-selected="false">Gol/Masa Kerja</button>
+      </li>
+    </ul>
     <div class="tab-content">
       <div class="tab-pane fade show active" id="tab-gaji" role="tabpanel" aria-labelledby="tab-gaji-btn">
-    <p class="sptjm-instruction-text">
-      Gunakan tombol di bawah untuk mengecek gaji yang tidak sesuai untuk semua NIDN/NUPTK pada tahun versi aktif.
-    </p>
-    <div class="row mb-2" style="font-size: 12px;">
-      <div class="col-sm-4">
-        <label class="col-form-label mb-1"><b>Cek Data Gaji per NIDN/NUPTK (Semua Bulan)</b></label>
-        <input type="text" id="gajiSingleNidn" class="form-control-sptjm" placeholder="Masukkan NIDN/NUPTK untuk cek data gaji (semua bulan)" />
+    <div class="d-flex flex-wrap align-items-center gap-2 mb-3" style="font-size: 12px;">
+      <div style="min-width: 250px; max-width: 320px; flex: 1;">
+        <input type="text" id="gajiSingleNidn" class="form-control-sptjm" placeholder="Masukkan NIDN/NUPTK..." />
       </div>
-      <div class="col-sm-3 d-flex align-items-end mt-2 mt-sm-0">
-        <button type="button" id="btnSyncGajiNidnAll" class="btn-sptjm-primary">
-          <span class="tf-icons bx bx-search"></span>&nbsp; Cek data
-        </button>
-      </div>
-    </div>
-    <div class="d-flex flex-wrap gap-2 mb-2">
+      <button type="button" id="btnSyncGajiNidnAll" class="btn-sptjm-primary">
+        <span class="tf-icons bx bx-search"></span>&nbsp; Cek data
+      </button>
       <button type="button" id="btnCheckGajiMismatch" class="btn-sptjm-warning">
         <span class="tf-icons bx bx-search"></span>&nbsp; Cek Gaji Tidak Sesuai
       </button>
@@ -246,8 +233,8 @@
         <span class="tf-icons bx bx-refresh"></span>&nbsp; Sinkronisasi Gaji ke Semua NIDN/NUPTK
       </button>
     </div>
-    <div id="syncGajiStatus" class="text-muted mb-2" style="font-size: 12px;">Belum ada proses sinkronisasi gaji.</div>
-    <div id="gajiMismatchStatus" class="text-muted mb-1" style="font-size: 12px;">Belum ada data pengecekan gaji.</div>
+    <div id="syncGajiStatus" class="text-muted mb-2" style="font-size: 12px;"></div>
+    <div id="gajiMismatchStatus" class="text-muted mb-1" style="font-size: 12px;"></div>
     <div id="gajiMismatchTableWrapper" class="table-responsive" style="font-size: 12px;">
       <table id="gajiMismatchTable" class="table table-sm table-bordered mb-0" style="width: 100%;">
         <thead>
@@ -269,21 +256,13 @@
       </div>
 
       <div class="tab-pane fade" id="tab-pajak" role="tabpanel" aria-labelledby="tab-pajak-btn">
-    <p class="sptjm-instruction-text">
-      Gunakan tombol di bawah untuk mengecek pajak yang tidak sesuai untuk semua NIDN/NUPTK pada tahun versi aktif.
-    </p>
-    <div class="row mb-2" style="font-size: 12px;">
-      <div class="col-sm-4">
-        <label class="col-form-label mb-1"><b>Cek Data Pajak per NIDN/NUPTK (Semua Bulan)</b></label>
-        <input type="text" id="pajakSingleNidn" class="form-control-sptjm" placeholder="Masukkan NIDN/NUPTK untuk cek data pajak (semua bulan)" />
+    <div class="d-flex flex-wrap align-items-center gap-2 mb-3" style="font-size: 12px;">
+      <div style="min-width: 250px; max-width: 320px; flex: 1;">
+        <input type="text" id="pajakSingleNidn" class="form-control-sptjm" placeholder="Masukkan NIDN/NUPTK..." />
       </div>
-      <div class="col-sm-3 d-flex align-items-end mt-2 mt-sm-0">
-        <button type="button" id="btnSyncPajakNidnAll" class="btn-sptjm-primary">
-          <span class="tf-icons bx bx-search"></span>&nbsp; Cek data
-        </button>
-      </div>
-    </div>
-    <div class="d-flex flex-wrap gap-2 mb-2">
+      <button type="button" id="btnSyncPajakNidnAll" class="btn-sptjm-primary">
+        <span class="tf-icons bx bx-search"></span>&nbsp; Cek data
+      </button>
       <button type="button" id="btnCheckMismatch" class="btn-sptjm-warning">
         <span class="tf-icons bx bx-search"></span>&nbsp; Cek Pajak Tidak Sesuai
       </button>
@@ -291,7 +270,7 @@
         <span class="tf-icons bx bx-refresh"></span>&nbsp; Sinkronisasi Pajak ke Semua NIDN/NUPTK
       </button>
     </div>
-    <div id="mismatchStatus" class="text-muted mb-1" style="font-size: 12px;">Belum ada data pengecekan pajak.</div>
+    <div id="mismatchStatus" class="text-muted mb-1" style="font-size: 12px;"></div>
     <div id="mismatchTableWrapper" class="table-responsive" style="font-size: 12px;">
       <table id="mismatchTable" class="table table-sm table-bordered mb-0" style="width: 100%;">
         <thead>
@@ -313,32 +292,26 @@
       </div>
 
       <div class="tab-pane fade" id="tab-golmasa" role="tabpanel" aria-labelledby="tab-golmasa-btn">
-        <p class="sptjm-instruction-text">
-          Gunakan tombol di bawah untuk mengecek data Golongan/Masa Kerja yang tidak sesuai untuk semua NIDN/NUPTK pada tahun versi aktif.
-        </p>
-        <div class="row mb-2" style="font-size: 12px;">
-          <div class="col-sm-4">
-            <label class="col-form-label mb-1"><b>Cek Data Gol/Masa Kerja per NIDN/NUPTK (Semua Bulan)</b></label>
-            <input type="text" id="golmasaSingleNidn" class="form-control-sptjm" placeholder="Masukkan NIDN/NUPTK untuk cek data Gol/Masa Kerja (semua bulan)" />
+        <div class="d-flex flex-wrap align-items-center gap-2 mb-3" style="font-size: 12px;">
+          <div style="min-width: 250px; max-width: 320px; flex: 1;">
+            <input type="text" id="golmasaSingleNidn" class="form-control-sptjm" placeholder="Masukkan NIDN/NUPTK..." />
           </div>
-          <div class="col-sm-3 d-flex align-items-end mt-2 mt-sm-0">
+          <div style="min-width: 250px; max-width: 300px; flex: 1;">
             <select id="golmasaSyncScope" class="form-select-sptjm" title="Pilih data yang disinkronisasi">
               <option value="both" selected>Keduanya (Golongan + Masa Kerja)</option>
               <option value="gol">Hanya Golongan</option>
               <option value="masa">Hanya Masa Kerja</option>
             </select>
           </div>
-          <div class="col-sm-5 d-flex align-items-end gap-2 mt-2 mt-sm-0">
-            <button type="button" id="btnSyncGolmasaNidnAll" class="btn-sptjm-primary">
-              <span class="tf-icons bx bx-search"></span>&nbsp; Cek data
-            </button>
-            <button type="button" id="btnSyncGolmasaNow" class="btn-sptjm-success" disabled onclick="if(window.syncGolmasaTrigger) window.syncGolmasaTrigger();">
-              <span class="tf-icons bx bx-refresh"></span>&nbsp; Sinkronisasi
-            </button>
-          </div>
+          <button type="button" id="btnSyncGolmasaNidnAll" class="btn-sptjm-primary">
+            <span class="tf-icons bx bx-search"></span>&nbsp; Cek data
+          </button>
+          <button type="button" id="btnSyncGolmasaNow" class="btn-sptjm-success" disabled onclick="if(window.syncGolmasaTrigger) window.syncGolmasaTrigger();">
+            <span class="tf-icons bx bx-refresh"></span>&nbsp; Sinkronisasi
+          </button>
         </div>
-        <div id="golmasaMismatchStatus" class="text-muted mb-1" style="font-size: 12px;">Belum ada data pengecekan Gol/Masa Kerja.</div>
-        <div class="text-muted mb-1" style="font-size: 12px; font-weight:600;">Sebelum sinkronisasi</div>
+        <div id="golmasaMismatchStatus" class="text-muted mb-1" style="font-size: 12px;"></div>
+        <div class="fw-bold mb-1" style="font-size: 12px; color: #2c3e50;">Sebelum sinkronisasi</div>
         <div id="golmasaMismatchTableWrapper" class="table-responsive" style="font-size: 12px;">
           <table id="golmasaMismatchTable" class="table table-sm table-bordered mb-0" style="width: 100%;">
             <thead>
@@ -397,7 +370,7 @@
           </table>
         </div>
 
-        <div class="text-muted mt-3 mb-1" style="font-size: 12px; font-weight:600;">Sesudah sinkronisasi</div>
+        <div class="fw-bold mt-3 mb-1" style="font-size: 12px; color: #2c3e50;">Sesudah sinkronisasi</div>
         <div id="golmasaAfterTableWrapper" class="table-responsive" style="font-size: 12px;">
           <table id="golmasaAfterTable" class="table table-sm table-bordered mb-0" style="width: 100%;">
             <thead>

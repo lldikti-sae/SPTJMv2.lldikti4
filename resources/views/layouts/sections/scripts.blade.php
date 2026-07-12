@@ -492,20 +492,85 @@
             }
         });
     }
-
+    
     if (typeof $ !== 'undefined') {
+        function mergePageHeadersIntoCards() {
+            $('.pt-page-header, .sptjm-page-header, .md-page-header, .md2-page-header, .vdd-page-header').each(function() {
+                var $header = $(this);
+                if ($header.hasClass('merged-card-header')) return;
+                
+                // Find next sibling card or content-wrapper containing a card
+                var $card = $header.nextAll('.card, .pt-card, .md-card, .md2-card, .sptjm-card, .sptjm-table-card, .content-wrapper').first();
+                if (!$card.length) {
+                    $card = $header.nextAll().find('.card, .pt-card, .md-card, .md2-card, .sptjm-card, .sptjm-table-card').first();
+                } else if ($card.hasClass('content-wrapper')) {
+                    $card = $card.find('.card, .pt-card, .md-card, .md2-card, .sptjm-card, .sptjm-table-card').first();
+                }
+                
+                if ($card.length) {
+                    $card.prepend($header);
+                    $header.addClass('merged-card-header');
+                }
+            });
+
+            // Standardize cards with legacy embedded headers (e.g. Kop Surat, Penandatangan, Complain, SKPP)
+            $('.card').each(function() {
+                var $card = $(this);
+                if ($card.closest('.modal').length) return; // Ignore modals
+                
+                var $header = $card.find('h5.card-header, .card-header').first();
+                if ($header.length && !$header.hasClass('merged-card-header') && !$header.hasClass('modal-header')) {
+                    if ($header.closest('.card-body').length) return; // Ignore nested headers
+                    
+                    var $hr = $header.next('hr');
+                    if (!$hr.length) {
+                        $hr = $header.parent().next('hr');
+                    }
+                    
+                    var titleText = $header.clone().children().remove().end().text().trim();
+                    var $parentDiv = $header.parent();
+                    var $actionBtn = null;
+                    if (!$parentDiv.hasClass('card') && ($parentDiv.hasClass('d-flex') || ($parentDiv.is('div') && $parentDiv.css('display') === 'flex'))) {
+                        $actionBtn = $parentDiv.find('button, a').not($header);
+                        $header = $parentDiv;
+                    }
+                    
+                    $header.addClass('merged-card-header');
+                    $header.html('<div class="page-titles"><h1>' + titleText + '</h1></div>');
+                    
+                    if ($actionBtn && $actionBtn.length) {
+                        var $btnContainer = $('<div class="d-flex align-items-center gap-2"></div>');
+                        $btnContainer.append($actionBtn);
+                        $header.append($btnContainer);
+                    }
+                    
+                    if ($hr.length) {
+                        $hr.hide();
+                    }
+                    
+                    $card.css('padding', '0');
+                    if (!$header.parent().is($card) && !$header.parent().parent().is($card)) {
+                        $card.prepend($header);
+                    }
+                }
+            });
+        }
+
         $(document).ready(function() {
             applySptjmGlobalStyles();
+            mergePageHeadersIntoCards();
             
             // Ensure styles apply after any ajax calls or datatable renders
             $(document).ajaxComplete(function() {
                 applySptjmGlobalStyles();
+                mergePageHeadersIntoCards();
             });
             
             if ($.fn.dataTable) {
                 // Ensure drawCallback triggers the function globally for all DataTables
                 $(document).on('draw.dt', function() {
                     applySptjmGlobalStyles();
+                    mergePageHeadersIntoCards();
                 });
             }
         });

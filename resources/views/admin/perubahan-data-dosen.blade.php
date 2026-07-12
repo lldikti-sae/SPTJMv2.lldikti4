@@ -1,4 +1,4 @@
-﻿@extends(
+@extends(
     \Illuminate\Support\Facades\Auth::guard('pts')->check()
         ? 'layouts/contentNavbarLayoutPts'
         : ((\Illuminate\Support\Facades\Auth::guard('web')->check()
@@ -184,16 +184,8 @@
                             <div class="col-md-6">
                                 <label class="form-label">Keterangan</label>
                                 <input type="text" name="keterangan" class="form-control js-editable" value="{{ $dosen->keterangan ?? '' }}" readonly style="background-color: #eceef1;" maxlength="100" required>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-<div class="card">
-    <h5 class="card-header">Detail Data Dosen</h5>
-    <div class="table-responsive text-nowrap">
-
-        <div class="card-body">
+                    <hr class="my-4">
+                    <h5 class="fw-bold mb-4" style="color: #0f2b5c;">Detail Data Dosen</h5>
                 <div class="row mb-3">
                     <div class="col-md-6">
                         <label class="form-label">NIDN</label>
@@ -546,9 +538,7 @@
 
 
                 </div>
-
-        </div>
-    </div>
+            </div>
     @endif
 </div>
 
@@ -625,16 +615,8 @@
                                 <label class="form-label">Keterangan</label>
                                 <input type="text" name="keterangan" class="form-control js-editable" value="{{ $dosen->keterangan ?? '' }}" readonly style="background-color: #eceef1;" maxlength="100" required>
                             </div>
-                            <!-- Terhitung Mulai Tanggal dihapus sesuai permintaan -->
-                        </div>
-                    </div>
-                </div>
-
-<div class="card">
-    <h5 class="card-header">Detail Data Dosen</h5>
-    <div class="table-responsive text-nowrap">
-
-        <div class="card-body">
+                    <hr class="my-4">
+                    <h5 class="fw-bold mb-4" style="color: #0f2b5c;">Detail Data Dosen</h5>
                 <div class="row mb-3">
                     <div class="col-md-6">
                         <label class="form-label">NIDN</label>
@@ -990,7 +972,6 @@
 
         </div>
     </div>
-</div>
 
     </div>
 </div>

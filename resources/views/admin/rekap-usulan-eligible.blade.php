@@ -1,16 +1,9 @@
-﻿@extends('layouts/contentNavbarLayout')
+@extends('layouts/contentNavbarLayout')
 
 @section('title', 'SPTJM Online')
 
 @section('content')
-@section('content')
 <style>
-    .card-eligible {
-        border: 1.5px solid #dbeafe !important;
-        box-shadow: 0 10px 30px rgba(26, 86, 219, 0.15) !important;
-        border-radius: 12px !important;
-        background: #ffffff !important;
-    }
     .alert-custom-success {
         background-color: #e6fcf5 !important;
         color: #0ca678 !important;
@@ -21,20 +14,30 @@
     }
 </style>
 
-<div class="content-wrapper">
+{{-- Page Header --}}
+<div class="md2-page-header">
+    <div class="page-titles">
+        <h3>Rekapitulasi Usulan Eligible</h3>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="#">Rekapitulasi</a></li>
+                <li class="breadcrumb-item active">Usulan Eligible</li>
+            </ol>
+        </nav>
+    </div>
+</div>
 
-    <!-- Filter Form -->
-    <div class="card card-eligible mb-4">
-        <div class="card-body p-4">
-            <h6 class="fw-bold text-dark mb-3" style="color: #0f2b5c !important; display: inline-flex; align-items: center; gap: 8px;">
-                <i class="bx bx-filter-alt" style="color: #d97706;"></i> Parameter Filter Data
-            </h6>
+<div class="card md2-card mb-4">
+    <div class="card-body px-4 pb-4 pt-0">
+
+        <!-- Filter Section -->
+        <div class="pt-3 pb-3 mb-3 border-bottom">
             <form action="{{ route('admin.rekap-usulan-eligible') }}" method="GET">
-                <div class="row g-3">
+                <div class="row g-3 align-items-end">
                     <!-- Tipe SPTJM -->
                     <div class="col">
-                        <label for="tipe_sptjm" class="form-label fw-bold text-dark text-uppercase" style="font-size: 0.68rem; letter-spacing: 0.05em;">Tipe SPTJM</label>
-                        <select class="form-select" id="tipe_sptjm" name="tipe_sptjm" onchange="this.form.submit()" style="border-color: #cbd5e1;">
+                        <label for="tipe_sptjm" class="form-label fw-bold text-dark text-uppercase mb-1" style="font-size: 0.68rem; letter-spacing: 0.05em; color: #64748b;">Tipe SPTJM</label>
+                        <select class="form-select" id="tipe_sptjm" name="tipe_sptjm" onchange="this.form.submit()" style="border: 1.5px solid #cbd5e1; border-radius: 8px; font-size: 0.88rem; color: #374151; height: 38px;">
                             <option value="SPTJM" {{ request('tipe_sptjm', 'SPTJM') == 'SPTJM' ? 'selected' : '' }}>SPTJM</option>
                             <option value="TUKIN" {{ request('tipe_sptjm') == 'TUKIN' ? 'selected' : '' }}>TUKIN</option>
                         </select>
@@ -42,8 +45,8 @@
 
                     <!-- Pencairan -->
                     <div class="col">
-                        <label for="pencairan_ke" class="form-label fw-bold text-dark text-uppercase" style="font-size: 0.68rem; letter-spacing: 0.05em;">Pencairan ke-</label>
-                        <select class="form-select" id="pencairan_ke" name="pencairan_ke" style="border-color: #cbd5e1;">
+                        <label for="pencairan_ke" class="form-label fw-bold text-dark text-uppercase mb-1" style="font-size: 0.68rem; letter-spacing: 0.05em; color: #64748b;">Pencairan ke-</label>
+                        <select class="form-select" id="pencairan_ke" name="pencairan_ke" style="border: 1.5px solid #cbd5e1; border-radius: 8px; font-size: 0.88rem; color: #374151; height: 38px;">
                             <option value="Semua" {{ request('pencairan_ke') == 'Semua' ? 'selected' : '' }}>Semua</option>
                             @for ($i = 1; $i <= 20; $i++)
                                 <option value="{{ $i }}" {{ request('pencairan_ke') == $i ? 'selected' : '' }}>{{ $i }}</option>
@@ -53,8 +56,8 @@
 
                     <!-- Bank -->
                     <div class="col">
-                        <label for="bank" class="form-label fw-bold text-dark text-uppercase" style="font-size: 0.68rem; letter-spacing: 0.05em;">Pilih Bank</label>
-                        <select class="form-select" id="bank" name="bank" style="border-color: #cbd5e1;">
+                        <label for="bank" class="form-label fw-bold text-dark text-uppercase mb-1" style="font-size: 0.68rem; letter-spacing: 0.05em; color: #64748b;">Pilih Bank</label>
+                        <select class="form-select" id="bank" name="bank" style="border: 1.5px solid #cbd5e1; border-radius: 8px; font-size: 0.88rem; color: #374151; height: 38px;">
                             <option value="Semua" {{ request('bank') == 'Semua' ? 'selected' : '' }}>Semua</option>
                             @foreach (['BRI', 'MANDIRI', 'BNI', 'BTN', 'BSI'] as $bank)
                                 <option value="{{ $bank }}" {{ request('bank') == $bank ? 'selected' : '' }}>{{ $bank }}</option>
@@ -64,8 +67,8 @@
 
                     <!-- Status Pegawai -->
                     <div class="col">
-                        <label for="status_pegawai" class="form-label fw-bold text-dark text-uppercase" style="font-size: 0.68rem; letter-spacing: 0.05em;">Status Pegawai</label>
-                        <select class="form-select" id="status_pegawai" name="status_pegawai" style="border-color: #cbd5e1;">
+                        <label for="status_pegawai" class="form-label fw-bold text-dark text-uppercase mb-1" style="font-size: 0.68rem; letter-spacing: 0.05em; color: #64748b;">Status Pegawai</label>
+                        <select class="form-select" id="status_pegawai" name="status_pegawai" style="border: 1.5px solid #cbd5e1; border-radius: 8px; font-size: 0.88rem; color: #374151; height: 38px;">
                             @foreach (['Semua', 'NON PNS', 'PNS'] as $status)
                                 <option value="{{ $status }}" {{ request('status_pegawai') == $status ? 'selected' : '' }}>{{ $status }}</option>
                             @endforeach
@@ -74,16 +77,16 @@
 
                     <!-- Eligible -->
                     <div class="col">
-                        <label for="Eligible_span" class="form-label fw-bold text-dark text-uppercase" style="font-size: 0.68rem; letter-spacing: 0.05em;">Eligible Span</label>
-                        <select class="form-select" id="Eligible_span" name="Eligible_span" style="border-color: #cbd5e1;">
+                        <label for="Eligible_span" class="form-label fw-bold text-dark text-uppercase mb-1" style="font-size: 0.68rem; letter-spacing: 0.05em; color: #64748b;">Eligible Span</label>
+                        <select class="form-select" id="Eligible_span" name="Eligible_span" style="border: 1.5px solid #cbd5e1; border-radius: 8px; font-size: 0.88rem; color: #374151; height: 38px;">
                             <option value="YA" {{ request('Eligible_span') == 'YA' ? 'selected' : '' }}>YA</option>
                         </select>
                     </div>
 
                     <!-- Tunjangan -->
                     <div class="col">
-                        <label for="tunjangan" class="form-label fw-bold text-dark text-uppercase" style="font-size: 0.68rem; letter-spacing: 0.05em;">Tunjangan</label>
-                        <select class="form-select" id="tunjangan" name="tunjangan" style="border-color: #cbd5e1;">
+                        <label for="tunjangan" class="form-label fw-bold text-dark text-uppercase mb-1" style="font-size: 0.68rem; letter-spacing: 0.05em; color: #64748b;">Tunjangan</label>
+                        <select class="form-select" id="tunjangan" name="tunjangan" style="border: 1.5px solid #cbd5e1; border-radius: 8px; font-size: 0.88rem; color: #374151; height: 38px;">
                             @foreach (['Semua', 'tpd1' => 'TPD', 'tkgb1' => 'TKGB'] as $value => $label)
                                 <option value="{{ is_int($value) ? $label : $value }}" {{ request('tunjangan') == (is_int($value) ? $label : $value) ? 'selected' : '' }}>
                                     {{ is_int($value) ? $label : $label }}
@@ -91,125 +94,122 @@
                             @endforeach
                         </select>
                     </div>
-                </div>
 
-                <div class="text-center mt-4">
-                    <button type="submit" class="btn btn-primary px-5 py-2 fw-bold" style="background-color: #0f2b5c; border-color: #0f2b5c; border-radius: 6px; font-size: 0.875rem;">Lihat</button>
+                    <!-- Button "Lihat" on the right end -->
+                    <div class="col-auto">
+                        <button type="submit" class="btn btn-primary d-flex align-items-center gap-1" style="background-color: #0b3d91; border-color: #0b3d91; border-radius: 8px; font-weight: 600; font-size: 0.88rem; height: 38px; padding: 0 24px;">
+                            <i class="bx bx-search-alt"></i> Lihat
+                        </button>
+                    </div>
                 </div>
             </form>
         </div>
-    </div>
 
-    @if ($hasFilter != false)
-        <div class="alert alert-custom-success mb-4" id="alertFilter">
-            <i class="bx bx-check-circle me-2"></i> {{ $success }}
-        </div>
-    @endif
-
-    @if (session('error'))
-        <div class="alert alert-danger mb-4">{{ session('error') }}</div>
-    @endif
-
-    <!-- Data Table -->
-    @if ($hasFilter)
-    <div class="card card-eligible mb-4">
-      <div class="card-header d-flex justify-content-between align-items-center p-4">
-        <h6 class="mb-0 fw-bold text-dark" style="color: #0f2b5c !important;">Tabel Rekapitulasi</h6>
-      </div>
-
-      <div class="card-body px-4 pb-4 pt-0">
-        <div class="table-responsive text-nowrap">
-          <table class="table table-hover md2-table text-center" id="rekapTable" style="width:100%">
-            <thead>
-              <tr>
-                <th style="background-color: #f8fafc !important; color: #475569 !important; font-size: 0.75rem !important; letter-spacing: 0.05em !important; font-weight: 700 !important;">NIDN</th>
-                <th style="background-color: #f8fafc !important; color: #475569 !important; font-size: 0.75rem !important; letter-spacing: 0.05em !important; font-weight: 700 !important;">NUPTK</th>
-                <th style="background-color: #f8fafc !important; color: #475569 !important; font-size: 0.75rem !important; letter-spacing: 0.05em !important; font-weight: 700 !important;">No Peserta</th>
-                <th style="background-color: #f8fafc !important; color: #475569 !important; font-size: 0.75rem !important; letter-spacing: 0.05em !important; font-weight: 700 !important;">Nama</th>
-                <th style="background-color: #f8fafc !important; color: #475569 !important; font-size: 0.75rem !important; letter-spacing: 0.05em !important; font-weight: 700 !important;">Jabatan</th>
-                <th style="background-color: #f8fafc !important; color: #475569 !important; font-size: 0.75rem !important; letter-spacing: 0.05em !important; font-weight: 700 !important;">Golongan</th>
-                <th style="background-color: #f8fafc !important; color: #475569 !important; font-size: 0.75rem !important; letter-spacing: 0.05em !important; font-weight: 700 !important;">Masa Kerja</th>
-                <th style="background-color: #f8fafc !important; color: #475569 !important; font-size: 0.75rem !important; letter-spacing: 0.05em !important; font-weight: 700 !important;">Status Pegawai</th>
-                <th style="background-color: #f8fafc !important; color: #475569 !important; font-size: 0.75rem !important; letter-spacing: 0.05em !important; font-weight: 700 !important;">Bank</th>
-                <th style="background-color: #f8fafc !important; color: #475569 !important; font-size: 0.75rem !important; letter-spacing: 0.05em !important; font-weight: 700 !important;">Eligible</th>
-                <th style="background-color: #f8fafc !important; color: #475569 !important; font-size: 0.75rem !important; letter-spacing: 0.05em !important; font-weight: 700 !important;">Status</th>
-                <th style="background-color: #f8fafc !important; color: #475569 !important; font-size: 0.75rem !important; letter-spacing: 0.05em !important; font-weight: 700 !important;">Tahun</th>
-                @foreach ($bulanMap as $bln)
-                <th style="background-color: #f8fafc !important; color: #475569 !important; font-size: 0.75rem !important; letter-spacing: 0.05em !important; font-weight: 700 !important;">{{ $bln }}</th>
-                @endforeach
-                <th style="background-color: #f8fafc !important; color: #475569 !important; font-size: 0.75rem !important; letter-spacing: 0.05em !important; font-weight: 700 !important;">Jumlah Kotor TPD</th>
-                <th style="background-color: #f8fafc !important; color: #475569 !important; font-size: 0.75rem !important; letter-spacing: 0.05em !important; font-weight: 700 !important;">Jumlah Kotor TKGB</th>
-                <th style="background-color: #f8fafc !important; color: #475569 !important; font-size: 0.75rem !important; letter-spacing: 0.05em !important; font-weight: 700 !important;">PPH TPD</th>
-                <th style="background-color: #f8fafc !important; color: #475569 !important; font-size: 0.75rem !important; letter-spacing: 0.05em !important; font-weight: 700 !important;">PPH TKGB</th>
-                <th style="background-color: #f8fafc !important; color: #475569 !important; font-size: 0.75rem !important; letter-spacing: 0.05em !important; font-weight: 700 !important;">Bersih TPD</th>
-                <th style="background-color: #f8fafc !important; color: #475569 !important; font-size: 0.75rem !important; letter-spacing: 0.05em !important; font-weight: 700 !important;">Bersih TKGB</th>
-                <th style="background-color: #f8fafc !important; color: #475569 !important; font-size: 0.75rem !important; letter-spacing: 0.05em !important; font-weight: 700 !important;">No Rekening</th>
-                <th style="background-color: #f8fafc !important; color: #475569 !important; font-size: 0.75rem !important; letter-spacing: 0.05em !important; font-weight: 700 !important;">NPWP</th>
-              </tr>
-            </thead>
-            <tbody>
-              {{-- Data dimuat via DataTables AJAX --}}
-            </tbody>
-          </table>
-        </div>
-        <br>
-        
-        @if (!empty($rekap))
-        <div class="border-top border-secondary my-4"></div>
-        <h5 class="fw-bold text-dark mb-3" style="color: #0f2b5c !important;">Rekapitulasi Usulan untuk Proses</h5>
-        <div class="table-responsive text-nowrap w-100 mb-4">
-          <table class="table table-hover md2-table text-center" id="tableRekap" style="width:100%">
-            <thead>
-              <tr>
-                <th style="background-color: #f8fafc !important; color: #475569 !important; font-size: 0.75rem !important; letter-spacing: 0.05em !important; font-weight: 700 !important;">Grup</th>
-                <th style="background-color: #f8fafc !important; color: #475569 !important; font-size: 0.75rem !important; letter-spacing: 0.05em !important; font-weight: 700 !important;">Jumlah Dosen</th>
-                <th style="background-color: #f8fafc !important; color: #475569 !important; font-size: 0.75rem !important; letter-spacing: 0.05em !important; font-weight: 700 !important;">Bank</th>
-                <th style="background-color: #f8fafc !important; color: #475569 !important; font-size: 0.75rem !important; letter-spacing: 0.05em !important; font-weight: 700 !important;">Status Pegawai</th>
-                <th style="background-color: #f8fafc !important; color: #475569 !important; font-size: 0.75rem !important; letter-spacing: 0.05em !important; font-weight: 700 !important;">Tunjangan</th>
-                <th style="background-color: #f8fafc !important; color: #475569 !important; font-size: 0.75rem !important; letter-spacing: 0.05em !important; font-weight: 700 !important;">Total Kotor</th>
-                <th style="background-color: #f8fafc !important; color: #475569 !important; font-size: 0.75rem !important; letter-spacing: 0.05em !important; font-weight: 700 !important;">Total Pajak</th>
-                <th style="background-color: #f8fafc !important; color: #475569 !important; font-size: 0.75rem !important; letter-spacing: 0.05em !important; font-weight: 700 !important;">Total Bersih</th>
-              </tr>
-            </thead>
-            <tbody>
-              @php $no = 1; @endphp
-              @foreach ($rekap as $groups)
-              @foreach ($groups as $group)
-              <tr>
-                <td>{{ $no++ }}</td>
-                <td>{{ $group['jmlh_dosen'] }}</td>
-                <td>{{ $group['bank'] }}</td>
-                <td>{{ $group['status_pegawai'] }}</td>
-                <td>{{ $group['tunjangan'] }}</td>
-                <td>{{ number_format($group['total_kotor_semua'], 0, ',', '.') }}</td>
-                <td>{{ number_format($group['total_pajak_semua'], 0, ',', '.') }}</td>
-                <td>{{ number_format($group['total_bersih_semua'], 0, ',', '.') }}</td>
-                <td class="d-none">{{ implode(', ', $group['nidns']) }}</td>
-              </tr>
-              @endforeach
-              @endforeach
-            </tbody>
-          </table>
-        </div>
-        <form id="formProses" method="POST" action="{{ route('admin.rekap-usulan-eligible.proses') }}">
-          @csrf
-          <input type="hidden" name="rekap_json" id="rekap_json">
-          <input type="hidden" name="tipe_sptjm" value="{{ request('tipe_sptjm', 'SPTJM') }}">
-          <input type="hidden" name="pencairan_ke" value="{{ request('pencairan_ke') }}">
-          <input type="hidden" name="eligible_span" value="{{ request('Eligible_span')}}">
-          <div class="text-center">
-            <button type="button" class="btn btn-warning px-5 py-2 fw-bold" id="btnProses" style="background-color: #d97706; border-color: #d97706; color: white;">Proses</button>
-          </div>
-        </form>
+        @if ($hasFilter != false)
+            <div class="alert alert-custom-success mb-3" id="alertFilter">
+                <i class="bx bx-check-circle me-2"></i> {{ $success }}
+            </div>
         @endif
-      </div>
+
+        @if (session('error'))
+            <div class="alert alert-danger mb-3">{{ session('error') }}</div>
+        @endif
+
+        <!-- Data Table -->
+        @if ($hasFilter)
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h6 class="mb-0 fw-bold text-dark">Tabel Rekapitulasi</h6>
+            </div>
+
+            <div class="table-responsive text-nowrap mb-4">
+                <table class="table table-hover md2-table text-center" id="rekapTable" style="width:100%">
+                    <thead>
+                        <tr>
+                            <th>NIDN</th>
+                            <th>NUPTK</th>
+                            <th>No Peserta</th>
+                            <th>Nama</th>
+                            <th>Jabatan</th>
+                            <th>Golongan</th>
+                            <th>Masa Kerja</th>
+                            <th>Status Pegawai</th>
+                            <th>Bank</th>
+                            <th>Eligible</th>
+                            <th>Status</th>
+                            <th>Tahun</th>
+                            @foreach ($bulanMap as $bln)
+                                <th>{{ $bln }}</th>
+                            @endforeach
+                            <th>Jumlah Kotor TPD</th>
+                            <th>Jumlah Kotor TKGB</th>
+                            <th>PPH TPD</th>
+                            <th>PPH TKGB</th>
+                            <th>Bersih TPD</th>
+                            <th>Bersih TKGB</th>
+                            <th>No Rekening</th>
+                            <th>NPWP</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+
+            @if (!empty($rekap))
+                <div class="border-top border-secondary my-4"></div>
+                <h5 class="fw-bold text-dark mb-3">Rekapitulasi Usulan untuk Proses</h5>
+                <div class="table-responsive text-nowrap w-100 mb-4">
+                    <table class="table table-hover md2-table text-center" id="tableRekap" style="width:100%">
+                        <thead>
+                            <tr>
+                                <th>Grup</th>
+                                <th>Jumlah Dosen</th>
+                                <th>Bank</th>
+                                <th>Status Pegawai</th>
+                                <th>Tunjangan</th>
+                                <th>Total Kotor</th>
+                                <th>Total Pajak</th>
+                                <th>Total Bersih</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @php $no = 1; @endphp
+                            @foreach ($rekap as $groups)
+                                @foreach ($groups as $group)
+                                    <tr>
+                                        <td>{{ $no++ }}</td>
+                                        <td>{{ $group['jmlh_dosen'] }}</td>
+                                        <td>{{ $group['bank'] }}</td>
+                                        <td>{{ $group['status_pegawai'] }}</td>
+                                        <td>{{ $group['tunjangan'] }}</td>
+                                        <td>{{ number_format($group['total_kotor_semua'], 0, ',', '.') }}</td>
+                                        <td>{{ number_format($group['total_pajak_semua'], 0, ',', '.') }}</td>
+                                        <td>{{ number_format($group['total_bersih_semua'], 0, ',', '.') }}</td>
+                                        <td class="d-none">{{ implode(', ', $group['nidns']) }}</td>
+                                    </tr>
+                                @endforeach
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
+
+                <form id="formProses" method="POST" action="{{ route('admin.rekap-usulan-eligible.proses') }}">
+                    @csrf
+                    <input type="hidden" name="rekap_json" id="rekap_json">
+                    <input type="hidden" name="tipe_sptjm" value="{{ request('tipe_sptjm', 'SPTJM') }}">
+                    <input type="hidden" name="pencairan_ke" value="{{ request('pencairan_ke') }}">
+                    <input type="hidden" name="eligible_span" value="{{ request('Eligible_span')}}">
+                    <div class="text-center mt-3">
+                        <button type="button" class="btn btn-warning px-5 py-2 fw-bold" id="btnProses" style="background-color: #d97706; border-color: #d97706; color: white; border-radius: 8px;">Proses</button>
+                    </div>
+                </form>
+            @endif
+        @else
+            <div class="alert alert-danger mt-3 text-bold px-4 py-3" style="border-radius: 8px;">
+                <i class="bx bx-error-circle me-2"></i> Silakan pilih terlebih dahulu untuk menampilkan data rekapitulasi.
+            </div>
+        @endif
+
     </div>
-  </div>
-  @else
-  <div class="alert alert-danger mt-3 text-bold px-4 py-3" style="border-radius: 8px;">
-    <i class="bx bx-error-circle me-2"></i> Silakan pilih terlebih dahulu untuk menampilkan data rekapitulasi.
-  </div>
-  @endif
 </div>
 </div>
 <script>

@@ -63,18 +63,16 @@ function updateCutoffFileName(input, targetId) {
 
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-<div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
-    <div>
-        <h3 class="fw-bold text-dark mb-1" style="color: #0f2b5c !important;">Manajemen Cut Off Data Sisternas</h3>
-        <p class="text-muted mb-0">Kelola periode pelaporan dan sinkronisasi data dosen dari sistem nasional.</p>
+<div class="md2-page-header">
+    <div class="page-titles">
+        <h3>Manajemen Cut Off Data Sisternas</h3>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="#">Data Sisternas</a></li>
+                <li class="breadcrumb-item active">Cut Off</li>
+            </ol>
+        </nav>
     </div>
-    <nav aria-label="breadcrumb">
-        <ol class="breadcrumb mb-0" style="font-size: 0.85rem;">
-            <li class="breadcrumb-item"><a href="#" style="text-decoration: none; color: #64748b;"><i class="bx bx-home-alt"></i></a></li>
-            <li class="breadcrumb-item"><a href="#" style="text-decoration: none; color: #64748b;">Data Sisternas</a></li>
-            <li class="breadcrumb-item active text-primary fw-bold" aria-current="page">Cut Off</li>
-        </ol>
-    </nav>
 </div>
 
 <div class="row">
@@ -218,31 +216,25 @@ function updateCutoffFileName(input, targetId) {
                     </button>
                     @endif
                 </div>
+            <hr class="my-4">
+
+            <div id="loading" style="display: none;">
+                <div class="spinner"></div>
+                <p>Loading...</p>
             </div>
-        </div>
 
-        <div id="loading" style="display: none;">
-            <div class="spinner"></div>
-            <p>Loading...</p>
-        </div>
+            <div id="table-container"></div> <!-- Kontainer untuk tabel hasil -->
 
-        <div id="table-container"></div> <!-- Kontainer untuk tabel hasil -->
-
-        <!-- coba -->
-        <div class="row">
-            <div class="col-12">
-                <div class="card mb-4 card-cutoff">
-                    <div class="card-header d-flex align-items-center justify-content-between p-4 pb-2">
-                        <h5 class="mb-0 fw-bold text-dark" style="font-size: 1.1rem;">Data Sisternas</h5>
-                        <div>
-                            <button type="button" id="exportBackupBtn" class="btn btn-outline-primary btn-sm fw-semibold" style="border-color: #cbd5e1; color: #475569; display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px; font-size: 0.82rem;">
-                                <i class="bx bx-export"></i> Export Backup ODS
-                            </button>
-                        </div>
-                    </div>
-                    <div class="card-body p-4 pt-0">
-                        <!-- Tabel Data -->
-                        <div class="table-responsive text-nowrap" style="overflow-x: auto;">
+            <div class="d-flex align-items-center justify-content-between pb-2 mb-3">
+                <h5 class="mb-0 fw-bold text-dark" style="font-size: 1.1rem;">Data Sisternas</h5>
+                <div>
+                    <button type="button" id="exportBackupBtn" class="btn btn-outline-primary btn-sm fw-semibold" style="border-color: #cbd5e1; color: #475569; display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px; font-size: 0.82rem;">
+                        <i class="bx bx-export"></i> Export Backup ODS
+                    </button>
+                </div>
+            </div>
+            <!-- Tabel Data -->
+            <div class="table-responsive text-nowrap" style="overflow-x: auto;">
                             <table class="table table-hover md2-table" id="cutoffTable" style="margin-bottom: 0 !important;">
                                 <thead>
                                     <tr>
@@ -269,8 +261,6 @@ function updateCutoffFileName(input, targetId) {
                 </div>
             </div>
         </div>
-    </div>
-</div>
 
 <!-- Modal Edit -->
 <div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">

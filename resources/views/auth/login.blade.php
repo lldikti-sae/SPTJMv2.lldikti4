@@ -131,17 +131,16 @@
 
     /* ── Glassmorphism Card ── */
     .sptjm-card {
-        background: rgba(255, 255, 255, 0.18);
-        backdrop-filter: blur(20px);
-        -webkit-backdrop-filter: blur(20px);
-        border: 1px solid rgba(255, 255, 255, 0.28);
-        border-radius: 24px;
+        background: rgba(255, 255, 255, 0.10) !important;
+        backdrop-filter: blur(20px) !important;
+        -webkit-backdrop-filter: blur(20px) !important;
+        border: 1px solid rgba(255, 255, 255, 0.25) !important;
+        border-radius: 24px !important;
         box-shadow:
-            0 8px 32px rgba(0, 0, 0, 0.18),
-            0 2px 8px rgba(0, 0, 0, 0.10),
-            inset 0 1px 0 rgba(255,255,255,0.35);
-        padding: 2.5rem 2.25rem 2rem;
-        width: 100%;
+            0 20px 40px rgba(0, 0, 0, 0.15),
+            0 2px 8px rgba(0, 0, 0, 0.05) !important;
+        padding: 2.5rem 2.25rem 2rem !important;
+        width: 100% !important;
         max-width: 400px;
     }
 
@@ -172,7 +171,7 @@
     .sptjm-brand-subtitle {
         font-size: 0.75rem;
         font-weight: 400;
-        color: rgba(255, 255, 255, 0.75);
+        color: rgba(255, 255, 255, 0.85);
         margin: 0;
         letter-spacing: 0.02em;
     }
@@ -180,11 +179,11 @@
     /* ── Form Labels ── */
     .sptjm-form-label {
         display: block;
-        font-size: 0.7rem;
+        font-size: 0.72rem;
         font-weight: 700;
-        letter-spacing: 0.1em;
+        letter-spacing: 0.08em;
         text-transform: uppercase;
-        color: rgba(255, 255, 255, 0.85);
+        color: #ffffff;
         margin-bottom: 0.4rem;
     }
 
@@ -205,7 +204,7 @@
         left: 14px;
         top: 50%;
         transform: translateY(-50%);
-        color: #6B7280;
+        color: #93c5fd;
         font-size: 1rem;
         z-index: 2;
         pointer-events: none;
@@ -216,7 +215,7 @@
         right: 14px;
         top: 50%;
         transform: translateY(-50%);
-        color: #6B7280;
+        color: #93c5fd;
         font-size: 1rem;
         z-index: 2;
         cursor: pointer;
@@ -225,28 +224,28 @@
     .sptjm-input {
         width: 100%;
         height: 48px;
-        background: rgba(255, 255, 255, 0.92) !important;
-        border: 1.5px solid rgba(255, 255, 255, 0.6) !important;
+        background: rgba(255, 255, 255, 0.05) !important;
+        border: 1.5px solid #60a5fa !important;
         border-radius: 12px !important;
         padding: 0 42px 0 42px !important;
         font-size: 0.875rem !important;
         font-weight: 400 !important;
-        color: #374151 !important;
+        color: #ffffff !important;
         transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
-        -webkit-text-fill-color: #374151 !important;
+        -webkit-text-fill-color: #ffffff !important;
         outline: none;
-        box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+        box-shadow: none;
     }
 
     .sptjm-input::placeholder {
-        color: #9CA3AF !important;
+        color: rgba(255, 255, 255, 0.5) !important;
         opacity: 1 !important;
     }
 
     .sptjm-input:focus {
-        background: rgba(255, 255, 255, 1) !important;
-        border-color: rgba(255, 255, 255, 0.9) !important;
-        box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.25), 0 1px 4px rgba(0,0,0,0.08) !important;
+        background: rgba(255, 255, 255, 0.1) !important;
+        border-color: #ffffff !important;
+        box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.2) !important;
         outline: none !important;
     }
 
@@ -254,31 +253,39 @@
     .sptjm-select {
         width: 100%;
         height: 48px;
-        background: rgba(255, 255, 255, 0.92) !important;
-        border: 1.5px solid rgba(255, 255, 255, 0.6) !important;
+        background: #ffffff !important;
+        border: 1.5px solid #ffffff !important;
         border-radius: 12px !important;
         padding: 0 42px 0 42px !important;
         font-size: 0.875rem !important;
         font-weight: 400 !important;
-        color: #374151 !important;
+        color: #1e293b !important;
         transition: border-color 0.2s, box-shadow 0.2s;
         -webkit-appearance: none;
         appearance: none;
         cursor: pointer;
         outline: none;
-        box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+        box-shadow: inset 0 1px 2px rgba(0,0,0,0.02);
     }
 
     .sptjm-select:focus {
-        background: rgba(255, 255, 255, 1) !important;
-        border-color: rgba(255, 255, 255, 0.9) !important;
-        box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.25), 0 1px 4px rgba(0,0,0,0.08) !important;
+        background: #ffffff !important;
+        border-color: #ffffff !important;
+        box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.3) !important;
         outline: none !important;
     }
 
     .sptjm-select option {
         background: #ffffff;
-        color: #374151;
+        color: #1e293b;
+    }
+
+    /* Target icons inside the select wrapper specifically */
+    .sptjm-input-wrapper .sptjm-select ~ .sptjm-input-icon-right {
+        color: #475569 !important;
+    }
+    .sptjm-input-wrapper:has(.sptjm-select) .sptjm-input-icon {
+        color: #475569 !important;
     }
 
     /* Password toggle */
@@ -332,7 +339,7 @@
     .sptjm-card-footer {
         text-align: center;
         margin-top: 1.5rem;
-        font-size: 0.7rem;
+        font-size: 0.72rem;
         color: rgba(255, 255, 255, 0.55);
         letter-spacing: 0.01em;
     }

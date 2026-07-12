@@ -1,4 +1,4 @@
-﻿@extends('layouts/contentNavbarLayout')
+@extends('layouts/contentNavbarLayout')
 
 @section('title', 'SPTJM Online')
 
@@ -103,58 +103,57 @@
     </div>
     @endif
 
-    <!-- Filter Card -->
+    <!-- Card Utama -->
     <div class="card card-laporan mb-4">
-        <div class="card-body p-4">
-            <form method="GET" action="{{ url('admin/laporan-keuangan') }}" id="filterForm">
-                <div class="row g-3 align-items-end">
-                    <!-- Pilih Perguruan Tinggi -->
-                    <div class="col-md-4">
-                        <label for="basic-default-kodept" class="form-label fw-bold text-uppercase mb-1"
-                            style="font-size: 0.68rem; letter-spacing: 0.06em; color: #64748b;">Pilih Perguruan Tinggi</label>
-                        <select class="form-select" id="basic-default-kodept" name="kode_pt" data-select2-kodept>
-                            <option value="">- Pilih Kode PT (opsional) -</option>
-                            <option value="Semua" {{ $kode_pt === 'Semua' ? 'selected' : '' }}>Semua</option>
-                            @foreach ($ptsList as $pt)
-                            <option value="{{ $pt->kode_pts }}" {{ $kode_pt === (string) $pt->kode_pts ? 'selected' : '' }}>
-                                {{ $pt->kode_pts }} - {{ $pt->nama_pts }}
-                            </option>
-                            @endforeach
-                        </select>
+        <div class="card-body px-4 pb-4 pt-0">
+            
+            <!-- Filter Section -->
+            <div class="pt-3 pb-3 mb-3 border-bottom">
+                <form method="GET" action="{{ url('admin/laporan-keuangan') }}" id="filterForm">
+                    <div class="row g-3 align-items-end">
+                        <!-- Pilih Perguruan Tinggi -->
+                        <div class="col-md-4">
+                            <label for="basic-default-kodept" class="form-label fw-bold text-uppercase mb-1"
+                                style="font-size: 0.68rem; letter-spacing: 0.06em; color: #64748b;">Pilih Perguruan Tinggi</label>
+                            <select class="form-select" id="basic-default-kodept" name="kode_pt" data-select2-kodept>
+                                <option value="">- Pilih Kode PT (opsional) -</option>
+                                <option value="Semua" {{ $kode_pt === 'Semua' ? 'selected' : '' }}>Semua</option>
+                                @foreach ($ptsList as $pt)
+                                <option value="{{ $pt->kode_pts }}" {{ $kode_pt === (string) $pt->kode_pts ? 'selected' : '' }}>
+                                    {{ $pt->kode_pts }} - {{ $pt->nama_pts }}
+                                </option>
+                                @endforeach
+                            </select>
+                        </div>
+
+                        <!-- Cari NIDN / NUPTK -->
+                        <div class="col-md-4">
+                            <label for="basic-default-nidn" class="form-label fw-bold text-uppercase mb-1"
+                                style="font-size: 0.68rem; letter-spacing: 0.06em; color: #64748b;">Cari NIDN / NUPTK</label>
+                            <input type="text" class="form-control" id="basic-default-nidn" name="nidn"
+                                placeholder="Masukkan NIDN/NUPTK..." value="{{ request('nidn') }}"
+                                style="border: 1.5px solid #cbd5e1; border-radius: 8px; font-size: 0.9rem;">
+                        </div>
+
+                        <!-- Tombol Tampilkan -->
+                        <div class="col-md-auto d-flex gap-2">
+                            <button type="submit" class="btn fw-semibold d-flex align-items-center gap-2" name="submit"
+                                style="background-color: #0f2b5c; color: #ffffff; border-color: #0f2b5c; border-radius: 8px; padding: 9px 20px; font-size: 0.875rem; white-space: nowrap;">
+                                <i class="bx bx-search" style="font-size: 1rem;"></i> Tampilkan Data
+                            </button>
+
+                            @if (request()->filled('kode_pt') || request()->filled('nidn'))
+                            <a href="{{ route('laporan-keuangan-admin.export', ['kode_pt' => request('kode_pt'), 'nidn' => request('nidn')]) }}"
+                                class="btn fw-semibold d-flex align-items-center gap-2"
+                                style="background-color: #10b981; color: #ffffff; border-color: #10b981; border-radius: 8px; padding: 9px 20px; font-size: 0.875rem; white-space: nowrap;">
+                                <i class="bx bx-download" style="font-size: 1rem;"></i> Export XLS
+                            </a>
+                            @endif
+                        </div>
                     </div>
+                </form>
+            </div>
 
-                    <!-- Cari NIDN / NUPTK -->
-                    <div class="col-md-4">
-                        <label for="basic-default-nidn" class="form-label fw-bold text-uppercase mb-1"
-                            style="font-size: 0.68rem; letter-spacing: 0.06em; color: #64748b;">Cari NIDN / NUPTK</label>
-                        <input type="text" class="form-control" id="basic-default-nidn" name="nidn"
-                            placeholder="Masukkan NIDN/NUPTK..." value="{{ request('nidn') }}"
-                            style="border: 1.5px solid #cbd5e1; border-radius: 8px; font-size: 0.9rem;">
-                    </div>
-
-                    <!-- Tombol Tampilkan -->
-                    <div class="col-md-auto d-flex gap-2">
-                        <button type="submit" class="btn fw-semibold d-flex align-items-center gap-2" name="submit"
-                            style="background-color: #0f2b5c; color: #ffffff; border-color: #0f2b5c; border-radius: 8px; padding: 9px 20px; font-size: 0.875rem; white-space: nowrap;">
-                            <i class="bx bx-search" style="font-size: 1rem;"></i> Tampilkan Data
-                        </button>
-
-                        @if (request()->filled('kode_pt') || request()->filled('nidn'))
-                        <a href="{{ route('laporan-keuangan-admin.export', ['kode_pt' => request('kode_pt'), 'nidn' => request('nidn')]) }}"
-                            class="btn fw-semibold d-flex align-items-center gap-2"
-                            style="background-color: #10b981; color: #ffffff; border-color: #10b981; border-radius: 8px; padding: 9px 20px; font-size: 0.875rem; white-space: nowrap;">
-                            <i class="bx bx-download" style="font-size: 1rem;"></i> Export XLS
-                        </a>
-                        @endif
-                    </div>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <!-- Table -->
-    <div class="card card-laporan mb-4">
-        <div class="card-body p-0 pt-0">
             <div class="table-responsive text-nowrap">
 
 

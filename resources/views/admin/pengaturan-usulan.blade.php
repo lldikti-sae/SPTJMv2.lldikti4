@@ -1,4 +1,4 @@
-﻿@extends('layouts/contentNavbarLayout')
+@extends('layouts/contentNavbarLayout')
 
 @section('title', 'SPTJM Online')
 
@@ -94,12 +94,10 @@
                             </div>
                         </div>
                     </form>
-                </div>
-            </div>
 
-            <!-- TABEL & MODAL -->
-            <div class="card card-usulan mb-4">
-                <div class="card-body p-4">
+                    <hr class="my-4">
+
+                    <!-- TABEL & MODAL -->
                     <div class="table-responsive text-nowrap">
                         <table id="pengaturanUsulanTable" class="table table-hover md2-table" style="margin-bottom: 0 !important;">
                             <thead>
