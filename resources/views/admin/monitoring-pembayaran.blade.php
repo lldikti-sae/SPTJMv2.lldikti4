@@ -137,7 +137,7 @@ $months = [
       <div class="card shadow-none border mb-0"><div class="card-body py-1 px-2">
         <div class="d-flex align-items-center">
           <span class="avatar-initial rounded bg-label-danger me-2" style="width:28px;height:28px;display:flex;align-items:center;justify-content:center;font-size:14px;"><i class="bx bx-upload"></i></span>
-          <div><small class="text-muted" style="font-size:10px;">Total Kewajiban (OUT)</small><br><strong id="sum-kewajiban" style="font-size:13px;">Rp {{ number_format($sKewajiban,0,',','.') }}</strong></div>
+          <div><span style="font-size:11px; font-weight:700; color:#1a1a2e; display:block;">Total Kewajiban (OUT)</span><strong id="sum-kewajiban" style="font-size:13px; color:#1a1a2e !important; font-weight:800 !important;">Rp {{ number_format($sKewajiban,0,',','.') }}</strong></div>
         </div>
       </div></div>
     </div>
@@ -145,7 +145,7 @@ $months = [
       <div class="card shadow-none border mb-0"><div class="card-body py-1 px-2">
         <div class="d-flex align-items-center">
           <span class="avatar-initial rounded bg-label-info me-2" style="width:28px;height:28px;display:flex;align-items:center;justify-content:center;font-size:14px;"><i class="bx bx-download"></i></span>
-          <div><small class="text-muted" style="font-size:10px;">Total Dibayar (IN)</small><br><strong id="sum-dibayar" style="font-size:13px;">Rp {{ number_format($sDibayar,0,',','.') }}</strong></div>
+          <div><span style="font-size:11px; font-weight:700; color:#1a1a2e; display:block;">Total Dibayar (IN)</span><strong id="sum-dibayar" style="font-size:13px; color:#1a1a2e !important; font-weight:800 !important;">Rp {{ number_format($sDibayar,0,',','.') }}</strong></div>
         </div>
       </div></div>
     </div>
@@ -153,7 +153,7 @@ $months = [
       <div class="card shadow-none border mb-0"><div class="card-body py-1 px-2">
         <div class="d-flex align-items-center">
           <span id="sum-selisih-icon" class="avatar-initial rounded {{ $sSelisih == 0 ? 'bg-label-success' : 'bg-label-danger' }} me-2" style="width:28px;height:28px;display:flex;align-items:center;justify-content:center;font-size:14px;"><i class="bx bx-transfer"></i></span>
-          <div><small class="text-muted" style="font-size:10px;">Total Selisih</small><br><strong id="sum-selisih" style="font-size:13px;" class="{{ $sSelisih == 0 ? 'text-success' : 'text-danger' }}">Rp {{ number_format($sSelisih,0,',','.') }}</strong></div>
+          <div><span style="font-size:11px; font-weight:700; color:#1a1a2e; display:block;">Total Selisih</span><strong id="sum-selisih" style="font-size:13px; color:#1a1a2e !important; font-weight:800 !important;" class="{{ $sSelisih == 0 ? 'text-success' : 'text-danger' }}">Rp {{ number_format($sSelisih,0,',','.') }}</strong></div>
         </div>
       </div></div>
     </div>

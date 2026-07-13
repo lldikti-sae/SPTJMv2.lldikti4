@@ -1,4 +1,4 @@
-﻿@extends('layouts/contentNavbarLayout')
+@extends('layouts/contentNavbarLayout')
 
 @section('title', 'SPTJM Online - Hapus Dosen Tidak Aktif')
 
@@ -162,7 +162,7 @@
             </select>
         </div>
 
-        <div class="md-table-wrap table-responsive text-nowrap">
+        <div class="md-table-wrap">
             <table id="dosenTable" class="table table-hover" style="width: 100%;">
                 <thead>
                     <tr>
@@ -213,8 +213,7 @@ $(document).ready(function() {
         serverSide: true,
         processing: true,
         responsive: true,
-        dom: "<'md-toolbar'<'entries-wrap'l><'search-wrap'f>>" +
-             "rt<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
+        dom: "<'md-toolbar'<'entries-wrap'l><'search-wrap'f>><'table-responsive text-nowrap't><'row dt-bottom-row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
         ajax: {
             url: "{{ route('admin.data-dosen.tidak-aktif.data') }}",
             type: 'POST',

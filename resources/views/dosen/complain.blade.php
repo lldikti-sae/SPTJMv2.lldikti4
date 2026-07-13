@@ -72,7 +72,7 @@
 <div class="card" style="width: 100%; padding: 10px;">
   <h5 class="card-header text-start p-2">Complain</h5>
   <hr>
-  <div class="table-responsive text-nowrap">
+  <div>
     <div class="d-flex justify-content-end align-items-center mb-3 px-3">
       <button class="btn btn-sm btn-primary" type="button" id="addComplainBtn" data-bs-toggle="modal" data-bs-target="#modalComplainForm">
         <i class="bx bx-plus bx-sm me-1"></i> Buat Complain
@@ -203,7 +203,7 @@
       processing: true,
       serverSide: true,
       responsive: true,
-      dom: "<'dt-toolbar'<'dt-search-wrap'f>>rt<'dt-bottom-row'ip>",
+      dom: "<'dt-toolbar'<'dt-search-wrap'f>><'table-responsive text-nowrap't><'dt-bottom-row'ip>",
       ajax: {
         url: "{{ route('dosen.complain') }}",
         error: function(xhr) {

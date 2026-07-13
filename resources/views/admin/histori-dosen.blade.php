@@ -1,4 +1,4 @@
-﻿@extends('layouts/contentNavbarLayout')
+@extends('layouts/contentNavbarLayout')
 
 @section('title', 'SPTJM Online')
 
@@ -40,7 +40,7 @@
         <!-- DataTables will inject length menu and search filter here via DOM option -->
 
         {{-- Table --}}
-        <div class="md-table-wrap table-responsive text-nowrap">
+        <div class="md-table-wrap">
             <table class="table table-hover" id="dosenTable" style="width: 100%;">
                 <thead>
                     <tr>
@@ -85,8 +85,7 @@
         },
         lengthChange: true, // Use native length
         searching: true, // Use native search
-        dom: "<'md-toolbar'<'entries-wrap'l><'search-wrap'f>>" +
-             "rt<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
+        dom: "<'md-toolbar'<'entries-wrap'l><'search-wrap'f>><'table-responsive text-nowrap't><'row dt-bottom-row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
         order: [[6, 'desc']],
         columns: [
           { data: 'nidn', name: 'nidn', className: 'text-start' },

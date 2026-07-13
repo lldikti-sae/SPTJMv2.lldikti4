@@ -9,7 +9,7 @@
 <div class="card" style="width: 100%; padding: 10px;">
   <h5 class="card-header text-start p-2">Data Dosen PTS</h5>
   <hr>
-  <div class="table-responsive text-nowrap">
+  <div>
     <table class="table table-sm table-hover table-bordered" id="dosenTable">
       <thead style="text-align: center; background-color: #dbdee0;">
         <tr>
@@ -43,6 +43,7 @@
       serverSide: true,
       responsive: true,
       searching: true,
+      dom: "<'md-toolbar'<'entries-wrap'l><'search-wrap'f>><'table-responsive text-nowrap't><'row dt-bottom-row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
       ajax: {
         url: "{{ route('pic.lihat-data-dosen') }}"
       },

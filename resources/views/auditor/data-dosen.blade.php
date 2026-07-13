@@ -1,4 +1,4 @@
-﻿@extends('layouts/contentNavbarLayoutAuditor')
+@extends('layouts/contentNavbarLayoutAuditor')
 
 @section('title', 'SPTJM Online')
 
@@ -17,7 +17,7 @@
       </div>
     @endif
 
-    <div class="table-responsive text-nowrap">
+    <div>
       <table class="table table-sm table-hover" id="dosenTable">
         <thead style="background-color: #dbdee0;">
           <tr>
@@ -48,8 +48,7 @@
           paging: true,
           deferRender: true,
           lengthChange: true,
-          dom: "<'row align-items-center mb-3'<'col-sm-12 col-md-6'l><'col-sm-12 col-md-6 d-flex justify-content-md-end justify-content-start mt-2 mt-md-0'f>>" +
-               "rt<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
+          dom: "<'md-toolbar'<'entries-wrap'l><'search-wrap'f>><'table-responsive text-nowrap't><'row dt-bottom-row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
           ajax: {
             url: '{{ route('auditor.data-dosen') }}'
           },

@@ -10,7 +10,7 @@
   <h5 class="card-header text-start p-2">Lihat Data Dosen</h5>
   <hr>
 
-  <div class="table-responsive text-nowrap">
+  <div>
     <table class="table table-sm table-hover" id="dosenTable">
       <thead style="background-color: #dbdee0;">
         <tr>
@@ -35,6 +35,7 @@
     const table = $('#dosenTable').DataTable({
       processing: true,
       serverSide: true,
+      dom: "<'md-toolbar'<'entries-wrap'l><'search-wrap'f>><'table-responsive text-nowrap't><'row dt-bottom-row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
       ajax: {
         url: '{{ route("pts.lihat-data-dosen") }}'
       },

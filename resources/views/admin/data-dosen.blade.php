@@ -106,7 +106,7 @@
         <!-- DataTables will inject length menu and search filter here via DOM option -->
 
         {{-- Table --}}
-        <div class="md-table-wrap table-responsive text-nowrap">
+        <div class="md-table-wrap">
             <table class="table table-hover" id="dosenTable" style="width: 100%;">
                 <thead>
                     <tr>
@@ -582,8 +582,7 @@ document.addEventListener('DOMContentLoaded', function() {
         responsive: false,
         paging: true,
         deferRender: true,
-        dom: "<'md-toolbar'<'entries-wrap'l><'search-wrap'f>>" +
-             "rt<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
+        dom: "<'md-toolbar'<'entries-wrap'l><'search-wrap'f>><'table-responsive text-nowrap't><'row dt-bottom-row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
         ajax: {
             url: '{{ route("admin.data-dosen") }}'
         },

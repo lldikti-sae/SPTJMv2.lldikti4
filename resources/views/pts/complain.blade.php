@@ -72,7 +72,7 @@
 <div class="card" style="width: 100%; padding: 10px;">
   <h5 class="card-header text-start p-2">Complain</h5>
   <hr>
-  <div class="table-responsive text-nowrap">
+  <div>
     <!-- 'Buat Complain' button hidden for PTS -->
 
     <table class="table table-sm table-hover" id="complainTable">
@@ -199,7 +199,7 @@
       processing: true,
       serverSide: true,
       responsive: true,
-      dom: "<'dt-toolbar'<'dt-search-wrap'f>>rt<'dt-bottom-row'ip>",
+      dom: "<'dt-toolbar'<'dt-search-wrap'f>><'table-responsive text-nowrap't><'dt-bottom-row'ip>",
       ajax: {
         url: "{{ route('pts.complain') }}",
         error: function(xhr) {

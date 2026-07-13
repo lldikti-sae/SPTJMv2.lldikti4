@@ -26,8 +26,8 @@ table.dataTable tbody td,
 
 /* Paksa semua child element di dalam sel tabel:
    normal + hitam, kecuali badge & icon btn */
-table.dataTable tbody td *:not(.badge):not([class*="sptjm-btn"]):not([class*="sptjm-icon"]):not([class*="badge"]):not(.btn):not(i),
-.table tbody td *:not(.badge):not([class*="sptjm-btn"]):not([class*="sptjm-icon"]):not([class*="badge"]):not(.btn):not(i) {
+table.dataTable tbody td *:not(.badge):not([class*="sptjm-btn"]):not([class*="sptjm-icon"]):not([class*="badge"]):not(.btn):not(i):not(.bx):not(.tf-icons),
+.table tbody td *:not(.badge):not([class*="sptjm-btn"]):not([class*="sptjm-icon"]):not([class*="badge"]):not(.btn):not(i):not(.bx):not(.tf-icons) {
     font-weight: 400 !important;
     color: #111827 !important;
 }
@@ -418,8 +418,8 @@ table.dataTable thead th,
 .sptjm-btn-print { background-color: #e8f7fd !important; color: #0d9488 !important; }
 .sptjm-btn-print:hover { background-color: #c4eefa !important; color: #0a7a6e !important; }
 
-.sptjm-btn-view { background-color: #f0e8fe !important; color: #7c3aed !important; }
-.sptjm-btn-view:hover { background-color: #e0cefc !important; color: #5b21b6 !important; }
+.sptjm-btn-view { background-color: #e8f0fe !important; color: #1a56db !important; }
+.sptjm-btn-view:hover { background-color: #d0e1fd !important; color: #1a56db !important; }
 
 .sptjm-btn-info { background-color: #fef9e7 !important; color: #d97706 !important; }
 .sptjm-btn-info:hover { background-color: #fef3c7 !important; color: #b45309 !important; }

@@ -72,7 +72,7 @@
 <div class="card" style="width: 100%; padding: 10px;">
   <h5 class="card-header text-start p-2">Complain (PIC)</h5>
   <hr>
-  <div class="table-responsive text-nowrap">
+  <div>
     <div class="d-flex gap-2 mb-2 align-items-center">
       <label class="mb-0"><strong>Status:</strong></label>
       <select id="filterStatus" class="form-select form-select-sm" style="width:220px;">
@@ -181,7 +181,7 @@
       processing: true,
       serverSide: true,
       responsive: true,
-      dom: "<'dt-toolbar'<'dt-search-wrap'f>>rt<'dt-bottom-row'ip>",
+      dom: "<'dt-toolbar'<'dt-search-wrap'f>><'table-responsive text-nowrap't><'dt-bottom-row'ip>",
       ajax: {
         url: "{{ route('pic.complain.index') }}",
         data: function (d) {

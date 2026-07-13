@@ -106,7 +106,7 @@
             </div>
         </div>
 
-        <div class="table-responsive text-nowrap">
+        <div>
             <table class="table table-hover md2-table text-center" id="complainTable" style="width:100%">
                 <thead>
                     <tr>
@@ -193,7 +193,7 @@
       processing: true,
       serverSide: true,
       responsive: true,
-      dom: "<'dt-toolbar'<'dt-search-wrap'f>>rt<'dt-bottom-row'ip>",
+      dom: "<'dt-toolbar'<'dt-search-wrap'f>><'table-responsive text-nowrap't><'dt-bottom-row'ip>",
       ajax: {
         url: "{{ route('admin.complain.index') }}",
         data: function (d) {
