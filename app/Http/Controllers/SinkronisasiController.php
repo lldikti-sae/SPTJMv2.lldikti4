@@ -86,6 +86,9 @@ class SinkronisasiController extends Controller
         }
 
         // Map variations into canonical keys used in c_grade_serdos
+        if (strpos($text, 'guru besar 1050') !== false) {
+            return 'Guru Besar 1050';
+        }
         if (strpos($text, 'guru besar') !== false || strpos($text, 'profesor') !== false) {
             return 'Guru Besar';
         }
@@ -219,8 +222,8 @@ class SinkronisasiController extends Controller
                     ->orWhere(function ($q) use ($nidn) {
                         // re-apply identifier in this OR group to avoid widening results
                         $q->whereRaw('(TRIM(NIDN) = ? OR TRIM(NUPTK) = ?)', [$nidn, $nidn])
-                          ->whereNotNull('TMT_Pangkat_Golongan')
-                          ->where('TMT_Pangkat_Golongan', '!=', '');
+                          ->whereNotNull('TMT_Inpassing_Akhir')
+                          ->where('TMT_Inpassing_Akhir', '!=', '');
                     })
                     ->orderByDesc('Tahun_Versi')
                     ;
@@ -246,15 +249,15 @@ class SinkronisasiController extends Controller
             $masaMismatch = array_fill(0, 12, false);
             $golMismatch = array_fill(0, 12, false);
 
-            // Prefer the same fallback as sync (TMT_JAD_Pertama, else TMT_Pangkat_Golongan)
-            $tmtPertamaRaw = $row->TMT_JAD_Pertama ?? ($row->TMT_Pangkat_Golongan ?? null);
+            // Prefer the same fallback as sync (TMT_JAD_Pertama, else TMT_Inpassing_Akhir)
+            $tmtPertamaRaw = $row->TMT_JAD_Pertama ?? ($row->TMT_Inpassing_Akhir ?? null);
             if ($tmtPertamaRaw !== null && trim((string) $tmtPertamaRaw) === '') {
                 $tmtPertamaRaw = null;
             }
             if (!$tmtPertamaRaw) {
                 $tryFetchTmtRow();
                 if ($tmtRow) {
-                    $tmtPertamaRaw = $tmtRow->TMT_JAD_Pertama ?? ($tmtRow->TMT_Pangkat_Golongan ?? null);
+                    $tmtPertamaRaw = $tmtRow->TMT_JAD_Pertama ?? ($tmtRow->TMT_Inpassing_Akhir ?? null);
                 }
             }
             $tmtPertama = $tmtPertamaRaw ? $this->parseIndoDatePreferDMY((string) $tmtPertamaRaw) : null;
@@ -402,7 +405,7 @@ class SinkronisasiController extends Controller
                 ? filter_var($request->input('update_gol'), FILTER_VALIDATE_BOOLEAN)
                 : true;
 
-            $tmtPertamaRaw = $row->TMT_JAD_Pertama ?? $row->TMT_Pangkat_Golongan ?? null;
+            $tmtPertamaRaw = $row->TMT_JAD_Pertama ?? $row->TMT_Inpassing_Akhir ?? null;
             if ($tmtPertamaRaw !== null && trim((string) $tmtPertamaRaw) === '') {
                 $tmtPertamaRaw = null;
             }
@@ -415,18 +418,18 @@ class SinkronisasiController extends Controller
                     })
                     ->orWhere(function ($q) use ($identifier) {
                         $q->whereRaw('(TRIM(NIDN) = ? OR TRIM(NUPTK) = ?)', [$identifier, $identifier])
-                          ->whereNotNull('TMT_Pangkat_Golongan')
-                          ->where('TMT_Pangkat_Golongan', '!=', '');
+                          ->whereNotNull('TMT_Inpassing_Akhir')
+                          ->where('TMT_Inpassing_Akhir', '!=', '');
                     })
                     ->orderByDesc('Tahun_Versi')
                     ->first();
                 if ($tmtRow) {
-                    $tmtPertamaRaw = $tmtRow->TMT_JAD_Pertama ?? ($tmtRow->TMT_Pangkat_Golongan ?? null);
+                    $tmtPertamaRaw = $tmtRow->TMT_JAD_Pertama ?? ($tmtRow->TMT_Inpassing_Akhir ?? null);
                 }
             }
             $start = $tmtPertamaRaw ? $this->parseIndoDatePreferDMY((string) $tmtPertamaRaw) : null;
             if ($updateMasaRequested && !$start) {
-                Log::warning('syncGolmasa: TMT_JAD_Pertama/TMT_Pangkat_Golongan missing or unparseable for ' . $identifier, ['tmt' => $tmtPertamaRaw]);
+                Log::warning('syncGolmasa: TMT_JAD_Pertama/TMT_Inpassing_Akhir missing or unparseable for ' . $identifier, ['tmt' => $tmtPertamaRaw]);
             }
 
             $tmtAkhirRaw = $row->TMT_JAD_Akhir ?? null;

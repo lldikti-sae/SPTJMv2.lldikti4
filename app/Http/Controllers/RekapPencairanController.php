@@ -95,7 +95,7 @@ class RekapPencairanController extends Controller
 
         // filter jika jenis prosesnya TKGB
         if ($prosesCair->jenis == 'TKGB') {
-          $q->where('Jabatan1', 'Guru Besar');
+          $q->whereIn('Jabatan1', ['Guru Besar', 'Guru Besar 1050']);
         }
         return $q;
       };

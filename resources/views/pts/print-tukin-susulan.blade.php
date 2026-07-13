@@ -112,7 +112,7 @@
         @php
           $kelas='-'; $nilai='-';
           $jab = $row->jabatan;
-          if ($jab === 'Guru Besar') { $kelas='15'; $nilai='Rp. 19.280.000'; }
+          if (in_array($jab, ['Guru Besar', 'Guru Besar 1050'])) { $kelas='15'; $nilai='Rp. 19.280.000'; }
           elseif ($jab === 'Lektor Kepala') { $kelas='13'; $nilai='Rp. 10.936.000'; }
           elseif ($jab === 'Lektor') { $kelas='11'; $nilai='Rp. 8.757.600'; }
           elseif ($jab === 'Asisten Ahli') { $kelas='9'; $nilai='Rp. 5.079.200'; }

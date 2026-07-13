@@ -326,6 +326,7 @@ class UsulanTukinSusulanController extends Controller
         $TanggalUsulan = now()->toDateString();
         $mapNilai = [
             'Guru Besar' => ['kelas' => '15', 'nilai' => 19280000.00],
+            'Guru Besar 1050' => ['kelas' => '15', 'nilai' => 19280000.00],
             'Lektor Kepala' => ['kelas' => '13', 'nilai' => 10936000.00],
             'Lektor' => ['kelas' => '11', 'nilai' => 8757600.00],
             'Asisten Ahli' => ['kelas' => '9', 'nilai' => 5079200.00],

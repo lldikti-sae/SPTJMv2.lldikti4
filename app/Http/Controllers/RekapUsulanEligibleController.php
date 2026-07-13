@@ -134,7 +134,7 @@ class RekapUsulanEligibleController extends Controller
 
       if ($tunjangan != "Semua") {
         if ($tunjangan === "tkgb1") {
-          $query->where('Jabatan12', '=', 'Guru Besar');
+          $query->whereIn('Jabatan12', ['Guru Besar', 'Guru Besar 1050']);
           // Jika pencairan_ke spesifik (1..12), cari TKGB pada bulan itu.
           if ($pencairan_ke != "Semua") {
             $query->where(function ($q) use ($bulanPendek, $pencairan_ke) {
@@ -379,7 +379,7 @@ class RekapUsulanEligibleController extends Controller
 
     if ($tunjangan != "Semua") {
       if ($tunjangan === "tkgb1") {
-        $query->where('Jabatan12', '=', 'Guru Besar');
+        $query->whereIn('Jabatan12', ['Guru Besar', 'Guru Besar 1050']);
         if ($pencairan_ke != "Semua") {
           $query->where(function ($q) use ($bulanPendek, $pencairan_ke) {
             for ($i = 1; $i <= 12; $i++) {
@@ -486,7 +486,6 @@ class RekapUsulanEligibleController extends Controller
       $row[] = (string) $item->Sertifikat_Dosen;
       $row[] = (string) $item->Nama;
 
-      // jabatan/gol/tahun follow session month
       if ($bulanSession >= 12) {
         $row[] = (string) $item->Jabatan12;
         $row[] = (string) $item->Gol12;
