@@ -452,15 +452,18 @@ class SkppController extends Controller
         ]);
 
         // Cek kembali di sisi server agar tidak ada duplikasi jika tombol di-klik dua kali atau by-pass
-        $existing = DB::table('i_complain')
-            ->where('pelapor_tipe', 'admin')
-            ->whereIn('jenis_pengajuan', ['Surat Keterangan', 'Surat SKPP'])
-            ->where(function ($q) use ($request) {
-                if ($request->nidn) $q->where('nidn', $request->nidn);
-                if ($request->nuptk) $q->orWhere('nuptk', $request->nuptk);
-            })
-            ->whereIn('status', ['open', 'setuju', 'menunggu_konfirmasi'])
-            ->first();
+        $existing = false;
+        if (!empty($request->nidn) || !empty($request->nuptk)) {
+            $existing = DB::table('i_complain')
+                ->where('pelapor_tipe', 'admin')
+                ->whereIn('jenis_pengajuan', ['Surat Keterangan', 'Surat SKPP'])
+                ->where(function ($q) use ($request) {
+                    if (!empty($request->nidn)) $q->where('nidn', $request->nidn);
+                    if (!empty($request->nuptk)) $q->orWhere('nuptk', $request->nuptk);
+                })
+                ->whereIn('status', ['open', 'setuju', 'menunggu_konfirmasi'])
+                ->first();
+        }
 
         if ($existing) {
             return response()->json(['success' => false, 'message' => 'Gagal: Dosen ini sudah dibuatkan pengajuan sebelumnya.']);
