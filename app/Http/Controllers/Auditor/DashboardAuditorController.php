@@ -162,14 +162,14 @@ class DashboardAuditorController extends Controller
           ->orWhere(function ($query) {
             $query
               ->where('usia', '>=', 70)
-              ->where('jabatan12', 'Guru Besar');
+              ->whereIn('jabatan12', ['Guru Besar', 'Guru Besar 1050']);
           });
       })
       ->get();
 
     $filteredDosenPensiun = [];
     foreach ($dosenPensiun as $dosen) {
-      $pensiunAge = $dosen->jabatan_terakhir == 'Guru Besar' ? 70 : 65;
+      $pensiunAge = in_array($dosen->jabatan_terakhir, ['Guru Besar', 'Guru Besar 1050']) ? 70 : 65;
       $tanggalLahir = $this->parseTanggalLahir($dosen->Tanggal_Lahir);
       if ($tanggalLahir) {
         $tmtPensiun = $tanggalLahir

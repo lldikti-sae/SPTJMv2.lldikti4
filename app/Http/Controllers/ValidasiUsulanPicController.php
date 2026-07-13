@@ -828,7 +828,7 @@ class ValidasiUsulanPicController extends Controller
       }
 
       foreach ($dataDosen as $d) {
-        $isGuruBesar = strtolower(trim($d->Jabatan)) === 'guru besar';
+        $isGuruBesar = in_array(strtolower(trim($d->Jabatan)), ['guru besar', 'guru besar 1050']);
         $gajiDosen = (float) $d->Gaji;
         $golKey = isset($d->Gol) ? trim((string) $d->Gol) : '';
         $pajak = (float) ($pajakMap[$golKey] ?? 0);
