@@ -1,4 +1,4 @@
-@extends('layouts/contentNavbarLayoutPts')
+﻿@extends('layouts/contentNavbarLayoutPts')
 
 @section('title', 'SPTJM Online')
 
@@ -36,7 +36,6 @@
             processing: true,
             serverSide: true,
             paging: true,
-            pageLength: 10,
             lengthMenu: [
                 [10, 25, 50, 100, 500],
                 [10, 25, 50, 100, 500]
@@ -82,8 +81,8 @@
                 paginate: {
                     first: "Awal",
                     last: "Akhir",
-                    next: "→",
-                    previous: "←",
+                    next: "â†’",
+                    previous: "â†",
                 },
                 zeroRecords: "Data tidak ditemukan",
                 infoEmpty: "Tidak ada data tersedia",

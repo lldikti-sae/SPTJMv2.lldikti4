@@ -94,12 +94,10 @@
                             </div>
                         </div>
                     </form>
-                </div>
-            </div>
 
-            <!-- TABEL & MODAL -->
-            <div class="card card-usulan mb-4">
-                <div class="card-body p-4">
+                    <hr class="my-4">
+
+                    <!-- TABEL & MODAL -->
                     <div class="table-responsive text-nowrap">
                         <table id="pengaturanUsulanTable" class="table table-hover md2-table" style="margin-bottom: 0 !important;">
                             <thead>
@@ -117,7 +115,20 @@
                             <tbody class="table-border-bottom-0">
                                 @foreach ($pengaturanUsulan as $data)
                                 <tr>
-                                    <td><span class="fw-bold text-primary">{{ $data->jenis_usulan ?? '-' }}</span></td>
+                                    <td>
+                                        @php
+                                            $jenisUsulan = strtolower($data->jenis_usulan ?? '');
+                                            $badgeStyle = '';
+                                            if (str_contains($jenisUsulan, 'sptjm')) {
+                                                $badgeStyle = 'background-color: #e0e7ff !important; color: #3730a3 !important; font-weight: 700; font-size: 0.72rem; padding: 6px 12px; border-radius: 20px; text-transform: uppercase; display: inline-block;';
+                                            } elseif (str_contains($jenisUsulan, 'tukin')) {
+                                                $badgeStyle = 'background-color: #fef3c7 !important; color: #d97706 !important; font-weight: 700; font-size: 0.72rem; padding: 6px 12px; border-radius: 20px; text-transform: uppercase; display: inline-block;';
+                                            } else {
+                                                $badgeStyle = 'background-color: #f1f5f9 !important; color: #475569 !important; font-weight: 700; font-size: 0.72rem; padding: 6px 12px; border-radius: 20px; text-transform: uppercase; display: inline-block;';
+                                            }
+                                        @endphp
+                                        <span class="badge" style="{{ $badgeStyle }}">{{ $data->jenis_usulan ?? '-' }}</span>
+                                    </td>
                                     <td><span class="fw-semibold text-dark">{{ $data->tahun }}</span></td>
                                     <td><span class="fw-semibold text-dark">{{ $data->bulan }}</span></td>
                                     <td><span class="fw-semibold text-dark">{{ $data->pencairan_ke }}</span></td>
@@ -180,10 +191,8 @@
                                     { orderable: false, searchable: false, targets: 7 } // disable sorting/search on Aksi column
                                 ],
                                 lengthChange: true,
-                                pageLength: 100,
-                                lengthMenu: [[25, 50, 100, 250, 500], [25, 50, 100, 250, 500]],
                                 language: {
-                                    paginate: { first: 'Awal', last: 'Akhir', next: '→', previous: '←' },
+                                    paginate: { first: 'Awal', last: 'Akhir', next: 'â†’', previous: 'â†' },
                                     zeroRecords: 'Data tidak ditemukan',
                                     infoEmpty: 'Tidak ada data tersedia',
                                     searchPlaceholder: 'Cari data...',
@@ -359,7 +368,7 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 </script>
 <script>
-// Prevent activating if tanggal_selesai is in the past — show modal warning via SweetAlert
+// Prevent activating if tanggal_selesai is in the past â€” show modal warning via SweetAlert
 function isDateBeforeToday(dateStr) {
     if (!dateStr) return false;
     const d = new Date(dateStr);

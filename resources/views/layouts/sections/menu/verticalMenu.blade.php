@@ -3,34 +3,44 @@
     <style>
         /* --- Brand area layout --- */
         .layout-menu .app-brand.demo {
-            padding: 0 1.2rem !important;
-            min-height: 72px !important;
-            display: flex !important;
-            align-items: center !important;
-            justify-content: flex-start !important;
-            gap: 10px !important;
-            border-bottom: 1px solid #eef0f4 !important;
-        }
+    padding: 12px 1.2rem 22px !important;
+    min-height: 90px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: flex-start !important;
+    gap: 10px !important;
+    border-bottom: 1px solid #eef0f4 !important;
+    margin-bottom: 12px !important;
+}
     </style>
 
-    <!-- App Brand (logo only — toggle is in navbar) -->
+    <!-- App Brand -->
     <div class="app-brand demo">
-        <a href="{{ url('/') }}" class="app-brand-link" style="text-decoration:none; display:flex; align-items:center; gap:10px; overflow:hidden;">
-            <div class="app-brand-logo" style="width:44px; height:44px; border-radius:50%; overflow:hidden; flex-shrink:0;">
-                <img src="{{ asset('assets/img/favicon/logo-lldikti-4.png') }}"
-                     alt="LLDIKTI 4"
-                     style="height:44px; width:auto; object-fit:cover; object-position:left center; display:block;">
-            </div>
-            <div class="app-brand-text d-flex flex-column" style="line-height:1.2; overflow:hidden;">
-                <span style="color:#0f3994; font-size:1.2rem; font-weight:800; font-family:'Public Sans',sans-serif; white-space:nowrap; letter-spacing:0.3px;">LLDIKTI<span style="color:#d97706;">4</span></span>
-                <span style="color:#64748b; font-size:0.68rem; font-weight:700; font-family:'Public Sans',sans-serif; text-transform:uppercase; letter-spacing:0.8px; white-space:nowrap;">SPTJM ONLINE</span>
-            </div>
+        <a href="{{ url('/') }}" class="app-brand-link" style="text-decoration:none;">
+            <img src="{{ asset('assets/img/favicon/logo-lldikti-4.png') }}"
+                 alt="LLDIKTI 4"
+                 style="height: 38px; width: auto; display: block; max-width: 100%; object-fit: contain;">
+           <span class="sptjm-logo-subtitle"
+           style="color:#64748b;
+           font-size:1rem;
+           font-weight:700;
+           letter-spacing:2px;
+           text-transform:uppercase;
+           text-align:center;
+           display:block;
+           margin-top:2px;
+           margin-left:45px ;">
+    SPTJM ONLINE
+</span>
+        </a>
+        <a href="javascript:void(0);" class="layout-menu-toggle menu-link text-large ms-auto">
+            <i class="bx bx-chevron-left" style="font-size: 1.9rem !important; color: #1a56db !important;"></i>
         </a>
     </div>
 
     <div class="menu-inner-shadow"></div>
 
-    <ul class="menu-inner py-3">
+    <ul class="menu-inner pt-5 pb-3">
         @foreach ($menuData[0]->menu as $menu)
             {{-- adding active and open class if child is active --}}
 

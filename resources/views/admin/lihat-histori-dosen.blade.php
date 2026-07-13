@@ -1,10 +1,10 @@
-@extends('layouts/contentNavbarLayout')
+﻿@extends('layouts/contentNavbarLayout')
 
 @section('title', 'SPTJM Online - Lihat Histori Dosen')
 
 @section('content')
 <style>
-/* ── Variables & Setup ── */
+/* â”€â”€ Variables & Setup â”€â”€ */
 :root {
     --md-primary: #0b3d91;
     --md-primary-hover: #082d6b;
@@ -16,7 +16,7 @@
     --md-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
 }
 
-/* ── Page Header ── */
+/* â”€â”€ Page Header â”€â”€ */
 .md-page-header {
     display: flex;
     justify-content: space-between;
@@ -25,12 +25,7 @@
     background: transparent;
     padding: 0;
 }
-.md-page-header .page-titles h4 {
-    font-size: 1.25rem;
-    font-weight: 700;
-    color: var(--md-text-main);
-    margin: 0 0 4px 0;
-}
+
 .md-page-header .breadcrumb { margin: 0; padding: 0; background: transparent; font-size: 0.85rem; }
 .md-page-header .breadcrumb-item a { color: var(--md-text-muted); text-decoration: none; }
 .md-page-header .breadcrumb-item.active { color: var(--md-primary); font-weight: 600; }
@@ -52,7 +47,7 @@
 }
 .btn-back-md:hover { background-color: var(--md-bg-gray); color: var(--md-primary); }
 
-/* ── Card & Table Container ── */
+/* â”€â”€ Card & Table Container â”€â”€ */
 .md-card {
     background: #fff;
     border-radius: var(--md-radius-lg);
@@ -62,7 +57,7 @@
 }
 .md-card-inner { padding: 20px 24px; }
 
-/* ── Toolbar ── */
+/* â”€â”€ Toolbar â”€â”€ */
 .md-toolbar {
     display: flex;
     align-items: center;
@@ -120,7 +115,7 @@
 {{-- Page Header --}}
 <div class="md-page-header">
     <div class="page-titles">
-        <h4>Lihat Histori Data Dosen</h4>
+        <h1>Lihat Histori Data Dosen</h1>
         <nav aria-label="breadcrumb">
             <ol class="breadcrumb">
                 <li class="breadcrumb-item"><a href="#">Data Dosen</a></li>
@@ -192,16 +187,14 @@
 document.addEventListener('DOMContentLoaded', function() {
     if (window.jQuery && window.jQuery.fn.DataTable) {
         window.jQuery('#lihatHistoriTable').DataTable({
-            pageLength: 15,
-            lengthMenu: [[15, 25, 50, 100, 500], [15, 25, 50, 100, 500]],
             dom: "<'md-toolbar'<'entries-wrap'l><'search-wrap'f>>" +
                  "rt<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
             language: {
                 paginate: {
                     first: "Awal",
                     last: "Akhir",
-                    next: "→",
-                    previous: "←",
+                    next: "â†’",
+                    previous: "â†",
                 },
                 zeroRecords: "Data tidak ditemukan",
                 infoEmpty: "Tidak ada data tersedia",

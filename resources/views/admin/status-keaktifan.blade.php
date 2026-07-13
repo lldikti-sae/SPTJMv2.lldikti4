@@ -5,7 +5,7 @@
 @section('page-style')
 <style>
 .md2-page-header { display:flex; align-items:flex-start; justify-content:space-between; flex-wrap:wrap; gap:12px; margin-bottom:24px; }
-.md2-page-header .page-titles h4 { font-size:1.35rem; font-weight:700; color:#2c3e50; margin:0 0 4px; }
+
 .md2-page-header .breadcrumb { margin:0; font-size:0.8rem; background:none; padding:0; }
 .md2-page-header .breadcrumb-item a { color:#696cff; text-decoration:none; }
 .md2-page-header .breadcrumb-item.active { color:#8592a3; }
@@ -22,10 +22,6 @@
 .btn-md2-tambah { background:#1a56db; border:none; color:#fff; font-weight:600; font-size:0.82rem; padding:8px 18px; border-radius:6px; display:inline-flex; align-items:center; gap:6px; transition:background 0.2s; cursor:pointer; }
 .btn-md2-tambah:hover { background:#1648c0; color:#fff; box-shadow:0 4px 12px rgba(26,86,219,0.35); }
 /* Table header/body/pagination: dipindahkan ke global sptjm-datatable.css */
-.badge-status { display:inline-block; padding:3px 12px; border-radius:20px; font-size:0.75rem; font-weight:700; }
-.badge-aktif   { background:rgba(40,199,111,0.12); color:#28c76f; }
-.badge-nonaktif { background:rgba(234,84,85,0.12); color:#ea5455; }
-.badge-belajar  { background:rgba(0,123,255,0.12); color:#0d6efd; }
 </style>
 @endsection
 
@@ -34,7 +30,7 @@
 
 <div class="md2-page-header">
     <div class="page-titles">
-        <h4>Status Keaktifan</h4>
+        <h1>Status Keaktifan</h1>
         <nav aria-label="breadcrumb"><ol class="breadcrumb">
             <li class="breadcrumb-item"><a href="#">Master Data</a></li>
             <li class="breadcrumb-item active">Status Keaktifan</li>
@@ -77,7 +73,7 @@
                                 $aktifLower = strtolower($keaktifan->aktif);
                                 $badgeClass = $aktifLower === 'aktif' ? 'badge-aktif' : ($aktifLower === 'tidak aktif' ? 'badge-nonaktif' : 'badge-belajar');
                             @endphp
-                            <span class="badge-status {{ $badgeClass }}">{{ $keaktifan->aktif }}</span>
+                            <span class="{{ $badgeClass }}">{{ $keaktifan->aktif }}</span>
                         </td>
                         <td>
                             <button class="sptjm-icon-btn sptjm-btn-edit edit-keaktifan" data-id="{{ $keaktifan->kode }}"
@@ -142,11 +138,9 @@
     @endif
 
     const table = $('#keaktifanTable').DataTable({
-      pageLength: 10,
       dom: '<"d-none"l><"d-none"f>rtip',
-      lengthMenu: [[10, 25, 50, 100, 500, -1], [10, 25, 50, 100, 500, 'All']],
       language: {
-        paginate: { first: "«", last: "»", next: "›", previous: "‹" },
+        paginate: { first: "Â«", last: "Â»", next: "â€º", previous: "â€¹" },
         zeroRecords: "Data tidak ditemukan",
         infoEmpty: "Tidak ada data tersedia",
         info: "Menampilkan _START_-_END_ dari _TOTAL_ entri",

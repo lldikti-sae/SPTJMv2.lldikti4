@@ -1,4 +1,4 @@
-@extends('layouts/contentNavbarLayoutAuditor')
+﻿@extends('layouts/contentNavbarLayoutAuditor')
 
 @section('title', 'SPTJM Online')
 
@@ -198,7 +198,6 @@
         $('#myTable').DataTable({
           processing: true,
           serverSide: true,
-          pageLength: 10,
           order: [],
           ajax: {
             url: "{{ url('auditor/laporan-keuangan') }}",

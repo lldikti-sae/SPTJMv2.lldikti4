@@ -1,10 +1,10 @@
-@extends('layouts/contentNavbarLayout')
+﻿@extends('layouts/contentNavbarLayout')
 
 @section('title', 'SPTJM Online - Hapus Dosen Tidak Aktif')
 
 @section('page-style')
 <style>
-/* ── Variables & Setup ── */
+/* â”€â”€ Variables & Setup â”€â”€ */
 :root {
     --md-primary: #0b3d91;
     --md-bg-gray: #f8fafc;
@@ -15,7 +15,7 @@
     --md-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
 }
 
-/* ── Page Header ── */
+/* â”€â”€ Page Header â”€â”€ */
 .md-page-header {
     display: flex;
     justify-content: space-between;
@@ -26,18 +26,13 @@
     flex-wrap: wrap;
     gap: 12px;
 }
-.md-page-header .page-titles h4 {
-    font-size: 1.25rem;
-    font-weight: 700;
-    color: var(--md-text-main);
-    margin: 0 0 4px 0;
-}
+
 .md-page-header .breadcrumb { margin: 0; padding: 0; background: transparent; font-size: 0.85rem; }
 .md-page-header .breadcrumb-item a { color: var(--md-text-muted); text-decoration: none; }
 .md-page-header .breadcrumb-item.active { color: var(--md-primary); font-weight: 600; }
 .md-page-header .breadcrumb-item + .breadcrumb-item::before { color: #cbd5e1; }
 
-/* ── Card & Table Container ── */
+/* â”€â”€ Card & Table Container â”€â”€ */
 .md-card {
     background: #fff;
     border-radius: var(--md-radius-lg);
@@ -47,7 +42,7 @@
 }
 .md-card-inner { padding: 20px 24px; }
 
-/* ── Filter Box ── */
+/* â”€â”€ Filter Box â”€â”€ */
 .md-filter-box {
     display: flex;
     align-items: center;
@@ -79,7 +74,7 @@
     border-color: var(--md-primary);
 }
 
-/* ── Toolbar ── */
+/* â”€â”€ Toolbar â”€â”€ */
 .md-toolbar {
     display: flex;
     align-items: center;
@@ -141,7 +136,7 @@
 {{-- Page Header --}}
 <div class="md-page-header">
     <div class="page-titles">
-        <h4>Hapus Data Dosen Tidak Aktif</h4>
+        <h1>Hapus Data Dosen Tidak Aktif</h1>
         <nav aria-label="breadcrumb">
             <ol class="breadcrumb">
                 <li class="breadcrumb-item"><a href="#">Data Dosen</a></li>
@@ -218,8 +213,6 @@ $(document).ready(function() {
         serverSide: true,
         processing: true,
         responsive: true,
-        pageLength: 15,
-        lengthMenu: [15, 25, 75, 100, 500],
         dom: "<'md-toolbar'<'entries-wrap'l><'search-wrap'f>>" +
              "rt<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
         ajax: {
@@ -285,7 +278,7 @@ $(document).ready(function() {
                         return '';
                     }
 
-                    // Jika can_delete == 1 (tidak ada kode usulan/kode cair) → tampilkan tombol hapus
+                    // Jika can_delete == 1 (tidak ada kode usulan/kode cair) â†’ tampilkan tombol hapus
                     if (parseInt(row.can_delete ?? 0) === 1) {
                         let url = "{{ route('admin.data-dosen.tidak-aktif.hapus', ':id') }}";
                         url = url.replace(':id', identifier);
@@ -301,7 +294,7 @@ $(document).ready(function() {
                         `;
                     }
 
-                    // Jika punya kode usulan/kode cair → tidak boleh dihapus, tampilkan tombol info yang memunculkan modal
+                    // Jika punya kode usulan/kode cair â†’ tidak boleh dihapus, tampilkan tombol info yang memunculkan modal
                     return `
                         <button type="button" class="sptjm-icon-btn sptjm-btn-info btn-cannot-delete" data-id="${identifier}" title="Informasi Penghapusan">
                             <i class="bx bx-info-circle"></i>
@@ -317,8 +310,8 @@ $(document).ready(function() {
             paginate: {
                 "first": "Awal",
                 "last": "Akhir",
-                "next": "→",
-                "previous": "←"
+                "next": "â†’",
+                "previous": "â†"
             },
             zeroRecords: "Data tidak ditemukan",
             infoEmpty: "Tidak ada data tersedia",

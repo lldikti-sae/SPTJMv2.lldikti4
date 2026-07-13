@@ -3,98 +3,113 @@
 @section('title', 'SPTJM Online')
 
 @section('content')
-<div class="card mt-2">
-  <h5 class="card-header">Data Dosen Belum Ada Usulan</h5>
-
-  {{-- Form Filter --}}
-  <div class="card-body mb-2">
-    <form method="GET" action="{{ route('pts.monitoring-usulan-dosen') }}">
-      <div class="row gx-3 gy-2 align-items-end">
-        <div class="col-md-3">
-          <label for="searchInput" class="form-label fw-semibold small">NIDN / NUPTK</label>
-          <input type="text" class="form-control form-control-sm" id="searchInput" name="search" placeholder="Masukan NIDN atau NUPTK..." value="{{ request('search') }}">
-        </div>
-
-        <div class="col-md-2">
-          <label for="awalPeriode" class="form-label fw-semibold small">Periode Awal</label>
-          <select id="awalPeriode" name="awalPeriode" class="form-select form-select-sm">
-            @foreach ($bulanIndonesia as $key => $bulan)
-            <option value="{{ $key }}" {{ request('awalPeriode') == $key ? 'selected' : '' }}>
-              {{ $bulan }}
-            </option>
-            @endforeach
-          </select>
-        </div>
-
-        <div class="col-auto col-md-1 text-center">
-          <label class="form-label fw-semibold small d-block">s.d</label>
-        </div>
-
-        <div class="col-md-2">
-          <label for="akhirPeriode" class="form-label fw-semibold small">Periode Akhir</label>
-          <select id="akhirPeriode" name="akhirPeriode" class="form-select form-select-sm">
-            @foreach ($bulanIndonesia as $key => $bulan)
-            <option value="{{ $key }}" {{ request('akhirPeriode', now()->month) == $key ? 'selected' : '' }}>
-              {{ $bulan }}
-            </option>
-            @endforeach
-          </select>
-        </div>
-
-        <div class="col-md-3 text-md-end">
-          <div class="d-flex justify-content-end gap-2">
-              <button type="submit" formaction="{{ route('pts.export-data-belum-usulan') }}" formtarget="_blank" class="btn btn-success btn-sm py-1 px-3">Export XLS</button>
-              <button type="submit" class="btn btn-primary btn-sm py-1 px-3">Tampilkan</button>
-          </div>
-        </div>
-      </div>
-    </form>
-  </div>
-
-  {{-- Export Toolbar and Table --}}
-  <div class="card-body pt-0">
-    {{-- Export button moved next to form submit; kept empty here --}}
-    {{-- Tabel Data --}}
-    <div class="table-responsive">
-      <table class="table table-bordered align-middle text-nowrap w-100 table-hover" id="monitoringTable">
-        <thead class="text-center" style="background-color: #dbdee0;">
-          <tr>
-            <th>No</th>
-            <th>NIDN</th>
-            <th>NUPTK</th>
-            <th>Nama</th>
-            <th>Jenis</th>
-            <th>Kode PT</th>
-            <th>PTS</th>
-            <th>Bulan</th>
-          </tr>
-        </thead>
-        <tbody>
-          @forelse ($dosenList as $i => $data)
-          <tr>
-            <td class="text-center">{{ $i + 1 }}</td>
-            <td class="text-center">{{ $data->NIDN }}</td>
-            <td class="text-center">{{ $data->NUPTK ?? '-' }}</td>
-            <td class="text-wrap">{{ $data->Nama }}</td>
-            <td class="text-center">{{ $data->Jenis }}</td>
-            <td class="text-center">{{ $data->Kode_PT }}</td>
-            <td class="text-wrap">{{ $data->PTS }}</td>
-            <td class="text-center">
-              <a href="javascript:void(0);" class="text-decoration-underline text-primary"
-                onclick="showDetailModal('{{ $data->Nama }}', '{{ $data->kode_belum_usulan }}')">
-                {{ $data->bulan_belum_usulan }} Bulan
-              </a>
-            </td>
-          </tr>
-          @empty
-          <tr>
-            <td colspan="8" class="text-center text-muted">Tidak ada dosen aktif tanpa usulan.</td>
-          </tr>
-          @endforelse
-        </tbody>
-      </table>
+<div class="md2-page-header">
+    <div class="page-titles">
+        <h3>Monitoring Usulan Dosen</h3>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="#">Data Dosen</a></li>
+                <li class="breadcrumb-item active">Monitoring Usulan Dosen</li>
+            </ol>
+        </nav>
     </div>
-  </div>
+</div>
+
+<div class="card md2-card mb-4">
+    <div class="card-body px-4 pb-4 pt-0">
+
+        {{-- Filter Section --}}
+        <div class="pt-3 pb-3 mb-3 border-bottom">
+            <form method="GET" action="{{ route('pts.monitoring-usulan-dosen') }}">
+                <div class="row g-3 align-items-end">
+                    <div class="col-md-3 col-sm-12">
+                        <label for="searchInput" class="form-label fw-bold text-uppercase mb-1" style="font-size: 0.68rem; letter-spacing: 0.05em; color: #64748b;">NIDN / NUPTK</label>
+                        <input type="text" class="form-control" id="searchInput" name="search" placeholder="Masukan NIDN atau NUPTK..." value="{{ request('search') }}" style="border: 1.5px solid #cbd5e1; border-radius: 8px; font-size: 0.88rem; height: 38px;">
+                    </div>
+
+                    <div class="col-md-2 col-sm-5">
+                        <label for="awalPeriode" class="form-label fw-bold text-uppercase mb-1" style="font-size: 0.68rem; letter-spacing: 0.05em; color: #64748b;">Periode Awal</label>
+                        <select id="awalPeriode" name="awalPeriode" class="form-select" style="border: 1.5px solid #cbd5e1; border-radius: 8px; font-size: 0.88rem; color: #374151; height: 38px;">
+                            @foreach ($bulanIndonesia as $key => $bulan)
+                            <option value="{{ $key }}" {{ request('awalPeriode') == $key ? 'selected' : '' }}>
+                                {{ $bulan }}
+                            </option>
+                            @endforeach
+                        </select>
+                    </div>
+
+                    <div class="col-auto text-center px-1" style="height: 38px; display: flex; align-items: center; justify-content: center;">
+                        <span class="text-muted fw-semibold">s.d</span>
+                    </div>
+
+                    <div class="col-md-2 col-sm-5">
+                        <label for="akhirPeriode" class="form-label fw-bold text-uppercase mb-1" style="font-size: 0.68rem; letter-spacing: 0.05em; color: #64748b;">Periode Akhir</label>
+                        <select id="akhirPeriode" name="akhirPeriode" class="form-select" style="border: 1.5px solid #cbd5e1; border-radius: 8px; font-size: 0.88rem; color: #374151; height: 38px;">
+                            @foreach ($bulanIndonesia as $key => $bulan)
+                            <option value="{{ $key }}" {{ request('akhirPeriode', now()->month) == $key ? 'selected' : '' }}>
+                                {{ $bulan }}
+                            </option>
+                            @endforeach
+                        </select>
+                    </div>
+
+                    <div class="col-md-4 col-sm-12 text-md-end align-self-end">
+                        <div class="d-flex justify-content-end gap-2">
+                            <button type="submit" formaction="{{ route('pts.export-data-belum-usulan') }}" formtarget="_blank" class="btn btn-success d-flex align-items-center gap-1" style="border-radius: 8px; font-weight: 600; font-size: 0.88rem; height: 38px; padding: 0 20px;">
+                                <i class="bx bx-download"></i> Export XLS
+                            </button>
+                            <button type="submit" class="btn btn-primary d-flex align-items-center gap-1" style="border-radius: 8px; font-weight: 600; font-size: 0.88rem; height: 38px; padding: 0 20px; background-color: #0b3d91; border-color: #0b3d91;">
+                                <i class="bx bx-search-alt"></i> Tampilkan
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <div class="table-responsive text-nowrap">
+            <table class="table table-hover md2-table text-center" id="monitoringTable" style="width: 100%;">
+                <thead>
+                    <tr>
+                        <th style="width: 50px;">No</th>
+                        <th>NIDN</th>
+                        <th>NUPTK</th>
+                        <th>Nama</th>
+                        <th>Jenis</th>
+                        <th>Kode PT</th>
+                        <th class="text-center" style="text-align: center !important;">PTS</th>
+                        <th>Bulan</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @forelse ($dosenList as $i => $data)
+                    <tr>
+                        <td class="text-center">{{ $i + 1 }}</td>
+                        <td class="text-center">{{ $data->NIDN }}</td>
+                        <td class="text-center">{{ $data->NUPTK ?? '-' }}</td>
+                        <td class="text-start" style="white-space: normal; max-width: 220px;">{{ $data->Nama }}</td>
+                        <td class="text-center">{{ $data->Jenis }}</td>
+                        <td class="text-center">{{ $data->Kode_PT }}</td>
+                        <td style="white-space: normal; max-width: 220px; text-align: center !important;">{{ $data->PTS }}</td>
+                        <td class="text-center">
+                            <button type="button"
+                                class="badge bg-label-warning border-0 py-2 px-3 fw-bold cursor-pointer"
+                                style="border-radius: 20px; font-size: 0.78rem; transition: transform 0.2s;"
+                                onclick="showDetailModal('{{ addslashes($data->Nama) }}', '{{ addslashes($data->kode_belum_usulan) }}')">
+                                <i class="bx bx-calendar-x me-1" style="font-size: 0.85rem;"></i>
+                                {{ $data->bulan_belum_usulan }} Bulan
+                            </button>
+                        </td>
+                    </tr>
+                    @empty
+                    <tr>
+                        <td colspan="8" class="text-center text-muted">Tidak ada dosen aktif tanpa usulan.</td>
+                    </tr>
+                    @endforelse
+                </tbody>
+            </table>
+        </div>
+    </div>
 </div>
 
 {{-- Modal Detail Bulan --}}

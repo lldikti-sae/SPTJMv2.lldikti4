@@ -4,7 +4,7 @@
 
 @section('page-style')
 <style>
-/* ── Variables & Setup ── */
+/* â”€â”€ Variables & Setup â”€â”€ */
 :root {
     --md-primary: #0b3d91;
     --md-primary-hover: #082d6b;
@@ -16,7 +16,7 @@
     --md-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
 }
 
-/* ── Page Header ── */
+/* â”€â”€ Page Header â”€â”€ */
 .md-page-header {
     display: flex;
     justify-content: space-between;
@@ -27,18 +27,13 @@
     flex-wrap: wrap;
     gap: 12px;
 }
-.md-page-header .page-titles h4 {
-    font-size: 1.25rem;
-    font-weight: 700;
-    color: var(--md-text-main);
-    margin: 0 0 4px 0;
-}
+
 .md-page-header .breadcrumb { margin: 0; padding: 0; background: transparent; font-size: 0.85rem; }
 .md-page-header .breadcrumb-item a { color: var(--md-text-muted); text-decoration: none; }
 .md-page-header .breadcrumb-item.active { color: var(--md-primary); font-weight: 600; }
 .md-page-header .breadcrumb-item + .breadcrumb-item::before { color: #cbd5e1; }
 
-/* ── Header Action Buttons ── */
+/* â”€â”€ Header Action Buttons â”€â”€ */
 .btn-export-md {
     background: linear-gradient(135deg, #059669 0%, #047857 100%);
     color: #fff;
@@ -72,7 +67,7 @@
 }
 .btn-tampilkan-md:hover { opacity: 0.9; transform: translateY(-1px); }
 
-/* ── Card & Table Container ── */
+/* â”€â”€ Card & Table Container â”€â”€ */
 .md-card {
     background: #fff;
     border-radius: var(--md-radius-lg);
@@ -82,7 +77,7 @@
 }
 .md-card-inner { padding: 20px 24px; }
 
-/* ── Filter Card ── */
+/* â”€â”€ Filter Card â”€â”€ */
 .md-filter-card {
     background: var(--md-bg-gray);
     border: 1px solid var(--md-border);
@@ -131,7 +126,7 @@
     padding-bottom: 10px;
 }
 
-/* ── Toolbar ── */
+/* â”€â”€ Toolbar â”€â”€ */
 .md-toolbar {
     display: flex;
     align-items: center;
@@ -160,7 +155,7 @@
 
 
 
-/* ── Custom Badges ── */
+/* â”€â”€ Custom Badges â”€â”€ */
 .badge-bulan {
     background-color: #fef3c7;
     color: #92400e;
@@ -199,7 +194,7 @@
 
 
 
-/* ── Modal ── */
+/* â”€â”€ Modal â”€â”€ */
 .modal-content {
     border-radius: 12px;
     border: none;
@@ -251,9 +246,9 @@
 @section('content')
 
 {{-- Page Header --}}
-<div class="md-page-header">
+<div class="md2-page-header">
     <div class="page-titles">
-        <h4>Monitoring Usulan Dosen</h4>
+        <h3>Monitoring Usulan Dosen</h3>
         <nav aria-label="breadcrumb">
             <ol class="breadcrumb">
                 <li class="breadcrumb-item"><a href="#">Data Dosen</a></li>
@@ -262,31 +257,28 @@
         </nav>
     </div>
     <div class="d-flex align-items-center gap-2">
-        <a href="{{ route('admin.export-monitoring-usulan-dosen', request()->query()) }}" target="_blank" class="btn-export-md">
+        <a href="{{ route('admin.export-monitoring-usulan-dosen', request()->query()) }}" target="_blank" class="btn btn-success d-flex align-items-center gap-1" style="border-radius: 20px; font-weight: 600; font-size: 0.85rem; padding: 6px 16px;">
             <i class="bx bx-download"></i> Export XLS
         </a>
     </div>
 </div>
 
 {{-- Main Card --}}
-<div class="md-card">
-    <div class="md-card-inner">
+<div class="card md2-card mb-4">
+    <div class="card-body px-4 pb-4 pt-0">
 
         {{-- Filter Section --}}
-        <div class="md-filter-card">
-            <div class="filter-title">
-                <i class="bx bx-filter-alt"></i> Filter Periode & Pencarian
-            </div>
-            <form class="row gx-3 gy-2 align-items-end" method="GET" action="{{ route('admin.monitoring-usulan-dosen') }}">
-                <div class="col-md-3">
-                    <label for="searchInput">NIDN / NUPTK / Nama</label>
+        <div class="pt-3 pb-3 mb-3 border-bottom">
+            <form class="row g-3 align-items-end" method="GET" action="{{ route('admin.monitoring-usulan-dosen') }}">
+                <div class="col-md-3 col-sm-12">
+                    <label for="searchInput" class="form-label fw-bold text-uppercase mb-1" style="font-size: 0.68rem; letter-spacing: 0.05em; color: #64748b;">NIDN / NUPTK / Nama</label>
                     <input type="text" class="form-control" id="searchInput" name="search"
-                        placeholder="Cari data..." value="{{ request('search') }}">
+                        placeholder="Cari data..." value="{{ request('search') }}" style="border: 1.5px solid #cbd5e1; border-radius: 8px; font-size: 0.88rem; height: 38px;">
                 </div>
 
-                <div class="col-md-2">
-                    <label for="awalPeriode">Periode Awal</label>
-                    <select id="awalPeriode" name="awalPeriode" class="form-select">
+                <div class="col-md-2 col-sm-5">
+                    <label for="awalPeriode" class="form-label fw-bold text-uppercase mb-1" style="font-size: 0.68rem; letter-spacing: 0.05em; color: #64748b;">Periode Awal</label>
+                    <select id="awalPeriode" name="awalPeriode" class="form-select" style="border: 1.5px solid #cbd5e1; border-radius: 8px; font-size: 0.88rem; color: #374151; height: 38px;">
                         @foreach ($bulanIndonesia as $key => $bulan)
                         <option value="{{ $key }}" {{ request('awalPeriode') == $key ? 'selected' : '' }}>
                             {{ $bulan }}
@@ -295,13 +287,13 @@
                     </select>
                 </div>
 
-                <div class="col-auto separator-label">
-                    s.d
+                <div class="col-auto text-center px-1" style="height: 38px; display: flex; align-items: center; justify-content: center;">
+                    <span class="text-muted fw-semibold">s.d</span>
                 </div>
 
-                <div class="col-md-2">
-                    <label for="akhirPeriode">Periode Akhir</label>
-                    <select id="akhirPeriode" name="akhirPeriode" class="form-select">
+                <div class="col-md-2 col-sm-5">
+                    <label for="akhirPeriode" class="form-label fw-bold text-uppercase mb-1" style="font-size: 0.68rem; letter-spacing: 0.05em; color: #64748b;">Periode Akhir</label>
+                    <select id="akhirPeriode" name="akhirPeriode" class="form-select" style="border: 1.5px solid #cbd5e1; border-radius: 8px; font-size: 0.88rem; color: #374151; height: 38px;">
                         @foreach ($bulanIndonesia as $key => $bulan)
                         <option value="{{ $key }}" {{ request('akhirPeriode', now()->month) == $key ? 'selected' : '' }}>
                             {{ $bulan }}
@@ -311,7 +303,7 @@
                 </div>
 
                 <div class="col-auto">
-                    <button type="submit" class="btn-tampilkan-md">
+                    <button type="submit" class="btn btn-primary d-flex align-items-center gap-1" style="border-radius: 8px; font-weight: 600; font-size: 0.88rem; height: 38px; padding: 0 20px; background-color: #0b3d91; border-color: #0b3d91;">
                         <i class="bx bx-search-alt"></i> Tampilkan
                     </button>
                 </div>
@@ -319,10 +311,10 @@
         </div>
 
         {{-- Toolbar --}}
-        <div class="md-toolbar">
-            <div class="entries-wrap">
+        <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-3">
+            <div class="d-flex align-items-center gap-2" style="font-size: 0.82rem; color: #475569;">
                 <span>Show</span>
-                <select id="perPageSelect">
+                <select id="perPageSelect" class="form-select form-select-sm" style="width: auto; display: inline-block; border: 1.5px solid #dde3ed; border-radius: 6px; padding: 2px 8px; font-size: 0.79rem; color: #475569; background: #f8fafc; height: 28px;">
                     @foreach ([15,25,50,100] as $pp)
                     <option value="{{ $pp }}" {{ request('perPage', 15) == $pp ? 'selected' : '' }}>{{ $pp }}</option>
                     @endforeach
@@ -332,8 +324,8 @@
         </div>
 
         {{-- Table --}}
-        <div class="md-table-wrap table-responsive text-nowrap">
-            <table class="table table-hover" id="monitoringTable" style="width: 100%;">
+        <div class="table-responsive text-nowrap">
+            <table class="table table-hover md2-table text-center" id="monitoringTable" style="width: 100%;">
                 <thead>
                     <tr>
                         <th style="width: 50px;">No</th>
@@ -342,7 +334,7 @@
                         <th>Nama Dosen</th>
                         <th>Jenis</th>
                         <th>Kode PT</th>
-                        <th>Nama PTS</th>
+                        <th class="text-center" style="text-align: center !important;">Nama PTS</th>
                         <th style="width: 120px;">Bulan Belum Usulan</th>
                     </tr>
                 </thead>
@@ -355,12 +347,13 @@
                         <td style="white-space: normal; max-width: 220px;">{{ $data->Nama }}</td>
                         <td class="text-center"><span class="badge-jenis">{{ $data->Jenis }}</span></td>
                         <td class="text-center">{{ $data->Kode_PT }}</td>
-                        <td style="white-space: normal; max-width: 220px;">{{ $data->PTS }}</td>
+                        <td style="white-space: normal; max-width: 220px; text-align: center !important;">{{ $data->PTS }}</td>
                         <td class="text-center">
                             <button type="button"
-                                class="badge-bulan {{ $data->bulan_belum_usulan >= 3 ? 'high' : '' }}"
+                                class="badge bg-label-warning border-0 py-2 px-3 fw-bold cursor-pointer"
+                                style="border-radius: 20px; font-size: 0.78rem; transition: transform 0.2s;"
                                 onclick="showDetailModal('{{ addslashes($data->Nama) }}', '{{ addslashes($data->kode_belum_usulan) }}')">
-                                <i class="bx bx-calendar-x" style="font-size: 0.85rem;"></i>
+                                <i class="bx bx-calendar-x me-1" style="font-size: 0.85rem;"></i>
                                 {{ $data->bulan_belum_usulan }} Bulan
                             </button>
                         </td>
@@ -379,7 +372,7 @@
 
         {{-- Pagination --}}
         @if($dosenList->hasPages())
-        <div class="md-pagination">
+        <div class="mt-3 d-flex justify-content-end">
             {{ $dosenList->links('pagination::simple-bootstrap-5') }}
         </div>
         @endif
@@ -422,7 +415,7 @@ function showDetailModal(nama, kodeBelum) {
         const index = nmBulan.indexOf(bulan);
         const kodeUsulan = index !== -1 ? `KodeUsulan${index+1}` : `????`;
         const padded = `${kodeUsulan} (${bulan})`.padEnd(28, ' ');
-        return `${padded}  ⚠ Belum Diusulkan`;
+        return `${padded}  âš  Belum Diusulkan`;
     }).join('\n');
     document.getElementById('modalListBulan').innerHTML = formatted;
     const modal = new bootstrap.Modal(document.getElementById('modalDetail'));

@@ -26,17 +26,18 @@ table tfoot,
 table.dataTable,
 .table,
 table.md2-table,
-.md-table-wrap table,
-#complainTable,
-#sisternasTable {
-    border: 1px solid #e2e8f0 !important;
+.md-table-wrap table {
+    border: 1px solid #dde3ed !important;
     border-collapse: collapse !important;
     width: 100% !important;
     margin-top: 0 !important;
     margin-bottom: 0 !important;
 }
 
-/* ── TABLE HEADER ── */
+/* ── TABLE HEADER ──
+   Compact, bold, uppercase, abu-abu terang
+   Header lebih pendek: height 28px, padding minimal
+   ── */
 table.dataTable thead th,
 .table thead th,
 table.md2-table thead th,
@@ -45,34 +46,55 @@ table.md2-table thead th,
     color: #1e293b !important;
     font-weight: 700 !important;
     text-transform: uppercase !important;
-    font-size: 0.75rem !important;
+    font-size: 0.7rem !important;
     letter-spacing: 0.05em !important;
-    padding: 4px 12px !important;
+    padding: 4px 8px !important;
     vertical-align: middle !important;
-    border: 1px solid #e2e8f0 !important;
-    white-space: nowrap;
-    line-height: 1.1;
-    height: 30px !important;
+    border: 1px solid #dde3ed !important;
+    white-space: nowrap !important;
+    line-height: 1.0 !important;
+    height: auto !important;
 }
 
-/* ── TABLE BODY ── */
+/* ── TABLE BODY ──
+   Font normal (400), warna hitam/gelap, compact padding
+   ── */
 table.dataTable tbody td,
 .table tbody td,
 table.md2-table tbody td,
 .md-table-wrap table tbody td {
-    font-size: 0.84rem !important;
-    color: #374151 !important;
-    padding: 8px 14px !important;
+    font-size: 0.78rem !important;
+    font-weight: 400 !important;          /* NORMAL — tidak bold */
+    color: #1a1a2e !important;            /* Hitam gelap konsisten */
+    padding: 4px 8px !important;         /* Compact rows */
     vertical-align: middle !important;
-    border: 1px solid #e2e8f0 !important;
-    line-height: 1.2;
+    border: 1px solid #dde3ed !important;
+    line-height: 1.2 !important;
+}
+
+/* ── OVERRIDE: Paksa semua teks di dalam sel table menjadi hitam dan normal ── */
+table.dataTable tbody td span:not([class*="badge"]),
+table.dataTable tbody td div:not([class*="badge"]):not([class*="sptjm-icon-btn"]),
+.table tbody td span:not([class*="badge"]),
+.table tbody td div:not([class*="badge"]):not([class*="sptjm-icon-btn"]) {
+    font-weight: 400 !important;
+    color: #1a1a2e !important;
+}
+
+/* ── OVERRIDE SPESIFIK: Nama Dosen dan nama PT tidak perlu warna khusus ── */
+table.dataTable tbody td .fw-bold,
+table.dataTable tbody td .fw-semibold,
+.table tbody td .fw-bold,
+.table tbody td .fw-semibold {
+    font-weight: 400 !important;
+    color: #1a1a2e !important;
 }
 
 /* ── COMPACT ELEMENTS INSIDE TABLE BODY ── */
 table.dataTable tbody td .btn-icon,
 .table tbody td .btn-icon {
-    height: 28px !important;
-    width: 28px !important;
+    height: 26px !important;
+    width: 26px !important;
     padding: 0 !important;
     display: inline-flex !important;
     align-items: center !important;
@@ -81,11 +103,13 @@ table.dataTable tbody td .btn-icon,
 
 table.dataTable tbody td .badge,
 .table tbody td .badge {
-    padding: 2px 6px !important;
+    padding: 2px 7px !important;
     line-height: 1.1 !important;
     display: inline-flex !important;
     align-items: center !important;
     justify-content: center !important;
+    font-size: 0.7rem !important;
+    font-weight: 600 !important;           /* Badge boleh semibold */
 }
 
 table.dataTable tbody td .form-check,
@@ -96,61 +120,68 @@ table.dataTable tbody td .form-check-input {
     vertical-align: middle !important;
 }
 
-/* ── HOVER EFFECT ── */
-table.dataTable tbody tr:hover,
-.table tbody tr:hover,
-table.md2-table tbody tr:hover,
-.md-table-wrap table tbody tr:hover {
-    background-color: #f8fafc !important;
-    transition: background-color 0.15s ease;
+/* ── HOVER EFFECT — konsisten di semua tabel ── */
+table.dataTable tbody tr:hover > td,
+.table tbody tr:hover > td,
+table.md2-table tbody tr:hover > td,
+.md-table-wrap table tbody tr:hover > td {
+    background-color: #eef3fb !important;
+    transition: background-color 0.12s ease !important;
 }
 
-/* ── SORTING ICONS ── */
+/* ── SORTING ICONS — tampil di semua kolom yang bisa diurutkan ── */
 table.dataTable thead .sorting,
 table.dataTable thead .sorting_asc,
 table.dataTable thead .sorting_desc {
-    position: relative;
-    cursor: pointer;
-    padding-right: 24px !important;
+    position: relative !important;
+    cursor: pointer !important;
+    padding-right: 22px !important;
+    user-select: none !important;
 }
 
+/* Pseudo-element for sort arrows */
 table.dataTable thead .sorting::before,
 table.dataTable thead .sorting::after,
 table.dataTable thead .sorting_asc::before,
 table.dataTable thead .sorting_asc::after,
 table.dataTable thead .sorting_desc::before,
 table.dataTable thead .sorting_desc::after {
-    position: absolute;
-    bottom: 50%;
-    transform: translateY(50%);
-    display: block;
-    opacity: 0.3;
-    font-size: 0.7rem;
-    color: #64748b;
+    position: absolute !important;
+    bottom: 50% !important;
+    transform: translateY(50%) !important;
+    display: block !important;
+    font-size: 0.6rem !important;
+    line-height: 1 !important;
 }
 
+/* ▲ Up arrow */
 table.dataTable thead .sorting::before,
 table.dataTable thead .sorting_asc::before,
 table.dataTable thead .sorting_desc::before {
-    right: 12px;
-    content: "▲";
+    right: 10px !important;
+    content: "▲" !important;
+    opacity: 0.3 !important;
+    color: #475569 !important;
 }
 
+/* ▼ Down arrow */
 table.dataTable thead .sorting::after,
 table.dataTable thead .sorting_asc::after,
 table.dataTable thead .sorting_desc::after {
-    right: 4px;
-    content: "▼";
+    right: 3px !important;
+    content: "▼" !important;
+    opacity: 0.3 !important;
+    color: #475569 !important;
 }
 
+/* Active sort highlight */
 table.dataTable thead .sorting_asc::before {
-    opacity: 1;
-    color: #1a56db;
+    opacity: 1 !important;
+    color: #1a56db !important;
 }
-
 table.dataTable thead .sorting_desc::after {
-    opacity: 1;
-    color: #1a56db;
+    opacity: 1 !important;
+    color: #1a56db !important;
 }
 
 /* ── DATATABLES WRAPPER ── */
@@ -159,152 +190,167 @@ table.dataTable thead .sorting_desc::after {
     overflow-x: auto;
 }
 
-.dataTables_wrapper .md-toolbar {
-    padding: 4px 24px 4px 24px;
+/* ── TOOLBAR WRAPPER: Show Entries (kiri) + Search (kanan) ── */
+.dataTables_wrapper .md-toolbar,
+.dataTables_wrapper .md2-toolbar,
+.dataTables_wrapper .pt-toolbar {
+    padding: 0 0 12px 0 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    flex-wrap: wrap !important;
+    gap: 10px !important;
 }
 
 .dataTables_wrapper .row {
-    margin: 0;
-    padding: 0;
+    margin-left: -0.75rem !important;
+    margin-right: -0.75rem !important;
 }
 
 /* ── DATATABLES INFO ── */
 .dataTables_wrapper .dataTables_info {
     color: #64748b !important;
-    font-size: 0.82rem !important;
-    padding-top: 12px !important;
+    font-size: 0.79rem !important;
+    font-weight: 400 !important;
+    padding-top: 10px !important;
     padding-bottom: 4px !important;
 }
 
-/* ── DATATABLES LENGTH (Show entries) ── */
+/* ── DATATABLES LENGTH (Show Entries) ──
+   Selalu muncul, posisi kiri, label "Show X Entries"
+   ── */
 .dataTables_wrapper .dataTables_length {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    font-size: 0.8rem !important;
-    color: #4a5568 !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 6px !important;
+    font-size: 0.79rem !important;
+    font-weight: 400 !important;
+    color: #475569 !important;
 }
 
 .dataTables_wrapper .dataTables_length label {
-    display: flex;
-    align-items: center;
-    gap: 6px;
+    display: flex !important;
+    align-items: center !important;
+    gap: 6px !important;
     margin-bottom: 0 !important;
+    font-weight: 400 !important;
+    color: #475569 !important;
+    white-space: nowrap !important;
 }
 
 .dataTables_wrapper .dataTables_length select {
-    border: 1.5px solid #e2e8f0 !important;
+    border: 1.5px solid #dde3ed !important;
     border-radius: 6px !important;
     padding: 2px 8px !important;
-    font-size: 0.8rem !important;
-    color: #4a5568 !important;
+    font-size: 0.79rem !important;
+    color: #475569 !important;
     background: #f8fafc !important;
-    cursor: pointer;
-    outline: none;
+    cursor: pointer !important;
+    outline: none !important;
     height: 28px !important;
+    min-width: 58px !important;
+    transition: border-color 0.18s !important;
 }
 
 .dataTables_wrapper .dataTables_length select:focus {
     border-color: #1a56db !important;
-    box-shadow: 0 0 0 3px rgba(26, 86, 219, 0.1) !important;
+    box-shadow: 0 0 0 3px rgba(26, 86, 219, 0.08) !important;
 }
 
-/* ── DATATABLES SEARCH ── */
+/* ── DATATABLES SEARCH — selalu di kanan ── */
 .dataTables_wrapper .dataTables_filter {
-    display: flex;
-    align-items: center;
-    gap: 6px;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: flex-end !important;
+    gap: 6px !important;
     margin-bottom: 0 !important;
 }
 
 .dataTables_wrapper .dataTables_filter label {
-    font-size: 0.8rem !important;
-    color: #4a5568 !important;
-    display: flex;
-    align-items: center;
-    gap: 6px;
+    font-size: 0.79rem !important;
+    font-weight: 400 !important;
+    color: #475569 !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 6px !important;
     margin-bottom: 0 !important;
+    white-space: nowrap !important;
 }
 
 .dataTables_wrapper .dataTables_filter input {
-    border: 1.5px solid #e2e8f0 !important;
-    border-radius: 8px !important;
-    padding: 6px 36px 6px 12px !important;
-    font-size: 0.84rem !important;
-    color: #2d3748 !important;
-    background: #f8fafc url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' fill='%238592a3' viewBox='0 0 16 16'%3E%3Cpath d='M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398l3.85 3.85a1 1 0 0 0 1.415-1.415l-3.868-3.833zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z'/%3E%3C/svg%3E") no-repeat calc(100% - 10px) center !important;
-    min-width: 180px;
-    height: 32px !important;
+    border: 1.5px solid #dde3ed !important;
+    border-radius: 7px !important;
+    padding: 4px 32px 4px 10px !important;
+    font-size: 0.82rem !important;
+    font-weight: 400 !important;
+    color: #1a1a2e !important;
+    background: #f8fafc url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='13' height='13' fill='%238592a3' viewBox='0 0 16 16'%3E%3Cpath d='M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398l3.85 3.85a1 1 0 0 0 1.415-1.415l-3.868-3.833zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z'/%3E%3C/svg%3E") no-repeat calc(100% - 9px) center !important;
+    min-width: 190px !important;
+    height: 30px !important;
     outline: none !important;
-    transition: border-color 0.2s, box-shadow 0.2s;
+    transition: border-color 0.18s, box-shadow 0.18s !important;
 }
 
-/* Hide native webkit search icon */
+/* Hide webkit search icons */
 .dataTables_wrapper .dataTables_filter input[type="search"]::-webkit-search-decoration,
 .dataTables_wrapper .dataTables_filter input[type="search"]::-webkit-search-cancel-button,
 .dataTables_wrapper .dataTables_filter input[type="search"]::-webkit-search-results-button,
 .dataTables_wrapper .dataTables_filter input[type="search"]::-webkit-search-results-decoration {
-    -webkit-appearance: none;
-    display: none;
+    -webkit-appearance: none !important;
+    display: none !important;
 }
 
 .dataTables_wrapper .dataTables_filter input:focus {
     border-color: #1a56db !important;
-    box-shadow: 0 0 0 3px rgba(26, 86, 219, 0.1) !important;
+    box-shadow: 0 0 0 3px rgba(26, 86, 219, 0.08) !important;
     background-color: #fff !important;
 }
 
-/* ── COMPACT THEAD ── */
-table.dataTable thead th,
-.table thead th {
-    height: 30px !important;
-    padding-top: 4px !important;
-    padding-bottom: 4px !important;
-}
-
 /* =====================================================
-   PAGINATION - Standar tunggal untuk seluruh aplikasi
+   PAGINATION — Standar tunggal untuk seluruh aplikasi
    ===================================================== */
 
 /* Wrapper pagination */
 .dataTables_wrapper .dataTables_paginate {
     display: flex !important;
+    justify-content: flex-end !important;
     align-items: center !important;
-    gap: 4px !important;
-    margin-top: 12px !important;
-    padding-top: 4px !important;
+    gap: 3px !important;
+    margin-top: 10px !important;
+    padding-top: 2px !important;
+    flex-wrap: wrap !important;
 }
 
-/* Semua tombol paginate */
+/* Semua tombol paginate — reset dahulu */
 .dataTables_wrapper .dataTables_paginate .paginate_button {
-    border: 1.5px solid #e2e8f0 !important;
-    border-radius: 8px !important;
+    border: 1.5px solid #dde3ed !important;
+    border-radius: 6px !important;
     background: #ffffff !important;
     color: #374151 !important;
-    font-size: 0.82rem !important;
-    font-weight: 600 !important;
-    padding: 5px 12px !important;
-    min-width: 36px !important;
+    font-size: 0.8rem !important;
+    font-weight: 500 !important;
+    padding: 4px 10px !important;
+    min-width: 32px !important;
     text-align: center !important;
-    transition: all 0.2s ease !important;
+    transition: all 0.18s ease !important;
     cursor: pointer !important;
-    line-height: 1.5 !important;
-    margin: 0 1px !important;
+    line-height: 1.4 !important;
+    margin: 0 !important;
     box-shadow: none !important;
 }
 
-/* Previous & Next - rounded pill style */
+/* Previous & Next — pill style */
 .dataTables_wrapper .dataTables_paginate .paginate_button.previous,
 .dataTables_wrapper .dataTables_paginate .paginate_button.next {
     color: #374151 !important;
-    font-weight: 600 !important;
+    font-weight: 500 !important;
     background: #f8fafc !important;
-    padding: 5px 16px !important;
-    border-color: #e2e8f0 !important;
-    border-radius: 20px !important;
+    padding: 4px 14px !important;
+    border-color: #dde3ed !important;
+    border-radius: 16px !important;
 }
 
-/* Hover - semua tombol */
+/* Hover — semua tombol */
 .dataTables_wrapper .dataTables_paginate .paginate_button:hover:not(.disabled):not(.current) {
     background: #eef2ff !important;
     border-color: #1a56db !important;
@@ -312,21 +358,21 @@ table.dataTable thead th,
     box-shadow: none !important;
 }
 
-/* Active / current page - biru */
+/* Active / current page — biru solid */
 .dataTables_wrapper .dataTables_paginate .paginate_button.current,
 .dataTables_wrapper .dataTables_paginate .paginate_button.current:hover {
     background: #1a56db !important;
     border-color: #1a56db !important;
     color: #ffffff !important;
-    box-shadow: 0 2px 8px rgba(26, 86, 219, 0.25) !important;
+    box-shadow: 0 2px 6px rgba(26, 86, 219, 0.22) !important;
 }
 
 /* Disabled buttons */
 .dataTables_wrapper .dataTables_paginate .paginate_button.disabled,
 .dataTables_wrapper .dataTables_paginate .paginate_button.disabled:hover {
     background: #f8fafc !important;
-    border-color: #e2e8f0 !important;
-    color: #94a3b8 !important;
+    border-color: #e8ecf3 !important;
+    color: #b0bcd0 !important;
     cursor: not-allowed !important;
     box-shadow: none !important;
 }
@@ -334,24 +380,24 @@ table.dataTable thead th,
 /* Ellipsis */
 .dataTables_wrapper .dataTables_paginate span.ellipsis {
     color: #94a3b8 !important;
-    padding: 5px 6px !important;
-    font-size: 0.82rem !important;
+    padding: 4px 5px !important;
+    font-size: 0.8rem !important;
 }
 
-/* Bootstrap 5 pagination override (for pages using BS5 DataTables and manual Laravel pagination) */
+/* Bootstrap 5 pagination override */
 .dataTables_wrapper .pagination .page-link,
 .md-pagination .pagination .page-link,
 .md-pagination .page-link,
 .pagination .page-link {
-    border: 1.5px solid #e2e8f0 !important;
-    border-radius: 8px !important;
+    border: 1.5px solid #dde3ed !important;
+    border-radius: 6px !important;
     background: #ffffff !important;
     color: #374151 !important;
-    font-size: 0.82rem !important;
-    font-weight: 600 !important;
-    padding: 5px 12px !important;
+    font-size: 0.8rem !important;
+    font-weight: 500 !important;
+    padding: 4px 10px !important;
     margin: 0 1px !important;
-    transition: all 0.2s ease !important;
+    transition: all 0.18s ease !important;
 }
 
 .dataTables_wrapper .pagination .page-item.active .page-link,
@@ -361,7 +407,7 @@ table.dataTable thead th,
     background: #1a56db !important;
     border-color: #1a56db !important;
     color: #ffffff !important;
-    box-shadow: 0 2px 8px rgba(26, 86, 219, 0.25) !important;
+    box-shadow: 0 2px 6px rgba(26, 86, 219, 0.22) !important;
 }
 
 .dataTables_wrapper .pagination .page-link:hover,
@@ -377,27 +423,24 @@ table.dataTable thead th,
 .dataTables_wrapper .pagination .page-item:last-child .page-link,
 .md-pagination .pagination .page-item:first-child .page-link,
 .md-pagination .pagination .page-item:last-child .page-link,
-.md-pagination .page-item:first-child .page-link,
-.md-pagination .page-item:last-child .page-link,
 .pagination .page-item:first-child .page-link,
 .pagination .page-item:last-child .page-link {
-    border-radius: 20px !important;
-    padding: 5px 16px !important;
+    border-radius: 16px !important;
+    padding: 4px 14px !important;
 }
 
 .dataTables_wrapper .pagination .page-item.disabled .page-link,
 .md-pagination .pagination .page-item.disabled .page-link,
-.md-pagination .page-item.disabled .page-link,
 .pagination .page-item.disabled .page-link {
     background: #f8fafc !important;
-    border-color: #e2e8f0 !important;
-    color: #94a3b8 !important;
+    border-color: #e8ecf3 !important;
+    color: #b0bcd0 !important;
 }
 
 /* ── PAGINATION FOOTER WRAPPER ── */
-.dataTables_wrapper>.row:last-child {
-    padding: 8px 0 !important;
-    margin-top: 8px !important;
+.dataTables_wrapper > .row:last-child {
+    padding: 6px 0 !important;
+    margin-top: 6px !important;
     display: flex !important;
     align-items: center !important;
     justify-content: space-between !important;
@@ -420,11 +463,11 @@ table td:last-child {
     background: rgba(255, 255, 255, 0.9) !important;
     color: #1a56db !important;
     font-weight: 600 !important;
-    font-size: 0.85rem !important;
-    border: 1px solid #e2e8f0 !important;
+    font-size: 0.83rem !important;
+    border: 1px solid #dde3ed !important;
     border-radius: 8px !important;
-    padding: 12px 24px !important;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1) !important;
+    padding: 10px 22px !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08) !important;
 }
 
 /* ── EMPTY TABLE MESSAGE ── */
@@ -432,7 +475,8 @@ table td:last-child {
 table.dataTable td.dataTables_empty {
     text-align: center !important;
     color: #94a3b8 !important;
-    font-size: 0.85rem !important;
-    padding: 24px 14px !important;
-    font-style: italic;
+    font-size: 0.83rem !important;
+    padding: 22px 14px !important;
+    font-style: italic !important;
+    font-weight: 400 !important;
 }

@@ -116,11 +116,33 @@
             border-right: 1px solid #e2e8f0 !important;
         }
 
-        /* ─── Show sidebar hamburger toggle on ALL screen sizes ─── */
-        .layout-menu .app-brand .sptjm-hamburger.layout-menu-toggle {
+        /* ─── Sidebar Toggle Button (Chevron Left) ─── */
+        .layout-menu .app-brand .layout-menu-toggle {
             display: flex !important;
-            opacity: 1 !important;
-            position: static !important;
+            align-items: center !important;
+            justify-content: center !important;
+            width: 28px !important;
+            height: 28px !important;
+            border-radius: 50% !important;
+            background: #eef2ff !important;
+            border: 1px solid #e2e8f0 !important;
+            transition: all 0.2s ease !important;
+            cursor: pointer !important;
+            text-decoration: none !important;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05) !important;
+        }
+        .layout-menu .app-brand .layout-menu-toggle:hover {
+            background: #1a56db !important;
+            border-color: #1a56db !important;
+        }
+        .layout-menu .app-brand .layout-menu-toggle:hover i {
+            color: #ffffff !important;
+        }
+        
+        /* Hide logo subtitle when sidebar collapsed */
+        html.layout-menu-collapsed .sptjm-logo-subtitle {
+            opacity: 0 !important;
+            pointer-events: none !important;
         }
 
         /* ─── FORCE FULL-HIDE SIDEBAR for layout-menu-fixed + collapsed ─── */
@@ -178,23 +200,23 @@
         /* ─── APP BRAND AREA (Logo Horizontal) ─── */
         .layout-menu .app-brand.demo {
             height: auto !important;
-            min-height: 64px !important;
-            padding: 10px 16px !important;
+            min-height: 72px !important;
+            padding: 12px 16px !important;
             overflow: hidden !important;
             border-bottom: 1px solid #eef0f4 !important;
             display: flex !important;
             flex-direction: row !important;
             align-items: center !important;
-            justify-content: flex-start !important;
+            justify-content: space-between !important;
             width: 100% !important;
             box-sizing: border-box !important;
             position: relative !important;
         }
         .layout-menu .app-brand.demo .app-brand-link {
             display: flex !important;
-            flex-direction: row !important;
-            align-items: center !important;
-            gap: 10px !important;
+            flex-direction: column !important;
+            align-items: flex-start !important;
+            gap: 2px !important;
             overflow: hidden !important;
             flex: 1 !important;
         }
@@ -270,13 +292,93 @@
             text-transform: uppercase !important;
         }
 
-        /* ─── STATUS BADGE: AKTIF (Green label) ─── */
-        .badge.bg-label-primary {
-            background-color: rgba(40, 199, 111, 0.12) !important;
-            color: #28c76f !important;
+        /* ─── STATUS BADGE GLOBAL STANDARDIZATION ─── */
+        /* Aktif = Biru */
+        .badge.bg-label-primary,
+        .badge-aktif,
+        .vdd-badge-aktif {
+            background-color: rgba(26, 86, 219, 0.1) !important;
+            color: #1a56db !important;
             font-weight: 600 !important;
-            text-transform: uppercase !important;
-            letter-spacing: 0.03em !important;
+            font-size: 0.73rem !important;
+            padding: 3px 10px !important;
+            border-radius: 20px !important;
+            border: 1px solid rgba(26,86,219,0.18) !important;
+            display: inline-block !important;
+        }
+        /* Tidak Aktif / Non / Merah */
+        .badge.bg-label-danger,
+        .badge-nonaktif,
+        .badge-tidak,
+        .vdd-badge-nonaktif,
+        .vdd-badge-tidak {
+            background-color: rgba(220, 38, 38, 0.1) !important;
+            color: #dc2626 !important;
+            font-weight: 600 !important;
+            font-size: 0.73rem !important;
+            padding: 3px 10px !important;
+            border-radius: 20px !important;
+            border: 1px solid rgba(220,38,38,0.18) !important;
+            display: inline-block !important;
+        }
+        /* Sukses = Hijau */
+        .badge.bg-label-success {
+            background-color: rgba(5, 150, 105, 0.1) !important;
+            color: #059669 !important;
+            font-weight: 600 !important;
+            font-size: 0.73rem !important;
+            padding: 3px 10px !important;
+            border-radius: 20px !important;
+            border: 1px solid rgba(5,150,105,0.18) !important;
+            display: inline-block !important;
+        }
+        /* Warning = Kuning */
+        .badge.bg-label-warning {
+            background-color: rgba(217, 119, 6, 0.1) !important;
+            color: #d97706 !important;
+            font-weight: 600 !important;
+            font-size: 0.73rem !important;
+            padding: 3px 10px !important;
+            border-radius: 20px !important;
+            border: 1px solid rgba(217,119,6,0.18) !important;
+            display: inline-block !important;
+        }
+        /* Info = Abu-abu */
+        .badge.bg-label-secondary,
+        .badge.bg-label-info {
+            background-color: rgba(100, 116, 139, 0.1) !important;
+            color: #64748b !important;
+            font-weight: 600 !important;
+            font-size: 0.73rem !important;
+            padding: 3px 10px !important;
+            border-radius: 20px !important;
+            border: 1px solid rgba(100,116,139,0.18) !important;
+            display: inline-block !important;
+        }
+
+        /* ─── LINK LIHAT DOKUMEN ─── */
+        a:has(> .bx-file),
+        a.link-lihat-dokumen {
+            color: #1a56db !important;
+            font-weight: 500 !important;
+            text-decoration: none !important;
+            background: transparent !important;
+            border: none !important;
+            box-shadow: none !important;
+            padding: 0 !important;
+        }
+        a:has(> .bx-file):hover,
+        a.link-lihat-dokumen:hover {
+            text-decoration: underline !important;
+        }
+
+        /* ─── TOMBOL SINKRONISASI (ORANGE) ─── */
+        .btn-sinkron-md,
+        button[class*="sinkron"],
+        .btn-sptjm-sinkron {
+            background-color: #d97706 !important;
+            color: #fff !important;
+            border: none !important;
         }
     </style>
 
@@ -298,208 +400,7 @@
     {{-- Page-level scripts (from @push('scripts')) --}}
     @stack('scripts')
 
-    <!-- ─── GLOBAL CARD ENHANCEMENT ─── -->
-    <style>
-        /* ─── GLOBAL MASTER DATA TOOLBAR BUTTONS ─── */
-        /* Override all page-level .btn-md2-tambah to pill shape matching data-dosen */
-        .btn-md2-tambah {
-            background-color: #0b3d91 !important;
-            border: none !important;
-            color: #fff !important;
-            font-weight: 600 !important;
-            font-size: 0.82rem !important;
-            padding: 8px 20px !important;
-            border-radius: 20px !important;
-            display: inline-flex !important;
-            align-items: center !important;
-            gap: 6px !important;
-            transition: all 0.2s !important;
-            white-space: nowrap !important;
-            cursor: pointer !important;
-        }
-        .btn-md2-tambah:hover {
-            background-color: #082f73 !important;
-            color: #fff !important;
-            box-shadow: 0 4px 14px rgba(11, 61, 145, 0.35) !important;
-        }
-
-        /* ─── GLOBAL SPTJM ICON BUTTONS (Rounded Circle Style) ─── */
-        .sptjm-icon-btn {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            width: 28px;
-            height: 28px;
-            border-radius: 50%;
-            border: none;
-            cursor: pointer;
-            font-size: 1rem;
-            transition: box-shadow 0.15s ease, opacity 0.15s ease;
-            flex-shrink: 0;
-            will-change: auto;
-        }
-        .sptjm-icon-btn:hover {
-            box-shadow: 0 3px 10px rgba(0,0,0,0.18);
-            opacity: 0.88;
-        }
-        .sptjm-icon-btn:active { opacity: 0.7; }
-
-        /* Edit – soft blue */
-        .sptjm-btn-edit {
-            background-color: #e8f0fe;
-            color: #1a56db;
-        }
-        .sptjm-btn-edit:hover { background-color: #d0e1fd; color: #1a56db; }
-
-        /* Reset/Upload – soft green */
-        .sptjm-btn-reset {
-            background-color: #e8faf0;
-            color: #28a745;
-        }
-        .sptjm-btn-reset:hover { background-color: #c3f0d8; color: #1e7e34; }
-
-        /* Delete – soft red */
-        .sptjm-btn-delete {
-            background-color: #fde8e8;
-            color: #dc3545;
-        }
-        .sptjm-btn-delete:hover { background-color: #fcc8c8; color: #b02a37; }
-
-        /* Print – soft teal */
-        .sptjm-btn-print {
-            background-color: #e8f7fd;
-            color: #0d9488;
-        }
-        .sptjm-btn-print:hover { background-color: #c4eefa; color: #0a7a6e; }
-
-        /* View – soft purple */
-        .sptjm-btn-view {
-            background-color: #f0e8fe;
-            color: #7c3aed;
-        }
-        .sptjm-btn-view:hover { background-color: #e0cefc; color: #5b21b6; }
-
-        /* Info – soft yellow */
-        .sptjm-btn-info {
-            background-color: #fef9e7;
-            color: #d97706;
-        }
-        .sptjm-btn-info:hover { background-color: #fef3c7; color: #b45309; }
-
-        /* Wrap for spacing */
-        td .sptjm-icon-btn + .sptjm-icon-btn,
-        td .sptjm-icon-btn + form,
-        td form + .sptjm-icon-btn,
-        td form + form {
-            margin-left: 4px;
-        }
-
-        /* Disable all transitions during page navigation to prevent icon ghost */
-        .page-transitioning *,
-        .page-transitioning *::before,
-        .page-transitioning *::after {
-            transition: none !important;
-            animation: none !important;
-        }
-    </style>
-
-    <style>
-        /* ─── GLOBAL CARD ENHANCEMENT ─── */
-        .card, 
-        .md-card,
-        .md2-card, 
-        .sptjm-table-card, 
-        .sptjm-stat-card {
-            border: 1.5px solid #dbeafe !important;
-            box-shadow: 0 10px 30px rgba(26, 86, 219, 0.15) !important;
-            border-radius: 12px !important;
-            background: #ffffff !important;
-            margin-bottom: 24px !important;
-            overflow: hidden !important;
-        }
-        .sptjm-stat-card {
-            margin-bottom: 0px !important;
-        }
-        .card-header, .md2-card-inner h5, .md-card-inner h5 {
-            font-weight: 700 !important;
-            color: #1e293b !important;
-            border-bottom: 1px solid #e2e8f0 !important;
-            padding-bottom: 12px !important;
-            margin-bottom: 16px !important;
-        }
-        .md-card-inner, .md2-card-inner {
-            padding: 24px !important;
-        }
-
-        /* ─── GLOBAL TABLE GRIDLINES & BORDERS ─── */
-        table.dataTable,
-        .table,
-        .md-table-wrap table,
-        .md2-table {
-            border: 1.5px solid #cbd5e1 !important;
-            border-collapse: collapse !important;
-            width: 100% !important;
-        }
-        table.dataTable thead th,
-        .table thead th,
-        .md-table-wrap table thead th,
-        .md2-table thead th {
-            border: 1.5px solid #cbd5e1 !important;
-            background-color: #f1f5f9 !important;
-            color: #1e293b !important;
-            font-weight: 700 !important;
-            text-transform: uppercase !important;
-            font-size: 0.76rem !important;
-            letter-spacing: 0.05em !important;
-            padding: 5px 10px !important;
-            vertical-align: middle !important;
-            line-height: 1.2 !important;
-        }
-        table.dataTable tbody td,
-        .table tbody td,
-        .md-table-wrap table tbody td,
-        .md2-table tbody td {
-            border: 1.5px solid #cbd5e1 !important;
-            padding: 6px 12px !important;
-            vertical-align: middle !important;
-            color: #334155 !important;
-            line-height: 1.2 !important;
-        }
-        
-        /* ─── DATATABLES PAGINATION FOOTER WRAPPER ─── */
-        .dataTables_wrapper > .row:last-child {
-            background-color: #edf2f9 !important;
-            padding: 12px 24px !important;
-            border-top: 1.5px solid #dbeafe !important;
-            margin-left: -24px !important;
-            margin-right: -24px !important;
-            margin-bottom: -24px !important;
-            margin-top: 16px !important;
-            border-bottom-left-radius: 12px !important;
-            border-bottom-right-radius: 12px !important;
-            display: flex !important;
-            align-items: center !important;
-            justify-content: space-between !important;
-        }
-        .dataTables_wrapper .dataTables_paginate .paginate_button {
-            background: transparent !important;
-            border: none !important;
-            padding: 0 !important;
-            margin: 0 !important;
-            box-shadow: none !important;
-            cursor: pointer !important;
-        }
-        .dataTables_wrapper .dataTables_paginate .paginate_button:hover {
-            background: transparent !important;
-            border: none !important;
-        }
-        .dataTables_wrapper .dataTables_paginate .paginate_button.current,
-        .dataTables_wrapper .dataTables_paginate .paginate_button.current:hover {
-            background: transparent !important;
-            border: none !important;
-            box-shadow: none !important;
-        }
-    </style>
+    <!-- Stylesheets consolidated into sptjm-custom.css -->
 
 </body>
 

@@ -20,7 +20,7 @@
     </div>
 
     {{-- Main Card --}}
-    <div class="md-card mt-4">
+    <div class="md-card">
         <div class="md-card-inner">
             <div class="md-toolbar d-flex justify-content-between align-items-center mb-4">
                 {{-- Kiri: info --}}

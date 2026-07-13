@@ -9,11 +9,11 @@
 @endsection
 
 @section('content')
-<div class="row g-3 mb-3">
+<div class="row g-2 mb-2">
     <!-- Jumlah Seluruh Dosen -->
     <div class="col-12 col-md-6 col-lg-4">
         <div class="sptjm-stat-card">
-            <div class="d-flex justify-content-between align-items-start">
+            <div class="d-flex justify-content-between align-items-center">
                 <div>
                     <div class="sptjm-stat-title">Jumlah Seluruh Dosen</div>
                     <div class="sptjm-stat-value val-primary">{{ number_format($totalDosen, 0, ',', '.') }}</div>
@@ -28,12 +28,12 @@
     <!-- Dosen PNS Aktif -->
     <div class="col-12 col-md-6 col-lg-4">
         <div class="sptjm-stat-card">
-            <div class="d-flex justify-content-between align-items-start">
+            <div class="d-flex justify-content-between align-items-center">
                 <div>
                     <div class="sptjm-stat-title">Dosen PNS Aktif</div>
-                    <div class="sptjm-stat-value val-success">{{ number_format($jumlahDosenPNSAktif, 0, ',', '.') }}</div>
+                    <div class="sptjm-stat-value val-primary">{{ number_format($jumlahDosenPNSAktif, 0, ',', '.') }}</div>
                 </div>
-                <div class="sptjm-stat-icon-wrapper icon-bg-success">
+                <div class="sptjm-stat-icon-wrapper icon-bg-primary">
                     <i class="bx bx-user-check"></i>
                 </div>
             </div>
@@ -43,7 +43,7 @@
     <!-- Dosen PNS Tidak Aktif -->
     <div class="col-12 col-md-6 col-lg-4">
         <div class="sptjm-stat-card">
-            <div class="d-flex justify-content-between align-items-start">
+            <div class="d-flex justify-content-between align-items-center">
                 <div>
                     <div class="sptjm-stat-title">Dosen PNS Tidak Aktif</div>
                     <div class="sptjm-stat-value val-danger">{{ number_format($jumlahDosenPNSNon, 0, ',', '.') }}</div>
@@ -58,7 +58,7 @@
     <!-- Perguruan Tinggi Swasta -->
     <div class="col-12 col-md-6 col-lg-4">
         <div class="sptjm-stat-card">
-            <div class="d-flex justify-content-between align-items-start">
+            <div class="d-flex justify-content-between align-items-center">
                 <div>
                     <div class="sptjm-stat-title">Perguruan Tinggi Swasta</div>
                     <div class="sptjm-stat-value val-warning">{{ number_format($ptsCount, 0, ',', '.') }}</div>
@@ -73,12 +73,12 @@
     <!-- Dosen Non-PNS Aktif -->
     <div class="col-12 col-md-6 col-lg-4">
         <div class="sptjm-stat-card">
-            <div class="d-flex justify-content-between align-items-start">
+            <div class="d-flex justify-content-between align-items-center">
                 <div>
                     <div class="sptjm-stat-title">Dosen Non-PNS Aktif</div>
-                    <div class="sptjm-stat-value val-success">{{ number_format($jumlahDosenNonPNSAktif, 0, ',', '.') }}</div>
+                    <div class="sptjm-stat-value val-primary">{{ number_format($jumlahDosenNonPNSAktif, 0, ',', '.') }}</div>
                 </div>
-                <div class="sptjm-stat-icon-wrapper icon-bg-success">
+                <div class="sptjm-stat-icon-wrapper icon-bg-primary">
                     <i class="bx bx-user-check"></i>
                 </div>
             </div>
@@ -88,7 +88,7 @@
     <!-- Dosen Non-PNS Tidak Aktif -->
     <div class="col-12 col-md-6 col-lg-4">
         <div class="sptjm-stat-card">
-            <div class="d-flex justify-content-between align-items-start">
+            <div class="d-flex justify-content-between align-items-center">
                 <div>
                     <div class="sptjm-stat-title">Dosen Non-PNS Tidak Aktif</div>
                     <div class="sptjm-stat-value val-danger">{{ number_format($jumlahDosenNonPNSNon, 0, ',', '.') }}</div>
@@ -113,13 +113,13 @@
     </div>
 
     <div class="table-responsive text-nowrap">
-        <table class="table table-hover" id="dosenPensiunTable">
+        <table class="table table-hover md2-table text-center" id="dosenPensiunTable" style="width: 100%;">
             <thead>
                 <tr>
                     <th>Nidn</th>
                     <th>NUPTK</th>
-                    <th>Nama Dosen</th>
-                    <th>Nama PTS</th>
+                    <th class="text-start">Nama Dosen</th>
+                    <th class="text-start">Nama PTS</th>
                     <th>TMT Pensiun</th>
                     <th>Usia</th>
                     <th>Status</th>
@@ -140,32 +140,21 @@ document.addEventListener('DOMContentLoaded', function () {
         processing: true,
         serverSide: true,
         paging: true,
-        pageLength: 10,
         ajax: {
             url: '{{ route('admin.dashboard.dosen-pensiun.data') }}'
         },
         columns: [
-            { 
-                data: 'nidn', 
-                name: 'nidn',
-                render: function(data, type, row) {
-                    return '<span class="fw-semibold text-primary">' + data + '</span>';
-                }
-            },
+            { data: 'nidn', name: 'nidn' },
             { data: 'nuptk', name: 'nuptk' },
             { 
                 data: 'nama', 
                 name: 'nama',
-                render: function(data, type, row) {
-                    return '<span class="fw-bold text-dark">' + data + '</span>';
-                }
+                className: 'text-start'
             },
             { 
                 data: 'pts', 
                 name: 'pts',
-                render: function(data, type, row) {
-                    return '<span class="fw-semibold text-primary">' + data + '</span>';
-                }
+                className: 'text-start'
             },
             { data: 'tmt_pensiun', name: 'tmt_pensiun' },
             { data: 'usia', name: 'usia' },
@@ -176,7 +165,9 @@ document.addEventListener('DOMContentLoaded', function () {
                 searchable: false,
                 render: function(data, type, row) {
                     // Figma design uses active pill
-                    return '<span class="sptjm-badge-active">' + (data || 'AKTIF') + '</span>';
+                    // Strip HTML if present to prevent nesting
+                    var text = (data || 'AKTIF').toString().replace(/<[^>]*>/g, '');
+                    return '<span class="sptjm-badge-active">' + text + '</span>';
                 }
             },
             { 

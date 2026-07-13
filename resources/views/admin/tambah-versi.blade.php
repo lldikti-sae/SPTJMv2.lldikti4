@@ -29,8 +29,8 @@
         </div>
     @endif
 
-    {{-- Form Card --}}
-    <div class="md-card mt-4 mb-4">
+    {{-- Main Unified Card --}}
+    <div class="md-card">
         <div class="md-card-inner">
             <h5 class="mb-4">Buat Versi Baru</h5>
             <form method="POST" action="{{ route('admin.versi.store') }}" onsubmit="return validateForm()">
@@ -57,12 +57,9 @@
                     </div>
                 </div>
             </form>
-        </div>
-    </div>
 
-    {{-- Main Card for Table --}}
-    <div class="md-card">
-        <div class="md-card-inner">
+            <hr class="my-4">
+
             <div class="d-flex align-items-center justify-content-between flex-wrap mb-3">
                 <h5 class="mb-0">Data Tahun Versi </h5>
                 <div class="form-check form-switch mb-0">

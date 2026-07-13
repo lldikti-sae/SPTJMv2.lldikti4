@@ -13,103 +13,92 @@
         border-radius: 12px !important;
         background: #ffffff !important;
     }
-
+    .md2-table th, .md2-table td {
+        padding: 6px 12px !important;
+        font-size: 0.82rem !important;
+        line-height: 1.2 !important;
+    }
 </style>
 
 <div class="content-wrapper">
-    <!-- Breadcrumb -->
-    <nav aria-label="breadcrumb" class="mb-3">
-        <ol class="breadcrumb" style="font-size: 0.85rem; padding: 0; background: transparent;">
-            <li class="breadcrumb-item"><a href="#" style="color: #64748b;">Proses Pembayaran</a></li>
-            <li class="breadcrumb-item active fw-bold" aria-current="page" style="color: #1a56db;">Rekapitulasi Pencairan</li>
-        </ol>
-    </nav>
 
-    <!-- Header -->
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <div>
-            <h4 class="fw-bold text-dark mb-1" style="color: #0f2b5c !important; font-size: 1.5rem;">Proses Rekapitulasi Pencairan</h4>
-        </div>
-    </div>
-
-    <!-- Filter Form -->
+    <!-- Card Utama -->
     <div class="card card-pencairan mb-4">
-        <div class="card-body p-4">
-            <h6 class="fw-bold mb-3 d-flex align-items-center gap-2" style="color: #0f2b5c; font-size: 0.95rem;">
-                <i class="bx bx-filter" style="color: #d97706; font-size: 1.15rem;"></i>
-                Proses Rekapitulasi Pencairan
-            </h6>
-            <form method="GET" action="{{ route('rekap-pencairan') }}" id="filterPencairanForm">
-                <div class="d-flex flex-wrap align-items-end gap-3">
-                    <!-- Tipe SPTJM -->
-                    <div style="min-width: 200px;">
-                        <label for="tipe_sptjm" class="form-label fw-bold text-uppercase mb-1" style="font-size: 0.68rem; letter-spacing: 0.06em; color: #64748b;">Tipe Pencairan</label>
-                        <select class="form-select" id="tipe_sptjm" name="tipe_sptjm"
-                            style="border: 1.5px solid #cbd5e1; border-radius: 8px; font-size: 0.9rem; color: #374151;">
-                            <option value="SPTJM" {{ request('tipe_sptjm', 'SPTJM') == 'SPTJM' ? 'selected' : '' }}>SPTJM</option>
-                            <option value="TUKIN" {{ request('tipe_sptjm') == 'TUKIN' ? 'selected' : '' }}>TUKIN</option>
-                        </select>
-                    </div>
-
-                    <!-- Dropdown Pencairan ke- -->
-                    <div style="min-width: 200px;">
-                        <label for="pencairan_ke" class="form-label fw-bold text-uppercase mb-1" style="font-size: 0.68rem; letter-spacing: 0.06em; color: #64748b;">Pencairan ke-</label>
-                        <select class="form-select" id="pencairan_ke" name="pencairan_ke"
-                            style="border: 1.5px solid #cbd5e1; border-radius: 8px; font-size: 0.9rem; color: #374151;">
-                            <option value="Semua" {{ $pencairanKe == 'Semua' ? 'selected' : '' }}>Semua Tahap</option>
-                            @for ($i = 1; $i <= 20; $i++)
-                                <option value="{{ $i }}" {{ $pencairanKe == $i ? 'selected' : '' }}>Tahap {{ $i }}</option>
-                            @endfor
-                        </select>
-                    </div>
-
-                    <!-- Tombol Proses & Selesai berdampingan (segmented button style) -->
-                    <div class="d-flex" style="border: 1.5px solid #e2e8f0; border-radius: 8px; overflow: hidden; align-self: flex-end;">
-                        <button type="submit" name="status" value="Proses"
-                            style="border: none; border-right: 1.5px solid #e2e8f0; padding: 9px 24px; font-weight: 700; font-size: 0.875rem; cursor: pointer; transition: all 0.2s;
-                                {{ $status == 'Proses'
-                                    ? 'background-color: #f59e0b; color: #ffffff;'
-                                    : 'background-color: #ffffff; color: #64748b;' }}">
-                            Proses
-                        </button>
-                        <button type="submit" name="status" value="Selesai"
-                            style="border: none; padding: 9px 24px; font-weight: 700; font-size: 0.875rem; cursor: pointer; transition: all 0.2s;
-                                {{ $status == 'Selesai'
-                                    ? 'background-color: #10b981; color: #ffffff;'
-                                    : 'background-color: #ffffff; color: #64748b;' }}">
-                            Selesai
-                        </button>
-                    </div>
-
-                    <!-- Sinkronkan Data di kanan -->
-                    <div class="ms-auto" style="align-self: flex-end;">
-                        <a href="{{ route('rekap-pencairan') }}"
-                            class="btn d-flex align-items-center gap-2 fw-semibold"
-                            style="background-color: #0f2b5c; color: #ffffff; border-color: #0f2b5c; border-radius: 8px; padding: 9px 20px; font-size: 0.875rem; white-space: nowrap; text-decoration: none;">
-                            <i class="bx bx-refresh" style="font-size: 1.05rem;"></i> Sinkronkan Data
-                        </a>
-                    </div>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <!-- Table Card -->
-    <div class="card card-pencairan mb-4">
-        <div class="card-header d-flex justify-content-between align-items-center px-4 py-3"
-            style="border-bottom: 1px solid #e2e8f0; background: #fff; border-radius: 12px 12px 0 0;">
-            <h6 class="mb-0 fw-bold d-flex align-items-center gap-2" style="color: #0f2b5c;">
-                <i class="bx bx-table" style="color: #1a56db; font-size: 1.15rem;"></i> Tabel Rekapitulasi
-            </h6>
-            <div class="d-flex align-items-center"
-                style="border: 1.5px solid #e2e8f0; border-radius: 50px; background: #f8fafc; padding: 5px 14px; min-width: 240px;">
-                <i class="bx bx-search me-2" style="color: #94a3b8; font-size: 0.95rem;"></i>
-                <input type="text" id="searchInput" placeholder="Cari data rekapitulasi..."
-                    style="border: none; background: transparent; outline: none; font-size: 0.84rem; color: #374151; width: 100%;">
-            </div>
-        </div>
-
         <div class="card-body px-4 pb-4 pt-0">
+            
+            <!-- Filter Section -->
+            <div class="pt-3 pb-3 mb-3 border-bottom">
+                <h6 class="fw-bold mb-3 d-flex align-items-center gap-2" style="color: #0f2b5c; font-size: 0.95rem;">
+                    <i class="bx bx-filter" style="color: #d97706; font-size: 1.15rem;"></i>
+                    Proses Rekapitulasi Pencairan
+                </h6>
+                <form method="GET" action="{{ route('rekap-pencairan') }}" id="filterPencairanForm">
+                    <div class="d-flex flex-wrap align-items-end gap-3">
+                        <!-- Tipe SPTJM -->
+                        <div style="min-width: 200px;">
+                            <label for="tipe_sptjm" class="form-label fw-bold text-uppercase mb-1" style="font-size: 0.68rem; letter-spacing: 0.06em; color: #64748b;">Tipe Pencairan</label>
+                            <select class="form-select" id="tipe_sptjm" name="tipe_sptjm"
+                                style="border: 1.5px solid #cbd5e1; border-radius: 8px; font-size: 0.9rem; color: #374151;">
+                                <option value="SPTJM" {{ request('tipe_sptjm', 'SPTJM') == 'SPTJM' ? 'selected' : '' }}>SPTJM</option>
+                                <option value="TUKIN" {{ request('tipe_sptjm') == 'TUKIN' ? 'selected' : '' }}>TUKIN</option>
+                            </select>
+                        </div>
+
+                        <!-- Dropdown Pencairan ke- -->
+                        <div style="min-width: 200px;">
+                            <label for="pencairan_ke" class="form-label fw-bold text-uppercase mb-1" style="font-size: 0.68rem; letter-spacing: 0.06em; color: #64748b;">Pencairan ke-</label>
+                            <select class="form-select" id="pencairan_ke" name="pencairan_ke"
+                                style="border: 1.5px solid #cbd5e1; border-radius: 8px; font-size: 0.9rem; color: #374151;">
+                                <option value="Semua" {{ $pencairanKe == 'Semua' ? 'selected' : '' }}>Semua Tahap</option>
+                                @for ($i = 1; $i <= 20; $i++)
+                                    <option value="{{ $i }}" {{ $pencairanKe == $i ? 'selected' : '' }}>Tahap {{ $i }}</option>
+                                @endfor
+                            </select>
+                        </div>
+
+                        <!-- Tombol Proses & Selesai berdampingan (segmented button style) -->
+                        <div class="d-flex" style="border: 1.5px solid #e2e8f0; border-radius: 8px; overflow: hidden; align-self: flex-end;">
+                            <button type="submit" name="status" value="Proses"
+                                style="border: none; border-right: 1.5px solid #e2e8f0; padding: 9px 24px; font-weight: 700; font-size: 0.875rem; cursor: pointer; transition: all 0.2s;
+                                    {{ $status == 'Proses'
+                                        ? 'background-color: #f59e0b; color: #ffffff;'
+                                        : 'background-color: #ffffff; color: #64748b;' }}">
+                                Proses
+                            </button>
+                            <button type="submit" name="status" value="Selesai"
+                                style="border: none; padding: 9px 24px; font-weight: 700; font-size: 0.875rem; cursor: pointer; transition: all 0.2s;
+                                    {{ $status == 'Selesai'
+                                        ? 'background-color: #10b981; color: #ffffff;'
+                                        : 'background-color: #ffffff; color: #64748b;' }}">
+                                Selesai
+                            </button>
+                        </div>
+
+                        <!-- Sinkronkan Data di kanan -->
+                        <div class="ms-auto" style="align-self: flex-end;">
+                            <a href="{{ route('rekap-pencairan') }}"
+                                class="btn d-flex align-items-center gap-2 fw-semibold"
+                                style="background-color: #0f2b5c; color: #ffffff; border-color: #0f2b5c; border-radius: 8px; padding: 9px 20px; font-size: 0.875rem; white-space: nowrap; text-decoration: none;">
+                                <i class="bx bx-refresh" style="font-size: 1.05rem;"></i> Sinkronkan Data
+                            </a>
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Table Header Toolbar -->
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h6 class="mb-0 fw-bold d-flex align-items-center gap-2" style="color: #0f2b5c;">
+                    <i class="bx bx-table" style="color: #1a56db; font-size: 1.15rem;"></i> Tabel Rekapitulasi
+                </h6>
+                <div class="d-flex align-items-center"
+                    style="border: 1.5px solid #e2e8f0; border-radius: 50px; background: #f8fafc; padding: 5px 14px; min-width: 240px;">
+                    <i class="bx bx-search me-2" style="color: #94a3b8; font-size: 0.95rem;"></i>
+                    <input type="text" id="searchInput" placeholder="Cari data rekapitulasi..."
+                        style="border: none; background: transparent; outline: none; font-size: 0.84rem; color: #374151; width: 100%;">
+                </div>
+            </div>
+
             <div class="table-responsive text-nowrap">
                 <table class="table table-hover md2-table text-center" id="rekapTable" style="width:100%; border-collapse: collapse;">
                     <thead>
@@ -147,8 +136,8 @@
 
                             // Badge status pegawai
                             $isPns = strtoupper(trim($item->status_pegawai ?? '')) === 'PNS';
-                            $spBg   = $isPns ? '#d1fae5' : '#fef9c3';
-                            $spText = $isPns ? '#065f46' : '#854d0e';
+                            $spBg   = $isPns ? '#dbeafe' : '#fbe0e0';
+                            $spText = $isPns ? '#1a56db' : '#b92c2c';
                         @endphp
                         <tr>
                             <td class="fw-semibold" style="color: #374151;">{{ $loop->iteration }}</td>
@@ -157,11 +146,11 @@
                                 <span style="display:inline-flex; align-items:center; justify-content:center; background:#dbeafe; color:#1a56db; border-radius:50%; width:28px; height:28px; font-size:0.8rem; font-weight:700;">{{ $item->pencairan_ke }}</span>
                             </td>
                             <td>
-                                <span style="display:inline-block; background:{{ $spBg }}; color:{{ $spText }}; border-radius:20px; padding:3px 10px; font-size:0.72rem; font-weight:700; line-height:1.4;">{{ strtoupper($item->status_pegawai) }}</span>
+                                <span class="badge" style="display:inline-block; background:{{ $spBg }} !important; color:{{ $spText }} !important; border-radius:20px !important; padding:3px 10px !important; font-size:0.72rem !important; font-weight:700 !important; line-height:1.4 !important;">{{ strtoupper($item->status_pegawai) }}</span>
                             </td>
                             <td style="color:#374151; font-weight:600;">{{ $item->jenis }}</td>
                             <td>
-                                <span style="display:inline-block; background:{{ $bankBg }}; color:{{ $bankTxt }}; border-radius:6px; padding:3px 8px; font-size:0.72rem; font-weight:700;">{{ strtoupper($item->bank) }}</span>
+                                <span class="badge-bank" style="display:inline-block; background:{{ $bankBg }}; color:{{ $bankTxt }} !important; border-radius:6px; padding:3px 8px; font-size:0.72rem; font-weight:700;">{{ strtoupper($item->bank) }}</span>
                             </td>
                             <td class="text-end fw-semibold" style="color:#0f2b5c;">{{ number_format($item->jumlah_kotor, 0, ',', '.') }}</td>
                             <td class="text-end fw-semibold" style="color:#ef4444;">{{ number_format($item->jumlah_pajak, 0, ',', '.') }}</td>

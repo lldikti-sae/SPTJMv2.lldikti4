@@ -6,83 +6,143 @@ $navbarDetached = $navbarDetached ?? '';
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 <style>
-/* ─── NAVBAR REDESIGN ─────────────────────────── */
-/* ─── Navbar hamburger toggle — always visible ─── */
+/* ─── NAVBAR — Unified, symmetric, proportional ─────────── */
+
+/* ── Navbar container ── */
+#layout-navbar {
+    background: #ffffff !important;
+    border-bottom: 1px solid #e2e8f0 !important;
+    box-shadow: 0 1px 8px rgba(0, 0, 0, 0.05) !important;
+    padding: 0 20px !important;
+    min-height: 58px !important;
+    height: 58px !important;
+}
+
+/* ── Inner nav row ── */
+#layout-navbar .navbar-nav-right {
+    width: 100% !important;
+    display: flex !important;
+    align-items: center !important;
+    height: 100% !important;
+    gap: 0 !important;
+}
+
+/* ── Hamburger toggle ── */
 .sptjm-nav-hamburger {
     display: flex !important;
     align-items: center !important;
     justify-content: center !important;
-    width: 40px !important;
-    height: 40px !important;
+    width: 36px !important;
+    height: 36px !important;
     border-radius: 8px !important;
     background: transparent !important;
     border: none !important;
     cursor: pointer !important;
     text-decoration: none !important;
-    transition: background 0.18s ease !important;
+    transition: background 0.15s ease !important;
     flex-shrink: 0 !important;
-    margin-right: 8px !important;
+    margin-right: 12px !important;
 }
 .sptjm-nav-hamburger:hover {
     background: rgba(15, 57, 148, 0.07) !important;
 }
 .sptjm-nav-hamburger i {
-    font-size: 1.55rem !important;
+    font-size: 1.45rem !important;
     color: #0f3994 !important;
 }
 
-#layout-navbar {
-    background: #ffffff !important;
-    border-bottom: 1px solid #e8ecf4 !important;
-    box-shadow: 0 2px 12px rgba(0,0,0,0.06) !important;
-    padding: 0 16px !important;
-    min-height: 64px !important;
+/* Toggle icon open/closed state */
+html:not(.layout-menu-collapsed) .navbar-toggle-icon-open  { display: inline-block !important; }
+html:not(.layout-menu-collapsed) .navbar-toggle-icon-closed { display: none !important; }
+html.layout-menu-collapsed .navbar-toggle-icon-open  { display: none !important; }
+html.layout-menu-collapsed .navbar-toggle-icon-closed { display: inline-block !important; }
+
+/* Desktop (≥1200px): hide hamburger when sidebar expanded */
+@media (min-width: 1200px) {
+    html:not(.layout-menu-collapsed) .sptjm-nav-hamburger { display: none !important; }
+    html.layout-menu-collapsed .sptjm-nav-hamburger { display: flex !important; }
 }
-#layout-navbar .navbar-nav-right {
-    width: 100%;
+
+/* ── Page title ── */
+#layout-navbar .sptjm-nav-title {
+    font-size: 1.0rem !important;
+    font-weight: 600 !important;
+    color: #1e293b !important;
+    letter-spacing: -0.1px !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+}
+
+/* ── Divider between title and user info ── */
+.sptjm-nav-divider {
+    width: 1px;
+    height: 28px;
+    background: #e2e8f0;
+    flex-shrink: 0;
+    margin: 0 16px;
+}
+
+/* ── User info block ── */
+.sptjm-user-info-wrap {
     display: flex !important;
     align-items: center !important;
-}
-#layout-navbar .sptjm-nav-title {
-    font-size: 1.4rem;
-    font-weight: 800;
-    color: #0f2b5c;
-    letter-spacing: -0.3px;
-    white-space: nowrap;
-}
-/* User info inline display (name + role stacked, then avatar) */
-.sptjm-user-info-wrap {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    cursor: pointer;
-    text-decoration: none;
+    gap: 10px !important;
+    cursor: pointer !important;
+    text-decoration: none !important;
+    padding: 6px 0 !important;
+    flex-shrink: 0 !important;
 }
 .sptjm-user-info-wrap .sptjm-user-text {
-    text-align: right;
+    text-align: right !important;
+    line-height: 1 !important;
 }
 .sptjm-user-info-wrap .sptjm-user-name {
-    display: block;
-    font-size: 0.88rem;
-    font-weight: 700;
-    color: #1e293b;
-    line-height: 1.2;
+    display: block !important;
+    font-size: 0.84rem !important;
+    font-weight: 600 !important;
+    color: #1e293b !important;
+    line-height: 1.25 !important;
 }
 .sptjm-user-info-wrap .sptjm-user-role {
-    display: block;
-    font-size: 0.75rem;
-    color: #64748b;
-    line-height: 1.2;
+    display: block !important;
+    font-size: 0.72rem !important;
+    font-weight: 400 !important;
+    color: #64748b !important;
+    line-height: 1.25 !important;
 }
 .sptjm-user-info-wrap .sptjm-avatar {
-    width: 38px;
-    height: 38px;
-    border-radius: 50%;
-    object-fit: cover;
-    border: 2px solid #e2e8f0;
+    width: 34px !important;
+    height: 34px !important;
+    border-radius: 50% !important;
+    object-fit: cover !important;
+    border: 2px solid #e2e8f0 !important;
+    flex-shrink: 0 !important;
 }
-/* Dropdown arrow hidden on custom link */
+
+/* ── Dropdown arrow hidden ── */
 .dropdown-user .hide-arrow::after { display: none !important; }
+
+/* ── Dropdown menu ── */
+.dropdown-user .dropdown-menu {
+    min-width: 200px !important;
+    border: 1px solid #e2e8f0 !important;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.10) !important;
+    border-radius: 10px !important;
+    padding: 6px !important;
+    margin-top: 6px !important;
+}
+.dropdown-user .dropdown-item {
+    border-radius: 6px !important;
+    font-size: 0.84rem !important;
+    padding: 8px 12px !important;
+    color: #374151 !important;
+    font-weight: 400 !important;
+}
+.dropdown-user .dropdown-item:hover {
+    background: #f1f5f9 !important;
+    color: #1e293b !important;
+}
 </style>
 
 <!-- Navbar -->
@@ -99,7 +159,8 @@ $navbarDetached = $navbarDetached ?? '';
                 <a href="javascript:void(0);"
                    class="sptjm-nav-hamburger layout-menu-toggle"
                    aria-label="Toggle sidebar">
-                    <i class="bx bx-menu"></i>
+                    <i class="bx bx-chevron-left navbar-toggle-icon-open"></i>
+                    <i class="bx bx-chevron-right navbar-toggle-icon-closed" style="display: none;"></i>
                 </a>
 
                 <div class="navbar-nav-right d-flex align-items-center" id="navbar-collapse">

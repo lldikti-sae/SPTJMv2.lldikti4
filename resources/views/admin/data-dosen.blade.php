@@ -8,79 +8,19 @@
 
 @section('page-style')
 <style>
-/* ── Page Header ── */
-.md-page-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    flex-wrap: wrap;
-    gap: 12px;
-    margin-bottom: 24px;
-    margin-top: 8px; /* Aga kebawahan */
-}
-.md-page-header .page-titles h4 {
-    font-size: 1.35rem;
-    font-weight: 700;
-    color: #2c3e50;
-    margin: 0 0 4px 0;
-    line-height: 1.2;
-}
-.md-page-header .breadcrumb {
-    margin: 0;
-    font-size: 0.8rem;
-    background: none;
-    padding: 0;
-}
-.md-page-header .breadcrumb-item a { color: #696cff; text-decoration: none; }
-.md-page-header .breadcrumb-item.active { color: #8592a3; }
-.md-page-header .breadcrumb-item + .breadcrumb-item::before { color: #8592a3; }
-
-/* ── Buttons ── */
-.btn-sinkron-md {
-    background-color: #d97706;
-    border-color: #d97706;
-    color: #fff;
-    font-weight: 600;
-    font-size: 0.82rem;
-    padding: 8px 18px;
-    border-radius: 20px;
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    transition: all 0.2s;
-    white-space: nowrap;
-}
-.btn-sinkron-md:hover { background-color: #b45309; color: #fff; }
-
-.btn-tambah-md {
-    background-color: #0b3d91; /* Dark blue matching Figma */
-    border-color: #0b3d91;
-    color: #fff;
-    font-weight: 600;
-    font-size: 0.82rem;
-    padding: 8px 18px;
-    border-radius: 20px;
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    transition: all 0.2s;
-    white-space: nowrap;
-}
-.btn-tambah-md:hover { background-color: #082f73; color: #fff; }
-
-/* ── Status Filters ── */
+/* â”€â”€ Status Filter Buttons â€” unik untuk halaman ini â”€â”€ */
 .md-status-filters {
     display: flex;
-    gap: 10px;
-    margin-bottom: 24px;
+    gap: 8px;
+    margin-bottom: 20px;
 }
 .md-status-btn {
     background-color: #fff;
     border: 1px solid #e2e8f0;
     color: #4a5568;
-    font-weight: 600;
+    font-weight: 500;
     font-size: 0.82rem;
-    padding: 6px 20px;
+    padding: 5px 18px;
     border-radius: 20px;
     transition: all 0.2s;
     cursor: pointer;
@@ -92,119 +32,40 @@
 }
 .md-status-btn:hover:not(.active) {
     background-color: #f8fafc;
+    border-color: #cbd5e1;
 }
 
-/* ── Card ── */
-.md-card {
-    background: #fff;
-    border-radius: 10px;
-    box-shadow: 0 2px 12px rgba(44,62,80,0.07);
-    overflow: hidden;
-}
-.md-card-inner { padding: 20px 24px 24px; }
 
-/* ── Toolbar ── */
-.md-toolbar {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    flex-wrap: wrap;
-    gap: 12px;
-    margin-bottom: 16px;
-}
-.dataTables_length {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    font-size: 0.84rem;
-    color: #4a5568;
-}
-.dataTables_length select {
-    border: 1px solid #e2e8f0;
-    border-radius: 6px;
-    padding: 5px 10px;
-    font-size: 0.84rem;
-    color: #4a5568;
-    background: #f8fafc;
-    cursor: pointer;
-    outline: none;
-}
-.dataTables_filter {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-}
-.dataTables_filter label {
-    font-size: 0.84rem;
-    color: #4a5568;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-}
-.dataTables_filter input {
-    border: 1px solid #e2e8f0;
-    border-radius: 6px;
-    padding: 6px 36px 6px 14px;
-    font-size: 0.84rem;
-    color: #2d3748;
-    background: #f8fafc url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' fill='%238592a3' viewBox='0 0 16 16'%3E%3Cpath d='M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398l3.85 3.85a1 1 0 0 0 1.415-1.415l-3.868-3.833zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z'/%3E%3C/svg%3E") no-repeat calc(100% - 10px) center;
-    min-width: 240px;
-    outline: none;
-    transition: border-color 0.2s;
-}
-.dataTables_filter input:focus { border-color: #0b3d91; background-color: #fff; }
 
-/* ── Table: dipindahkan ke global sptjm-datatable.css ── */
-
-/* ── Custom Elements ── */
+/* NIDN link style */
 .text-link-nidn {
     color: #0b3d91;
-    font-weight: 600;
+    font-weight: 500;
     text-decoration: none;
 }
-.text-link-nidn:hover {
-    text-decoration: underline;
-}
+.text-link-nidn:hover { text-decoration: underline; }
 
-.badge-ya {
-    background-color: #e0e7ff;
-    color: #3730a3;
-    font-weight: 700;
-    font-size: 0.72rem;
-    padding: 4px 12px;
-    border-radius: 20px;
-    display: inline-block;
-}
-.badge-tidak {
-    background-color: #fee2e2;
-    color: #b91c1c;
-    font-weight: 700;
-    font-size: 0.72rem;
-    padding: 4px 12px;
-    border-radius: 20px;
-    display: inline-block;
-}
-
-/* ── Aksi Circular Buttons ── */
+/* â”€â”€ Aksi Circular Buttons â”€â”€ */
 .btn-aksi-circle {
-    width: 28px;
-    height: 28px;
+    width: 26px;
+    height: 26px;
     border-radius: 50%;
     display: inline-flex;
     align-items: center;
     justify-content: center;
     border: none;
     color: #fff !important;
-    margin-right: 4px;
-    font-size: 0.9rem;
+    margin-right: 3px;
+    font-size: 0.85rem;
     transition: transform 0.2s, opacity 0.2s;
     text-decoration: none;
+    cursor: pointer;
 }
 .btn-aksi-circle:hover { transform: scale(1.1); opacity: 0.9; }
-.btn-aksi-view { background: #1e3a8a; } /* dark blue */
-.btn-aksi-check { background: #166534; } /* dark green */
-.btn-aksi-block { background: #dc2626; } /* red */
-.btn-aksi-edit { background: #eab308; } /* yellow */
+.btn-aksi-view  { background: #1e3a8a; }
+.btn-aksi-check { background: #166534; }
+.btn-aksi-block { background: #dc2626; }
+.btn-aksi-edit  { background: #eab308; }
 </style>
 @endsection
 
@@ -213,7 +74,7 @@
 {{-- Page Header --}}
 <div class="md-page-header">
     <div class="page-titles">
-        <h4>Data Dosen</h4>
+        <h1>Data Dosen</h1>
         <nav aria-label="breadcrumb">
             <ol class="breadcrumb">
                 <li class="breadcrumb-item"><a href="#">Data Dosen</a></li>
@@ -721,8 +582,6 @@ document.addEventListener('DOMContentLoaded', function() {
         responsive: false,
         paging: true,
         deferRender: true,
-        pageLength: 15,
-        lengthMenu: [[15, 25, 50, 100, 500], [15, 25, 50, 100, 500]],
         dom: "<'md-toolbar'<'entries-wrap'l><'search-wrap'f>>" +
              "rt<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
         ajax: {
@@ -788,8 +647,8 @@ document.addEventListener('DOMContentLoaded', function() {
             paginate: {
                 first: "Awal",
                 last: "Akhir",
-                next: "→",
-                previous: "←",
+                next: "â†’",
+                previous: "â†",
             },
             zeroRecords: "Data tidak ditemukan",
             infoEmpty: "Tidak ada data tersedia",
@@ -800,10 +659,10 @@ document.addEventListener('DOMContentLoaded', function() {
         },
     });
 
-    // ── Status Filter Buttons (Semua / Aktif / Tidak Aktif) ──
+    // â”€â”€ Status Filter Buttons (Semua / Aktif / Tidak Aktif) â”€â”€
     // Filters by 'eligible_span' column (index 5) using regex exact match.
     // eligible_span has NO editColumn on server, so Yajra applies
-    // SQL-level filtering directly — no controller changes needed.
+    // SQL-level filtering directly â€” no controller changes needed.
     $('.md-status-btn').on('click', function() {
         $('.md-status-btn').removeClass('active');
         $(this).addClass('active');
@@ -818,7 +677,7 @@ document.addEventListener('DOMContentLoaded', function() {
             // Standard search for 'TIDAK' (will use LIKE '%TIDAK%')
             table.column(eligibleColIdx).search('TIDAK').draw();
         } else {
-            // Semua — clear column filter
+            // Semua â€” clear column filter
             table.column(eligibleColIdx).search('').draw();
         }
     });
@@ -937,7 +796,6 @@ document.addEventListener('DOMContentLoaded', function() {
                         searching: true,
                             info: true,
                         lengthChange: true,
-                        pageLength: 25,
                         order: [[1, 'asc']], // urut berdasarkan NIDN
                         columnDefs: [
                             { orderable: false, searchable: false, targets: 0 }, // disable sorting/search on checkbox column
@@ -946,8 +804,8 @@ document.addEventListener('DOMContentLoaded', function() {
                             paginate: {
                                 first: "Awal",
                                 last: "Akhir",
-                                next: "→",
-                                previous: "←",
+                                next: "â†’",
+                                previous: "â†",
                             },
                             zeroRecords: "Tidak ada data dosen",
                             infoEmpty: "Tidak ada data tersedia",

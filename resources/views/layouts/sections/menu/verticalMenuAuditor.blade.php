@@ -1,15 +1,15 @@
 <aside id="layout-menu" class="layout-menu menu-vertical menu bg-menu-theme">
 
+  <!-- App Brand -->
   <div class="app-brand demo">
-    <div class="app-brand-link d-flex flex-column align-items-center">
-      <img src="{{ asset('assets/img/favicon/logo-lldikti-4.png') }}" height="40" alt="View Badge User">
-      <div class="text-primary fw-bold" style="font-size: 25px;">
-        SPTJM Online
-      </div>
-    </div>
-
-    <a href="javascript:void(0);" class="layout-menu-toggle menu-link text-large ms-auto d-block d-xl-none">
-      <i class="bx bx-chevron-left bx-sm align-middle"></i>
+    <a href="{{ url('/') }}" class="app-brand-link" style="text-decoration:none;">
+        <img src="{{ asset('assets/img/favicon/logo-lldikti-4.png') }}"
+             alt="LLDIKTI 4"
+             style="height: 38px; width: auto; display: block; max-width: 100%; object-fit: contain;">
+        <span class="sptjm-logo-subtitle" style="color:#64748b; font-size:0.6rem; font-weight:700; font-family:'Public Sans',sans-serif; text-transform:uppercase; letter-spacing:1.2px; margin-left: 45px; margin-top: -4px;">SPTJM ONLINE</span>
+    </a>
+    <a href="javascript:void(0);" class="layout-menu-toggle menu-link text-large ms-auto">
+        <i class="bx bx-chevron-left" style="font-size: 1.9rem !important; color: #1a56db !important;"></i>
     </a>
   </div>
 

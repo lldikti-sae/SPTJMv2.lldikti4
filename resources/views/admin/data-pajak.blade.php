@@ -5,7 +5,7 @@
 @section('page-style')
 <style>
 .md2-page-header { display:flex; align-items:flex-start; justify-content:space-between; flex-wrap:wrap; gap:12px; margin-bottom:24px; }
-.md2-page-header .page-titles h4 { font-size:1.35rem; font-weight:700; color:#2c3e50; margin:0 0 4px; }
+
 .md2-page-header .breadcrumb { margin:0; font-size:0.8rem; background:none; padding:0; }
 .md2-page-header .breadcrumb-item a { color:#696cff; text-decoration:none; }
 .md2-page-header .breadcrumb-item.active { color:#8592a3; }
@@ -35,7 +35,7 @@
 
 <div class="md2-page-header">
     <div class="page-titles">
-        <h4>Data Pajak & Identitas Pemotong</h4>
+        <h1>Data Pajak & Identitas Pemotong</h1>
         <nav aria-label="breadcrumb"><ol class="breadcrumb">
             <li class="breadcrumb-item"><a href="#">Master Data</a></li>
             <li class="breadcrumb-item active">Data Pajak</li>
@@ -96,12 +96,9 @@
                 </tbody>
             </table>
         </div>
-    </div>
-</div>
 
-{{-- Card 2: Identitas Pemotong --}}
-<div class="md2-card">
-    <div class="md2-card-inner">
+        <hr class="my-4">
+
         <h5 class="mb-3 text-dark fw-bold" style="font-size:1.1rem;">Identitas Pemotong</h5>
         <div class="md2-toolbar">
             <div class="entries-wrap">
@@ -363,11 +360,9 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     const tablePajak = $('#pajakTable').DataTable({
-        pageLength: 10,
         dom: '<"d-none"l><"d-none"f>rtip',
-        lengthMenu: [[10, 25, 50, 100, 500, -1], [10, 25, 50, 100, 500, 'All']],
         language: {
-            paginate: { first: "«", last: "»", next: "›", previous: "‹" },
+            paginate: { first: "Â«", last: "Â»", next: "â€º", previous: "â€¹" },
             zeroRecords: "Data tidak ditemukan",
             infoEmpty: "Tidak ada data tersedia",
             info: "Menampilkan _START_-_END_ dari _TOTAL_ entri",
@@ -383,11 +378,9 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     const tablePemotong = $('#pemotongTable').DataTable({
-        pageLength: 10,
         dom: '<"d-none"l><"d-none"f>rtip',
-        lengthMenu: [[10, 25, 50, 100, 500, -1], [10, 25, 50, 100, 500, 'All']],
         language: {
-            paginate: { first: "«", last: "»", next: "›", previous: "‹" },
+            paginate: { first: "Â«", last: "Â»", next: "â€º", previous: "â€¹" },
             zeroRecords: "Data tidak ditemukan",
             infoEmpty: "Tidak ada data tersedia",
             info: "Menampilkan _START_-_END_ dari _TOTAL_ entri",

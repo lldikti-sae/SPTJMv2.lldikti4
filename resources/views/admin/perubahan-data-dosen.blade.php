@@ -175,7 +175,7 @@
                                 <label class="form-label">Dokumen (PDF, max 10MB)</label>
                                 @if(!empty($dosen->dokumen_path))
                                     <div class="mb-2">
-                                        <a href="{{ $dosen->dokumen_path }}" target="_blank" class="btn btn-sm btn-outline-primary">Lihat Dokumen Saat Ini</a>
+                                        <a href="{{ $dosen->dokumen_path }}" target="_blank" class="link-lihat-dokumen">Lihat Dokumen Saat Ini</a>
                                     </div>
                                 @endif
                                 <input type="file" class="form-control dokumen-input" name="dokumen" accept="application/pdf" required />
@@ -184,16 +184,8 @@
                             <div class="col-md-6">
                                 <label class="form-label">Keterangan</label>
                                 <input type="text" name="keterangan" class="form-control js-editable" value="{{ $dosen->keterangan ?? '' }}" readonly style="background-color: #eceef1;" maxlength="100" required>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-<div class="card">
-    <h5 class="card-header">Detail Data Dosen</h5>
-    <div class="table-responsive text-nowrap">
-
-        <div class="card-body">
+                    <hr class="my-4">
+                    <h5 class="fw-bold mb-4" style="color: #0f2b5c;">Detail Data Dosen</h5>
                 <div class="row mb-3">
                     <div class="col-md-6">
                         <label class="form-label">NIDN</label>
@@ -277,7 +269,7 @@
                             $__namaPtsCurrent = trim((string)($dosen->PTS ?? ''));
                             $__ptsList = collect($ptsList ?? [])
                                 ->filter(fn($p) => isset($p->kode_pts, $p->nama_pts))
-                                ->sortBy(fn($p) => (int) $p->kode_pts) // ← URUT TERKECIL
+                                ->sortBy(fn($p) => (int) $p->kode_pts) // â† URUT TERKECIL
                                 ->values();
                             $__kodePtsInList = $__kodePtsCurrent !== '' && $__ptsList->contains(function($p) use ($__kodePtsCurrent) {
                                 return isset($p->kode_pts) && (string)$p->kode_pts === (string)$__kodePtsCurrent;
@@ -546,9 +538,7 @@
 
 
                 </div>
-
-        </div>
-    </div>
+            </div>
     @endif
 </div>
 
@@ -615,7 +605,7 @@
                                 <label class="form-label">Dokumen (PDF, max 10MB)</label>
                                 @if(!empty($dosen->dokumen_path))
                                     <div class="mb-2">
-                                        <a href="{{ $dosen->dokumen_path }}" target="_blank" class="btn btn-sm btn-outline-primary">Lihat Dokumen Saat Ini</a>
+                                        <a href="{{ $dosen->dokumen_path }}" target="_blank" class="link-lihat-dokumen">Lihat Dokumen Saat Ini</a>
                                     </div>
                                 @endif
                                 <input type="file" class="form-control dokumen-input" name="dokumen" accept="application/pdf" required />
@@ -625,16 +615,8 @@
                                 <label class="form-label">Keterangan</label>
                                 <input type="text" name="keterangan" class="form-control js-editable" value="{{ $dosen->keterangan ?? '' }}" readonly style="background-color: #eceef1;" maxlength="100" required>
                             </div>
-                            <!-- Terhitung Mulai Tanggal dihapus sesuai permintaan -->
-                        </div>
-                    </div>
-                </div>
-
-<div class="card">
-    <h5 class="card-header">Detail Data Dosen</h5>
-    <div class="table-responsive text-nowrap">
-
-        <div class="card-body">
+                    <hr class="my-4">
+                    <h5 class="fw-bold mb-4" style="color: #0f2b5c;">Detail Data Dosen</h5>
                 <div class="row mb-3">
                     <div class="col-md-6">
                         <label class="form-label">NIDN</label>
@@ -718,7 +700,7 @@
                             $__namaPtsCurrent = trim((string)($dosen->PTS ?? ''));
                             $__ptsList = collect($ptsList ?? [])
                                 ->filter(fn($p) => isset($p->kode_pts, $p->nama_pts))
-                                ->sortBy(fn($p) => (int) $p->kode_pts) // ← URUT TERKECIL
+                                ->sortBy(fn($p) => (int) $p->kode_pts) // â† URUT TERKECIL
                                 ->values();
                             $__kodePtsInList = $__kodePtsCurrent !== '' && $__ptsList->contains(function($p) use ($__kodePtsCurrent) {
                                 return isset($p->kode_pts) && (string)$p->kode_pts === (string)$__kodePtsCurrent;
@@ -990,7 +972,6 @@
 
         </div>
     </div>
-</div>
 
     </div>
 </div>
@@ -1447,7 +1428,7 @@ document.addEventListener('DOMContentLoaded', function () {
     try {
         const __errors = {!! json_encode($errors->all() ?? []) !!};
         if (Array.isArray(__errors) && __errors.length) {
-            const html = '<div style="text-align:left">' + __errors.map(e => '<div>• ' + String(e) + '</div>').join('') + '</div>';
+            const html = '<div style="text-align:left">' + __errors.map(e => '<div>â€¢ ' + String(e) + '</div>').join('') + '</div>';
             Alert.warning('Validasi gagal', html, { confirmButtonText: 'Tutup' });
         }
     } catch (e) {}
@@ -1496,7 +1477,7 @@ document.addEventListener('DOMContentLoaded', function () {
         try {
             const invalid = form ? Array.from(form.querySelectorAll(':invalid')) : [];
             if (invalid.length) {
-                const html = '<div style="text-align:left">' + invalid.map((el) => '• ' + getFieldLabel(el)).join('<br>') + '</div>';
+                const html = '<div style="text-align:left">' + invalid.map((el) => 'â€¢ ' + getFieldLabel(el)).join('<br>') + '</div>';
                 await Alert.warning('Periksa input', html, { confirmButtonText: 'Tutup' });
             } else {
                 await Alert.warning('Periksa input', 'Pastikan semua field wajib sudah diisi.', { confirmButtonText: 'Tutup' });

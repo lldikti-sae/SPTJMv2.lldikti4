@@ -42,9 +42,16 @@
 
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-<div class="mb-4">
-    <h3 class="fw-bold text-dark mb-1" style="color: #0f2b5c !important;">Data Sisternas</h3>
-    <p class="text-muted mb-0">Kelola sinkronisasi data Sisternas untuk periode pencairan</p>
+<div class="md2-page-header">
+    <div class="page-titles">
+        <h3>Data Sisternas</h3>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="#">Master Data</a></li>
+                <li class="breadcrumb-item active">Data Sisternas</li>
+            </ol>
+        </nav>
+    </div>
 </div>
 
 <div class="card-sisternas card">
@@ -184,12 +191,10 @@ function updateFileName(input) {
 document.addEventListener('DOMContentLoaded', function() {
     // Initialize DataTable
     const table = $('#sisternasTable').DataTable({
-        pageLength: 10,
         dom: '<"d-none"l><"d-none"f>rtip',
-        lengthMenu: [[10, 25, 50, 100, 500, -1], [10, 25, 50, 100, 500, 'All']],
         order: [[0, 'asc']],
         language: {
-            paginate: { first: "«", last: "»", next: "›", previous: "‹" },
+            paginate: { first: "Â«", last: "Â»", next: "â€º", previous: "â€¹" },
             zeroRecords: "Data tidak ditemukan",
             infoEmpty: "Tidak ada data tersedia",
             info: "Menampilkan _START_-_END_ dari _TOTAL_ entri",

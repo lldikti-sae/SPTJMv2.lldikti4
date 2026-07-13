@@ -1,11 +1,11 @@
-@extends('layouts/contentNavbarLayout')
+﻿@extends('layouts/contentNavbarLayout')
 
 @section('title', 'Data Grade Serdos - SPTJM Online')
 
 @section('page-style')
 <style>
 .md2-page-header { display:flex; align-items:flex-start; justify-content:space-between; flex-wrap:wrap; gap:12px; margin-bottom:24px; }
-.md2-page-header .page-titles h4 { font-size:1.35rem; font-weight:700; color:#2c3e50; margin:0 0 4px; }
+
 .md2-page-header .breadcrumb { margin:0; font-size:0.8rem; background:none; padding:0; }
 .md2-page-header .breadcrumb-item a { color:#696cff; text-decoration:none; }
 .md2-page-header .breadcrumb-item.active { color:#8592a3; }
@@ -30,7 +30,7 @@ table.md2-table { border-collapse:collapse!important; }
 
 <div class="md2-page-header">
     <div class="page-titles">
-        <h4>Data Grade Serdos</h4>
+        <h1>Data Grade Serdos</h1>
         <nav aria-label="breadcrumb"><ol class="breadcrumb">
             <li class="breadcrumb-item"><a href="#">Master Data</a></li>
             <li class="breadcrumb-item active">Data Grade Serdos</li>
@@ -126,9 +126,7 @@ table.md2-table { border-collapse:collapse!important; }
 
     const table = $('#gradeTable').DataTable({
       processing: true, serverSide: true, responsive: true,
-      pageLength: 25,
       dom: '<"d-none"l><"d-none"f>rtip',
-      lengthMenu: [[10, 25, 50, 100, 500, -1], [10, 25, 50, 100, 500, 'All']],
       ajax: { url: "{{ route('admin.grade-serdos.index') }}" },
       columns: [
         { 
@@ -143,7 +141,7 @@ table.md2-table { border-collapse:collapse!important; }
         },
         { data: 'aksi', name: 'aksi', orderable: false, searchable: false }
       ],
-      language: { paginate: { first: "«", last: "»", next: "›", previous: "‹" }, zeroRecords: 'Data tidak ditemukan', infoEmpty: 'Tidak ada data tersedia', info: 'Menampilkan _START_-_END_ dari _TOTAL_ entri' },
+      language: { paginate: { first: "Â«", last: "Â»", next: "â€º", previous: "â€¹" }, zeroRecords: 'Data tidak ditemukan', infoEmpty: 'Tidak ada data tersedia', info: 'Menampilkan _START_-_END_ dari _TOTAL_ entri' },
     });
 
     document.getElementById('serdosLengthSelect').addEventListener('change', function() { table.page.len(parseInt(this.value)).draw(); });

@@ -1,10 +1,10 @@
-@extends('layouts/contentNavbarLayout')
+﻿@extends('layouts/contentNavbarLayout')
 
 @section('title', 'Edit Perguruan Tinggi - SPTJM Online')
 
 @section('page-style')
 <style>
-/* ── Page Header ── */
+/* â”€â”€ Page Header â”€â”€ */
 .pt-page-header {
     display: flex;
     align-items: flex-start;
@@ -13,12 +13,7 @@
     gap: 12px;
     margin-bottom: 24px;
 }
-.pt-page-header .page-titles h4 {
-    font-size: 1.35rem;
-    font-weight: 700;
-    color: #2c3e50;
-    margin: 0 0 4px 0;
-}
+
 .pt-page-header .breadcrumb {
     margin: 0;
     font-size: 0.8rem;
@@ -29,7 +24,7 @@
 .pt-page-header .breadcrumb-item.active { color: #8592a3; }
 .pt-page-header .breadcrumb-item + .breadcrumb-item::before { color: #8592a3; }
 
-/* ── Card ── */
+/* â”€â”€ Card â”€â”€ */
 .edit-pt-card {
     background: #fff;
     border-radius: 10px;
@@ -63,7 +58,7 @@
     padding: 24px;
 }
 
-/* ── Form Label ── */
+/* â”€â”€ Form Label â”€â”€ */
 .edit-pt-card .form-label-custom {
     font-size: 0.82rem;
     font-weight: 600;
@@ -89,14 +84,14 @@
     color: #8592a3;
 }
 
-/* ── Divider Row Label ── */
+/* â”€â”€ Divider Row Label â”€â”€ */
 .edit-pt-card .row-divider {
     border-top: 1px solid #f0f2f5;
     padding-top: 18px;
     margin-top: 4px;
 }
 
-/* ── Buttons ── */
+/* â”€â”€ Buttons â”€â”€ */
 .btn-save-pt {
     background: #28c76f;
     border: none;
@@ -133,7 +128,7 @@
     color: #2c3e50;
 }
 
-/* ── Password toggle ── */
+/* â”€â”€ Password toggle â”€â”€ */
 .password-wrap { position: relative; }
 .password-wrap .toggle-pw {
     position: absolute;
@@ -151,10 +146,10 @@
 
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-{{-- ── Page Header ── --}}
+{{-- â”€â”€ Page Header â”€â”€ --}}
 <div class="pt-page-header">
     <div class="page-titles">
-        <h4>Edit Perguruan Tinggi</h4>
+        <h1>Edit Perguruan Tinggi</h1>
         <nav aria-label="breadcrumb">
             <ol class="breadcrumb">
                 <li class="breadcrumb-item"><a href="#">Master Data</a></li>
@@ -165,7 +160,7 @@
     </div>
 </div>
 
-{{-- ── Card ── --}}
+{{-- â”€â”€ Card â”€â”€ --}}
 <div class="edit-pt-card">
     <div class="card-header-custom">
         <div class="icon-wrap"><i class="bx bx-edit"></i></div>

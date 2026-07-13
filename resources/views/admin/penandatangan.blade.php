@@ -35,22 +35,25 @@
                     <td>{{ $pejabat->nip }}</td>
                     <td>{{ $pejabat->jabatan }}</td>
                     <td>
-                        <button type="button" class="btn btn-sm btn-info btn-edit" 
-                            data-id="{{ $pejabat->id }}"
-                            data-urutan="{{ $pejabat->urutan }}"
-                            data-nama="{{ $pejabat->nama }}"
-                            data-nip="{{ $pejabat->nip }}"
-                            data-jabatan="{{ $pejabat->jabatan }}">
-                            <i class="bx bx-edit-alt"></i> Edit
-                        </button>
-                        
-                        <form action="{{ route('admin.master-penandatangan.destroy', $pejabat->id) }}" method="POST" class="d-inline form-hapus">
-                            @csrf
-                            @method('DELETE')
-                            <button type="button" class="btn btn-sm btn-danger btn-hapus">
-                                <i class="bx bx-trash"></i> Hapus
+                        <div class="d-flex gap-1 justify-content-start">
+                            <button type="button" class="sptjm-icon-btn sptjm-btn-edit btn-edit" 
+                                data-id="{{ $pejabat->id }}"
+                                data-urutan="{{ $pejabat->urutan }}"
+                                data-nama="{{ $pejabat->nama }}"
+                                data-nip="{{ $pejabat->nip }}"
+                                data-jabatan="{{ $pejabat->jabatan }}"
+                                title="Edit">
+                                <i class="bx bx-edit-alt"></i>
                             </button>
-                        </form>
+                            
+                            <form action="{{ route('admin.master-penandatangan.destroy', $pejabat->id) }}" method="POST" class="d-inline form-hapus">
+                                @csrf
+                                @method('DELETE')
+                                <button type="button" class="sptjm-icon-btn sptjm-btn-delete btn-hapus" title="Hapus">
+                                    <i class="bx bx-trash"></i>
+                                </button>
+                            </form>
+                        </div>
                     </td>
                 </tr>
                 @endforeach

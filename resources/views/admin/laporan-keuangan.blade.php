@@ -13,7 +13,7 @@
 
 @section('page-style')
 <style>
-/* ── Select2 Custom Theme for SPTJM ── */
+/* â”€â”€ Select2 Custom Theme for SPTJM â”€â”€ */
 .select2-container--bootstrap-5 .select2-selection {
     border: 1.5px solid #cbd5e1 !important;
     border-radius: 8px !important;
@@ -87,25 +87,14 @@
         border-radius: 12px !important;
         background: #ffffff !important;
     }
+    #myTable th, #myTable td {
+        padding: 5px 8px !important;
+        font-size: 0.8rem !important;
+        line-height: 1.2 !important;
+    }
 </style>
 
 <div class="content-wrapper">
-    <!-- Breadcrumb -->
-    <nav aria-label="breadcrumb" class="mb-3">
-        <ol class="breadcrumb" style="font-size: 0.85rem; padding: 0; background: transparent;">
-            <li class="breadcrumb-item"><a href="#" style="color: #64748b;">Proses Pembayaran</a></li>
-            <li class="breadcrumb-item active fw-bold" aria-current="page" style="color: #1a56db;">Laporan Keuangan</li>
-        </ol>
-    </nav>
-
-    <!-- Header -->
-    <div class="mb-4">
-        <h4 class="fw-bold mb-1" style="color: #0f2b5c; font-size: 1.5rem;">Laporan Keuangan</h4>
-        <p class="text-muted mb-0" style="font-size: 0.875rem;">
-            Rekapitulasi <span class="fw-semibold" style="color:#1a56db;">pembayaran gaji</span> dan
-            <span class="fw-semibold" style="color:#1a56db;">tunjangan</span> dosen tahun berjalan.
-        </p>
-    </div>
 
     @if (session('error'))
     <div class="alert alert-danger alert-dismissible fade show mb-4" role="alert" style="border-radius: 10px;">
@@ -114,59 +103,58 @@
     </div>
     @endif
 
-    <!-- Filter Card -->
+    <!-- Card Utama -->
     <div class="card card-laporan mb-4">
-        <div class="card-body p-4">
-            <form method="GET" action="{{ url('admin/laporan-keuangan') }}" id="filterForm">
-                <div class="row g-3 align-items-end">
-                    <!-- Pilih Perguruan Tinggi -->
-                    <div class="col-md-4">
-                        <label for="basic-default-kodept" class="form-label fw-bold text-uppercase mb-1"
-                            style="font-size: 0.68rem; letter-spacing: 0.06em; color: #64748b;">Pilih Perguruan Tinggi</label>
-                        <select class="form-select" id="basic-default-kodept" name="kode_pt" data-select2-kodept>
-                            <option value="">- Pilih Kode PT (opsional) -</option>
-                            <option value="Semua" {{ $kode_pt === 'Semua' ? 'selected' : '' }}>Semua</option>
-                            @foreach ($ptsList as $pt)
-                            <option value="{{ $pt->kode_pts }}" {{ $kode_pt === (string) $pt->kode_pts ? 'selected' : '' }}>
-                                {{ $pt->kode_pts }} - {{ $pt->nama_pts }}
-                            </option>
-                            @endforeach
-                        </select>
+        <div class="card-body px-4 pb-4 pt-0">
+            
+            <!-- Filter Section -->
+            <div class="pt-3 pb-3 mb-3 border-bottom">
+                <form method="GET" action="{{ url('admin/laporan-keuangan') }}" id="filterForm">
+                    <div class="row g-3 align-items-end">
+                        <!-- Pilih Perguruan Tinggi -->
+                        <div class="col-md-4">
+                            <label for="basic-default-kodept" class="form-label fw-bold text-uppercase mb-1"
+                                style="font-size: 0.68rem; letter-spacing: 0.06em; color: #64748b;">Pilih Perguruan Tinggi</label>
+                            <select class="form-select" id="basic-default-kodept" name="kode_pt" data-select2-kodept>
+                                <option value="">- Pilih Kode PT (opsional) -</option>
+                                <option value="Semua" {{ $kode_pt === 'Semua' ? 'selected' : '' }}>Semua</option>
+                                @foreach ($ptsList as $pt)
+                                <option value="{{ $pt->kode_pts }}" {{ $kode_pt === (string) $pt->kode_pts ? 'selected' : '' }}>
+                                    {{ $pt->kode_pts }} - {{ $pt->nama_pts }}
+                                </option>
+                                @endforeach
+                            </select>
+                        </div>
+
+                        <!-- Cari NIDN / NUPTK -->
+                        <div class="col-md-4">
+                            <label for="basic-default-nidn" class="form-label fw-bold text-uppercase mb-1"
+                                style="font-size: 0.68rem; letter-spacing: 0.06em; color: #64748b;">Cari NIDN / NUPTK</label>
+                            <input type="text" class="form-control" id="basic-default-nidn" name="nidn"
+                                placeholder="Masukkan NIDN/NUPTK..." value="{{ request('nidn') }}"
+                                style="border: 1.5px solid #cbd5e1; border-radius: 8px; font-size: 0.9rem;">
+                        </div>
+
+                        <!-- Tombol Tampilkan -->
+                        <div class="col-md-auto d-flex gap-2">
+                            <button type="submit" class="btn fw-semibold d-flex align-items-center gap-2" name="submit"
+                                style="background-color: #0f2b5c; color: #ffffff; border-color: #0f2b5c; border-radius: 8px; padding: 9px 20px; font-size: 0.875rem; white-space: nowrap;">
+                                <i class="bx bx-search" style="font-size: 1rem;"></i> Tampilkan Data
+                            </button>
+
+                            @if (request()->filled('kode_pt') || request()->filled('nidn'))
+                            <a href="{{ route('laporan-keuangan-admin.export', ['kode_pt' => request('kode_pt'), 'nidn' => request('nidn')]) }}"
+                                class="btn fw-semibold d-flex align-items-center gap-2"
+                                style="background-color: #10b981; color: #ffffff; border-color: #10b981; border-radius: 8px; padding: 9px 20px; font-size: 0.875rem; white-space: nowrap;">
+                                <i class="bx bx-download" style="font-size: 1rem;"></i> Export XLS
+                            </a>
+                            @endif
+                        </div>
                     </div>
+                </form>
+            </div>
 
-                    <!-- Cari NIDN / NUPTK -->
-                    <div class="col-md-4">
-                        <label for="basic-default-nidn" class="form-label fw-bold text-uppercase mb-1"
-                            style="font-size: 0.68rem; letter-spacing: 0.06em; color: #64748b;">Cari NIDN / NUPTK</label>
-                        <input type="text" class="form-control" id="basic-default-nidn" name="nidn"
-                            placeholder="Masukkan NIDN/NUPTK..." value="{{ request('nidn') }}"
-                            style="border: 1.5px solid #cbd5e1; border-radius: 8px; font-size: 0.9rem;">
-                    </div>
-
-                    <!-- Tombol Tampilkan -->
-                    <div class="col-md-auto d-flex gap-2">
-                        <button type="submit" class="btn fw-semibold d-flex align-items-center gap-2" name="submit"
-                            style="background-color: #0f2b5c; color: #ffffff; border-color: #0f2b5c; border-radius: 8px; padding: 9px 20px; font-size: 0.875rem; white-space: nowrap;">
-                            <i class="bx bx-search" style="font-size: 1rem;"></i> Tampilkan Data
-                        </button>
-
-                        @if (request()->filled('kode_pt') || request()->filled('nidn'))
-                        <a href="{{ route('laporan-keuangan-admin.export', ['kode_pt' => request('kode_pt'), 'nidn' => request('nidn')]) }}"
-                            class="btn fw-semibold d-flex align-items-center gap-2"
-                            style="background-color: #10b981; color: #ffffff; border-color: #10b981; border-radius: 8px; padding: 9px 20px; font-size: 0.875rem; white-space: nowrap;">
-                            <i class="bx bx-download" style="font-size: 1rem;"></i> Export XLS
-                        </a>
-                        @endif
-                    </div>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <!-- Table -->
-    <div class="card card-laporan mb-4">
-        <div class="card-body p-0 pt-0">
-            <div class="table-responsive text-nowrap">
+            <div class="mb-4">
 
 
               <!-- Table Display -->
@@ -310,8 +298,8 @@
     $('#myTable').DataTable({
       processing: true,
       serverSide: true,
-      pageLength: 10,
       order: [],
+      dom: '<"row"<"col-sm-12 col-md-6"l><"col-sm-12 col-md-6"f>><"table-responsive text-nowrap"t><"row"<"col-sm-12 col-md-5"i><"col-sm-12 col-md-7"p>>',
       ajax: {
         url: "{{ url('admin/laporan-keuangan') }}",
         type: 'POST',
