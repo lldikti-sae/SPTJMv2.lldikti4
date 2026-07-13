@@ -303,7 +303,9 @@ class RekapUsulanNonEligibleController extends Controller
       $row[] = (string) (!empty($item->nuptk) ? $item->nuptk : '-');
       $row[] = (string) ($item->sertifikat_dosen ?? '');
       $row[] = (string) ($item->nama ?? '');
+      
       $row[] = (string) ($item->jabatan12 ?? '');
+      
       $row[] = (string) ($item->gol12 ?? '');
       $row[] = (string) ($item->tahun12 ?? '');
       $row[] = (string) ($item->jenis ?? '');

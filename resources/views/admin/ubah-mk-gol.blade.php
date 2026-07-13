@@ -231,6 +231,7 @@
                 <select class="form-select" aria-label="Default select example" name="jabatan">
                   <option value="Asisten Ahli" {{ trim($data_dosen->jabatan) == 'Asisten Ahli' ? 'selected' : '' }}>Asisten Ahli</option>
                   <option value="Guru Besar" {{ trim($data_dosen->jabatan) == 'Guru Besar' ? 'selected' : '' }}>Guru Besar</option>
+                  <option value="Guru Besar 1050" {{ trim($data_dosen->jabatan) == 'Guru Besar 1050' ? 'selected' : '' }}>Guru Besar 1050</option>
                   <option value="Lektor" {{ trim($data_dosen->jabatan) == 'Lektor' ? 'selected' : '' }}>Lektor</option>
                   <option value="Lektor Kepala" {{ trim($data_dosen->jabatan) == 'Lektor Kepala' ? 'selected' : '' }}>Lektor Kepala</option>
                   <option value="Tenaga Pengajar" {{ trim($data_dosen->jabatan) == 'Tenaga Pengajar' ? 'selected' : '' }}>Tenaga Pengajar</option>

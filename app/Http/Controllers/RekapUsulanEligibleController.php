@@ -486,7 +486,6 @@ class RekapUsulanEligibleController extends Controller
       $row[] = (string) $item->Sertifikat_Dosen;
       $row[] = (string) $item->Nama;
 
-      // jabatan/gol/tahun follow session month
       if ($bulanSession >= 12) {
         $row[] = (string) $item->Jabatan12;
         $row[] = (string) $item->Gol12;
