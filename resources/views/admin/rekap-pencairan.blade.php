@@ -136,8 +136,8 @@
 
                             // Badge status pegawai
                             $isPns = strtoupper(trim($item->status_pegawai ?? '')) === 'PNS';
-                            $spBg   = $isPns ? '#d1fae5' : '#fef9c3';
-                            $spText = $isPns ? '#065f46' : '#854d0e';
+                            $spBg   = $isPns ? '#dbeafe' : '#fbe0e0';
+                            $spText = $isPns ? '#1a56db' : '#b92c2c';
                         @endphp
                         <tr>
                             <td class="fw-semibold" style="color: #374151;">{{ $loop->iteration }}</td>
@@ -146,7 +146,7 @@
                                 <span style="display:inline-flex; align-items:center; justify-content:center; background:#dbeafe; color:#1a56db; border-radius:50%; width:28px; height:28px; font-size:0.8rem; font-weight:700;">{{ $item->pencairan_ke }}</span>
                             </td>
                             <td>
-                                <span style="display:inline-block; background:{{ $spBg }}; color:{{ $spText }}; border-radius:20px; padding:3px 10px; font-size:0.72rem; font-weight:700; line-height:1.4;">{{ strtoupper($item->status_pegawai) }}</span>
+                                <span class="badge" style="display:inline-block; background:{{ $spBg }} !important; color:{{ $spText }} !important; border-radius:20px !important; padding:3px 10px !important; font-size:0.72rem !important; font-weight:700 !important; line-height:1.4 !important;">{{ strtoupper($item->status_pegawai) }}</span>
                             </td>
                             <td style="color:#374151; font-weight:600;">{{ $item->jenis }}</td>
                             <td>

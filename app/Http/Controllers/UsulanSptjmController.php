@@ -20,45 +20,61 @@ class UsulanSptjmController extends Controller
     $status = $request->input('status');
     $currentYear = session('tahun') ?? date('Y'); // prefer session year
 
-    // Query dasar dengan filter tahun sesuai session (fallback ke tahun sekarang)
-    $query = DB::table('q_sptjm')->where('tahun', $currentYear);
+    // Helper closure to build base query with current filters
+    $getQueryForCounts = function() use ($tipeSptjm, $bulan, $currentYear) {
+      $q = DB::table('q_sptjm')->where('tahun', $currentYear);
 
-    // Filter Tipe SPTJM/TUKIN (semua dari q_sptjm)
-    if ($tipeSptjm !== 'All') {
-      switch ($tipeSptjm) {
-        case 'SPTJM Berjalan':
-          // Include codes that start with 'B' but exclude 'BT' (TUKIN Berjalan)
-          $query->where('id_usulan', 'LIKE', 'B%')
-                ->whereRaw("id_usulan NOT LIKE 'BT%'");
-          break;
-        case 'SPTJM Susulan':
-          // Include codes that start with 'S' but exclude 'ST' (TUKIN Susulan)
-          $query->where('id_usulan', 'LIKE', 'S%')
-                ->whereRaw("id_usulan NOT LIKE 'ST%'");
-          break;
-        case 'TUKIN Berjalan':
-          $query->where('id_usulan', 'LIKE', 'BT%');
-          break;
-        case 'TUKIN Susulan':
-          $query->where('id_usulan', 'LIKE', 'ST%');
-          break;
+      if ($tipeSptjm !== 'All') {
+        switch ($tipeSptjm) {
+          case 'SPTJM Berjalan':
+            $q->where('id_usulan', 'LIKE', 'B%')
+              ->whereRaw("id_usulan NOT LIKE 'BT%'");
+            break;
+          case 'SPTJM Susulan':
+            $q->where('id_usulan', 'LIKE', 'S%')
+              ->whereRaw("id_usulan NOT LIKE 'ST%'");
+            break;
+          case 'TUKIN Berjalan':
+            $q->where('id_usulan', 'LIKE', 'BT%');
+            break;
+          case 'TUKIN Susulan':
+            $q->where('id_usulan', 'LIKE', 'ST%');
+            break;
+        }
       }
-    }
 
-    // Filter Bulan
-    if ($bulan !== 'All') {
-      $query->where('bulan', $bulan);
-    }
+      if ($bulan !== 'All') {
+        $q->where('bulan', $bulan);
+      }
 
-    // Filter Status
+      return $q;
+    };
+
+    // Calculate real-time counts under current filters
+    $countUsulan = (clone $getQueryForCounts())->where('status', 'Usulan')->count();
+    $countValidasi = (clone $getQueryForCounts())->where('status', 'Validasi')->count();
+    $countProses = (clone $getQueryForCounts())->where('status', 'Proses')->count();
+    $countSelesai = (clone $getQueryForCounts())->where('status', 'Selesai')->count();
+
+    $countTolakMain = (clone $getQueryForCounts())->where('status', 'Tolak')->count();
+    $countTolakZero = DB::table('q_sptjm')
+      ->where('id_usulan', 0)
+      ->where('status', 'Tolak')
+      ->where('tahun', $currentYear)
+      ->when($bulan !== 'All', function ($q) use ($bulan) {
+        return $q->where('bulan', $bulan);
+      })
+      ->count();
+    $countTolak = $countTolakMain + $countTolakZero;
+
+    // Get main data
+    $query = $getQueryForCounts();
     if (!empty($status) && $status !== 'All') {
       $query->where('status', $status);
     }
-
-    // Ambil data utama (B% atau S%)
     $dataUtama = $query->get();
 
-    // Ambil data `id_usulan = 0` hanya jika status = 'Tolak'
+    // Get zero ID usulan if status is Tolak
     $dataZero = collect();
     if ($status === 'Tolak') {
       $dataZero = DB::table('q_sptjm')
@@ -71,12 +87,18 @@ class UsulanSptjmController extends Controller
         ->get();
     }
 
-    // Gabungkan hasilnya
     $dataUsulan = $dataUtama->merge($dataZero);
 
     return response()->json([
       'success' => true,
       'data' => $dataUsulan,
+      'counts' => [
+        'Usulan' => $countUsulan,
+        'Validasi' => $countValidasi,
+        'Proses' => $countProses,
+        'Selesai' => $countSelesai,
+        'Tolak' => $countTolak
+      ]
     ]);
   }
 }

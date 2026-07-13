@@ -86,7 +86,7 @@ class LihatDataDosenPtsController extends Controller
           }
 
           if ($isActive) {
-            $statusBtn = '<a href="' . $linkEmpat . '" target="_blank" rel="noopener" class="sptjm-icon-btn sptjm-btn-active" title="Pengaktifan (cek di EMpat)"><i class="bx bx-check-circle"></i></a>';
+            $statusBtn = '<a href="' . $linkEmpat . '" target="_blank" rel="noopener" class="sptjm-icon-btn sptjm-btn-reset" title="Pengaktifan (cek di EMpat)"><i class="bx bx-check"></i></a>';
           } else {
             $statusBtn = '<a href="' . $urlPengaktifan . '" class="sptjm-icon-btn sptjm-btn-delete" title="Tidak Aktif"><i class="bx bx-block"></i></a>';
           }

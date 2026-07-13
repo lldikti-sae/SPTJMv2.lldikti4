@@ -1,4 +1,4 @@
-﻿@extends('layouts/contentNavbarLayout')
+@extends('layouts/contentNavbarLayout')
 
 @section('title', 'Monitoring Pembayaran - SPTJM Online')
 
@@ -304,7 +304,7 @@ $months = [
            $lPajakM = $summaryRekap['l_pajak'] ?? 0;
            $lNetM = $summaryRekap['l_net'] ?? 0;
         @endphp
-        <tr class="fw-bold" style="background-color: #fff0f0">
+        <tr class="fw-bold" style="background-color: #ffdcdc">
           <td colspan="4" class="text-center">Pembayaran Kekurangan</td>
           <td></td>
           <td class="text-end">{{ number_format($kGrossRow,0,',','.') }}</td>
@@ -315,7 +315,7 @@ $months = [
           @if($hasTkgb)<td class="text-end tkgb-col">0</td>@endif
           <td colspan="2"></td><td colspan="2"></td>
         </tr>
-        <tr class="fw-bold" style="background-color: #f0f0ff">
+        <tr class="fw-bold" style="background-color: #dbeafe">
           <td colspan="4" class="text-center">Pengembalian Kelebihan</td>
           <td></td>
           <td class="text-end">{{ number_format($lGrossRow,0,',','.') }}</td>
@@ -336,7 +336,7 @@ $months = [
             $totalAkhirPajakTpd = $jmPajakTpd + $kPajakRow - $lPajakRow;
             $totalAkhirBersihTpd = $jmBersihTpd + $kNetRow - $lNetRow;
         @endphp
-        <tr class="fw-bold" style="background-color: #f0fff4;">
+        <tr class="fw-bold" style="background-color: #d1fae5;">
           <td colspan="4" class="text-center">Total Akhir</td>
           <td class="text-end">{{ number_format($totalGaji,0,',','.') }}</td>
           <td class="text-end">{{ number_format($totalAkhirKotorTpd,0,',','.') }}</td>
@@ -423,21 +423,21 @@ $months = [
           <td class="text-end">{{ number_format($totalUraianBersih, 0, ',', '.') }}</td>
           <td colspan="2"></td>
         </tr>
-        <tr class="fw-bold" style="background-color: #fff0f0;">
+        <tr class="fw-bold" style="background-color: #ffdcdc;">
           <td colspan="3" class="text-start">Pembayaran Kekurangan {!! $kGross > 0 ? $nettingText : '' !!}</td>
           <td class="text-end">{{ number_format($kGross, 0, ',', '.') }}</td>
           <td class="text-end">{{ number_format($kPajak, 0, ',', '.') }}</td>
           <td class="text-end">{{ number_format($kNet, 0, ',', '.') }}</td>
           <td colspan="2"></td>
         </tr>
-        <tr class="fw-bold" style="background-color: #f0f0ff;">
+        <tr class="fw-bold" style="background-color: #dbeafe;">
           <td colspan="3" class="text-start">Pengembalian Kelebihan {!! $lGross > 0 ? $nettingText : '' !!}</td>
           <td class="text-end">{{ number_format($lGross, 0, ',', '.') }}</td>
           <td class="text-end">{{ number_format($lPajak, 0, ',', '.') }}</td>
           <td class="text-end">{{ number_format($lNet, 0, ',', '.') }}</td>
           <td colspan="2"></td>
         </tr>
-        <tr class="fw-bold" style="background-color: #f0fff4;">
+        <tr class="fw-bold" style="background-color: #d1fae5;">
           <td colspan="3" class="text-start">Total Akhir</td>
           <td class="text-end">{{ number_format($totalAkhirGross, 0, ',', '.') }}</td>
           <td class="text-end">{{ number_format($totalAkhirPajak, 0, ',', '.') }}</td>
@@ -550,8 +550,8 @@ $months = [
             const valLPjRow = sumOri.l_pajak || 0;
             const valLNeRow = sumOri.l_net || 0;
             
-            tbody.innerHTML+=`<tr class="fw-bold" style="background-color:#fff0f0"><td colspan="4" class="text-center">Pembayaran Kekurangan</td><td></td><td class="text-end">${fmt(valKGrRow)}</td>${tkc(0)}<td class="text-end">${fmt(valKPjRow)}</td>${tkc(0)}<td class="text-end">${fmt(valKNeRow)}</td>${tkc(0)}<td colspan="2"></td><td colspan="2"></td></tr>`;
-            tbody.innerHTML+=`<tr class="fw-bold" style="background-color:#f0f0ff"><td colspan="4" class="text-center">Pengembalian Kelebihan</td><td></td><td class="text-end">${fmt(valLGrRow)}</td>${tkc(0)}<td class="text-end">${fmt(valLPjRow)}</td>${tkc(0)}<td class="text-end">${fmt(valLNeRow)}</td>${tkc(0)}<td colspan="2"></td><td colspan="2"></td></tr>`;
+            tbody.innerHTML+=`<tr class="fw-bold" style="background-color:#ffdcdc"><td colspan="4" class="text-center">Pembayaran Kekurangan</td><td></td><td class="text-end">${fmt(valKGrRow)}</td>${tkc(0)}<td class="text-end">${fmt(valKPjRow)}</td>${tkc(0)}<td class="text-end">${fmt(valKNeRow)}</td>${tkc(0)}<td colspan="2"></td><td colspan="2"></td></tr>`;
+            tbody.innerHTML+=`<tr class="fw-bold" style="background-color:#dbeafe"><td colspan="4" class="text-center">Pengembalian Kelebihan</td><td></td><td class="text-end">${fmt(valLGrRow)}</td>${tkc(0)}<td class="text-end">${fmt(valLPjRow)}</td>${tkc(0)}<td class="text-end">${fmt(valLNeRow)}</td>${tkc(0)}<td colspan="2"></td><td colspan="2"></td></tr>`;
 
             // Total Akhir (Sisa)
             const sumRekap = data.summaryRekap || {};
@@ -569,7 +569,7 @@ $months = [
             const taKotorTpd = jmKotorTpd + valKGrRow - valLGrRow;
             const taPajakTpd = jmPajakTpd + valKPjRow - valLPjRow;
             const taBersihTpd = jmBersihTpd + valKNeRow - valLNeRow;
-            tbody.innerHTML+=`<tr class="fw-bold" style="background-color:#f0fff4"><td colspan="4" class="text-center">Total Akhir</td><td class="text-end">${fmt(t.gaji||0)}</td><td class="text-end">${fmt(taKotorTpd)}</td>${tkc(0)}<td class="text-end">${fmt(taPajakTpd)}</td>${tkc(0)}<td class="text-end">${fmt(taBersihTpd)}</td>${tkc(0)}<td colspan="2"></td><td colspan="2"></td></tr>`;
+            tbody.innerHTML+=`<tr class="fw-bold" style="background-color:#d1fae5"><td colspan="4" class="text-center">Total Akhir</td><td class="text-end">${fmt(t.gaji||0)}</td><td class="text-end">${fmt(taKotorTpd)}</td>${tkc(0)}<td class="text-end">${fmt(taPajakTpd)}</td>${tkc(0)}<td class="text-end">${fmt(taBersihTpd)}</td>${tkc(0)}<td colspan="2"></td><td colspan="2"></td></tr>`;
           }
 
           // UPDATE TABEL KEDUA (URAIAN PEMBAYARAN)
@@ -656,7 +656,7 @@ $months = [
               // Row: Pembayaran Kekurangan
               const trKurang = document.createElement('tr');
               trKurang.className = 'fw-bold';
-              trKurang.style.backgroundColor = '#fff0f0';
+              trKurang.style.backgroundColor = '#ffdcdc';
               trKurang.innerHTML = `
                 <td colspan="3" class="text-start">Pembayaran Kekurangan ${kGross > 0 ? nettingText : ''}</td>
                 <td class="text-end">${fmt(kGross)}</td>
@@ -669,7 +669,7 @@ $months = [
               // Row: Pengembalian Kelebihan
               const trLebih = document.createElement('tr');
               trLebih.className = 'fw-bold';
-              trLebih.style.backgroundColor = '#f0f0ff';
+              trLebih.style.backgroundColor = '#dbeafe';
               trLebih.innerHTML = `
                 <td colspan="3" class="text-start">Pengembalian Kelebihan ${lGross > 0 ? nettingText : ''}</td>
                 <td class="text-end">${fmt(lGross)}</td>
@@ -682,7 +682,7 @@ $months = [
               // Row: Total Akhir
               const trAkhir = document.createElement('tr');
               trAkhir.className = 'fw-bold';
-              trAkhir.style.backgroundColor = '#f0fff4';
+              trAkhir.style.backgroundColor = '#d1fae5';
               trAkhir.innerHTML = `
                 <td colspan="3" class="text-start">Total Akhir</td>
                 <td class="text-end">${fmt(totalAkhirGross)}</td>

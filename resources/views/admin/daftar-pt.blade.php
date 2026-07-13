@@ -1,4 +1,4 @@
-﻿@extends('layouts/contentNavbarLayout')
+@extends('layouts/contentNavbarLayout')
 
 @section('title', 'Data Perguruan Tinggi - SPTJM Online')
 
@@ -52,7 +52,7 @@
         </div>
 
         {{-- Table --}}
-        <div class="table-responsive">
+        <div>
             <table class="table" id="ptsTable" style="width:100%">
                 <thead>
                     <tr>
@@ -345,7 +345,7 @@ document.addEventListener('DOMContentLoaded', function () {
             info: "Menampilkan _START_ - _END_ dari _TOTAL_ entri",
             infoFiltered: "(difilter dari _MAX_ total entri)"
         },
-        dom: 'rtip'  // hide default length + search, tampilkan hanya table + info + pagination
+        dom: '<"table-responsive text-nowrap"t>rip'
     });
 
     // Hook custom entries selector

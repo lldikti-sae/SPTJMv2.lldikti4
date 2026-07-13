@@ -89,70 +89,70 @@
         <div class="row g-2 mb-4">
             <!-- Card Usulan -->
             <div class="col">
-                <div class="card status-card status-btn p-2" data-status="Usulan" style="border-radius: 10px; border: 1.5px solid #cbd5e1; box-shadow: 0 2px 8px rgba(0,0,0,0.02); background: white;">
+                <div class="card status-card status-btn p-2" data-status="Usulan" style="border-radius: 10px; border: 1.5px solid #cbd5e1; box-shadow: 0 2px 8px rgba(0,0,0,0.02); background: white; cursor: pointer;">
                     <div class="d-flex align-items-center gap-2">
                         <div class="d-flex align-items-center justify-content-center flex-shrink-0" style="width: 32px; height: 32px; border-radius: 8px; background-color: #f1f5f9;">
                             <i class="bx bx-folder" style="font-size: 1.1rem; color: #475569;"></i>
                         </div>
                         <div>
-                            <span class="d-block text-uppercase fw-bold text-muted" style="font-size: 0.6rem; letter-spacing: 0.04em; line-height: 1.2;">Usulan</span>
-                            <span class="fw-bold text-dark" style="font-size: 1rem; line-height: 1.2;">{{ $countUsulan }}</span>
+                            <span class="status-title d-block text-uppercase fw-bold text-muted" style="font-size: 0.6rem; letter-spacing: 0.04em; line-height: 1.2;">Usulan</span>
+                            <span class="status-count fw-bold text-dark" style="font-size: 1rem; line-height: 1.2;">{{ $countUsulan }}</span>
                         </div>
                     </div>
                 </div>
             </div>
             <!-- Card Validasi -->
             <div class="col">
-                <div class="card status-card status-btn p-2" data-status="Validasi" style="border-radius: 10px; border: 1.5px solid #cbd5e1; box-shadow: 0 2px 8px rgba(0,0,0,0.02); background: white;">
+                <div class="card status-card status-btn p-2" data-status="Validasi" style="border-radius: 10px; border: 1.5px solid #cbd5e1; box-shadow: 0 2px 8px rgba(0,0,0,0.02); background: white; cursor: pointer;">
                     <div class="d-flex align-items-center gap-2">
                         <div class="d-flex align-items-center justify-content-center flex-shrink-0" style="width: 32px; height: 32px; border-radius: 8px; background-color: #fff8eb;">
                             <i class="bx bx-hourglass" style="font-size: 1.1rem; color: #d97706;"></i>
                         </div>
                         <div>
-                            <span class="d-block text-uppercase fw-bold text-muted" style="font-size: 0.6rem; letter-spacing: 0.04em; line-height: 1.2;">Validasi</span>
-                            <span class="fw-bold text-dark" style="font-size: 1rem; line-height: 1.2;">{{ $countValidasi }}</span>
+                            <span class="status-title d-block text-uppercase fw-bold text-muted" style="font-size: 0.6rem; letter-spacing: 0.04em; line-height: 1.2;">Validasi</span>
+                            <span class="status-count fw-bold text-dark" style="font-size: 1rem; line-height: 1.2;">{{ $countValidasi }}</span>
                         </div>
                     </div>
                 </div>
             </div>
             <!-- Card Proses -->
             <div class="col">
-                <div class="card status-card status-btn p-2" data-status="Proses" style="border-radius: 10px; border: 1.5px solid #cbd5e1; box-shadow: 0 2px 8px rgba(0,0,0,0.02); background: white;">
+                <div class="card status-card status-btn p-2" data-status="Proses" style="border-radius: 10px; border: 1.5px solid #cbd5e1; box-shadow: 0 2px 8px rgba(0,0,0,0.02); background: white; cursor: pointer;">
                     <div class="d-flex align-items-center gap-2">
                         <div class="d-flex align-items-center justify-content-center flex-shrink-0" style="width: 32px; height: 32px; border-radius: 8px; background-color: #eff6ff;">
                             <i class="bx bx-sync" style="font-size: 1.1rem; color: #2563eb;"></i>
                         </div>
                         <div>
-                            <span class="d-block text-uppercase fw-bold text-muted" style="font-size: 0.6rem; letter-spacing: 0.04em; line-height: 1.2;">Proses</span>
-                            <span class="fw-bold text-dark" style="font-size: 1rem; line-height: 1.2;">{{ $countProses }}</span>
+                            <span class="status-title d-block text-uppercase fw-bold text-muted" style="font-size: 0.6rem; letter-spacing: 0.04em; line-height: 1.2;">Proses</span>
+                            <span class="status-count fw-bold text-dark" style="font-size: 1rem; line-height: 1.2;">{{ $countProses }}</span>
                         </div>
                     </div>
                 </div>
             </div>
             <!-- Card Selesai -->
             <div class="col">
-                <div class="card status-card status-btn p-2" data-status="Selesai" style="border-radius: 10px; border: 1.5px solid #cbd5e1; box-shadow: 0 2px 8px rgba(0,0,0,0.02); background: white;">
+                <div class="card status-card status-btn p-2" data-status="Selesai" style="border-radius: 10px; border: 1.5px solid #cbd5e1; box-shadow: 0 2px 8px rgba(0,0,0,0.02); background: white; cursor: pointer;">
                     <div class="d-flex align-items-center gap-2">
                         <div class="d-flex align-items-center justify-content-center flex-shrink-0" style="width: 32px; height: 32px; border-radius: 8px; background-color: #f0fdf4;">
                             <i class="bx bx-check-circle" style="font-size: 1.1rem; color: #16a34a;"></i>
                         </div>
                         <div>
-                            <span class="d-block text-uppercase fw-bold text-muted" style="font-size: 0.6rem; letter-spacing: 0.04em; line-height: 1.2;">Selesai</span>
-                            <span class="fw-bold text-dark" style="font-size: 1rem; line-height: 1.2;">{{ $countSelesai }}</span>
+                            <span class="status-title d-block text-uppercase fw-bold text-muted" style="font-size: 0.6rem; letter-spacing: 0.04em; line-height: 1.2;">Selesai</span>
+                            <span class="status-count fw-bold text-dark" style="font-size: 1rem; line-height: 1.2;">{{ $countSelesai }}</span>
                         </div>
                     </div>
                 </div>
             </div>
             <!-- Card Tolak -->
             <div class="col">
-                <div class="card status-card status-btn p-2" data-status="Tolak" style="border-radius: 10px; border: 1.5px solid #cbd5e1; box-shadow: 0 2px 8px rgba(0,0,0,0.02); background: white;">
+                <div class="card status-card status-btn p-2" data-status="Tolak" style="border-radius: 10px; border: 1.5px solid #cbd5e1; box-shadow: 0 2px 8px rgba(0,0,0,0.02); background: white; cursor: pointer;">
                     <div class="d-flex align-items-center gap-2">
                         <div class="d-flex align-items-center justify-content-center flex-shrink-0" style="width: 32px; height: 32px; border-radius: 8px; background-color: #fef2f2;">
                             <i class="bx bx-x-circle" style="font-size: 1.1rem; color: #dc2626;"></i>
                         </div>
                         <div>
-                            <span class="d-block text-uppercase fw-bold text-muted" style="font-size: 0.6rem; letter-spacing: 0.04em; line-height: 1.2;">Ditolak</span>
-                            <span class="fw-bold text-dark" style="font-size: 1rem; line-height: 1.2;">{{ $countTolak }}</span>
+                            <span class="status-title d-block text-uppercase fw-bold text-muted" style="font-size: 0.6rem; letter-spacing: 0.04em; line-height: 1.2;">Ditolak</span>
+                            <span class="status-count fw-bold text-dark" style="font-size: 1rem; line-height: 1.2;">{{ $countTolak }}</span>
                         </div>
                     </div>
                 </div>
@@ -160,16 +160,16 @@
         </div>
 
         <!-- Table Section -->
-        <div class="table-responsive text-nowrap">
+        <div class="mb-4">
             <table class="table table-hover md2-table text-center" id="dataTable" style="width:100%;">
                 <thead>
                     <tr>
                         <th>ID Usulan</th>
                         <th>Tahun</th>
                         <th>Kode PT</th>
-                        <th>Nama PT</th>
+                        <th class="text-start">Nama PT</th>
                         <th>Bulan</th>
-                        <th>Nama Penandatangan</th>
+                        <th class="text-start">Nama Penandatangan</th>
                         <th>Jabatan</th>
                         <th>Wilayah</th>
                         <th>File</th>
@@ -197,14 +197,15 @@ document.addEventListener('DOMContentLoaded', function() {
         lengthChange: true,
         searching: true,
         responsive: true,
+        dom: '<"row"<"col-sm-12 col-md-6"l><"col-sm-12 col-md-6"f>><"table-responsive text-nowrap"t><"row"<"col-sm-12 col-md-5"i><"col-sm-12 col-md-7"p>>',
         order: [[0, 'desc']],
         columns: [
             { data: 'id_usulan' },
             { data: 'tahun' },
             { data: 'kode_pts' },
-            { data: 'nama_pts' },
+            { data: 'nama_pts', className: 'text-start' },
             { data: 'bulan' },
-            { data: 'nama' },
+            { data: 'nama', className: 'text-start' },
             { data: 'jabatan' },
             { data: 'wilayah' },
             { data: 'file', render: function(d, type, row){
@@ -250,71 +251,121 @@ document.addEventListener('DOMContentLoaded', function() {
     statusButtons.forEach(button => {
         button.addEventListener('click', function() {
             const status = this.getAttribute('data-status');
-            const tipeSptjm = pilihSptjm.value;
-            const bulan = bulanSelect.value;
-
-            // Reset all status cards styling
-            statusButtons.forEach(btn => {
-                btn.style.setProperty('border-color', '#dbeafe', 'important');
-                btn.style.setProperty('background-color', '#ffffff', 'important');
-                btn.style.setProperty('box-shadow', '0 4px 12px rgba(26, 86, 219, 0.05)', 'important');
-            });
-
-            // Highlight selected card
-            this.style.setProperty('border-color', '#1a56db', 'important');
-            this.style.setProperty('background-color', '#f0f5ff', 'important');
-            this.style.setProperty('box-shadow', '0 10px 25px rgba(26, 86, 219, 0.15)', 'important');
-
-            Swal.fire({
-                title: 'Mohon tunggu...',
-                html: `
-                      <div class="d-flex justify-content-center align-items-center flex-column">
-                          <div class="spinner-border spinner-border-lg text-primary" role="status">
-                              <span class="visually-hidden">Loading...</span>
-                          </div>
-                          <div class="mt-2">Sedang mencari data</div>
-                      </div>
-                  `,
-                showConfirmButton: false,
-                allowOutsideClick: false,
-                allowEscapeKey: false,
-                backdrop: true
-            });
-
-            fetch("{{ route('admin.usulan-sptjm.data') }}", {
-                    method: 'POST',
-                    headers: {
-                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        pilihsptjm: tipeSptjm,
-                        bulan: bulan,
-                        status: status
-                    })
-                })
-                .then(response => response.json())
-                .then(data => {
-                    Swal.close();
-                    // Populate DataTable with the returned data
-                    dt.clear();
-                    if (data.success && Array.isArray(data.data)) {
-                        dt.rows.add(data.data);
-                    }
-                    dt.draw();
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Gagal!',
-                        text: 'Terjadi kesalahan saat mengambil data.',
-                    });
-                });
+            loadData(status);
         });
     });
 
-    // User clicks a status card to load data
+    // Color configurations for the status cards when active
+    const activeConfigs = {
+        'Usulan': { border: '#475569', bg: '#f1f5f9', shadow: 'rgba(71, 85, 105, 0.25)', text: '#475569' },
+        'Validasi': { border: '#d97706', bg: '#fef3c7', shadow: 'rgba(217, 119, 6, 0.3)', text: '#b45309' },
+        'Proses': { border: '#2563eb', bg: '#dbeafe', shadow: 'rgba(37, 99, 235, 0.3)', text: '#1d4ed8' },
+        'Selesai': { border: '#16a34a', bg: '#d1fae5', shadow: 'rgba(22, 163, 74, 0.3)', text: '#065f46' },
+        'Tolak': { border: '#dc2626', bg: '#fee2e2', shadow: 'rgba(220, 38, 38, 0.3)', text: '#991b1b' }
+    };
+
+    let activeStatus = 'Usulan';
+
+    function loadData(status) {
+        activeStatus = status;
+        const tipeSptjm = pilihSptjm.value;
+        const bulan = bulanSelect.value;
+
+        // Reset all status cards styling
+        statusButtons.forEach(btn => {
+            btn.style.setProperty('border-color', '#cbd5e1', 'important');
+            btn.style.setProperty('background-color', '#ffffff', 'important');
+            btn.style.setProperty('box-shadow', '0 2px 8px rgba(0,0,0,0.02)', 'important');
+            const title = btn.querySelector('.status-title');
+            if (title) {
+                title.classList.add('text-muted');
+                title.style.removeProperty('color');
+            }
+        });
+
+        // Highlight selected card dynamically
+        const activeCard = document.querySelector(`.status-btn[data-status="${status}"]`);
+        if (activeCard) {
+            const cfg = activeConfigs[status] || activeConfigs['Usulan'];
+            activeCard.style.setProperty('border-color', cfg.border, 'important');
+            activeCard.style.setProperty('background-color', cfg.bg, 'important');
+            activeCard.style.setProperty('box-shadow', `0 10px 25px ${cfg.shadow}`, 'important');
+            const title = activeCard.querySelector('.status-title');
+            if (title) {
+                title.classList.remove('text-muted');
+                title.style.setProperty('color', cfg.text, 'important');
+            }
+        }
+
+        Swal.fire({
+            title: 'Mohon tunggu...',
+            html: `
+                  <div class="d-flex justify-content-center align-items-center flex-column">
+                      <div class="spinner-border spinner-border-lg text-primary" role="status">
+                          <span class="visually-hidden">Loading...</span>
+                      </div>
+                      <div class="mt-2">Sedang mencari data</div>
+                  </div>
+              `,
+            showConfirmButton: false,
+            allowOutsideClick: false,
+            allowEscapeKey: false,
+            backdrop: true
+        });
+
+        fetch("{{ route('admin.usulan-sptjm.data') }}", {
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    pilihsptjm: tipeSptjm,
+                    bulan: bulan,
+                    status: status
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                Swal.close();
+                // Populate DataTable with the returned data
+                dt.clear();
+                if (data.success && Array.isArray(data.data)) {
+                    dt.rows.add(data.data);
+                }
+                dt.draw();
+
+                // Update status card counts in real time
+                if (data.success && data.counts) {
+                    for (const [key, val] of Object.entries(data.counts)) {
+                        const countSpan = document.querySelector(`.status-btn[data-status="${key}"] .status-count`);
+                        if (countSpan) {
+                            countSpan.textContent = val;
+                        }
+                    }
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Gagal!',
+                    text: 'Terjadi kesalahan saat mengambil data.',
+                });
+            });
+    }
+
+    // Auto-reload data when dropdown filter changes
+    pilihSptjm.addEventListener('change', function() {
+        loadData(activeStatus);
+    });
+
+    bulanSelect.addEventListener('change', function() {
+        loadData(activeStatus);
+    });
+
+    // Auto-load the initial "Usulan" data on mount
+    loadData('Usulan');
 });
 </script>
 @endsection

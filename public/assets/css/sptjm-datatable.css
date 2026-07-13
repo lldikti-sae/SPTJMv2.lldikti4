@@ -46,14 +46,14 @@ table.md2-table thead th,
     color: #1e293b !important;
     font-weight: 700 !important;
     text-transform: uppercase !important;
-    font-size: 0.72rem !important;
+    font-size: 0.7rem !important;
     letter-spacing: 0.05em !important;
-    padding: 5px 10px !important;
+    padding: 4px 8px !important;
     vertical-align: middle !important;
     border: 1px solid #dde3ed !important;
     white-space: nowrap !important;
     line-height: 1.0 !important;
-    height: 28px !important;
+    height: auto !important;
 }
 
 /* ── TABLE BODY ──
@@ -63,19 +63,19 @@ table.dataTable tbody td,
 .table tbody td,
 table.md2-table tbody td,
 .md-table-wrap table tbody td {
-    font-size: 0.84rem !important;
+    font-size: 0.78rem !important;
     font-weight: 400 !important;          /* NORMAL — tidak bold */
     color: #1a1a2e !important;            /* Hitam gelap konsisten */
-    padding: 5px 10px !important;         /* Compact rows */
+    padding: 4px 8px !important;         /* Compact rows */
     vertical-align: middle !important;
     border: 1px solid #dde3ed !important;
-    line-height: 1.3 !important;
+    line-height: 1.2 !important;
 }
 
 /* ── OVERRIDE: Paksa semua teks di dalam sel table menjadi hitam dan normal ── */
-table.dataTable tbody td span:not(.badge):not(.sptjm-badge-active):not(.sptjm-badge-inactive):not(.badge-aktif):not(.badge-nonaktif):not(.badge-tidak-aktif),
+table.dataTable tbody td span:not([class*="badge"]),
 table.dataTable tbody td div:not([class*="badge"]):not([class*="sptjm-icon-btn"]),
-.table tbody td span:not(.badge):not(.sptjm-badge-active):not(.sptjm-badge-inactive):not(.badge-aktif):not(.badge-nonaktif):not(.badge-tidak-aktif),
+.table tbody td span:not([class*="badge"]),
 .table tbody td div:not([class*="badge"]):not([class*="sptjm-icon-btn"]) {
     font-weight: 400 !important;
     color: #1a1a2e !important;
@@ -203,8 +203,8 @@ table.dataTable thead .sorting_desc::after {
 }
 
 .dataTables_wrapper .row {
-    margin: 0;
-    padding: 0;
+    margin-left: -0.75rem !important;
+    margin-right: -0.75rem !important;
 }
 
 /* ── DATATABLES INFO ── */
@@ -261,6 +261,7 @@ table.dataTable thead .sorting_desc::after {
 .dataTables_wrapper .dataTables_filter {
     display: flex !important;
     align-items: center !important;
+    justify-content: flex-end !important;
     gap: 6px !important;
     margin-bottom: 0 !important;
 }

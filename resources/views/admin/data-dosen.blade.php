@@ -1,4 +1,4 @@
-﻿@extends('layouts/contentNavbarLayout')
+@extends('layouts/contentNavbarLayout')
 
 @section('title', 'SPTJM Online')
 
@@ -35,25 +35,7 @@
     border-color: #cbd5e1;
 }
 
-/* â”€â”€ Custom badges unik halaman ini â”€â”€ */
-.badge-ya {
-    background-color: #e0e7ff;
-    color: #3730a3;
-    font-weight: 600;
-    font-size: 0.7rem;
-    padding: 3px 10px;
-    border-radius: 20px;
-    display: inline-block;
-}
-.badge-tidak {
-    background-color: #fee2e2;
-    color: #b91c1c;
-    font-weight: 600;
-    font-size: 0.7rem;
-    padding: 3px 10px;
-    border-radius: 20px;
-    display: inline-block;
-}
+
 
 /* NIDN link style */
 .text-link-nidn {

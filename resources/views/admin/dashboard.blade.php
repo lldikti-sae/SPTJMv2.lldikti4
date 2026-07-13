@@ -113,13 +113,13 @@
     </div>
 
     <div class="table-responsive text-nowrap">
-        <table class="table table-hover" id="dosenPensiunTable">
+        <table class="table table-hover md2-table text-center" id="dosenPensiunTable" style="width: 100%;">
             <thead>
                 <tr>
                     <th>Nidn</th>
                     <th>NUPTK</th>
-                    <th>Nama Dosen</th>
-                    <th>Nama PTS</th>
+                    <th class="text-start">Nama Dosen</th>
+                    <th class="text-start">Nama PTS</th>
                     <th>TMT Pensiun</th>
                     <th>Usia</th>
                     <th>Status</th>
@@ -144,27 +144,17 @@ document.addEventListener('DOMContentLoaded', function () {
             url: '{{ route('admin.dashboard.dosen-pensiun.data') }}'
         },
         columns: [
-            { 
-                data: 'nidn', 
-                name: 'nidn',
-                render: function(data, type, row) {
-                    return '<span class="text-dark">' + data + '</span>';
-                }
-            },
+            { data: 'nidn', name: 'nidn' },
             { data: 'nuptk', name: 'nuptk' },
             { 
                 data: 'nama', 
                 name: 'nama',
-                render: function(data, type, row) {
-                    return '<span class="fw-bold text-dark">' + data + '</span>';
-                }
+                className: 'text-start'
             },
             { 
                 data: 'pts', 
                 name: 'pts',
-                render: function(data, type, row) {
-                    return '<span class="text-dark">' + data + '</span>';
-                }
+                className: 'text-start'
             },
             { data: 'tmt_pensiun', name: 'tmt_pensiun' },
             { data: 'usia', name: 'usia' },

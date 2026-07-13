@@ -154,7 +154,7 @@
                 </form>
             </div>
 
-            <div class="table-responsive text-nowrap">
+            <div class="mb-4">
 
 
               <!-- Table Display -->
@@ -299,6 +299,7 @@
       processing: true,
       serverSide: true,
       order: [],
+      dom: '<"row"<"col-sm-12 col-md-6"l><"col-sm-12 col-md-6"f>><"table-responsive text-nowrap"t><"row"<"col-sm-12 col-md-5"i><"col-sm-12 col-md-7"p>>',
       ajax: {
         url: "{{ url('admin/laporan-keuangan') }}",
         type: 'POST',

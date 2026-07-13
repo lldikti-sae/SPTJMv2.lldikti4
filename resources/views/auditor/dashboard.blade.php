@@ -1,4 +1,4 @@
-﻿@extends('layouts/contentNavbarLayoutAuditor')
+@extends('layouts/contentNavbarLayoutAuditor')
 
 @section('title', 'SPTJM Online')
 
@@ -149,7 +149,7 @@
           <div class="text-muted small">Tahun {{ $tahun }}</div>
         </div>
         <div class="card-body pt-0">
-          <div class="table-responsive text-nowrap">
+          <div>
             <table class="table table-sm table-hover" id="dosenPensiunTable">
               <thead style="background-color: #dbdee0;">
                 <tr>
@@ -182,6 +182,7 @@
           serverSide: true,
           paging: true,
           lengthChange: true,
+          dom: '<"row mx-0 mt-3 mb-2"<"col-sm-12 col-md-6"l><"col-sm-12 col-md-6"f>><"table-responsive text-nowrap"t><"row mx-0 mt-2 mb-2"<"col-sm-12 col-md-5"i><"col-sm-12 col-md-7"p>>',
           ajax: {
             url: '{{ route('auditor.dashboard.dosen-pensiun.data') }}'
           },

@@ -64,7 +64,7 @@
                 <h6 class="mb-0 fw-bold text-dark">Tabel Rekapitulasi</h6>
             </div>
 
-            <div class="table-responsive text-nowrap">
+            <div class="mb-4">
                 <table class="table table-hover md2-table text-center" id="rekapTable" style="width:100%">
                     <thead>
                         <tr>
@@ -106,6 +106,7 @@
             processing: true,
             serverSide: true,
             paging: true,
+            dom: '<"row"<"col-sm-12 col-md-6"l><"col-sm-12 col-md-6"f>><"table-responsive text-nowrap"t><"row"<"col-sm-12 col-md-5"i><"col-sm-12 col-md-7"p>>',
             ajax: {
                 url: ajaxUrl,
                 data: {

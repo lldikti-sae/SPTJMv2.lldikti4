@@ -92,7 +92,7 @@
                         <td style="white-space: normal; max-width: 220px; text-align: center !important;">{{ $data->PTS }}</td>
                         <td class="text-center">
                             <button type="button"
-                                class="badge bg-label-warning border-0 py-2 px-3 fw-semibold cursor-pointer"
+                                class="badge bg-label-warning border-0 py-2 px-3 fw-bold cursor-pointer"
                                 style="border-radius: 20px; font-size: 0.78rem; transition: transform 0.2s;"
                                 onclick="showDetailModal('{{ addslashes($data->Nama) }}', '{{ addslashes($data->kode_belum_usulan) }}')">
                                 <i class="bx bx-calendar-x me-1" style="font-size: 0.85rem;"></i>

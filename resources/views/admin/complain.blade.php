@@ -2,6 +2,82 @@
 
 @section('title', 'SPTJM Online')
 
+@section('page-style')
+<style>
+.dt-toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    flex-wrap: wrap;
+    gap: 10px;
+    padding: 10px 0 12px;
+}
+.dt-toolbar .dt-search-wrap {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.dt-toolbar .dt-search-wrap label {
+    font-size: 0.83rem;
+    font-weight: 600;
+    color: #64748b;
+    margin-bottom: 0;
+    white-space: nowrap;
+}
+.dt-toolbar .dt-search-wrap input {
+    border: 1.5px solid #cbd5e1;
+    border-radius: 8px;
+    padding: 5px 10px;
+    font-size: 0.85rem;
+    height: 34px;
+    width: 220px;
+    outline: none;
+    color: #374151;
+}
+.dt-toolbar .dt-search-wrap input:focus {
+    border-color: #696cff;
+    box-shadow: 0 0 0 2px rgba(105,108,255,0.1);
+}
+.dataTables_info {
+    font-size: 0.82rem;
+    color: #64748b;
+}
+.dataTables_paginate {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+.dataTables_paginate .paginate_button {
+    border: 1.5px solid #e2e8f0 !important;
+    border-radius: 6px !important;
+    padding: 4px 10px !important;
+    font-size: 0.82rem !important;
+    color: #374151 !important;
+    background: #f8fafc !important;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+.dataTables_paginate .paginate_button:hover,
+.dataTables_paginate .paginate_button.current {
+    background: #696cff !important;
+    color: #fff !important;
+    border-color: #696cff !important;
+}
+.dataTables_paginate .paginate_button.disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+.dt-bottom-row {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 12px;
+}
+</style>
+@endsection
+
 @section('content')
 <div class="md2-page-header">
     <div class="page-titles">
@@ -117,7 +193,7 @@
       processing: true,
       serverSide: true,
       responsive: true,
-      dom: "<'md-toolbar'<'entries-wrap'l><'search-wrap'f>>rt<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
+      dom: "<'dt-toolbar'<'dt-search-wrap'f>>rt<'dt-bottom-row'ip>",
       ajax: {
         url: "{{ route('admin.complain.index') }}",
         data: function (d) {
