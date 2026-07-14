@@ -361,7 +361,106 @@
 
 <script src="{{ asset(mix('assets/js/main.js')) }}"></script>
 
-<!-- END: Theme JS-->
+<!-- ================================================================
+     SPTJM: Menu Nested Submenu Overlap Fix
+     Root cause: menu.js hanya menganimasikan .menu-item yang diklik,
+     tapi tidak memperbarui ancestor .menu-item yang sudah open.
+     Saat submenu child dibuka, ancestor bisa terjebak di pixel-height
+     lama → sibling menu di bawahnya tidak terdorong ke bawah.
+     Fix: setelah setiap animasi selesai, hapus height/overflow inline
+     dari semua ancestor .menu-item yang sudah open.
+     ================================================================ -->
+<script>
+(function () {
+    'use strict';
+
+    /**
+     * Hapus style height & overflow dari semua ancestor .menu-item yang sudah open.
+     * Ini memastikan parent selalu expand ke height:auto setelah child selesai animasi.
+     */
+    function clearAncestorHeights(startItem) {
+        var parent = startItem && startItem.parentElement
+            ? startItem.parentElement.closest('.menu-item')
+            : null;
+        while (parent) {
+            // Hanya clear jika parent sudah open dan TIDAK sedang dianimasikan
+            if (parent.classList.contains('open') && !parent.classList.contains('menu-item-animating')) {
+                parent.style.height = '';
+                parent.style.overflow = '';
+            }
+            parent = parent.parentElement
+                ? parent.parentElement.closest('.menu-item')
+                : null;
+        }
+    }
+
+    /**
+     * Patch menu.js setelah ia terinisialisasi (main.js memanggil new Menu()).
+     * Kita intercept _toggleAnimation agar clearAncestorHeights dipanggil
+     * setelah animasi item yang diklik selesai.
+     */
+    function patchMenuInstance() {
+        var menuEl = document.getElementById('layout-menu');
+        if (!menuEl || !menuEl.menuInstance) return false;
+
+        var instance = menuEl.menuInstance;
+        var originalOnOpened = instance._onOpened;
+        var originalOnClosed  = instance._onClosed;
+
+        // Setelah submenu dibuka, bersihkan height ancestor
+        instance._onOpened = function (menu, item, link, sub) {
+            if (typeof originalOnOpened === 'function') originalOnOpened(menu, item, link, sub);
+            // Beri sedikit jeda agar menu.js clearItemStyle() selesai dahulu
+            setTimeout(function () { clearAncestorHeights(item); }, 20);
+        };
+
+        // Setelah submenu ditutup, bersihkan juga (untuk konsistensi)
+        instance._onClosed = function (menu, item, link, sub) {
+            if (typeof originalOnClosed === 'function') originalOnClosed(menu, item, link, sub);
+            setTimeout(function () { clearAncestorHeights(item); }, 20);
+        };
+
+        return true;
+    }
+
+    // Coba patch segera (jika main.js sudah jalan secara sinkron)
+    if (!patchMenuInstance()) {
+        // Jika belum siap, tunggu DOMContentLoaded lalu coba lagi
+        document.addEventListener('DOMContentLoaded', function () {
+            if (!patchMenuInstance()) {
+                // Fallback: polling ringan selama maks 2 detik
+                var attempts = 0;
+                var interval = setInterval(function () {
+                    attempts++;
+                    if (patchMenuInstance() || attempts >= 20) clearInterval(interval);
+                }, 100);
+            }
+        });
+    }
+
+    // ─── Fallback tambahan: event listener langsung di menu ───────────────
+    // Jika patch di atas gagal (mis. menu.js diupdate), fallback ini tetap bekerja.
+    document.addEventListener('DOMContentLoaded', function () {
+        var menuEl = document.getElementById('layout-menu');
+        if (!menuEl) return;
+
+        menuEl.addEventListener('click', function (e) {
+            var toggle = e.target && e.target.closest
+                ? e.target.closest('a.menu-toggle')
+                : null;
+            if (!toggle) return;
+
+            var clickedItem = toggle.closest('.menu-item');
+            if (!clickedItem) return;
+
+            // Jalankan setelah menu.js memproses klik dan setelah animasi selesai (~380ms)
+            setTimeout(function () { clearAncestorHeights(clickedItem); }, 400);
+        });
+    });
+})();
+</script>
+
+
 
 <!-- Pricing Modal JS-->
 @stack('pricing-script')

@@ -249,6 +249,31 @@
             margin-left: 2.15rem !important; /* diposisikan tepat di bawah ikon induk */
             padding-left: 0 !important;
             position: relative !important;
+            /* FIX OVERLAP: overflow harus visible agar parent .menu-item bisa menghitung
+               tingginya secara otomatis saat submenu nested dibuka. overflow:hidden
+               yang lama memblokir reflow dan menyebabkan sibling tumpang-tindih. */
+            overflow: visible !important;
+        }
+
+        /* ─── SAFETY NET: Pastikan .menu-item yang sudah terbuka selalu auto-height ─── */
+        /* Ketika menu.js selesai animasi, ia menghapus height inline via clearItemStyle().
+           Rule ini menjadi fallback agar tidak ada pixel-height yang tersisa
+           pada elemen yang sudah open tapi TIDAK sedang dianimasikan. */
+        .menu-vertical .menu-item.open:not(.menu-item-animating) {
+            height: auto !important;
+            overflow: visible !important;
+        }
+
+        /* FIX: Hentikan animasi transition pada menu-icon yang menyebabkan icon bocor ke submenu */
+        .menu-vertical .menu-inner > .menu-item > .menu-link .menu-icon,
+        .menu-vertical .menu-sub .menu-icon {
+            transition: none !important;
+            position: static !important;
+        }
+
+        /* FIX: Sembunyikan icon yang ada di dalam submenu (submenu tidak punya icon) */
+        .menu-vertical .menu-sub > .menu-item > .menu-link .menu-icon {
+            display: none !important;
         }
 
         /* Hapus total bullet dot default */
