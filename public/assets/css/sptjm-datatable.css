@@ -60,6 +60,8 @@ table.md2-table,
     width: 100% !important;
     margin-top: 0 !important;
     margin-bottom: 0 !important;
+    display: table !important;
+    overflow-x: visible !important;
 }
 
 /* ── TABLE HEADER ──
@@ -215,7 +217,8 @@ table.dataTable thead .sorting_desc::after {
 /* ── DATATABLES WRAPPER ── */
 .dataTables_wrapper {
     width: 100%;
-    overflow-x: auto;
+    overflow-x: visible !important;
+    overflow-y: visible !important;
 }
 
 /* ── TOOLBAR WRAPPER: Show Entries (kiri) + Search (kanan) ── */
@@ -231,8 +234,8 @@ table.dataTable thead .sorting_desc::after {
 }
 
 .dataTables_wrapper .row {
-    margin-left: -0.75rem !important;
-    margin-right: -0.75rem !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
 }
 
 /* ── DATATABLES INFO ── */

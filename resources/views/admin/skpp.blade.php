@@ -73,26 +73,26 @@
                     <td class="text-center">{{ \Carbon\Carbon::parse($skpp->created_at)->format('d-m-Y H:i') }}</td>
                     <td class="text-center">
                         <div class="d-flex justify-content-center gap-1">
-                            <a href="{{ route('admin.skpp.cetak', $skpp->id) }}" class="btn btn-sm btn-outline-info" target="_blank" title="Cetak Surat">
+                            <a href="{{ route('admin.skpp.cetak', $skpp->id) }}" class="sptjm-icon-btn sptjm-btn-print" target="_blank" title="Cetak Surat">
                                 <i class="bx bx-printer"></i>
                             </a>
                             @if(!empty($skpp->lampiran))
-                                <a href="{{ asset('storage/Dokumen_Histori_Dosen2/' . $skpp->lampiran) }}" class="btn btn-sm {{ $skpp->status === 'setuju' ? 'btn-success' : 'btn-info' }}" target="_blank" title="Lihat PDF SKPP">
+                                <a href="{{ asset('storage/Dokumen_Histori_Dosen2/' . $skpp->lampiran) }}" class="sptjm-icon-btn {{ $skpp->status === 'setuju' ? 'sptjm-btn-reset' : 'sptjm-btn-view' }}" target="_blank" title="Lihat PDF SKPP">
                                     <i class="bx bx-file"></i>
                                 </a>
                             @endif
                             @if($skpp->status !== 'setuju')
-                            <button type="button" class="btn btn-sm btn-outline-primary" onclick="editSkpp({{ $skpp->id }})" title="Edit Surat">
+                            <button type="button" class="sptjm-icon-btn sptjm-btn-edit" onclick="editSkpp({{ $skpp->id }})" title="Edit Surat">
                                 <i class="bx bx-edit"></i>
                             </button>
                             
                             @if($skpp->status === 'open' || $skpp->status === 'tolak')
-                            <button type="button" class="btn btn-sm btn-outline-success" onclick="uploadPdf({{ $skpp->id }})" title="Upload PDF">
+                            <button type="button" class="sptjm-icon-btn sptjm-btn-reset" onclick="uploadPdf({{ $skpp->id }})" title="Upload PDF">
                                 <i class="bx bx-upload"></i>
                             </button>
                             @endif
 
-                            <button type="button" class="btn btn-sm btn-outline-danger" onclick="hapusSkpp({{ $skpp->id }})" title="Hapus Surat">
+                            <button type="button" class="sptjm-icon-btn sptjm-btn-delete" onclick="hapusSkpp({{ $skpp->id }})" title="Hapus Surat">
                                 <i class="bx bx-trash"></i>
                             </button>
                             @endif
