@@ -8,15 +8,17 @@ use Maatwebsite\Excel\Concerns\WithHeadings;
 class CutoffSisternasExport implements FromQuery, WithHeadings
 {
     protected $table;
+    protected $tahun;
 
-    public function __construct($table)
+    public function __construct($table, $tahun)
     {
         $this->table = $table;
+        $this->tahun = $tahun;
     }
 
     public function query()
     {
-        return \Illuminate\Support\Facades\DB::table($this->table)->orderBy('nidn');
+        return \Illuminate\Support\Facades\DB::table($this->table)->where('tahun', $this->tahun)->orderBy('nidn');
     }
 
     public function headings(): array

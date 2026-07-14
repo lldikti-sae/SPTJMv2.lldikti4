@@ -34,7 +34,8 @@ class CutOffSisternasController extends Controller
       $allowedTables = ['n_sister_genap_bj', 'o_sister_genap_tl', 'p_sister_ganjil_tl'];
 
       if (in_array($table, $allowedTables)) {
-        $query = DB::table($table);
+        $tahun = session('tahun') ?: date('Y');
+        $query = DB::table($table)->where('tahun', $tahun);
 
         return DataTables::of($query)
           ->addIndexColumn()
@@ -93,6 +94,7 @@ class CutOffSisternasController extends Controller
 
     $nidn = $norm($request->input('nidn'));
     $nuptk = $norm($request->input('nuptk'));
+    $tahun = session('tahun') ?: date('Y');
 
     $updatePayload = [
       'nuptk' => $norm($request->input('nuptk')),
@@ -114,12 +116,14 @@ class CutOffSisternasController extends Controller
     if ($nidn !== null) {
       $affected = DB::table($table)
         ->where('nidn', $nidn)
+        ->where('tahun', $tahun)
         ->update($updatePayload);
     }
 
     if ($affected === 0 && $nuptk !== null) {
       $affected = DB::table($table)
         ->where('nuptk', $nuptk)
+        ->where('tahun', $tahun)
         ->update($updatePayload);
     }
 
@@ -134,6 +138,7 @@ class CutOffSisternasController extends Controller
             $q->orWhere('nidn', $nuptk)->orWhere('nuptk', $nuptk);
           }
         })
+        ->where('tahun', $tahun)
         ->update($updatePayload);
     }
 
@@ -214,6 +219,7 @@ class CutOffSisternasController extends Controller
       $batch = [];
       $inserted = 0;
       $chunkSize = 500;
+      $tahun = session('tahun') ?: date('Y');
 
       while (($row = fgetcsv($handle, 0, $delimiter)) !== false) {
         // map row to header
@@ -236,6 +242,7 @@ class CutOffSisternasController extends Controller
           'kd' => $parseDecimal($mapped['kd'] ?? null),
           'kp' => $parseDecimal($mapped['kp'] ?? null),
           'potongan_periodik' => $parseDecimal($mapped['potongan_periodik'] ?? null),
+          'tahun' => $tahun,
         ];
 
         // skip rows without nidn
@@ -298,7 +305,8 @@ class CutOffSisternasController extends Controller
       return response()->json(['success' => false, 'message' => 'Tabel tidak valid.']);
     }
 
-    DB::table($table)->truncate();
+    $tahun = session('tahun') ?: date('Y');
+    DB::table($table)->where('tahun', $tahun)->delete();
 
     return response()->json(['success' => true, 'message' => 'Data berhasil dihapus!']);
   }
@@ -323,9 +331,10 @@ class CutOffSisternasController extends Controller
     ]);
 
     $table = $request->input('sisternas');
+    $tahun = session('tahun') ?: date('Y');
 
     DB::table($table)->updateOrInsert(
-      ['nidn' => $request->input('nidn')],
+      ['nidn' => $request->input('nidn'), 'tahun' => $tahun],
       [
         'nuptk' => $request->input('nuptk'),
         'no_sertifikat' => $request->input('no_sertifikat'),
@@ -359,8 +368,9 @@ class CutOffSisternasController extends Controller
       return redirect()->back()->with('error', 'Tabel tidak valid untuk export.');
     }
 
-    $filename = "cutoff_{$table}_backup_" . date('Ymd_His') . ".ods";
+    $tahun = session('tahun') ?: date('Y');
+    $filename = "cutoff_{$table}_{$tahun}_backup_" . date('Ymd_His') . ".ods";
 
-    return Excel::download(new CutoffSisternasExport($table), $filename, \Maatwebsite\Excel\Excel::ODS);
+    return Excel::download(new CutoffSisternasExport($table, $tahun), $filename, \Maatwebsite\Excel\Excel::ODS);
   }
 }
