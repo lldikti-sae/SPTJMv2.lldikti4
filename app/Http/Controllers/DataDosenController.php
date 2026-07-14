@@ -263,21 +263,87 @@ class DataDosenController extends Controller
     }
 
     try {
-      $jumlah = Transaksi::where(function($q) use ($request) {
+      $dosens = Transaksi::where(function($q) use ($request) {
           $q->whereIn('NIDN', $request->nidn)
             ->orWhereIn('NUPTK', $request->nidn);
         })
         ->where('Tahun_Versi', $tahun)
         // Guard against whitespace issues in stored Kode_PT values
         ->whereRaw('TRIM(`Kode_PT`) = ?', [$kodePtsAsal])
-        ->update([
-          'Kode_PT' => $kodePtsTujuan,
-          'PTS' => $ptsTujuan->nama_pts,
-        ]);
+        ->get();
+
+      $jumlahDipindah = 0;
+      $jumlahDijadwalkan = 0;
+      $wilayahBaru = strtolower($ptsTujuan->wilayah ?? '');
+
+      foreach ($dosens as $dosen) {
+          $identifier = $dosen->NIDN ?? $dosen->NUPTK;
+          if (!$identifier) continue;
+
+          if ($this->hasActiveUsulan($identifier, $tahun)) {
+              // Jadwalkan pindah PTS
+              $existing = DB::table('j_jadwal_pindah_pts')
+                  ->where(function($q) use ($identifier) {
+                      $q->where('nidn', $identifier)
+                        ->orWhere('nuptk', $identifier);
+                  })
+                  ->where('status', 'pending')
+                  ->first();
+
+              if ($existing) {
+                  DB::table('j_jadwal_pindah_pts')
+                      ->where('id', $existing->id)
+                      ->update([
+                          'kode_pt_baru' => $kodePtsTujuan,
+                          'nama_pts_baru' => $ptsTujuan->nama_pts,
+                          'pemegang_wilayah_baru' => $wilayahBaru,
+                          'pengguna' => auth()->user()->email ?? 'admin',
+                          'updated_at' => now()
+                      ]);
+              } else {
+                  DB::table('j_jadwal_pindah_pts')->insert([
+                      'nidn' => $dosen->NIDN,
+                      'nuptk' => $dosen->NUPTK,
+                      'kode_pt_baru' => $kodePtsTujuan,
+                      'nama_pts_baru' => $ptsTujuan->nama_pts,
+                      'pemegang_wilayah_baru' => $wilayahBaru,
+                      'status' => 'pending',
+                      'pengguna' => auth()->user()->email ?? 'admin',
+                      'created_at' => now(),
+                      'updated_at' => now()
+                  ]);
+              }
+              $jumlahDijadwalkan++;
+          } else {
+              // Pindah langsung
+              Transaksi::where(function ($q) use ($identifier) {
+                $q->where('NIDN', $identifier)
+                  ->orWhere('NUPTK', $identifier);
+              })->update([
+                  'Kode_PT' => $kodePtsTujuan,
+                  'PTS' => $ptsTujuan->nama_pts,
+                  'Pemegang_Wilayah' => $wilayahBaru
+              ]);
+              $jumlahDipindah++;
+          }
+      }
+
+      $msg = [];
+      if ($jumlahDipindah > 0) {
+          $msg[] = "$jumlahDipindah data dosen berhasil dipindahkan ke PTS tujuan.";
+      }
+      if ($jumlahDijadwalkan > 0) {
+          $msg[] = "$jumlahDijadwalkan data dosen dijadwalkan pindah karena proses pencairan aktif.";
+      }
+      
+      $finalMessage = implode(' ', $msg);
+      if (empty($finalMessage)) {
+          $finalMessage = "Tidak ada data yang diproses.";
+      }
 
       return response()->json([
         'status' => 'success',
-        'message' => $jumlah . ' data dosen berhasil dipindahkan ke PTS tujuan.',
+        'message' => $finalMessage,
       ]);
     } catch (\Exception $e) {
       $alias = ErrorAlias::fromThrowable($e, 'ADM-SINKRON');
