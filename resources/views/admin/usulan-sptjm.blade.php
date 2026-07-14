@@ -95,8 +95,8 @@
                             <i class="bx bx-folder" style="font-size: 1.1rem; color: #475569;"></i>
                         </div>
                         <div>
-                            <span class="status-title d-block text-uppercase fw-bold text-muted" style="font-size: 0.6rem; letter-spacing: 0.04em; line-height: 1.2;">Usulan</span>
-                            <span class="status-count fw-bold text-dark" style="font-size: 1rem; line-height: 1.2;">{{ $countUsulan }}</span>
+                            <span class="status-title d-block text-uppercase" style="font-size: 0.75rem; letter-spacing: 0.05em; line-height: 1.2; font-weight: 800; color: #0f172a;">Usulan</span>
+                            <span class="status-count fw-bold text-dark" style="font-size: 1.35rem; line-height: 1.2; font-weight: 900 !important;">{{ $countUsulan }}</span>
                         </div>
                     </div>
                 </div>
@@ -109,8 +109,8 @@
                             <i class="bx bx-hourglass" style="font-size: 1.1rem; color: #d97706;"></i>
                         </div>
                         <div>
-                            <span class="status-title d-block text-uppercase fw-bold text-muted" style="font-size: 0.6rem; letter-spacing: 0.04em; line-height: 1.2;">Validasi</span>
-                            <span class="status-count fw-bold text-dark" style="font-size: 1rem; line-height: 1.2;">{{ $countValidasi }}</span>
+                            <span class="status-title d-block text-uppercase" style="font-size: 0.75rem; letter-spacing: 0.05em; line-height: 1.2; font-weight: 800; color: #0f172a;">Validasi</span>
+                            <span class="status-count fw-bold text-dark" style="font-size: 1.35rem; line-height: 1.2; font-weight: 900 !important;">{{ $countValidasi }}</span>
                         </div>
                     </div>
                 </div>
@@ -123,8 +123,8 @@
                             <i class="bx bx-sync" style="font-size: 1.1rem; color: #2563eb;"></i>
                         </div>
                         <div>
-                            <span class="status-title d-block text-uppercase fw-bold text-muted" style="font-size: 0.6rem; letter-spacing: 0.04em; line-height: 1.2;">Proses</span>
-                            <span class="status-count fw-bold text-dark" style="font-size: 1rem; line-height: 1.2;">{{ $countProses }}</span>
+                            <span class="status-title d-block text-uppercase" style="font-size: 0.75rem; letter-spacing: 0.05em; line-height: 1.2; font-weight: 800; color: #0f172a;">Proses</span>
+                            <span class="status-count fw-bold text-dark" style="font-size: 1.35rem; line-height: 1.2; font-weight: 900 !important;">{{ $countProses }}</span>
                         </div>
                     </div>
                 </div>
@@ -137,8 +137,8 @@
                             <i class="bx bx-check-circle" style="font-size: 1.1rem; color: #16a34a;"></i>
                         </div>
                         <div>
-                            <span class="status-title d-block text-uppercase fw-bold text-muted" style="font-size: 0.6rem; letter-spacing: 0.04em; line-height: 1.2;">Selesai</span>
-                            <span class="status-count fw-bold text-dark" style="font-size: 1rem; line-height: 1.2;">{{ $countSelesai }}</span>
+                            <span class="status-title d-block text-uppercase" style="font-size: 0.75rem; letter-spacing: 0.05em; line-height: 1.2; font-weight: 800; color: #0f172a;">Selesai</span>
+                            <span class="status-count fw-bold text-dark" style="font-size: 1.35rem; line-height: 1.2; font-weight: 900 !important;">{{ $countSelesai }}</span>
                         </div>
                     </div>
                 </div>
@@ -151,8 +151,8 @@
                             <i class="bx bx-x-circle" style="font-size: 1.1rem; color: #dc2626;"></i>
                         </div>
                         <div>
-                            <span class="status-title d-block text-uppercase fw-bold text-muted" style="font-size: 0.6rem; letter-spacing: 0.04em; line-height: 1.2;">Ditolak</span>
-                            <span class="status-count fw-bold text-dark" style="font-size: 1rem; line-height: 1.2;">{{ $countTolak }}</span>
+                            <span class="status-title d-block text-uppercase" style="font-size: 0.75rem; letter-spacing: 0.05em; line-height: 1.2; font-weight: 800; color: #0f172a;">Ditolak</span>
+                            <span class="status-count fw-bold text-dark" style="font-size: 1.35rem; line-height: 1.2; font-weight: 900 !important;">{{ $countTolak }}</span>
                         </div>
                     </div>
                 </div>
@@ -278,10 +278,11 @@ document.addEventListener('DOMContentLoaded', function() {
             btn.style.setProperty('box-shadow', '0 2px 8px rgba(0,0,0,0.02)', 'important');
             const title = btn.querySelector('.status-title');
             if (title) {
-                title.classList.add('text-muted');
-                title.style.removeProperty('color');
+                title.classList.remove('text-muted');
+                title.style.setProperty('color', '#0f172a', 'important');
             }
         });
+
 
         // Highlight selected card dynamically
         const activeCard = document.querySelector(`.status-btn[data-status="${status}"]`);
