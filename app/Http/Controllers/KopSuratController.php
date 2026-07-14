@@ -106,4 +106,15 @@ class KopSuratController extends Controller
         DB::table('m_pejabat')->where('id', $id)->delete();
         return redirect()->back()->with('success', 'Pejabat berhasil dihapus.');
     }
+
+    public function toggleStatusPenandatangan($id)
+    {
+        $pejabat = DB::table('m_pejabat')->where('id', $id)->first();
+        if ($pejabat) {
+            $newStatus = $pejabat->is_aktif ? 0 : 1;
+            DB::table('m_pejabat')->where('id', $id)->update(['is_aktif' => $newStatus, 'updated_at' => now()]);
+            return response()->json(['success' => true, 'is_aktif' => $newStatus, 'message' => 'Status berhasil diubah.']);
+        }
+        return response()->json(['success' => false, 'message' => 'Pejabat tidak ditemukan.'], 404);
+    }
 }

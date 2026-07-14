@@ -223,6 +223,7 @@ Route::get('/admin/master-penandatangan', [KopSuratController::class, 'indexPena
 Route::post('/admin/master-penandatangan', [KopSuratController::class, 'storePenandatangan'])->name('admin.master-penandatangan.store');
 Route::put('/admin/master-penandatangan/{id}', [KopSuratController::class, 'updatePenandatangan'])->name('admin.master-penandatangan.update');
 Route::delete('/admin/master-penandatangan/{id}', [KopSuratController::class, 'destroyPenandatangan'])->name('admin.master-penandatangan.destroy');
+Route::post('/admin/master-penandatangan/{id}/toggle-status', [KopSuratController::class, 'toggleStatusPenandatangan'])->name('admin.master-penandatangan.toggle-status');
 Route::post('/admin/data-jabatan', [JabatanController::class, 'store'])->name('admin/data-jabatan.store');
 Route::get('/admin/data-jabatan/{kode}/edit', [JabatanController::class, 'edit'])->name('admin/data-jabatan.edit');
 Route::put('/admin/data-jabatan/{kode}', [JabatanController::class, 'update'])->name('admin/data-jabatan.update');

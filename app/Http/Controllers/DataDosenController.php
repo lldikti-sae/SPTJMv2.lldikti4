@@ -1074,8 +1074,8 @@ class DataDosenController extends Controller
   //view data dosen tidak aktif
   public function viewDataDosenTidakAktif()
   {
-    // dd('tes datadosentidakaktif');
-    $dataDosenTidakAktif = Dosen::where('aktif', 0)->get();
+    // dataDosenTidakAktif sudah tidak digunakan di view (menggunakan datatables)
+    $dataDosenTidakAktif = [];
     // ambil daftar kategori keterangan untuk dropdown filter dari tabel h_perubahan
     // menggunakan field status_perubahan agar opsi selalu mengikuti master data perubahan
     $keteranganOptions = DB::table('h_perubahan')
@@ -1110,9 +1110,12 @@ class DataDosenController extends Controller
                             THEN 1
                             ELSE 0
                         END AS can_delete";
-      $query = Transaksi::where('Aktif', '0')
+      $aktifValues = ['1', 'YA', 'Ya', 'ya', 'Y'];
+      $query = Transaksi::where(function($q) use ($aktifValues) {
+            $q->whereNotIn('Eligible_span', $aktifValues)->orWhereNull('Eligible_span');
+        })
         ->where('Tahun_Versi', $year)
-        ->select(DB::raw('NIDN AS nidn'), DB::raw('NUPTK AS nuptk'), 'Nama', 'Kode_PT', 'PTS', 'Jenis', 'Keterangan', DB::raw($cekKodeUsulan));
+        ->select(DB::raw('NIDN AS nidn'), DB::raw('NUPTK AS nuptk'), 'Nama', 'Kode_PT', 'PTS', 'Jenis', 'Keterangan', 'Eligible_span', DB::raw($cekKodeUsulan));
       // apply keterangan filter if provided (client sends 'all' for no-filter)
       $keterangan = $request->input('keterangan', 'all');
       if (!empty($keterangan) && $keterangan !== 'all') {
@@ -1127,7 +1130,8 @@ class DataDosenController extends Controller
           return $row->nuptk ?? '-';
         })
         ->editColumn('status', function ($row) {
-          if (isset($row->Aktifq) && $row->Aktif == 1) {
+          $val = strtoupper($row->Eligible_span ?? '');
+          if (in_array($val, ['1', 'YA', 'Y'])) {
             return '<span class="badge bg-label-primary">Aktif</span>';
           }
           return '<span class="badge bg-label-danger">Tidak Aktif</span>';

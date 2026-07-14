@@ -37,24 +37,17 @@ class MonitoringUsulanDosenController extends Controller
 
     $search = $request->filled('search') ? trim((string) $request->input('search')) : '';
 
-    $allowedPerPage = [15, 25, 50, 100];
-    $perPage = (int) $request->input('perPage', 15);
+    $allowedPerPage = [10, 15, 25, 50, 100, 500];
+    $perPage = (int) $request->input('perPage', 10);
     if (!in_array($perPage, $allowedPerPage, true)) {
-      $perPage = 15;
+      $perPage = 10;
     }
 
     $currentPage = max(1, (int) $request->input('page', 1));
-    $pageItems = $this->buildMonitoringPageInChunks($awal, $akhir, $bulanIndonesia, $search, $perPage, $currentPage);
+    $dosenList = $this->buildMonitoringPageInChunks($awal, $akhir, $bulanIndonesia, $search, $perPage, $currentPage);
 
-    $dosenList = new Paginator(
-      $pageItems,
-      $perPage,
-      $currentPage,
-      [
-        'path' => $request->url(),
-        'query' => $request->query(),
-      ]
-    );
+    $dosenList->onEachSide(1);
+    $dosenList->appends($request->query());
 
     return view('admin.monitoring-usulan-dosen', compact('dosenList', 'bulanIndonesia'));
   }
@@ -72,7 +65,7 @@ class MonitoringUsulanDosenController extends Controller
     string $search,
     int $perPage,
     int $currentPage
-  ): array
+  )
   {
     $tahun = (string) session('tahun');
 
@@ -83,6 +76,16 @@ class MonitoringUsulanDosenController extends Controller
       ->values()
       ->all();
 
+    if (empty($activePts)) {
+      return new \Illuminate\Pagination\LengthAwarePaginator([], 0, $perPage, $currentPage);
+    }
+
+    $bulanCaseStr = [];
+    for ($i = $awal; $i <= $akhir; $i++) {
+      $bulanCaseStr[] = "(CASE WHEN s_transaksi_2.KodeUsulan{$i} IS NULL OR s_transaksi_2.KodeUsulan{$i} = '' THEN 1 ELSE 0 END)";
+    }
+    $bulanBelumExpr = implode(' + ', $bulanCaseStr);
+
     $query = DB::table('s_transaksi_2')
       ->select(
         's_transaksi_2.no as no',
@@ -91,16 +94,12 @@ class MonitoringUsulanDosenController extends Controller
         's_transaksi_2.Nama',
         's_transaksi_2.Jenis',
         's_transaksi_2.Kode_PT',
-        's_transaksi_2.PTS'
+        's_transaksi_2.PTS',
+        DB::raw("({$bulanBelumExpr}) as bulan_belum_usulan")
       )
       ->where('s_transaksi_2.Aktif', '1')
-      ->where('s_transaksi_2.tahun_versi', $tahun);
-
-    if (!empty($activePts)) {
-      $query->whereIn('s_transaksi_2.Kode_PT', $activePts);
-    } else {
-      return [];
-    }
+      ->where('s_transaksi_2.tahun_versi', $tahun)
+      ->whereIn('s_transaksi_2.Kode_PT', $activePts);
 
     for ($i = $awal; $i <= $akhir; $i++) {
       $query->addSelect('s_transaksi_2.KodeUsulan' . $i);
@@ -116,71 +115,23 @@ class MonitoringUsulanDosenController extends Controller
       });
     }
 
-    $offset = ($currentPage - 1) * $perPage;
-    $need = $perPage + 1;
-    $filteredSeen = 0;
-    $pageRows = [];
+    $query->having('bulan_belum_usulan', '>', 0);
+    $query->orderBy('bulan_belum_usulan', 'DESC')->orderBy('s_transaksi_2.Nama', 'ASC');
 
-    // Chunk per batch agar query per request tetap ringan, lalu berhenti saat data halaman sudah cukup.
-    $query->orderBy('s_transaksi_2.no')->chunkById(200, function ($chunk) use (
-      &$pageRows,
-      &$filteredSeen,
-      $awal,
-      $akhir,
-      $bulanIndonesia,
-      $offset,
-      $need
-    ) {
-      foreach ($chunk as $row) {
-        $bulanKosong = [];
+    $paginator = $query->paginate($perPage, ['*'], 'page', $currentPage);
 
-        for ($i = $awal; $i <= $akhir; $i++) {
-          $kolom = 'KodeUsulan' . $i;
-          $nilai = $row->{$kolom} ?? null;
-          if ($nilai === null || $nilai === '') {
-            $bulanKosong[] = $bulanIndonesia[$i];
-          }
-        }
-
-        $jumlahBulanKosong = count($bulanKosong);
-        if ($jumlahBulanKosong === 0) {
-          continue;
-        }
-
-        if ($filteredSeen < $offset) {
-          $filteredSeen++;
-          continue;
-        }
-
-        $filteredSeen++;
-
-        $pageRows[] = (object) [
-          'NIDN' => $row->NIDN,
-          'NUPTK' => $row->NUPTK,
-          'Nama' => $row->Nama,
-          'Jenis' => $row->Jenis,
-          'Kode_PT' => $row->Kode_PT,
-          'PTS' => $row->PTS,
-          'bulan_belum_usulan' => $jumlahBulanKosong,
-          'kode_belum_usulan' => implode(', ', $bulanKosong),
-        ];
-
-        if (count($pageRows) >= $need) {
-          return false;
+    $paginator->getCollection()->transform(function ($row) use ($awal, $akhir, $bulanIndonesia) {
+      $bulanKosong = [];
+      for ($i = $awal; $i <= $akhir; $i++) {
+        $kolom = 'KodeUsulan' . $i;
+        if (empty($row->$kolom)) {
+          $bulanKosong[] = $bulanIndonesia[$i];
         }
       }
+      $row->kode_belum_usulan = implode(', ', $bulanKosong);
+      return $row;
+    });
 
-      return true;
-    }, 's_transaksi_2.no', 'no');
-
-      usort($pageRows, function ($a, $b) {
-        if ($a->bulan_belum_usulan === $b->bulan_belum_usulan) {
-          return strcmp((string) $a->Nama, (string) $b->Nama);
-        }
-
-        return $b->bulan_belum_usulan <=> $a->bulan_belum_usulan;
-      });
-
-    return $pageRows;
+    return $paginator;
   }
 }

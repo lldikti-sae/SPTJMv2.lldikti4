@@ -4,11 +4,52 @@
 
 @section('page-style')
 <style>
-    /* Specific styles for Dashboard page that might not be in demo.css */
+    /* Specific styles for Dashboard page */
 </style>
 @endsection
 
 @section('content')
+@php
+    $tahun = session('tahun') ?? date('Y');
+    $aktifValues = ['1', 'YA', 'Ya', 'ya', 'Y'];
+    
+    $realTotalDosen = DB::table('s_transaksi_2')->where('tahun_versi', $tahun)->count();
+    
+    $realJumlahDosenPNSAktif = DB::table('s_transaksi_2')
+        ->whereRaw('TRIM(UPPER(jenis)) = ?', ['PNS'])
+        ->whereIn('eligible_span', $aktifValues)
+        ->where('tahun_versi', $tahun)
+        ->count();
+        
+    $realJumlahDosenPNSNon = DB::table('s_transaksi_2')
+        ->whereRaw('TRIM(UPPER(jenis)) = ?', ['PNS'])
+        ->where(function($q) use ($aktifValues) {
+            $q->whereNotIn('eligible_span', $aktifValues)->orWhereNull('eligible_span');
+        })
+        ->where('tahun_versi', $tahun)
+        ->count();
+        
+    $realJumlahDosenNonPNSAktif = DB::table('s_transaksi_2')
+        ->where(function($q) {
+            $q->whereRaw('TRIM(UPPER(jenis)) != ?', ['PNS'])->orWhereNull('jenis');
+        })
+        ->whereIn('eligible_span', $aktifValues)
+        ->where('tahun_versi', $tahun)
+        ->count();
+        
+    $realJumlahDosenNonPNSNon = DB::table('s_transaksi_2')
+        ->where(function($q) {
+            $q->whereRaw('TRIM(UPPER(jenis)) != ?', ['PNS'])->orWhereNull('jenis');
+        })
+        ->where(function($q) use ($aktifValues) {
+            $q->whereNotIn('eligible_span', $aktifValues)->orWhereNull('eligible_span');
+        })
+        ->where('tahun_versi', $tahun)
+        ->count();
+        
+    $realPtsCount = \App\Models\Pts::where('aktif', '1')->count();
+@endphp
+
 <div class="row g-2 mb-2">
     <!-- Jumlah Seluruh Dosen -->
     <div class="col-12 col-md-6 col-lg-4">
@@ -16,7 +57,7 @@
             <div class="d-flex justify-content-between align-items-center">
                 <div>
                     <div class="sptjm-stat-title">Jumlah Seluruh Dosen</div>
-                    <div class="sptjm-stat-value val-primary">{{ number_format($totalDosen, 0, ',', '.') }}</div>
+                    <div class="sptjm-stat-value val-primary">{{ number_format($realTotalDosen, 0, ',', '.') }}</div>
                 </div>
                 <div class="sptjm-stat-icon-wrapper icon-bg-primary">
                     <i class="bx bx-group"></i>
@@ -31,7 +72,7 @@
             <div class="d-flex justify-content-between align-items-center">
                 <div>
                     <div class="sptjm-stat-title">Dosen PNS Aktif</div>
-                    <div class="sptjm-stat-value val-primary">{{ number_format($jumlahDosenPNSAktif, 0, ',', '.') }}</div>
+                    <div class="sptjm-stat-value val-primary">{{ number_format($realJumlahDosenPNSAktif, 0, ',', '.') }}</div>
                 </div>
                 <div class="sptjm-stat-icon-wrapper icon-bg-primary">
                     <i class="bx bx-user-check"></i>
@@ -46,7 +87,7 @@
             <div class="d-flex justify-content-between align-items-center">
                 <div>
                     <div class="sptjm-stat-title">Dosen PNS Tidak Aktif</div>
-                    <div class="sptjm-stat-value val-danger">{{ number_format($jumlahDosenPNSNon, 0, ',', '.') }}</div>
+                    <div class="sptjm-stat-value val-danger">{{ number_format($realJumlahDosenPNSNon, 0, ',', '.') }}</div>
                 </div>
                 <div class="sptjm-stat-icon-wrapper icon-bg-danger">
                     <i class="bx bx-user-x"></i>
@@ -61,7 +102,7 @@
             <div class="d-flex justify-content-between align-items-center">
                 <div>
                     <div class="sptjm-stat-title">Perguruan Tinggi Swasta</div>
-                    <div class="sptjm-stat-value val-warning">{{ number_format($ptsCount, 0, ',', '.') }}</div>
+                    <div class="sptjm-stat-value val-warning">{{ number_format($realPtsCount, 0, ',', '.') }}</div>
                 </div>
                 <div class="sptjm-stat-icon-wrapper icon-bg-warning">
                     <i class="bx bxs-graduation"></i>
@@ -76,7 +117,7 @@
             <div class="d-flex justify-content-between align-items-center">
                 <div>
                     <div class="sptjm-stat-title">Dosen Non-PNS Aktif</div>
-                    <div class="sptjm-stat-value val-primary">{{ number_format($jumlahDosenNonPNSAktif, 0, ',', '.') }}</div>
+                    <div class="sptjm-stat-value val-primary">{{ number_format($realJumlahDosenNonPNSAktif, 0, ',', '.') }}</div>
                 </div>
                 <div class="sptjm-stat-icon-wrapper icon-bg-primary">
                     <i class="bx bx-user-check"></i>
@@ -91,7 +132,7 @@
             <div class="d-flex justify-content-between align-items-center">
                 <div>
                     <div class="sptjm-stat-title">Dosen Non-PNS Tidak Aktif</div>
-                    <div class="sptjm-stat-value val-danger">{{ number_format($jumlahDosenNonPNSNon, 0, ',', '.') }}</div>
+                    <div class="sptjm-stat-value val-danger">{{ number_format($realJumlahDosenNonPNSNon, 0, ',', '.') }}</div>
                 </div>
                 <div class="sptjm-stat-icon-wrapper icon-bg-danger">
                     <i class="bx bx-user-x"></i>
@@ -104,7 +145,6 @@
 <div class="sptjm-table-card">
     <div class="sptjm-table-header">
         <h5 class="sptjm-table-title">
-            <i class="bx bx-history text-primary"></i>
             Data Dosen Pensiun Berjalan
         </h5>
         <div class="sptjm-table-actions">
@@ -112,11 +152,11 @@
         </div>
     </div>
 
-    <div class="table-responsive text-nowrap">
+    <div class="md-table-wrap px-4 pb-4 pt-2">
         <table class="table table-hover md2-table text-center" id="dosenPensiunTable" style="width: 100%;">
             <thead>
                 <tr>
-                    <th>Nidn</th>
+                    <th>NIDN</th>
                     <th>NUPTK</th>
                     <th class="text-start">Nama Dosen</th>
                     <th class="text-start">Nama PTS</th>
@@ -178,7 +218,22 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         ],
         order: [[3, 'asc']],
-        pagingType: 'simple_numbers'
+        pagingType: 'simple_numbers',
+        dom: "<'md-toolbar'<'entries-wrap'l><'search-wrap'f>><'table-responsive text-nowrap't><'row dt-bottom-row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
+        language: {
+            paginate: {
+                first: "Awal",
+                last: "Akhir",
+                next: "→",
+                previous: "←",
+            },
+            zeroRecords: "Data tidak ditemukan",
+            infoEmpty: "Tidak ada data tersedia",
+            info: "Menampilkan _START_ - _END_ dari _TOTAL_ entri",
+            search: "Filter Data:",
+            searchPlaceholder: "Cari data...",
+            lengthMenu: "Show _MENU_ entries"
+        }
     });
 });
 </script>

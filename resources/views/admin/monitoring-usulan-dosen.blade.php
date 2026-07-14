@@ -315,8 +315,8 @@
             <div class="d-flex align-items-center gap-2" style="font-size: 0.82rem; color: #475569;">
                 <span>Show</span>
                 <select id="perPageSelect" class="form-select form-select-sm" style="width: auto; display: inline-block; border: 1.5px solid #dde3ed; border-radius: 6px; padding: 2px 8px; font-size: 0.79rem; color: #475569; background: #f8fafc; height: 28px;">
-                    @foreach ([15,25,50,100] as $pp)
-                    <option value="{{ $pp }}" {{ request('perPage', 15) == $pp ? 'selected' : '' }}>{{ $pp }}</option>
+                    @foreach ([10,15,25,50,100,500] as $pp)
+                    <option value="{{ $pp }}" {{ request('perPage', 10) == $pp ? 'selected' : '' }}>{{ $pp }}</option>
                     @endforeach
                 </select>
                 <span>entries</span>
@@ -325,29 +325,29 @@
 
         {{-- Table --}}
         <div class="table-responsive text-nowrap">
-            <table class="table table-hover md2-table text-center" id="monitoringTable" style="width: 100%;">
+            <table class="table table-hover md2-table" id="monitoringTable" style="width: 100%;">
                 <thead>
                     <tr>
-                        <th style="width: 50px;">No</th>
-                        <th>NIDN</th>
-                        <th>NUPTK</th>
-                        <th>Nama Dosen</th>
-                        <th>Jenis</th>
-                        <th>Kode PT</th>
-                        <th class="text-center" style="text-align: center !important;">Nama PTS</th>
-                        <th style="width: 120px;">Bulan Belum Usulan</th>
+                        <th class="text-center" style="width: 50px;">No</th>
+                        <th class="text-start">NIDN</th>
+                        <th class="text-start">NUPTK</th>
+                        <th class="text-start">Nama Dosen</th>
+                        <th class="text-center">Jenis</th>
+                        <th class="text-center">Kode PT</th>
+                        <th class="text-start">Nama PTS</th>
+                        <th class="text-center" style="width: 120px;">Bulan Belum Usulan</th>
                     </tr>
                 </thead>
                 <tbody>
                     @forelse ($dosenList as $data)
                     <tr>
                         <td class="text-center">{{ $dosenList->firstItem() ? $dosenList->firstItem() + $loop->index : $loop->iteration }}</td>
-                        <td>{{ $data->NIDN }}</td>
-                        <td>{{ $data->NUPTK ?: '-' }}</td>
-                        <td style="white-space: normal; max-width: 220px;">{{ $data->Nama }}</td>
+                        <td class="text-start">{{ $data->NIDN }}</td>
+                        <td class="text-start">{{ $data->NUPTK ?: '-' }}</td>
+                        <td class="text-start" style="white-space: normal; max-width: 220px;">{{ $data->Nama }}</td>
                         <td class="text-center"><span class="badge-jenis">{{ $data->Jenis }}</span></td>
                         <td class="text-center">{{ $data->Kode_PT }}</td>
-                        <td style="white-space: normal; max-width: 220px; text-align: center !important;">{{ $data->PTS }}</td>
+                        <td class="text-start" style="white-space: normal; max-width: 220px;">{{ $data->PTS }}</td>
                         <td class="text-center">
                             <button type="button"
                                 class="badge bg-label-warning border-0 py-2 px-3 fw-bold cursor-pointer"
@@ -373,7 +373,7 @@
         {{-- Pagination --}}
         @if($dosenList->hasPages())
         <div class="mt-3 d-flex justify-content-end">
-            {{ $dosenList->links('pagination::simple-bootstrap-5') }}
+            {{ $dosenList->links('admin.custom-pagination') }}
         </div>
         @endif
 
