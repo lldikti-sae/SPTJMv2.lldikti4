@@ -75,7 +75,7 @@ class HistoriDosenController extends Controller
           return '<span class="text-muted">-</span>';
         }
         $url = route('admin.lihat.histori.dosen', ['nidn' => $identifier]);
-        return '<a href="' . $url . '" class="sptjm-icon-btn sptjm-btn-view" title="Lihat Histori"><i class="bx bx-history"></i></a>';
+        return '<a href="' . $url . '" class="sptjm-icon-btn sptjm-btn-view" title="Lihat Histori"><i class="bx bx-show"></i></a>';
       })
       ->rawColumns(['aktif', 'aksi'])
       ->make(true);

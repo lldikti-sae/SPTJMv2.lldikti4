@@ -24,6 +24,7 @@
                     <th>Nama Penandatangan</th>
                     <th>NIP</th>
                     <th>Jabatan</th>
+                    <th>Status</th>
                     <th>Aksi</th>
                 </tr>
             </thead>
@@ -34,6 +35,16 @@
                     <td>{{ $pejabat->nama }}</td>
                     <td>{{ $pejabat->nip }}</td>
                     <td>{{ $pejabat->jabatan }}</td>
+                    <td>
+                        <div class="d-flex align-items-center gap-2">
+                            <div class="form-check form-switch mb-0">
+                                <input class="form-check-input toggle-status" type="checkbox" data-id="{{ $pejabat->id }}" {{ $pejabat->is_aktif ? 'checked' : '' }} style="cursor: pointer;">
+                            </div>
+                            <span class="badge rounded-pill {{ $pejabat->is_aktif ? 'bg-label-primary' : 'bg-label-danger' }} status-badge-{{ $pejabat->id }}">
+                                {{ $pejabat->is_aktif ? 'Aktif' : 'Tidak Aktif' }}
+                            </span>
+                        </div>
+                    </td>
                     <td>
                         <div class="d-flex gap-1 justify-content-start">
                             <button type="button" class="sptjm-icon-btn sptjm-btn-edit btn-edit" 
@@ -205,6 +216,52 @@
         }).then((result) => {
             if (result.isConfirmed) {
                 form.submit();
+            }
+        });
+    });
+
+    // Toggle Status
+    $('.toggle-status').on('change', function() {
+        var id = $(this).data('id');
+        var isChecked = $(this).is(':checked');
+        var url = "{{ route('admin.master-penandatangan.toggle-status', ':id') }}".replace(':id', id);
+        
+        $.ajax({
+            url: url,
+            type: 'POST',
+            data: {
+                _token: '{{ csrf_token() }}'
+            },
+            success: function(response) {
+                if (response.success) {
+                    var badge = $('.status-badge-' + id);
+                    if (response.is_aktif) {
+                        badge.removeClass('bg-label-danger').addClass('bg-label-primary').text('Aktif');
+                    } else {
+                        badge.removeClass('bg-label-primary').addClass('bg-label-danger').text('Tidak Aktif');
+                    }
+                    
+                    Swal.fire({
+                        toast: true,
+                        position: 'bottom-end',
+                        icon: 'success',
+                        title: response.message,
+                        showConfirmButton: false,
+                        timer: 2000
+                    });
+                }
+            },
+            error: function() {
+                Swal.fire({
+                    toast: true,
+                    position: 'bottom-end',
+                    icon: 'error',
+                    title: 'Gagal mengubah status',
+                    showConfirmButton: false,
+                    timer: 2000
+                });
+                // Revert switch state
+                $('.toggle-status[data-id="'+id+'"]').prop('checked', !isChecked);
             }
         });
     });

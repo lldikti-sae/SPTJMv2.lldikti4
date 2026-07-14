@@ -16,7 +16,6 @@
         border: 1.5px solid #dbeafe !important;
         box-shadow: 0 10px 30px rgba(26, 86, 219, 0.15) !important;
         border-radius: 12px !important;
-        border-left: 6px solid #1a56db !important;
         padding: 24px !important;
         background: #ffffff !important;
     }

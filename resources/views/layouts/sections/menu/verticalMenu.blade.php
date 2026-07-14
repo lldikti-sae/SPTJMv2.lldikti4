@@ -50,54 +50,56 @@
                     <span class="menu-header-text">{{ __($menu->menuHeader) }}</span>
                 </li>
             @else
-                {{-- active menu method --}}
                 @php
                     $activeClass = null;
-                    $currentRouteName = Route::currentRouteName();
 
-                    // Cek apakah ada submenu yang aktif berdasarkan URL request atau route name
+                    // 1. Check if the parent menu itself is active based on URL
+                    $isParentUrlActive = false;
+                    if (isset($menu->url)) {
+                        $menuUrl = trim($menu->url, '/');
+                        if ($menuUrl === '') {
+                            $isParentUrlActive = request()->is('/');
+                        } else {
+                            $isParentUrlActive = request()->is($menuUrl) || request()->is($menuUrl . '/*');
+                        }
+                    }
+
+                    // 2. Check if any submenu is active based on URL
                     $hasActiveSubmenu = false;
                     if (isset($menu->submenu)) {
                         foreach ($menu->submenu as $sub) {
-                            $isSubUrlActive = isset($sub->url) && (request()->is(trim($sub->url, '/')) || request()->is(trim($sub->url, '/') . '/*'));
-                            if ($currentRouteName === ($sub->slug ?? '') || $isSubUrlActive) {
-                                $hasActiveSubmenu = true;
-                                break;
+                            $subUrl = trim($sub->url ?? '', '/');
+                            if ($subUrl === '') {
+                                if (request()->is('/')) { $hasActiveSubmenu = true; break; }
+                            } else {
+                                if (request()->is($subUrl) || request()->is($subUrl . '/*')) {
+                                    $hasActiveSubmenu = true;
+                                    break;
+                                }
                             }
-                            // Dukungan bersarang (nested submenu) jika ada
+                            
+                            // Nested submenu support
                             if (isset($sub->submenu)) {
                                 foreach ($sub->submenu as $nestedSub) {
-                                    $isNestedUrlActive = isset($nestedSub->url) && (request()->is(trim($nestedSub->url, '/')) || request()->is(trim($nestedSub->url, '/') . '/*'));
-                                    if ($currentRouteName === ($nestedSub->slug ?? '') || $isNestedUrlActive) {
-                                        $hasActiveSubmenu = true;
-                                        break 2;
+                                    $nestedSubUrl = trim($nestedSub->url ?? '', '/');
+                                    if ($nestedSubUrl === '') {
+                                        if (request()->is('/')) { $hasActiveSubmenu = true; break 2; }
+                                    } else {
+                                        if (request()->is($nestedSubUrl) || request()->is($nestedSubUrl . '/*')) {
+                                            $hasActiveSubmenu = true;
+                                            break 2;
+                                        }
                                     }
                                 }
                             }
                         }
                     }
 
-                    $isParentUrlActive = isset($menu->url) && (request()->is(trim($menu->url, '/')) || request()->is(trim($menu->url, '/') . '/*'));
-
-                    if ($currentRouteName === $menu->slug || $isParentUrlActive) {
-                        $activeClass = 'active';
-                    } elseif ($hasActiveSubmenu) {
+                    // 3. Determine active class
+                    if ($hasActiveSubmenu) {
                         $activeClass = 'active open';
-                    } elseif (isset($menu->submenu)) {
-                        if (gettype($menu->slug) === 'array') {
-                            foreach ($menu->slug as $slug) {
-                                if (str_contains($currentRouteName, $slug) and strpos($currentRouteName, $slug) === 0) {
-                                    $activeClass = 'active open';
-                                }
-                            }
-                        } else {
-                            if (
-                                str_contains($currentRouteName, $menu->slug) and
-                                strpos($currentRouteName, $menu->slug) === 0
-                            ) {
-                                $activeClass = 'active open';
-                            }
-                        }
+                    } elseif ($isParentUrlActive) {
+                        $activeClass = 'active';
                     }
                 @endphp
 

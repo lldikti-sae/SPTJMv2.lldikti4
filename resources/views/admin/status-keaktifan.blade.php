@@ -70,10 +70,10 @@
                         <td><span class="fw-semibold text-primary">{{ $keaktifan->kode }}</span></td>
                         <td>
                             @php
-                                $aktifLower = strtolower($keaktifan->aktif);
-                                $badgeClass = $aktifLower === 'aktif' ? 'badge-aktif' : ($aktifLower === 'tidak aktif' ? 'badge-nonaktif' : 'badge-belajar');
+                                $aktifLower = strtolower(trim($keaktifan->aktif));
+                                $badgeClass = $aktifLower === 'aktif' ? 'bg-label-primary' : ($aktifLower === 'tidak aktif' ? 'bg-label-danger' : 'bg-label-success');
                             @endphp
-                            <span class="{{ $badgeClass }}">{{ $keaktifan->aktif }}</span>
+                            <span class="badge rounded-pill {{ $badgeClass }}">{{ $keaktifan->aktif }}</span>
                         </td>
                         <td>
                             <button class="sptjm-icon-btn sptjm-btn-edit edit-keaktifan" data-id="{{ $keaktifan->kode }}"

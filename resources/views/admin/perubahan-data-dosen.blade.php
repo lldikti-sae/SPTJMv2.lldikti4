@@ -46,6 +46,21 @@
 .btnToggleTmtJabatan { padding: 0.55rem 0.9rem; border-radius: 4px; }
 .btnToggleTmtJabatan i { font-size: 0.95rem; line-height: 1; }
 .jabatan-block .input-group .form-control { min-height: 36px; }
+
+/* Enhanced Form and Card Styling */
+.card { border: none; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.04); border-radius: 12px; margin-bottom: 2rem; }
+.card-header { background-color: #fff; border-bottom: 1px solid #f1f4f8; font-weight: 700; font-size: 1.05rem; color: #1e293b; border-radius: 12px 12px 0 0 !important; padding: 1.25rem 1.75rem; letter-spacing: 0.3px; }
+.card-body { padding: 1.75rem; }
+.form-label { font-size: 0.8rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.6px; color: #64748b; margin-bottom: 0.5rem; }
+.form-control, .form-select { border-radius: 8px; padding: 0.65rem 1rem; border: 1px solid #cbd5e1; font-size: 0.95rem; transition: all 0.25s ease; color: #334155; }
+.form-control:focus, .form-select:focus { border-color: #3b82f6; box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1); }
+.form-control[readonly], .form-select[disabled], input[readonly] { background-color: #f8fafc !important; color: #64748b; border-color: #e2e8f0; cursor: not-allowed; }
+hr { border-color: #e2e8f0; opacity: 1; }
+.btn-success { background-color: #10b981; border-color: #10b981; padding: 0.65rem 1.5rem; font-weight: 500; border-radius: 8px; box-shadow: 0 2px 4px rgba(16, 185, 129, 0.2); }
+.btn-success:hover { background-color: #059669; border-color: #059669; transform: translateY(-1px); }
+.btn-secondary { padding: 0.65rem 1.5rem; font-weight: 500; border-radius: 8px; }
+.text-muted { color: #94a3b8 !important; font-size: 0.85rem; }
+
 </style>
 
 @php
@@ -184,6 +199,8 @@
                             <div class="col-md-6">
                                 <label class="form-label">Keterangan</label>
                                 <input type="text" name="keterangan" class="form-control js-editable" value="{{ $dosen->keterangan ?? '' }}" readonly style="background-color: #eceef1;" maxlength="100" required>
+                            </div>
+                        </div>
                     <hr class="my-4">
                     <h5 class="fw-bold mb-4" style="color: #0f2b5c;">Detail Data Dosen</h5>
                 <div class="row mb-3">
@@ -537,16 +554,15 @@
                 </div>
 
 
-                </div>
-            </div>
+                </div> <!-- End demo-inline-spacing -->
+            </div> <!-- End card-body -->
+        </div> <!-- End card -->
+        </form>
+    </div> <!-- End tab-pane #tab-pengaktifan -->
     @endif
-</div>
-
-      </form>
 
     <div class="tab-pane fade {{ $showPengaktifanTab ? '' : 'show active' }}" id="tab-perubahan" role="tabpanel" aria-labelledby="tab-perubahan-btn">
-
-            <form id="formPerubahan" action="{{ route($routePrefix . '.perubahan-data-dosen.perubahan', ['nidn' => $__identifier]) }}" method="POST" enctype="multipart/form-data">
+        <form id="formPerubahan" action="{{ route($routePrefix . '.perubahan-data-dosen.perubahan', ['nidn' => $__identifier]) }}" method="POST" enctype="multipart/form-data">
         @csrf
         <input type="hidden" name="mode" value="{{ ($mode ?? 'edit') }}">
         <input type="hidden" name="tanggal_update_terakhir" value="{{ now()->format('d/m/Y') }}">
@@ -615,6 +631,7 @@
                                 <label class="form-label">Keterangan</label>
                                 <input type="text" name="keterangan" class="form-control js-editable" value="{{ $dosen->keterangan ?? '' }}" readonly style="background-color: #eceef1;" maxlength="100" required>
                             </div>
+                        </div>
                     <hr class="my-4">
                     <h5 class="fw-bold mb-4" style="color: #0f2b5c;">Detail Data Dosen</h5>
                 <div class="row mb-3">
@@ -965,16 +982,12 @@
                         </div>
                         <a href="{{ url()->previous() }}" class="btn btn-secondary mx-2" onclick="event.preventDefault(); if (history.length > 1) { history.back(); } else { window.location.href = this.href; }">Batal</a>
                     </div>
-                </div>
-
-
+                </div> <!-- End demo-inline-spacing -->
+            </div> <!-- End card-body -->
+        </div> <!-- End card -->
         </form>
-
-        </div>
-    </div>
-
-    </div>
-</div>
+    </div> <!-- End tab-pane #tab-perubahan -->
+</div> <!-- End tab-content -->
 
 <script>
 (() => {

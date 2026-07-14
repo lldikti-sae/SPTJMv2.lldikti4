@@ -25,14 +25,28 @@
     }
 
     /* ── Background Utama ── */
+    @php
+        $bgUrl = \App\Services\LoginBackgroundService::getAssetUrl();
+        $headerMode = \App\Services\LoginBackgroundService::getHeaderMode();
+    @endphp
     .sptjm-login-page {
         min-height: 100vh;
         width: 100%;
-        background: linear-gradient(135deg, #1565C0 0%, #1976D2 30%, #1E88E5 60%, #2196F3 100%);
+        background: url('{{ $bgUrl }}') no-repeat center center;
+        background-size: cover;
         position: relative;
         overflow: hidden;
         display: flex;
         align-items: stretch;
+    }
+
+    /* Gradient overlay to ensure form readability over any image */
+    .sptjm-login-page::before {
+        content: '';
+        position: absolute;
+        top: 0; left: 0; right: 0; bottom: 0;
+        background: linear-gradient(135deg, rgba(21, 101, 192, 0.40) 0%, rgba(30, 136, 229, 0.25) 100%);
+        z-index: 0;
     }
 
     /* ── Wave Decoration (SVG) ── */
@@ -415,19 +429,21 @@
         <div class="sptjm-left-col">
 
             {{-- Logo Row --}}
-            <div class="sptjm-logo-row">
+            <div class="sptjm-logo-row" style="{{ $headerMode === 'hide' ? 'display: none !important;' : ($headerMode === 'corner' ? 'position: absolute; top: 2rem; left: 2rem; margin-bottom: 0;' : '') }}">
                 <img src="{{ asset('assets/img/favicon/logo-lldikti-4.png') }}" alt="Logo LLDIKTI 4">
                 <div class="sptjm-logo-divider"></div>
                 <img src="{{ asset('logo_berdampak.png') }}" alt="Logo Berdampak DIKTISAINTEK">
             </div>
 
             {{-- Welcome Text --}}
-            <h1 class="sptjm-welcome-title">
-                Selamat Datang di<br>SPTJM Online
-            </h1>
-            <p class="sptjm-welcome-subtitle">
-                Silahkan Masuk untuk Memulai Aplikasi
-            </p>
+            <div style="{{ $headerMode === 'hide' || $headerMode === 'corner' ? 'display: none !important;' : '' }}">
+                <h1 class="sptjm-welcome-title">
+                    Selamat Datang di<br>SPTJM Online
+                </h1>
+                <p class="sptjm-welcome-subtitle">
+                    Silahkan Masuk untuk Memulai Aplikasi
+                </p>
+            </div>
 
         </div>
 

@@ -14,9 +14,18 @@ class KoreksiController extends Controller
 {
     public function index(Request $request)
     {
+        $years = DB::table('s_transaksi_2')
+            ->select('tahun_versi')
+            ->distinct()
+            ->orderBy('tahun_versi', 'desc')
+            ->pluck('tahun_versi')
+            ->toArray();
+
         $data = [
             'nidn' => $request->old('nidn'),
             'bulan' => $request->old('bulan', 1),
+            'tahun' => $request->old('tahun', session('tahun')),
+            'years' => $years,
             'result' => null,
             // Isi dropdown dari h_perubahan.status_perubahan
             'statusPerubahan' => Perubahan::query()->orderBy('status_perubahan')->pluck('status_perubahan')->all(),
@@ -25,12 +34,14 @@ class KoreksiController extends Controller
         // If nidn and bulan are provided via query (after redirect), perform lookup
         $nidn = $request->query('nidn');
         $bulan = $request->query('bulan');
+        $tahun = $request->query('tahun');
         if ($nidn && $bulan) {
-            $lookup = $this->lookupData($nidn, (int)$bulan);
+            $lookup = $this->lookupData($nidn, (int)$bulan, $tahun);
             if ($lookup['ok']) {
                 $data['result'] = $lookup['data'];
                 $data['nidn'] = $nidn;
                 $data['bulan'] = (int)$bulan;
+                $data['tahun'] = $tahun ?: session('tahun');
             } else {
                 return back()->with('error', $lookup['message']);
             }
@@ -44,19 +55,30 @@ class KoreksiController extends Controller
         $request->validate([
             'nidn' => 'required|string',
             'bulan' => 'required|integer|min:1|max:12',
+            'tahun' => 'nullable|string',
         ]);
 
-    $nidn = trim($request->input('nidn'));
+        $nidn = trim($request->input('nidn'));
         $bulan = (int)$request->input('bulan');
+        $tahun = $request->input('tahun') ?: session('tahun');
 
-        $lookup = $this->lookupData($nidn, $bulan);
+        $lookup = $this->lookupData($nidn, $bulan, $tahun);
         if (!$lookup['ok']) {
             return back()->withInput()->with('error', $lookup['message']);
         }
 
+        $years = DB::table('s_transaksi_2')
+            ->select('tahun_versi')
+            ->distinct()
+            ->orderBy('tahun_versi', 'desc')
+            ->pluck('tahun_versi')
+            ->toArray();
+
         return view('admin.koreksi', [
             'nidn' => $nidn,
             'bulan' => $bulan,
+            'tahun' => $tahun,
+            'years' => $years,
             'result' => $lookup['data'],
             // Isi dropdown dari h_perubahan.status_perubahan
             'statusPerubahan' => Perubahan::query()->orderBy('status_perubahan')->pluck('status_perubahan')->all(),
@@ -73,13 +95,16 @@ class KoreksiController extends Controller
             'password' => 'required|string',
             'nidn' => 'required|string',
             'bulan' => 'required|integer|min:1|max:12',
+            'tahun' => 'required|string',
             'gaji' => 'nullable|integer',
             'kodeusulan' => 'nullable|string',
             'kodecair' => 'nullable|string',
-            'tpd' => 'nullable|integer',
             'tkgb' => 'nullable|integer',
-            'tpd_sel' => 'nullable|integer',
-            'tkgb_sel' => 'nullable|integer',
+            'pajak_tpd' => 'nullable|integer',
+            'bersih_tpd' => 'nullable|integer',
+            'no_sp2d' => 'nullable|string',
+            'tgl_sp2d' => 'nullable|string',
+            'selisih' => 'nullable|integer',
         ]);
 
         if ($validator->fails()) {
@@ -114,11 +139,10 @@ class KoreksiController extends Controller
         }
 
         // Proceed update
-    $nidn = trim($payload['nidn']);
+        $nidn = trim($payload['nidn']);
         $bulan = (int)$payload['bulan'];
-        // Tabel tetap tanpa suffix tahun, filter berdasarkan Tahun_Versi dari sesi login
         $table = 's_transaksi_2';
-        $tahunVersi = session('tahun');
+        $tahunVersi = $payload['tahun'] ?? session('tahun');
         if (!$tahunVersi) {
             return response()->json([
                 'success' => false,
@@ -140,14 +164,10 @@ class KoreksiController extends Controller
         $update[$KCField] = $payload['kodecair'] ?? null;
         $update['TPD' . $bulan] = (int)($payload['tpd'] ?? 0);
         $update['TKGB' . $bulan] = (int)($payload['tkgb'] ?? 0);
-        /*
-        if (array_key_exists('tpd_sel', $payload)) {
-            $update['JmlTPD_Selisih'] = (int)$payload['tpd_sel'];
-        }
-        if (array_key_exists('tkgb_sel', $payload)) {
-            $update['JmlTKGB_Selisih'] = (int)$payload['tkgb_sel'];
-        }
-        */
+        $update['nilaiPajakTPD' . $bulan] = (int)($payload['pajak_tpd'] ?? 0);
+        $update['bersihTPD' . $bulan] = (int)($payload['bersih_tpd'] ?? 0);
+        $update['No_sp2d_' . $bulan] = $payload['no_sp2d'] ?? null;
+        $update['Tgl_sp2d_' . $bulan] = $payload['tgl_sp2d'] ?? null;
 
         try {
             $affected = DB::table($table)
@@ -180,15 +200,15 @@ class KoreksiController extends Controller
 
         return response()->json([
             'success' => true,
-            'redirect' => route('admin.koreksi', ['nidn' => $nidn, 'bulan' => $bulan]),
+            'redirect' => route('admin.koreksi', ['nidn' => $nidn, 'bulan' => $bulan, 'tahun' => $tahunVersi]),
         ]);
     }
 
-    private function lookupData(string $nidn, int $bulan): array
+    private function lookupData(string $nidn, int $bulan, string $tahunVersi = null): array
     {
         // Tabel tetap tanpa suffix tahun + filter Tahun_Versi
         $table = 's_transaksi_2';
-        $tahunVersi = session('tahun');
+        $tahunVersi = $tahunVersi ?: session('tahun');
         if (!$tahunVersi) {
             return ['ok' => false, 'message' => 'Tahun versi tidak ditemukan di sesi.'];
         }
@@ -204,8 +224,10 @@ class KoreksiController extends Controller
             ($this->bulanKeCair()[$bulan] ?? 'Jan') . ' as kode_cair',
             'TPD' . $bulan . ' as tpd',
             'TKGB' . $bulan . ' as tkgb',
-            // 'JmlTPD_Selisih as tpd_sel',
-            // 'JmlTKGB_Selisih as tkgb_sel',
+            'nilaiPajakTPD' . $bulan . ' as pajak_tpd',
+            'bersihTPD' . $bulan . ' as bersih_tpd',
+            'No_sp2d_' . $bulan . ' as no_sp2d',
+            'Tgl_sp2d_' . $bulan . ' as tgl_sp2d',
         ];
 
         try {
@@ -230,6 +252,43 @@ class KoreksiController extends Controller
         if (!$row) {
             return ['ok' => false, 'message' => 'Data tidak ditemukan.'];
         }
+
+        // Kalkulasi selisih secara dinamis berdasarkan (TPD + TKGB) - Gaji
+        $kotor = ((float)$row->tpd) + ((float)$row->tkgb);
+        $gaji = (float)$row->gaji;
+        $row->tpd_sel = $kotor - $gaji;
+
+        // Logika Status
+        $origSp2dNo = trim((string)($row->no_sp2d ?? ''));
+        $origSp2dTgl = trim((string)($row->tgl_sp2d ?? ''));
+        $origHasSp2d = ($origSp2dNo !== '' && $origSp2dNo !== '-' && $origSp2dTgl !== '' && $origSp2dTgl !== '-');
+        
+        $hasData = ($kotor > 0 || $gaji > 0);
+        $kc = trim((string)($row->kode_cair ?? ''));
+        $hasKodeCair = ($kc !== '' && $kc !== '-');
+        $kodeStr = trim((string)($row->kode_usulan ?? ''));
+        
+        $status = null;
+        if (!$hasData && !$kodeStr && !$hasKodeCair) {
+            $status = null;
+        } elseif ($origHasSp2d) {
+            if (abs($row->tpd_sel) <= 0.01) {
+                $status = 'selesai';
+            } elseif ($row->tpd_sel < -0.01) {
+                $status = 'kurang';
+            } elseif ($row->tpd_sel > 0.01) {
+                $status = 'lebih';
+            }
+        } elseif ($hasKodeCair && !$origHasSp2d) {
+            $status = 'proses';
+        } elseif (!$hasKodeCair && ($hasData || $kodeStr)) {
+            if ($kodeStr !== '' && $kodeStr !== '-' && $gaji == 0) {
+                $status = 'kode:' . $kodeStr;
+            } else {
+                $status = 'usulan';
+            }
+        }
+        $row->status = $status;
 
         return ['ok' => true, 'data' => $row];
     }
