@@ -59,6 +59,16 @@ class SkppController extends Controller
         ]);
 
         $identifier = trim((string) $request->input('identifier'));
+        // Pencegahan bug jika input hanya strip (-) atau kosong
+        if ($identifier === '-' || $identifier === '') {
+            return response()->json([
+                'found' => false,
+                'message' => 'Silakan masukkan NIDN atau NUPTK yang spesifik. Tidak bisa menggunakan (-) untuk pencarian.',
+                'existing_skpp' => false,
+                'existing_message' => ''
+            ]);
+        }
+        
         $tahun = (string) session('tahun');
 
         // Gunakan bulan aktif dari session
@@ -69,25 +79,61 @@ class SkppController extends Controller
         $golongan   = "NULLIF(Gol{$bulanSession}, '')";
         $jabatan    = "NULLIF(Jabatan{$bulanSession}, '')";
 
-        $dosen = DB::table('s_transaksi_2')
-            ->select(
-                's_transaksi_2.NIDN',
-                's_transaksi_2.NUPTK',
-                's_transaksi_2.Nama',
-                's_transaksi_2.Jenis',
-                DB::raw("COALESCE(s_transaksi_2.Kode_PT_{$bulanSession}, s_transaksi_2.Kode_PT) AS Kode_PT"),
-                DB::raw("COALESCE(s_transaksi_2.Nama_PT_{$bulanSession}, s_transaksi_2.PTS) AS PTS"),
-                's_transaksi_2.Aktif',
-                's_transaksi_2.Pemegang_Wilayah',
-                DB::raw("$jabatan AS jabatan"),
-                DB::raw("$golongan AS gol")
-            )
-            ->where('s_transaksi_2.Tahun_Versi', $tahun)
-            ->where(function ($q) use ($identifier) {
-                $q->where('s_transaksi_2.NIDN', $identifier)
+        $getDosenQuery = function($withTahun = true) use ($bulanSession, $jabatan, $golongan, $tahun, $identifier) {
+            $q = DB::table('s_transaksi_2')
+                ->select(
+                    's_transaksi_2.NIDN',
+                    's_transaksi_2.NUPTK',
+                    's_transaksi_2.Nama',
+                    's_transaksi_2.Jenis',
+                    DB::raw("COALESCE(s_transaksi_2.Kode_PT_{$bulanSession}, s_transaksi_2.Kode_PT) AS Kode_PT"),
+                    DB::raw("COALESCE(s_transaksi_2.Nama_PT_{$bulanSession}, s_transaksi_2.PTS) AS PTS"),
+                    's_transaksi_2.Aktif',
+                    's_transaksi_2.Pemegang_Wilayah',
+                    DB::raw("$jabatan AS jabatan"),
+                    DB::raw("$golongan AS gol")
+                );
+            if ($withTahun) {
+                $q->where('s_transaksi_2.Tahun_Versi', $tahun);
+            }
+            $q->where(function ($sub) use ($identifier) {
+                $sub->where('s_transaksi_2.NIDN', $identifier)
                   ->orWhere('s_transaksi_2.NUPTK', $identifier);
-            })
-            ->first();
+            });
+            if (!$withTahun) {
+                $q->orderByDesc('s_transaksi_2.Tahun_Versi');
+            }
+            return $q;
+        };
+
+        $dosen = $getDosenQuery(true)->first();
+
+        // Fallback 1: Cari di tahun mana saja (transaksi terbaru)
+        if (!$dosen) {
+            $dosen = $getDosenQuery(false)->first();
+        }
+
+        // Fallback 2: Cari di a_dosen jika dosen baru dan belum punya transaksi
+        if (!$dosen) {
+            $akunDosen = DB::table('a_dosen')
+                ->where('nidn', $identifier)
+                ->orWhere('nuptk', $identifier)
+                ->first();
+                
+            if ($akunDosen) {
+                $dosen = (object)[
+                    'NIDN' => $akunDosen->nidn,
+                    'NUPTK' => $akunDosen->nuptk,
+                    'Nama' => $akunDosen->nama_dosen,
+                    'Kode_PT' => $akunDosen->kode_pts,
+                    'PTS' => $akunDosen->nama_pts,
+                    'Aktif' => $akunDosen->aktif,
+                    'Pemegang_Wilayah' => $akunDosen->wilayah,
+                    'jabatan' => null,
+                    'gol' => null,
+                ];
+            }
+        }
 
         // Cek apakah dosen sudah memiliki SKPP / Surat Keterangan yang open atau setuju
         $existing = DB::table('i_complain')
@@ -406,15 +452,18 @@ class SkppController extends Controller
         ]);
 
         // Cek kembali di sisi server agar tidak ada duplikasi jika tombol di-klik dua kali atau by-pass
-        $existing = DB::table('i_complain')
-            ->where('pelapor_tipe', 'admin')
-            ->whereIn('jenis_pengajuan', ['Surat Keterangan', 'Surat SKPP'])
-            ->where(function ($q) use ($request) {
-                if ($request->nidn) $q->where('nidn', $request->nidn);
-                if ($request->nuptk) $q->orWhere('nuptk', $request->nuptk);
-            })
-            ->whereIn('status', ['open', 'setuju', 'menunggu_konfirmasi'])
-            ->first();
+        $existing = false;
+        if (!empty($request->nidn) || !empty($request->nuptk)) {
+            $existing = DB::table('i_complain')
+                ->where('pelapor_tipe', 'admin')
+                ->whereIn('jenis_pengajuan', ['Surat Keterangan', 'Surat SKPP'])
+                ->where(function ($q) use ($request) {
+                    if (!empty($request->nidn)) $q->where('nidn', $request->nidn);
+                    if (!empty($request->nuptk)) $q->orWhere('nuptk', $request->nuptk);
+                })
+                ->whereIn('status', ['open', 'setuju', 'menunggu_konfirmasi'])
+                ->first();
+        }
 
         if ($existing) {
             return response()->json(['success' => false, 'message' => 'Gagal: Dosen ini sudah dibuatkan pengajuan sebelumnya.']);
@@ -719,6 +768,15 @@ class SkppController extends Controller
 
         if (!empty($data['master_kop']->file_pdf_url) && class_exists('\setasign\Fpdi\Fpdi')) {
             $pdfBgPath = public_path($data['master_kop']->file_pdf_url);
+            
+            // Fallback: Jika symlink (storage:link) di laptop lain belum ada, akses langsung file aslinya
+            if (!file_exists($pdfBgPath)) {
+                $rawPath = str_replace('storage/', '', $data['master_kop']->file_pdf_url);
+                $directStoragePath = storage_path('app/public/' . $rawPath);
+                if (file_exists($directStoragePath)) {
+                    $pdfBgPath = $directStoragePath;
+                }
+            }
             
             if (file_exists($pdfBgPath)) {
                 $dompdfOutput = $pdf->output();
