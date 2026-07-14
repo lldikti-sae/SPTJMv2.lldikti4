@@ -106,16 +106,16 @@
                             <th rowspan="2" style="background-color: #f8fafc !important; color: #475569 !important; font-size: 0.75rem !important; letter-spacing: 0.05em !important; font-weight: 700 !important; vertical-align: middle; border-right: 1px solid #e2e8f0;">NO</th>
                             <th rowspan="2" style="background-color: #f8fafc !important; color: #475569 !important; font-size: 0.75rem !important; letter-spacing: 0.05em !important; font-weight: 700 !important; vertical-align: middle; border-right: 1px solid #e2e8f0;">TAHUN</th>
                             <th rowspan="2" style="background-color: #f8fafc !important; color: #475569 !important; font-size: 0.75rem !important; letter-spacing: 0.05em !important; font-weight: 700 !important; vertical-align: middle; border-right: 1px solid #e2e8f0;">PENCAIRAN</th>
-                            <th rowspan="2" style="background-color: #f8fafc !important; color: #475569 !important; font-size: 0.75rem !important; letter-spacing: 0.05em !important; font-weight: 700 !important; vertical-align: middle; border-right: 1px solid #e2e8f0;">STATUS<br>PEGAWAI</th>
+                            <th rowspan="2" style="background-color: #f8fafc !important; color: #475569 !important; font-size: 0.75rem !important; letter-spacing: 0.05em !important; font-weight: 700 !important; vertical-align: middle; border-right: 1px solid #e2e8f0; white-space: nowrap !important;">STATUS PEGAWAI</th>
                             <th rowspan="2" style="background-color: #f8fafc !important; color: #475569 !important; font-size: 0.75rem !important; letter-spacing: 0.05em !important; font-weight: 700 !important; vertical-align: middle; border-right: 1px solid #e2e8f0;">JENIS</th>
                             <th rowspan="2" style="background-color: #f8fafc !important; color: #475569 !important; font-size: 0.75rem !important; letter-spacing: 0.05em !important; font-weight: 700 !important; vertical-align: middle; border-right: 1px solid #e2e8f0;">BANK</th>
-                            <th colspan="3" style="background-color: #eff6ff !important; color: #1a56db !important; font-size: 0.75rem !important; letter-spacing: 0.05em !important; font-weight: 700 !important; text-align: center; border-bottom: 2px solid #bfdbfe; border-right: 1px solid #e2e8f0;">NOMINAL (IDR)</th>
+                            <th colspan="3" style="background-color: #eff6ff !important; color: #1a56db !important; font-size: 0.75rem !important; letter-spacing: 0.05em !important; font-weight: 700 !important; text-align: center !important; border-bottom: 2px solid #bfdbfe; border-right: 1px solid #e2e8f0;">NOMINAL (IDR)</th>
                             <th rowspan="2" style="background-color: #f8fafc !important; color: #475569 !important; font-size: 0.75rem !important; letter-spacing: 0.05em !important; font-weight: 700 !important; vertical-align: middle; text-align: center;">AKSI</th>
                         </tr>
                         <tr>
-                            <th style="background-color: #f0f9ff !important; color: #475569 !important; font-size: 0.72rem !important; letter-spacing: 0.05em !important; font-weight: 700 !important; border-right: 1px solid #e2e8f0;">JUMLAH KOTOR</th>
-                            <th style="background-color: #f0f9ff !important; color: #ef4444 !important; font-size: 0.72rem !important; letter-spacing: 0.05em !important; font-weight: 700 !important; border-right: 1px solid #e2e8f0;">PAJAK</th>
-                            <th style="background-color: #f0f9ff !important; color: #10b981 !important; font-size: 0.72rem !important; letter-spacing: 0.05em !important; font-weight: 700 !important; border-right: 1px solid #e2e8f0;">JUMLAH BERSIH</th>
+                            <th style="background-color: #f0f9ff !important; color: #475569 !important; font-size: 0.72rem !important; letter-spacing: 0.05em !important; font-weight: 700 !important; border-right: 1px solid #e2e8f0; text-align: center !important;">JUMLAH KOTOR</th>
+                            <th style="background-color: #f0f9ff !important; color: #ef4444 !important; font-size: 0.72rem !important; letter-spacing: 0.05em !important; font-weight: 700 !important; border-right: 1px solid #e2e8f0; text-align: center !important;">PAJAK</th>
+                            <th style="background-color: #f0f9ff !important; color: #10b981 !important; font-size: 0.72rem !important; letter-spacing: 0.05em !important; font-weight: 700 !important; border-right: 1px solid #e2e8f0; text-align: center !important;">JUMLAH BERSIH</th>
                         </tr>
                     </thead>
                     <tbody class="table-border-bottom-0">
@@ -146,15 +146,15 @@
                                 <span style="display:inline-flex; align-items:center; justify-content:center; background:#dbeafe; color:#1a56db; border-radius:50%; width:28px; height:28px; font-size:0.8rem; font-weight:700;">{{ $item->pencairan_ke }}</span>
                             </td>
                             <td>
-                                <span class="badge" style="display:inline-block; background:{{ $spBg }} !important; color:{{ $spText }} !important; border-radius:20px !important; padding:3px 10px !important; font-size:0.72rem !important; font-weight:700 !important; line-height:1.4 !important;">{{ strtoupper($item->status_pegawai) }}</span>
+                                <span class="badge" style="display:inline-flex; align-items:center; justify-content:center; text-align:center; background:{{ $spBg }} !important; color:{{ $spText }} !important; border-radius:20px !important; padding:3px 12px !important; font-size:0.72rem !important; font-weight:700 !important; line-height:1.2 !important; min-width: 90px; white-space: nowrap !important;">{{ strtoupper($item->status_pegawai) }}</span>
                             </td>
                             <td style="color:#374151; font-weight:600;">{{ $item->jenis }}</td>
                             <td>
                                 <span class="badge-bank" style="display:inline-block; background:{{ $bankBg }}; color:{{ $bankTxt }} !important; border-radius:6px; padding:3px 8px; font-size:0.72rem; font-weight:700;">{{ strtoupper($item->bank) }}</span>
                             </td>
-                            <td class="text-end fw-semibold" style="color:#0f2b5c;">{{ number_format($item->jumlah_kotor, 0, ',', '.') }}</td>
-                            <td class="text-end fw-semibold" style="color:#ef4444;">{{ number_format($item->jumlah_pajak, 0, ',', '.') }}</td>
-                            <td class="text-end fw-bold" style="color:#10b981;">{{ number_format($item->jumlah_bersih, 0, ',', '.') }}</td>
+                            <td class="text-center fw-semibold" style="color:#0f2b5c;">{{ number_format($item->jumlah_kotor, 0, ',', '.') }}</td>
+                            <td class="text-center fw-semibold" style="color:#ef4444;">{{ number_format($item->jumlah_pajak, 0, ',', '.') }}</td>
+                            <td class="text-center fw-bold" style="color:#10b981;">{{ number_format($item->jumlah_bersih, 0, ',', '.') }}</td>
                             <td>
                                 @if (request()->query('status') === "Proses")
                                 <div class="show">

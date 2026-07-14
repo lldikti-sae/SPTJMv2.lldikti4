@@ -88,7 +88,7 @@
                             </div>
 
                             <div class="col-lg-3 col-md-6 d-flex justify-content-end">
-                                <button type="submit" class="btn btn-success px-4 py-2 fw-bold" style="background-color: #0f2b5c; border-color: #0f2b5c; font-size: 0.875rem; border-radius: 6px; display: inline-flex; align-items: center; gap: 8px; width: 100%; justify-content: center;">
+                                <button type="submit" class="btn btn-success px-4 py-2 fw-bold" style="background-color: #28c76f; border-color: #28c76f; font-size: 0.875rem; border-radius: 6px; display: inline-flex; align-items: center; gap: 8px; width: 100%; justify-content: center; color: #ffffff;">
                                     <i class="bx bx-save" style="font-size: 1.15rem;"></i> Simpan
                                 </button>
                             </div>
@@ -254,7 +254,7 @@
                                     </div>
                                     <div class="modal-footer">
                                         <div id="modalSaveWarning" class="activation-warning d-none w-100 mb-2" role="alert"></div>
-                                        <button type="submit" class="btn btn-primary">Simpan</button>
+                                        <button type="submit" class="btn btn-success" style="background-color: #28c76f; border-color: #28c76f; color: #ffffff;">Simpan</button>
                                         <button type="button" class="btn btn-secondary"
                                             data-bs-dismiss="modal">Batal</button>
                                     </div>
