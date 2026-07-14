@@ -153,13 +153,13 @@
     </div>
 
     <div class="md-table-wrap px-4 pb-4 pt-2">
-        <table class="table table-hover md2-table text-center" id="dosenPensiunTable" style="width: 100%;">
+        <table class="table table-hover md2-table" id="dosenPensiunTable" style="width: 100%;">
             <thead>
                 <tr>
                     <th>NIDN</th>
                     <th>NUPTK</th>
-                    <th class="text-start">Nama Dosen</th>
-                    <th class="text-start">Nama PTS</th>
+                    <th>Nama Dosen</th>
+                    <th>Nama PTS</th>
                     <th>TMT Pensiun</th>
                     <th>Usia</th>
                     <th>Status</th>
@@ -184,8 +184,8 @@ document.addEventListener('DOMContentLoaded', function () {
             url: '{{ route('admin.dashboard.dosen-pensiun.data') }}'
         },
         columns: [
-            { data: 'nidn', name: 'nidn' },
-            { data: 'nuptk', name: 'nuptk' },
+            { data: 'nidn', name: 'nidn', className: 'text-start' },
+            { data: 'nuptk', name: 'nuptk', className: 'text-start' },
             { 
                 data: 'nama', 
                 name: 'nama',
@@ -196,13 +196,14 @@ document.addEventListener('DOMContentLoaded', function () {
                 name: 'pts',
                 className: 'text-start'
             },
-            { data: 'tmt_pensiun', name: 'tmt_pensiun' },
-            { data: 'usia', name: 'usia' },
+            { data: 'tmt_pensiun', name: 'tmt_pensiun', className: 'text-start' },
+            { data: 'usia', name: 'usia', className: 'text-start' },
             { 
                 data: 'status', 
                 name: 'status', 
                 orderable: false, 
                 searchable: false,
+                className: 'text-start',
                 render: function(data, type, row) {
                     // Figma design uses active pill
                     // Strip HTML if present to prevent nesting
@@ -214,7 +215,8 @@ document.addEventListener('DOMContentLoaded', function () {
                 data: 'aksi', 
                 name: 'aksi', 
                 orderable: false, 
-                searchable: false
+                searchable: false,
+                className: 'text-start'
             }
         ],
         order: [[3, 'asc']],

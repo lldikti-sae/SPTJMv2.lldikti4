@@ -481,7 +481,7 @@
                                 class="sptjm-input"
                                 id="login"
                                 name="login"
-                                placeholder="admin"
+                                placeholder=""
                                 required
                                 autocomplete="username"
                                 autocapitalize="none"
@@ -500,7 +500,7 @@
                                 id="password"
                                 class="sptjm-input with-right-icon"
                                 name="password"
-                                placeholder="password123"
+                                placeholder=""
                                 required
                                 autocomplete="current-password"
                             >

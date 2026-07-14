@@ -4,6 +4,34 @@
    Satu file CSS untuk mengatur semua tampilan DataTable
    ===================================================== */
 
+/* ── GLOBAL TEXT ALIGNMENT: Semua isi tabel rata kiri ──
+   Ini mengesampingkan class text-center yang mungkin ada di tag <table> atau <th>/<td>
+   Kecuali: pesan kosong, pagination, dan elemen yang explicitly di-override dengan .text-center
+   ── */
+table.dataTable thead th,
+table.dataTable tbody td,
+table.dataTable tfoot td,
+table.dataTable tfoot th,
+.table thead th,
+.table tbody td,
+.table tfoot td,
+.table tfoot th,
+table.md2-table thead th,
+table.md2-table tbody td,
+.md-table-wrap table thead th,
+.md-table-wrap table tbody td {
+    text-align: left !important;
+}
+
+/* Khusus: badge di dalam td tetap rata tengah jika dibutuhkan */
+table.dataTable tbody td .sptjm-badge-active,
+.table tbody td .sptjm-badge-active,
+table.dataTable tbody td .badge,
+.table tbody td .badge {
+    display: inline-flex !important;
+    align-items: center !important;
+}
+
 /* ── FONT KONSISTENSI ── */
 table,
 table th,
