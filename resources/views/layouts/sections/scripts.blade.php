@@ -109,20 +109,64 @@
 			menuEl.querySelectorAll('.menu-item.open').forEach((item) => item.classList.remove('open'));
 		};
 
+		/**
+		 * Kembalikan open-state dari localStorage HANYA untuk submenu
+		 * yang ROOT-nya sudah di-render oleh server sebagai 'open'.
+		 *
+		 * Kenapa perlu filter ini?
+		 * ─ Server PHP sudah tahu menu mana yang aktif berdasarkan URL.
+		 * ─ Jika user pindah dari "Proses Pembayaran" ke "Data Dosen",
+		 *   server merender "Data Dosen" sebagai active-open dan
+		 *   "Proses Pembayaran" tanpa open.
+		 * ─ Tanpa filter, localStorage akan membuka ulang "Proses Pembayaran"
+		 *   padahal user sudah pindah menu — inilah sumber bug.
+		 * ─ Dengan filter, hanya submenu dalam cabang yang SAMA dengan
+		 *   halaman aktif yang dipulihkan.
+		 */
 		const applyOpenKeysWithoutAnimation = (keys) => {
 			const menuEl = getMenuEl();
 			if (!menuEl || !Array.isArray(keys) || !keys.length) return;
+
+			// Kumpulkan root-level .menu-item yang sudah di-mark 'open' oleh server (PHP).
+			// Ini adalah "kebenaran" navigasi saat ini berdasarkan URL yang sedang aktif.
+			const menuInner = menuEl.querySelector('.menu-inner');
+			const serverOpenRoots = new Set(
+				menuInner
+					? Array.from(menuInner.querySelectorAll(':scope > .menu-item.open'))
+					: []
+			);
 
 			const toggles = menuEl.querySelectorAll('a.menu-toggle');
 			toggles.forEach((a) => {
 				const key = getToggleKey(a);
 				if (!key || !keys.includes(key)) return;
 
-				// Open this item and all ancestors (no menu.js API calls to avoid animations)
 				let item = a.closest ? a.closest('.menu-item') : null;
+				if (!item) return;
+
+				// Temukan root ancestor dari item ini (level paling atas di menu-inner)
+				let rootItem = item;
+				let parentCheck = rootItem.parentElement
+					? rootItem.parentElement.closest('.menu-item')
+					: null;
+				while (parentCheck) {
+					rootItem = parentCheck;
+					parentCheck = rootItem.parentElement
+						? rootItem.parentElement.closest('.menu-item')
+						: null;
+				}
+
+				// GUARD: Hanya pulihkan jika root menu-nya server-mark sebagai open.
+				// Jika serverOpenRoots kosong (tidak ada menu aktif, misal halaman lain),
+				// tidak ada state yang dipulihkan — ini perilaku yang benar.
+				if (!serverOpenRoots.has(rootItem)) return;
+
+				// Buka item ini dan semua ancestor-nya (tanpa animasi)
 				while (item) {
 					item.classList.add('open');
-					item = item.parentElement && item.parentElement.closest ? item.parentElement.closest('.menu-item') : null;
+					item = item.parentElement && item.parentElement.closest
+						? item.parentElement.closest('.menu-item')
+						: null;
 				}
 			});
 		};
@@ -192,34 +236,42 @@
 			});
 		};
 
+		/**
+		 * Pastikan hanya SATU root menu yang terbuka — menu yang memiliki
+		 * item aktif. Jika localStorage membuka menu lain, tutup paksa.
+		 * Ini adalah safety-net global setelah applyOpenKeysWithoutAnimation.
+		 */
 		const enforceSingleRootOpen = () => {
-			// Only needed for PTS: current route sets `active open` on one root item,
-			// while persisted state could open another root item after navigation.
-			if (scope !== 'pts') return;
 			const menuEl = getMenuEl();
 			if (!menuEl) return;
 			const menuInner = menuEl.querySelector('.menu-inner');
 			if (!menuInner) return;
 
-			// Root items are direct children of .menu-inner
+			// Root items = direct children of .menu-inner
 			const rootOpenItems = Array.from(menuInner.querySelectorAll(':scope > .menu-item.open'));
 			if (rootOpenItems.length <= 1) return;
 
-			// Prefer the root item that contains the active link/item
-			let keep = rootOpenItems.find((it) => it.classList.contains('active') || it.querySelector('.menu-link.active') || it.querySelector('.menu-item.active'));
+			// Preferensikan root item yang memiliki child active (server truth)
+			let keep = rootOpenItems.find(
+				(it) => it.classList.contains('active')
+					|| it.querySelector('.menu-link.active')
+					|| it.querySelector('.menu-item.active')
+			);
 			if (!keep) keep = rootOpenItems[0];
 
-			const instance = menuEl.menuInstance || (window.Helpers && window.Helpers.mainMenu) || null;
+			// Tutup paksa semua root item yang bukan 'keep', termasuk semua child-nya
 			rootOpenItems.forEach((item) => {
 				if (item === keep) return;
 				try {
-					const toggle = item.querySelector(':scope > a.menu-toggle');
-					if (toggle && instance && typeof instance.close === 'function') {
-						instance.close(toggle, true, true);
-					} else {
-						item.classList.remove('open');
-						item.querySelectorAll('.menu-item.open').forEach((child) => child.classList.remove('open'));
-					}
+					// Tutup semua submenu di dalamnya
+					item.querySelectorAll('.menu-item.open').forEach((child) => {
+						child.classList.remove('open');
+						child.style.height = '';
+						child.style.overflow = '';
+					});
+					item.classList.remove('open');
+					item.style.height = '';
+					item.style.overflow = '';
 				} catch (e) {
 					// ignore
 				}
@@ -351,6 +403,60 @@
 							// ignore
 						}
 					}, 150);
+				});
+			}
+
+			// ──────────────────────────────────────────────────────────────────────
+			// ACCORDION SYNC: Tutup semua submenu dari menu lain saat user klik
+			// link leaf (bukan toggle). Ini memastikan saveState() pada beforeunload
+			// menyimpan state yang bersih — hanya menu aktif yang tersimpan.
+			// Tanpa ini: user klik "Eligible" lalu navigasi ke "Data Dosen" →
+			// beforeunload menyimpan "Proses Pembayaran" sebagai open → bug restore.
+			// ──────────────────────────────────────────────────────────────────────
+			if (menuEl) {
+				menuEl.addEventListener('click', function (e) {
+					// Hanya proses klik pada link biasa (BUKAN toggle accordion)
+					const link = e.target && e.target.closest
+						? e.target.closest('a.menu-link')
+						: null;
+					if (!link) return;
+					if (link.classList.contains('menu-toggle')) return; // accordion click, skip
+
+					// Temukan root menu yang mengandung link ini
+					const clickedRootItem = (() => {
+						let item = link.closest ? link.closest('.menu-item') : null;
+						if (!item) return null;
+						let rootItem = item;
+						let parent = rootItem.parentElement
+							? rootItem.parentElement.closest('.menu-item')
+							: null;
+						while (parent) {
+							rootItem = parent;
+							parent = rootItem.parentElement
+								? rootItem.parentElement.closest('.menu-item')
+								: null;
+						}
+						return rootItem;
+					})();
+
+					// Tutup semua root menu LAIN beserta seluruh child-nya
+					const menuInnerEl = getMenuInner();
+					if (menuInnerEl) {
+						menuInnerEl.querySelectorAll(':scope > .menu-item.open').forEach((rootItem) => {
+							if (rootItem === clickedRootItem) return;
+							rootItem.querySelectorAll('.menu-item.open').forEach((child) => {
+								child.classList.remove('open');
+								child.style.height = '';
+								child.style.overflow = '';
+							});
+							rootItem.classList.remove('open');
+							rootItem.style.height = '';
+							rootItem.style.overflow = '';
+						});
+					}
+
+					// Simpan state bersih segera setelah penutupan (sebelum navigasi)
+					setTimeout(saveState, 0);
 				});
 			}
 		});
