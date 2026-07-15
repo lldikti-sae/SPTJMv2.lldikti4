@@ -77,17 +77,19 @@ $months = [
     </div>
   </form>
 
-  <div class="md-status-filters mb-3 mx-2">
-      <button type="button" class="md-status-btn {{ ($jenisTunjangan ?? 'semua') == 'semua' ? 'active' : '' }}" data-jenis="semua">Semua</button>
-      <button type="button" class="md-status-btn {{ ($jenisTunjangan ?? '') == 'sptjm' ? 'active' : '' }}" data-jenis="sptjm">SPTJM</button>
-      <button type="button" class="md-status-btn {{ ($jenisTunjangan ?? '') == 'tukin' ? 'active' : '' }}" data-jenis="tukin">TUKIN</button>
-  </div>
-
   @if ($transaksi)
   @php
     $jenis = trim($transaksi->Jenis ?? '');
     $isPns = stripos($jenis, 'PNS') !== false && stripos($jenis, 'NON') === false;
   @endphp
+
+  <div class="md-status-filters mb-3 mx-2 mt-3">
+      <button type="button" class="md-status-btn {{ ($jenisTunjangan ?? 'semua') == 'semua' ? 'active' : '' }}" data-jenis="semua">Semua</button>
+      <button type="button" class="md-status-btn {{ ($jenisTunjangan ?? '') == 'sptjm' ? 'active' : '' }}" data-jenis="sptjm">SPTJM</button>
+      @if ($isPns)
+      <button type="button" class="md-status-btn {{ ($jenisTunjangan ?? '') == 'tukin' ? 'active' : '' }}" data-jenis="tukin">TUKIN</button>
+      @endif
+  </div>
   <div class="row mb-2 mx-2">
     <label class="col-sm-2 col-form-label py-1" style="font-size:13px;font-weight:600;">NIDN - Nama</label>
     <div class="col-sm-7">
