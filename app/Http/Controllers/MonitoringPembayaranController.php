@@ -152,6 +152,7 @@ class MonitoringPembayaranController extends Controller
     $startYear = $request->input('start_year');
     $endYear = $request->input('end_year');
     $selectedYear = $request->input('tahun_versi');
+    $jenisTunjangan = strtolower($request->input('jenis_tunjangan', 'semua'));
 
     $availableYears = DB::table('s_transaksi_2')
       ->select('tahun_versi')
@@ -265,12 +266,31 @@ class MonitoringPembayaranController extends Controller
       $golonganBulanan[] = $transaksiTahun ? ($transaksiTahun->{'Gol' . $suffix} ?? '-') : '-';
       $gajiBulanan[] = $transaksiTahun ? (float) ($transaksiTahun->{'Gaji' . $suffix} ?? 0) : 0;
       $tahunBulanan[] = $transaksiTahun ? ($transaksiTahun->{'Tahun' . $suffix} ?? '-') : '-';
-      $kotorTpd[] = $transaksiTahun ? (float) ($transaksiTahun->{'TPD' . $suffix} ?? 0) : 0;
-      $kotorTkgb[] = $transaksiTahun ? (float) ($transaksiTahun->{'TKGB' . $suffix} ?? 0) : 0;
-      $pajakTpd[] = $transaksiTahun ? (float) ($transaksiTahun->{'nilaiPajakTPD' . $suffix} ?? 0) : 0;
-      $pajakTkgb[] = $transaksiTahun ? (float) ($transaksiTahun->{'nilaiPajakTKGB' . $suffix} ?? 0) : 0;
-      $bersihTpd[] = $transaksiTahun ? (float) ($transaksiTahun->{'bersihTPD' . $suffix} ?? 0) : 0;
-      $bersihTkgb[] = $transaksiTahun ? (float) ($transaksiTahun->{'bersihTKGB' . $suffix} ?? 0) : 0;
+      
+      $kotorTpdVal = $transaksiTahun ? (float) ($transaksiTahun->{'TPD' . $suffix} ?? 0) : 0;
+      $kotorTkgbVal = $transaksiTahun ? (float) ($transaksiTahun->{'TKGB' . $suffix} ?? 0) : 0;
+      $pajakTpdVal = $transaksiTahun ? (float) ($transaksiTahun->{'nilaiPajakTPD' . $suffix} ?? 0) : 0;
+      $pajakTkgbVal = $transaksiTahun ? (float) ($transaksiTahun->{'nilaiPajakTKGB' . $suffix} ?? 0) : 0;
+      $bersihTpdVal = $transaksiTahun ? (float) ($transaksiTahun->{'bersihTPD' . $suffix} ?? 0) : 0;
+      $bersihTkgbVal = $transaksiTahun ? (float) ($transaksiTahun->{'bersihTKGB' . $suffix} ?? 0) : 0;
+
+      if ($jenisTunjangan === 'sptjm') {
+          $kotorTkgbVal = 0;
+          $pajakTkgbVal = 0;
+          $bersihTkgbVal = 0;
+      } elseif ($jenisTunjangan === 'tukin') {
+          $kotorTpdVal = 0;
+          $pajakTpdVal = 0;
+          $bersihTpdVal = 0;
+      }
+
+      $kotorTpd[] = $kotorTpdVal;
+      $kotorTkgb[] = $kotorTkgbVal;
+      $pajakTpd[] = $pajakTpdVal;
+      $pajakTkgb[] = $pajakTkgbVal;
+      $bersihTpd[] = $bersihTpdVal;
+      $bersihTkgb[] = $bersihTkgbVal;
+      
       $noSp2d[] = $transaksiTahun ? ($transaksiTahun->{'No_sp2d_' . $suffix} ?? '-') : '-';
       $tglSp2d[] = $transaksiTahun ? ($transaksiTahun->{'Tgl_sp2d_' . $suffix} ?? '-') : '-';
     }
@@ -623,6 +643,7 @@ class MonitoringPembayaranController extends Controller
         'startYear',
         'endYear',
         'selectedYear',
+        'jenisTunjangan',
         'transaksi',
         'nidn',
         'kodeUsulanBulanan',
@@ -655,6 +676,7 @@ class MonitoringPembayaranController extends Controller
     $startYear = $request->input('start_year');
     $endYear = $request->input('end_year');
     $selectedYear = $request->input('tahun_versi');
+    $jenisTunjangan = strtolower($request->input('jenis_tunjangan', 'semua'));
 
     $availableYears = DB::table('s_transaksi_2')
       ->select('tahun_versi')
@@ -751,12 +773,31 @@ class MonitoringPembayaranController extends Controller
       $golonganBulanan[] = $transaksiTahun ? ($transaksiTahun->{'Gol' . $s} ?? '-') : '-';
       $gajiBulanan[] = $transaksiTahun ? (float) ($transaksiTahun->{'Gaji' . $s} ?? 0) : 0;
       $tahunBulanan[] = $transaksiTahun ? ($transaksiTahun->{'Tahun' . $s} ?? '-') : '-';
-      $kotorTpd[] = $transaksiTahun ? (float) ($transaksiTahun->{'TPD' . $s} ?? 0) : 0;
-      $kotorTkgb[] = $transaksiTahun ? (float) ($transaksiTahun->{'TKGB' . $s} ?? 0) : 0;
-      $pajakTpd[] = $transaksiTahun ? (float) ($transaksiTahun->{'nilaiPajakTPD' . $s} ?? 0) : 0;
-      $pajakTkgb[] = $transaksiTahun ? (float) ($transaksiTahun->{'nilaiPajakTKGB' . $s} ?? 0) : 0;
-      $bersihTpd[] = $transaksiTahun ? (float) ($transaksiTahun->{'bersihTPD' . $s} ?? 0) : 0;
-      $bersihTkgb[] = $transaksiTahun ? (float) ($transaksiTahun->{'bersihTKGB' . $s} ?? 0) : 0;
+      
+      $kotorTpdVal = $transaksiTahun ? (float) ($transaksiTahun->{'TPD' . $s} ?? 0) : 0;
+      $kotorTkgbVal = $transaksiTahun ? (float) ($transaksiTahun->{'TKGB' . $s} ?? 0) : 0;
+      $pajakTpdVal = $transaksiTahun ? (float) ($transaksiTahun->{'nilaiPajakTPD' . $s} ?? 0) : 0;
+      $pajakTkgbVal = $transaksiTahun ? (float) ($transaksiTahun->{'nilaiPajakTKGB' . $s} ?? 0) : 0;
+      $bersihTpdVal = $transaksiTahun ? (float) ($transaksiTahun->{'bersihTPD' . $s} ?? 0) : 0;
+      $bersihTkgbVal = $transaksiTahun ? (float) ($transaksiTahun->{'bersihTKGB' . $s} ?? 0) : 0;
+
+      if ($jenisTunjangan === 'sptjm') {
+          $kotorTkgbVal = 0;
+          $pajakTkgbVal = 0;
+          $bersihTkgbVal = 0;
+      } elseif ($jenisTunjangan === 'tukin') {
+          $kotorTpdVal = 0;
+          $pajakTpdVal = 0;
+          $bersihTpdVal = 0;
+      }
+
+      $kotorTpd[] = $kotorTpdVal;
+      $kotorTkgb[] = $kotorTkgbVal;
+      $pajakTpd[] = $pajakTpdVal;
+      $pajakTkgb[] = $pajakTkgbVal;
+      $bersihTpd[] = $bersihTpdVal;
+      $bersihTkgb[] = $bersihTkgbVal;
+      
       $noSp2d[] = $transaksiTahun ? ($transaksiTahun->{'No_sp2d_' . $s} ?? '-') : '-';
       $tglSp2d[] = $transaksiTahun ? ($transaksiTahun->{'Tgl_sp2d_' . $s} ?? '-') : '-';
     }

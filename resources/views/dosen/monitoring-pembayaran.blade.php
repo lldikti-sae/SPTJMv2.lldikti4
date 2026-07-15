@@ -4,6 +4,34 @@
 
 @section('content')
 
+<style>
+/* ── Status Filter Buttons ── */
+.md-status-filters {
+    display: flex;
+    gap: 8px;
+}
+.md-status-btn {
+    background-color: #fff;
+    border: 1px solid #e2e8f0;
+    color: #4a5568;
+    font-weight: 500;
+    font-size: 0.82rem;
+    padding: 5px 18px;
+    border-radius: 20px;
+    transition: all 0.2s;
+    cursor: pointer;
+}
+.md-status-btn.active {
+    background-color: #0b3d91;
+    border-color: #0b3d91;
+    color: #fff;
+}
+.md-status-btn:hover:not(.active) {
+    background-color: #f8fafc;
+    border-color: #cbd5e1;
+}
+</style>
+
 @php
 $transaksi = $transaksi ?? null;
 $months = [
@@ -34,6 +62,12 @@ $months = [
   @endif
 
   <input type="hidden" id="search_nidn" value="{{ $nidn ?? '' }}">
+  
+  <div class="md-status-filters mb-3 mx-2 mt-3">
+      <button type="button" class="md-status-btn {{ ($jenisTunjangan ?? 'semua') == 'semua' ? 'active' : '' }}" data-jenis="semua">Semua</button>
+      <button type="button" class="md-status-btn {{ ($jenisTunjangan ?? '') == 'sptjm' ? 'active' : '' }}" data-jenis="sptjm">SPTJM</button>
+      <button type="button" class="md-status-btn {{ ($jenisTunjangan ?? '') == 'tukin' ? 'active' : '' }}" data-jenis="tukin">TUKIN</button>
+  </div>
 
   @if ($transaksi)
   @php
@@ -103,6 +137,7 @@ $months = [
         @csrf
         <input type="hidden" name="start_year" id="hidden_start_year" value="{{ $startYear ?? old('start_year') }}">
         <input type="hidden" name="end_year" id="hidden_end_year" value="{{ $endYear ?? old('end_year') }}">
+        <input type="hidden" name="jenis_tunjangan" id="hidden_jenis_tunjangan" value="{{ $jenisTunjangan ?? 'semua' }}">
 
         <div>
           <label class="form-label mb-1" style="font-size:11px;">Filter Tahun</label>
@@ -627,7 +662,39 @@ $months = [
             alert("Terjadi kesalahan jaringan atau server. Silakan muat ulang halaman.");
             console.error(err);
         });
+      }
+
+      filterSelect.addEventListener('change', loadData);
+
+      document.querySelectorAll('.md-status-btn').forEach(btn => {
+          btn.addEventListener('click', function() {
+              currentJenis = this.getAttribute('data-jenis');
+              let form = document.querySelector('form[action="{{ route('monitoring-pembayaran.cari') }}"]');
+              if (form) {
+                  let hiddenInput = form.querySelector('input[name="jenis_tunjangan"]');
+                  if (!hiddenInput) {
+                      hiddenInput = document.createElement('input');
+                      hiddenInput.type = 'hidden';
+                      hiddenInput.name = 'jenis_tunjangan';
+                      form.appendChild(hiddenInput);
+                  }
+                  hiddenInput.value = currentJenis;
+              }
+              loadData();
+          });
       });
+      
+      let mainForm = document.querySelector('form[action="{{ route('monitoring-pembayaran.cari') }}"]');
+      if (mainForm && currentJenis) {
+          let hiddenInput = mainForm.querySelector('input[name="jenis_tunjangan"]');
+          if (!hiddenInput) {
+              hiddenInput = document.createElement('input');
+              hiddenInput.type = 'hidden';
+              hiddenInput.name = 'jenis_tunjangan';
+              mainForm.appendChild(hiddenInput);
+          }
+          hiddenInput.value = currentJenis;
+      }
     });
   </script>
   @endif

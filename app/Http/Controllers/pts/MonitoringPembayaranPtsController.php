@@ -360,6 +360,7 @@ class MonitoringPembayaranPtsController extends Controller
     $dataView['summaryOriginal'] = (array) ($dataView['summaryOriginal'] ?? []);
     $dataView['selisihTotals'] = (array) ($dataView['selisihTotals'] ?? []);
     $dataView['totals'] = (array) ($dataView['totals'] ?? []);
+    $dataView['jenisTunjangan'] = strtolower($request->input('jenis_tunjangan', 'semua'));
 
     return view('pts.monitoring-pembayaran', $dataView);
   }
