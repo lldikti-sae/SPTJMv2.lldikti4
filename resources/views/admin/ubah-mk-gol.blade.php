@@ -413,6 +413,23 @@
 
     if (golonganSelect) golonganSelect.addEventListener('change', fetchGaji);
     if (masaKerjaInput) masaKerjaInput.addEventListener('input', fetchGaji);
+
+    const jabatanSelect = document.querySelector('select[name="jabatan"]');
+    if (jabatanSelect) {
+      jabatanSelect.addEventListener('change', function() {
+        const val = this.value.trim();
+        let newGol = null;
+        if (val === 'Guru Besar 1050') newGol = 'IV/e';
+        else if (val === 'Guru Besar') newGol = 'IV/d';
+        
+        if (newGol) {
+          if (golonganSelect) golonganSelect.value = newGol;
+          if (golonganInput) golonganInput.value = newGol;
+          fetchGaji();
+        }
+      });
+    }
+
     // initial fetch
     fetchGaji();
 

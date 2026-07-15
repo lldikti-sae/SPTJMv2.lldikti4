@@ -248,6 +248,25 @@ class MonitoringPembayaranController extends Controller
 
     $selisihTotals = SelisihBayar::computeFromTransaksi($transaksiTahun);
 
+    // Ambil data TUKIN jika diperlukan
+    $tukinRecords = [];
+    if ($jenisTunjangan === 'tukin' || $jenisTunjangan === 'semua') {
+        $tukinData = DB::table('s_tunjangan_kinerja')
+            ->where(function($q) use ($nidn) {
+                $q->where('NIDN', $nidn)->orWhere('NUPTK', $nidn);
+            })
+            ->where('Tahun', $selectedYear)
+            ->get();
+            
+        $monthMap = ['Januari'=>1, 'Februari'=>2, 'Maret'=>3, 'April'=>4, 'Mei'=>5, 'Juni'=>6, 'Juli'=>7, 'Agustus'=>8, 'September'=>9, 'Oktober'=>10, 'November'=>11, 'Desember'=>12];
+        foreach($tukinData as $t) {
+            $m = $monthMap[$t->Bulan] ?? 0;
+            if ($m > 0) {
+                $tukinRecords[$m] = $t;
+            }
+        }
+    }
+
     // Ambil data dari bulan 1–12
     $golonganBulanan = [];
     $gajiBulanan = [];
@@ -264,9 +283,8 @@ class MonitoringPembayaranController extends Controller
     for ($i = 1; $i <= 12; $i++) {
       $suffix = $i;
       $golonganBulanan[] = $transaksiTahun ? ($transaksiTahun->{'Gol' . $suffix} ?? '-') : '-';
-      $gajiBulanan[] = $transaksiTahun ? (float) ($transaksiTahun->{'Gaji' . $suffix} ?? 0) : 0;
       $tahunBulanan[] = $transaksiTahun ? ($transaksiTahun->{'Tahun' . $suffix} ?? '-') : '-';
-      
+      $gajiAsli = $transaksiTahun ? (float) ($transaksiTahun->{'Gaji' . $suffix} ?? 0) : 0;
       $kotorTpdVal = $transaksiTahun ? (float) ($transaksiTahun->{'TPD' . $suffix} ?? 0) : 0;
       $kotorTkgbVal = $transaksiTahun ? (float) ($transaksiTahun->{'TKGB' . $suffix} ?? 0) : 0;
       $pajakTpdVal = $transaksiTahun ? (float) ($transaksiTahun->{'nilaiPajakTPD' . $suffix} ?? 0) : 0;
@@ -279,10 +297,24 @@ class MonitoringPembayaranController extends Controller
           $pajakTkgbVal = 0;
           $bersihTkgbVal = 0;
       } elseif ($jenisTunjangan === 'tukin') {
-          $kotorTpdVal = 0;
-          $pajakTpdVal = 0;
-          $bersihTpdVal = 0;
+          $kotorTkgbVal = 0;
+          $pajakTkgbVal = 0;
+          $bersihTkgbVal = 0;
+          if (isset($tukinRecords[$i])) {
+              $tk = $tukinRecords[$i];
+              $gajiAsli = (float) ($tk->Nilai_tukin_Jabatan ?? 0);
+              $kotorTpdVal = (float) ($tk->Nilai_Tukin ?? 0);
+              $pajakTpdVal = (float) ($tk->Nilai_Pajak ?? 0);
+              $bersihTpdVal = (float) ($tk->Nilai_Bersih ?? 0);
+          } else {
+              $gajiAsli = 0;
+              $kotorTpdVal = 0;
+              $pajakTpdVal = 0;
+              $bersihTpdVal = 0;
+          }
       }
+
+      $gajiBulanan[] = $gajiAsli;
 
       $kotorTpd[] = $kotorTpdVal;
       $kotorTkgb[] = $kotorTkgbVal;
@@ -748,6 +780,25 @@ class MonitoringPembayaranController extends Controller
 
     $selisihTotals = SelisihBayar::computeFromTransaksi($transaksiTahun);
 
+    // Ambil data TUKIN jika diperlukan
+    $tukinRecords = [];
+    if ($jenisTunjangan === 'tukin' || $jenisTunjangan === 'semua') {
+        $tukinData = DB::table('s_tunjangan_kinerja')
+            ->where(function($q) use ($nidn) {
+                $q->where('NIDN', $nidn)->orWhere('NUPTK', $nidn);
+            })
+            ->where('Tahun', $selectedYear)
+            ->get();
+            
+        $monthMap = ['Januari'=>1, 'Februari'=>2, 'Maret'=>3, 'April'=>4, 'Mei'=>5, 'Juni'=>6, 'Juli'=>7, 'Agustus'=>8, 'September'=>9, 'Oktober'=>10, 'November'=>11, 'Desember'=>12];
+        foreach($tukinData as $t) {
+            $m = $monthMap[$t->Bulan] ?? 0;
+            if ($m > 0) {
+                $tukinRecords[$m] = $t;
+            }
+        }
+    }
+
     // prepare monthly arrays
     $months = ['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'];
     $kodeCairMapping = [1=>'Jan', 2=>'Feb', 3=>'Mar', 4=>'Apr', 5=>'May', 6=>'Jun', 7=>'Jul', 8=>'Ags', 9=>'Sep', 10=>'Okt', 11=>'Nov', 12=>'Des'];
@@ -771,9 +822,8 @@ class MonitoringPembayaranController extends Controller
       $kcCol = $kodeCairMapping[$i];
       $kodeCairBulanan[] = $transaksiTahun ? ($transaksiTahun->{$kcCol} ?? null) : null;
       $golonganBulanan[] = $transaksiTahun ? ($transaksiTahun->{'Gol' . $s} ?? '-') : '-';
-      $gajiBulanan[] = $transaksiTahun ? (float) ($transaksiTahun->{'Gaji' . $s} ?? 0) : 0;
       $tahunBulanan[] = $transaksiTahun ? ($transaksiTahun->{'Tahun' . $s} ?? '-') : '-';
-      
+      $gajiAsli = $transaksiTahun ? (float) ($transaksiTahun->{'Gaji' . $s} ?? 0) : 0;
       $kotorTpdVal = $transaksiTahun ? (float) ($transaksiTahun->{'TPD' . $s} ?? 0) : 0;
       $kotorTkgbVal = $transaksiTahun ? (float) ($transaksiTahun->{'TKGB' . $s} ?? 0) : 0;
       $pajakTpdVal = $transaksiTahun ? (float) ($transaksiTahun->{'nilaiPajakTPD' . $s} ?? 0) : 0;
@@ -786,10 +836,24 @@ class MonitoringPembayaranController extends Controller
           $pajakTkgbVal = 0;
           $bersihTkgbVal = 0;
       } elseif ($jenisTunjangan === 'tukin') {
-          $kotorTpdVal = 0;
-          $pajakTpdVal = 0;
-          $bersihTpdVal = 0;
+          $kotorTkgbVal = 0;
+          $pajakTkgbVal = 0;
+          $bersihTkgbVal = 0;
+          if (isset($tukinRecords[$i])) {
+              $tk = $tukinRecords[$i];
+              $gajiAsli = (float) ($tk->Nilai_tukin_Jabatan ?? 0);
+              $kotorTpdVal = (float) ($tk->Nilai_Tukin ?? 0);
+              $pajakTpdVal = (float) ($tk->Nilai_Pajak ?? 0);
+              $bersihTpdVal = (float) ($tk->Nilai_Bersih ?? 0);
+          } else {
+              $gajiAsli = 0;
+              $kotorTpdVal = 0;
+              $pajakTpdVal = 0;
+              $bersihTpdVal = 0;
+          }
       }
+
+      $gajiBulanan[] = $gajiAsli;
 
       $kotorTpd[] = $kotorTpdVal;
       $kotorTkgb[] = $kotorTkgbVal;

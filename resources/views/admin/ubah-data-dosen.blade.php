@@ -490,6 +490,20 @@
     golonganInput.addEventListener('change', fetchGaji);
     masaKerjaInput.addEventListener('input', fetchGaji);
 
+    const jabatanSelect = document.getElementById('jabatan');
+    if (jabatanSelect && golonganInput) {
+      jabatanSelect.addEventListener('change', function() {
+        const val = this.value.trim();
+        if (val === 'Guru Besar 1050') {
+          golonganInput.value = 'IV/e';
+          fetchGaji();
+        } else if (val === 'Guru Besar') {
+          golonganInput.value = 'IV/d';
+          fetchGaji();
+        }
+      });
+    }
+
     fetchGaji();
     //alert reuseable
     const alert = (text, title, icon, warnaBtn) => {

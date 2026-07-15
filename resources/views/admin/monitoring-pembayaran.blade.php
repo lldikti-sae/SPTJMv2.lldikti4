@@ -261,7 +261,7 @@ $months = [
           <th rowspan="2" class="text-center">Bulan</th>
           <th rowspan="2" class="text-center">Kode Usulan</th>
           <th rowspan="2" class="text-center">Gol/MK</th>
-          <th rowspan="2" class="text-center">Gaji</th>
+          <th rowspan="2" class="text-center">{{ ($jenisTunjangan ?? 'semua') == 'tukin' ? 'Total Tukin' : 'Gaji' }}</th>
           <th colspan="{{ $nomColspan }}" class="text-center">Nominal</th>
           <th rowspan="2" class="text-center">NO SP2D</th>
           <th rowspan="2" class="text-center">TGL SP2D</th>
@@ -269,11 +269,11 @@ $months = [
           <th rowspan="2" class="text-center">Status</th>
         </tr>
         <tr>
-          <th class="text-center">Kotor TPD</th>
+          <th class="text-center">{{ ($jenisTunjangan ?? 'semua') == 'tukin' ? 'Kotor Tukin' : 'Kotor TPD' }}</th>
           @if($hasTkgb)<th class="text-center tkgb-col">Kotor TKGB</th>@endif
-          <th class="text-center">Pajak TPD</th>
+          <th class="text-center">{{ ($jenisTunjangan ?? 'semua') == 'tukin' ? 'Pajak Tukin' : 'Pajak TPD' }}</th>
           @if($hasTkgb)<th class="text-center tkgb-col">Pajak TKGB</th>@endif
-          <th class="text-center">Bersih TPD</th>
+          <th class="text-center">{{ ($jenisTunjangan ?? 'semua') == 'tukin' ? 'Bersih Tukin' : 'Bersih TPD' }}</th>
           @if($hasTkgb)<th class="text-center tkgb-col">Bersih TKGB</th>@endif
         </tr>
       </thead>
@@ -553,7 +553,7 @@ $months = [
           const thead=tbl?.querySelector('thead');
           if(thead){
             const nc=hasTkgb?6:3;
-            thead.innerHTML=`<tr><th rowspan="2" class="text-center">Tahun</th><th rowspan="2" class="text-center">Bulan</th><th rowspan="2" class="text-center">Kode Usulan</th><th rowspan="2" class="text-center">Gol/MK</th><th rowspan="2" class="text-center">Gaji</th><th colspan="${nc}" class="text-center">Nominal</th><th rowspan="2" class="text-center">NO SP2D</th><th rowspan="2" class="text-center">TGL SP2D</th><th rowspan="2" class="text-center">Selisih</th><th rowspan="2" class="text-center">Status</th></tr><tr><th class="text-center">Kotor TPD</th>${hasTkgb?'<th class="text-center tkgb-col">Kotor TKGB</th>':''}<th class="text-center">Pajak TPD</th>${hasTkgb?'<th class="text-center tkgb-col">Pajak TKGB</th>':''}<th class="text-center">Bersih TPD</th>${hasTkgb?'<th class="text-center tkgb-col">Bersih TKGB</th>':''}</tr>`;
+            thead.innerHTML=`<tr><th rowspan="2" class="text-center">Tahun</th><th rowspan="2" class="text-center">Bulan</th><th rowspan="2" class="text-center">Kode Usulan</th><th rowspan="2" class="text-center">Gol/MK</th><th rowspan="2" class="text-center">${currentJenis === 'tukin' ? 'Total Tukin' : 'Gaji'}</th><th colspan="${nc}" class="text-center">Nominal</th><th rowspan="2" class="text-center">NO SP2D</th><th rowspan="2" class="text-center">TGL SP2D</th><th rowspan="2" class="text-center">Selisih</th><th rowspan="2" class="text-center">Status</th></tr><tr><th class="text-center">${currentJenis === 'tukin' ? 'Kotor Tukin' : 'Kotor TPD'}</th>${hasTkgb?'<th class="text-center tkgb-col">Kotor TKGB</th>':''}<th class="text-center">${currentJenis === 'tukin' ? 'Pajak Tukin' : 'Pajak TPD'}</th>${hasTkgb?'<th class="text-center tkgb-col">Pajak TKGB</th>':''}<th class="text-center">${currentJenis === 'tukin' ? 'Bersih Tukin' : 'Bersih TPD'}</th>${hasTkgb?'<th class="text-center tkgb-col">Bersih TKGB</th>':''}</tr>`;
           }
 
           const tbody=tbl?.querySelector('tbody'); 
