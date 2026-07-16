@@ -333,6 +333,9 @@ class MonitoringPembayaranController extends Controller
 
     for ($i = 1; $i <= 12; $i++) {
       $kode = $transaksiTahun ? ($transaksiTahun->{'KodeUsulan' . $i} ?? null) : null;
+      if ($jenisTunjangan === 'tukin') {
+          $kode = isset($tukinRecords[$i]) ? $tukinRecords[$i]->Kode_Usulan : null;
+      }
       $kodeUsulanBulanan[] = $kode;
       $kcCol = $kodeCairMapping[$i];
       $kodeCairBulanan[] = $transaksiTahun ? ($transaksiTahun->{$kcCol} ?? null) : null;
@@ -414,7 +417,11 @@ class MonitoringPembayaranController extends Controller
       $summaryDibayar += $bersih;
 
       // Selisih = expected gross (kotor) - actual paid (gaji)
-      $selisihBulan = ($hasData && $origHasSp2d) ? ($kotor - $gaji) : 0;
+      if ($jenisTunjangan === 'tukin') {
+          $selisihBulan = 0;
+      } else {
+          $selisihBulan = ($hasData && $origHasSp2d) ? ($kotor - $gaji) : 0;
+      }
       $originalSelisihBulan = $selisihBulan;
       $originalSelisihBulanan[] = (float) $originalSelisihBulan;
 
@@ -818,7 +825,11 @@ class MonitoringPembayaranController extends Controller
 
     for ($i = 1; $i <= 12; $i++) {
       $s = $i;
-      $kodeUsulanBulanan[] = $transaksiTahun ? ($transaksiTahun->{'KodeUsulan' . $s} ?? null) : null;
+      $kode = $transaksiTahun ? ($transaksiTahun->{'KodeUsulan' . $s} ?? null) : null;
+      if ($jenisTunjangan === 'tukin') {
+          $kode = isset($tukinRecords[$i]) ? $tukinRecords[$i]->Kode_Usulan : null;
+      }
+      $kodeUsulanBulanan[] = $kode;
       $kcCol = $kodeCairMapping[$i];
       $kodeCairBulanan[] = $transaksiTahun ? ($transaksiTahun->{$kcCol} ?? null) : null;
       $golonganBulanan[] = $transaksiTahun ? ($transaksiTahun->{'Gol' . $s} ?? '-') : '-';
@@ -970,7 +981,11 @@ class MonitoringPembayaranController extends Controller
       $summaryDibayar += $bersih;
 
       // Selisih = expected gross (kotor) - actual paid (gaji)
-      $selisihBulan = ($hasData && $origHasSp2d) ? ($kotor - $gaji) : 0;
+      if ($jenisTunjangan === 'tukin') {
+          $selisihBulan = 0;
+      } else {
+          $selisihBulan = ($hasData && $origHasSp2d) ? ($kotor - $gaji) : 0;
+      }
       $originalSelisihBulan = $selisihBulan;
       $originalSelisihBulanan[] = (float) $originalSelisihBulan;
 
@@ -1250,6 +1265,7 @@ class MonitoringPembayaranController extends Controller
 
     $nidn = trim((string) $request->input('nidn'));
     $selectedYear = trim((string) $request->input('tahun_versi'));
+    $jenisTunjangan = trim((string) $request->input('jenis_tunjangan', 'semua'));
 
     $transaksi = DB::table('s_transaksi_2')
       ->where(function ($q) use ($nidn) {
@@ -1274,6 +1290,24 @@ class MonitoringPembayaranController extends Controller
       12 => 'Desember',
     ];
 
+    $tukinRecords = [];
+    if ($jenisTunjangan === 'tukin') {
+        $tukinData = DB::table('s_tunjangan_kinerja')
+            ->where(function ($q) use ($nidn) {
+                $q->where('NIDN', $nidn)->orWhere('NUPTK', $nidn);
+            })
+            ->where('Tahun', $selectedYear)
+            ->get();
+            
+        $monthMap = ['Januari'=>1, 'Februari'=>2, 'Maret'=>3, 'April'=>4, 'Mei'=>5, 'Juni'=>6, 'Juli'=>7, 'Agustus'=>8, 'September'=>9, 'Oktober'=>10, 'November'=>11, 'Desember'=>12];
+        foreach($tukinData as $t) {
+            $m = $monthMap[$t->Bulan] ?? 0;
+            if ($m > 0) {
+                $tukinRecords[$m] = $t;
+            }
+        }
+    }
+
     $rows = [];
     $totals = [
       'gaji' => 0,
@@ -1297,6 +1331,31 @@ class MonitoringPembayaranController extends Controller
       $pajakTkgb = (float) ($transaksi?->{'nilaiPajakTKGB' . $m} ?? 0);
       $bersihTpd = (float) ($transaksi?->{'bersihTPD' . $m} ?? 0);
       $bersihTkgb = (float) ($transaksi?->{'bersihTKGB' . $m} ?? 0);
+      
+      if ($jenisTunjangan === 'sptjm') {
+          $kotorTkgb = 0;
+          $pajakTkgb = 0;
+          $bersihTkgb = 0;
+      } elseif ($jenisTunjangan === 'tukin') {
+          $kotorTkgb = 0;
+          $pajakTkgb = 0;
+          $bersihTkgb = 0;
+          
+          if (isset($tukinRecords[$m])) {
+              $tk = $tukinRecords[$m];
+              $kodeUsulan = $tk->Kode_Usulan ?? '-';
+              $gaji = (float) ($tk->Nilai_tukin_Jabatan ?? 0);
+              $kotorTpd = (float) ($tk->Nilai_Tukin ?? 0);
+              $pajakTpd = (float) ($tk->Nilai_Pajak ?? 0);
+              $bersihTpd = (float) ($tk->Nilai_Bersih ?? 0);
+          } else {
+              $kodeUsulan = '-';
+              $gaji = 0;
+              $kotorTpd = 0;
+              $pajakTpd = 0;
+              $bersihTpd = 0;
+          }
+      }
 
       $noSp2d = $transaksi?->{'No_sp2d_' . $m} ?? '-';
       $tglSp2d = $transaksi?->{'Tgl_sp2d_' . $m} ?? '-';
