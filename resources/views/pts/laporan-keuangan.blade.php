@@ -1,54 +1,71 @@
-﻿@extends('layouts/contentNavbarLayoutPts')
+@extends('layouts/contentNavbarLayoutPts')
 
 @section('title', 'SPTJM Online')
 
 @section('content')
 
-    <div class="card" style="width: 100%; padding: 10px;">
-        <h5 class="card-header text-start p-2">Monitoring Pembayaran</h5>
-        <hr>
+<style>
+    .card-laporan {
+        border: 1.5px solid #dbeafe !important;
+        box-shadow: 0 10px 30px rgba(26, 86, 219, 0.15) !important;
+        border-radius: 12px !important;
+        background: #ffffff !important;
+    }
+    #myTable th, #myTable td {
+        padding: 5px 8px !important;
+        font-size: 0.8rem !important;
+        line-height: 1.2 !important;
+    }
+</style>
 
-        @if (session('error'))
-            <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                {{ session('error') }}
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+<div class="content-wrapper">
+
+    @if (session('error'))
+    <div class="alert alert-danger alert-dismissible fade show mb-4" role="alert" style="border-radius: 10px;">
+        {{ session('error') }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    @endif
+
+    <!-- Card Utama -->
+    <div class="card card-laporan mb-4">
+        <div class="card-body px-4 pb-4 pt-0">
+            
+            <!-- Filter Section -->
+            <div class="pt-3 pb-3 mb-3 border-bottom">
+                <form method="GET" action="{{ url('pts/laporan-keuangan') }}" id="filterForm">
+                    <div class="row g-3 align-items-end">
+                        <!-- Cari NIDN / NUPTK -->
+                        <div class="col-md-4">
+                            <label for="basic-default-nidn" class="form-label fw-bold text-uppercase mb-1"
+                                style="font-size: 0.68rem; letter-spacing: 0.06em; color: #64748b;">Cari NIDN / NUPTK</label>
+                            <input type="text" class="form-control" id="basic-default-nidn" name="nidn"
+                                placeholder="Masukkan NIDN/NUPTK..." value="{{ request('nidn') }}"
+                                style="border: 1.5px solid #cbd5e1; border-radius: 8px; font-size: 0.9rem;">
+                        </div>
+
+                        <!-- Tombol Tampilkan -->
+                        <div class="col-md-auto d-flex gap-2">
+                            <button type="submit" class="btn fw-semibold d-flex align-items-center gap-2" name="submit"
+                                style="background-color: #0f2b5c; color: #ffffff; border-color: #0f2b5c; border-radius: 8px; padding: 9px 20px; font-size: 0.875rem; white-space: nowrap;">
+                                <i class="bx bx-search" style="font-size: 1rem;"></i> Tampilkan Data
+                            </button>
+
+                            @if (request()->filled('nidn'))
+                            <a href="{{ route('laporan-keuangan-pts.export', ['nidn' => request('nidn')]) }}"
+                                class="btn fw-semibold d-flex align-items-center gap-2"
+                                style="background-color: #10b981; color: #ffffff; border-color: #10b981; border-radius: 8px; padding: 9px 20px; font-size: 0.875rem; white-space: nowrap;">
+                                <i class="bx bx-download" style="font-size: 1rem;"></i> Export XLS
+                            </a>
+                            @endif
+                        </div>
+                    </div>
+                </form>
             </div>
-        @endif
 
-        <div class="table-responsive text-nowrap">
-            <div class="col-12">
-                <div>
-                    <div class="card-body">
-                        <form method="GET" action="{{ url('pts/laporan-keuangan') }}" id="filterForm">
-                            <div class="row mb-3">
-                                <div class="d-inline-flex">
-                                    <!-- Kode PT -->
-                                    <div class="me-2">
-                                        <input type="text" id="basic-default-nidn" name="nidn" class="form-control"
-                                            placeholder="Masukkan NIDN / NUPTK" value="{{ request('nidn') }}">
-                                    </div>
+            <div class="mb-4">
 
-                                    <!-- Button Cari -->
-                                    <div class="me-2">
-                                        <button type="submit" class="btn btn-success" name="submit">
-                                            <span class="tf-icons bx bx-search"></span>&nbsp; Cari
-                                        </button>
-                                    </div>
-
-                                    <!-- Button Generate Excel -->
-                                    <div>
-                                        <a href="{{ route('laporan-keuangan-pts.export', ['nidn' => request('nidn')]) }}"
-                                            class="btn btn-success">
-                                            <span class="tf-icons bx bx-download"></span>&nbsp; Export XLS
-                                        </a>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Tabel hasil pencarian -->
-                            <div class="table-responsive text-nowrap">
-
-                                <!-- Table Display -->
+                <!-- Table Display -->
                                 <table id="myTable" class="table table-bordered table-hover"
                                     style="width:100%; border-collapse: collapse;">
                                     <thead>
@@ -139,12 +156,10 @@
                                     }
                                 </style>
 
-                            </div>
-                        </form>
-                    </div>
-                </div>
             </div>
         </div>
+    </div>
+</div>
 
 @push('scripts')
 <script>
@@ -210,6 +225,7 @@
         columns.push({ data: 'total_tkgb', orderable: false, searchable: false, render: renderFieldNumber() });
 
         $('#myTable').DataTable({
+            dom: '<"table-responsive pb-3"<"d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3 px-3"lf><"text-nowrap"rt><"d-flex justify-content-between align-items-center flex-wrap gap-2 mt-3 px-3"ip>>',
             processing: true,
             serverSide: true,
             order: [],

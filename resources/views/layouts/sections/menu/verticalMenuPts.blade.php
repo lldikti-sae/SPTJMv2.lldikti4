@@ -1,12 +1,37 @@
 <aside id="layout-menu" class="layout-menu menu-vertical menu bg-menu-theme">
 
+    <style>
+        /* --- Brand area layout --- */
+        .layout-menu .app-brand.demo {
+    padding: 12px 1.2rem 22px !important;
+    min-height: 90px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: flex-start !important;
+    gap: 10px !important;
+    border-bottom: 1px solid #eef0f4 !important;
+    margin-bottom: 12px !important;
+}
+    </style>
+
     <!-- App Brand -->
     <div class="app-brand demo">
         <a href="{{ url('/') }}" class="app-brand-link" style="text-decoration:none;">
             <img src="{{ asset('assets/img/favicon/logo-lldikti-4.png') }}"
                  alt="LLDIKTI 4"
                  style="height: 38px; width: auto; display: block; max-width: 100%; object-fit: contain;">
-            <span class="sptjm-logo-subtitle" style="color:#64748b; font-size:0.6rem; font-weight:700; font-family:'Public Sans',sans-serif; text-transform:uppercase; letter-spacing:1.2px; margin-left: 45px; margin-top: -4px;">SPTJM ONLINE</span>
+            <span class="sptjm-logo-subtitle"
+                  style="color:#64748b;
+                  font-size:1.15rem;
+                  font-weight:700;
+                  letter-spacing:2px;
+                  text-transform:uppercase;
+                  text-align:center;
+                  display:block;
+                  margin-top:2px;
+                  margin-left:45px ;">
+                SPTJM ONLINE
+            </span>
         </a>
         <a href="javascript:void(0);" class="layout-menu-toggle menu-link text-large ms-auto">
             <i class="bx bx-chevron-left" style="font-size: 1.9rem !important; color: #1a56db !important;"></i>

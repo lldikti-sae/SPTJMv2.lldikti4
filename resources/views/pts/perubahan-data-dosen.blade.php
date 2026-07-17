@@ -1,4 +1,4 @@
-﻿@extends('layouts/contentNavbarLayoutPts')
+@extends('layouts/contentNavbarLayoutPts')
 
 @php
     // PTS-specific wrapper view (separated from admin).
@@ -181,11 +181,10 @@
                     </div>
                 </div>
 
-<div class="card">
-    <h5 class="card-header">Detail Data Dosen</h5>
-    <div class="table-responsive text-nowrap">
-
-        <div class="card-body">
+<div class="card md2-card">
+    <div class="card-body px-4 pb-4 pt-4">
+        <h5 class="mb-4">Detail Data Dosen</h5>
+        <div class="table-responsive text-nowrap">
                 <div class="row mb-3">
                     <div class="col-md-6">
                         <label class="form-label">NIDN</label>
@@ -622,11 +621,10 @@
                     </div>
                 </div>
 
-<div class="card">
-    <h5 class="card-header">Detail Data Dosen</h5>
-    <div class="table-responsive text-nowrap">
-
-        <div class="card-body">
+<div class="card md2-card">
+    <div class="card-body px-4 pb-4 pt-4">
+        <h5 class="mb-4">Detail Data Dosen</h5>
+        <div class="table-responsive text-nowrap">
                 <div class="row mb-3">
                     <div class="col-md-6">
                         <label class="form-label">NIDN</label>

@@ -1,10 +1,16 @@
 @extends('layouts/contentNavbarLayoutPts')
 
-@section('title', 'SPTJM Online')
+@section('title', 'Monitoring Pembayaran - SPTJM Online')
 
-@section('content')
-
+@section('page-style')
 <style>
+.md2-page-header { display:flex; align-items:flex-start; justify-content:space-between; flex-wrap:wrap; gap:12px; margin-bottom:24px; }
+
+.md2-page-header .breadcrumb { margin:0; font-size:0.8rem; background:none; padding:0; }
+.md2-page-header .breadcrumb-item a { color:#696cff; text-decoration:none; }
+.md2-page-header .breadcrumb-item.active { color:#8592a3; }
+.md2-page-header .breadcrumb-item+.breadcrumb-item::before { color:#8592a3; }
+
 /* ── Status Filter Buttons ── */
 .md-status-filters {
     display: flex;
@@ -19,7 +25,10 @@
     padding: 5px 18px;
     border-radius: 20px;
     transition: all 0.2s;
-    cursor: pointer;
+    cursor: pointer !important;
+    position: relative;
+    z-index: 10;
+    pointer-events: auto !important;
 }
 .md-status-btn.active {
     background-color: #0b3d91;
@@ -31,6 +40,9 @@
     border-color: #cbd5e1;
 }
 </style>
+@endsection
+
+@section('content')
 
 @php
 $transaksi = $transaksi ?? null;
@@ -50,9 +62,18 @@ $months = [
 ];
 @endphp
 
-<div class="card" style="width: 100%; padding: 10px;">
-  <h5 class="card-header text-start p-2">Monitoring Pembayaran</h5>
-  <hr>
+<div class="md2-page-header">
+    <div class="page-titles">
+        <h1>Monitoring Pembayaran</h1>
+        <nav aria-label="breadcrumb"><ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="#">Monitoring</a></li>
+            <li class="breadcrumb-item active">Monitoring Pembayaran</li>
+        </ol></nav>
+    </div>
+</div>
+
+<div class="card md2-card mb-4">
+    <div class="card-body px-4 pb-4 pt-4">
 
   @if (session('error'))
   <div class="alert alert-danger alert-dismissible fade show" role="alert">
@@ -73,6 +94,37 @@ $months = [
         <button type="submit" class="btn btn-primary w-100">
           <span class="tf-icons bx bx-search"></span>&nbsp; Cari
         </button>
+      </div>
+    </div>
+
+    <div class="row mb-3 mx-2">
+      <label class="col-sm-2 col-form-label"><b style="font-size: 12px;">Tahun</b></label>
+      <div class="col-sm-2">
+        <select name="start_year" class="form-select">
+          @if(!empty($years))
+            @php $selStart = old('start_year', $startYear ?? $years[0]); @endphp
+            @foreach($years as $y)
+              <option value="{{ $y }}" {{ $selStart == $y ? 'selected' : '' }}>{{ $y }}</option>
+            @endforeach
+          @else
+            <option value="">-</option>
+          @endif
+        </select>
+      </div>
+      <div class="col-auto d-flex align-items-center">
+        <strong style="margin:0 6px;">s/d</strong>
+      </div>
+      <div class="col-sm-2">
+        <select name="end_year" class="form-select">
+          @if(!empty($years))
+            @php $selEnd = old('end_year', $endYear ?? end($years)); @endphp
+            @foreach($years as $y)
+              <option value="{{ $y }}" {{ $selEnd == $y ? 'selected' : '' }}>{{ $y }}</option>
+            @endforeach
+          @else
+            <option value="">-</option>
+          @endif
+        </select>
       </div>
     </div>
   </form>
@@ -187,7 +239,12 @@ $months = [
     </div>
   </div>
 
-  <style>.mp-tbl{font-size:12px;line-height:1.3}.mp-tbl th,.mp-tbl td{padding:3px 5px!important;vertical-align:middle}</style>
+  <style>
+    .mp-tbl{font-size:12px;line-height:1.3}
+    .mp-tbl th,.mp-tbl td{padding:3px 5px!important;vertical-align:middle}
+    .mp-tbl.tukin-wrap th { white-space: normal !important; min-width: 70px; word-break: break-word; }
+    .mp-tbl.tukin-wrap td, .mp-tbl.tukin-wrap th.col-bulan { white-space: nowrap !important; min-width: auto; word-break: normal; }
+  </style>
   @php
     $hasTkgb = collect($kotorTkgb)->merge($pajakTkgb)->merge($bersihTkgb)->sum() != 0;
     $isSemua = ($jenisTunjangan ?? 'semua') === 'semua';
@@ -204,24 +261,24 @@ $months = [
     $nomColspan = $hasTkgb ? 6 : 3;
     $statusMap = ['usulan'=>['bg-label-warning','Usulan'],'proses'=>['bg-label-info','Proses'],'kurang'=>['bg-label-danger','Kurang'],'lebih'=>['bg-label-secondary','Lebih'],'selesai'=>['bg-label-success','Selesai']];
   @endphp
-  <div class="table-responsive text-nowrap mt-2" style="overflow:auto;padding-right:0;">
-    <table class="table table-bordered table-hover table-sm mp-tbl" id="mp-table" style="width:100%" data-has-tkgb="{{ $hasTkgb ? '1' : '0' }}">
+  <div id="mp-table-wrapper" class="table-responsive {{ ($jenisTunjangan ?? 'semua') == 'tukin' ? '' : 'text-nowrap' }} mt-2" style="overflow:auto;padding-right:0;">
+    <table class="table table-bordered table-hover table-sm mp-tbl {{ ($jenisTunjangan ?? 'semua') == 'tukin' ? 'tukin-wrap' : '' }}" id="mp-table" style="width:100%" data-has-tkgb="{{ $hasTkgb ? '1' : '0' }}">
       @if (($jenisTunjangan ?? 'semua') == 'tukin')
       <thead>
         <tr>
           <th class="text-center">Tahun</th>
-          <th class="text-center">Bulan</th>
+          <th class="text-center col-bulan">Bulan</th>
           <th class="text-center">Kode Usulan</th>
-          <th class="text-center">Gol/MK</th>
-          <th class="text-center">Gaji</th>
+          <th class="text-center">Jabatan / Gol/MK</th>
           <th class="text-center">Nominal TUKIN</th>
-          <th class="text-center">Nominal Kinerja Dasar</th>
+          <th class="text-center">Nominal Diterima</th>
+          <th class="text-center">Nominal kinerja dasar</th>
           <th class="text-center">Nominal Kinerja Prestasi</th>
           <th class="text-center">Potongan Periodik</th>
           <th class="text-center">Nominal Bersih TPD</th>
           <th class="text-center">Nilai Bersih TUKIN</th>
-          <th class="text-center">No SP2D</th>
-          <th class="text-center">Tgl SP2D</th>
+          <th class="text-center">NO SP2D</th>
+          <th class="text-center">TGL SP2D</th>
           <th class="text-center">Selisih</th>
           <th class="text-center">Status</th>
         </tr>
@@ -236,15 +293,12 @@ $months = [
             $gaji = $gajiBulanan[$index] ?? 0;
             $nominalTukin = $kotorTpd[$index] ?? 0;
             
-            $kinerjaDasar = $nominalTukin * 0.6;
-            $kinerjaPrestasi = 0; // Tidak tersedia dari backend asli
-            $potongan = 0; // Tidak tersedia dari backend asli
-            $bersihTpdVal = 0; // Tidak tersedia (bersihTpd tertimpa nilai bersih tukin dari DB)
-            
-            $nilaiBersihTukin = 0;
-            if ($nominalTukin > 0) {
-                $nilaiBersihTukin = ($kinerjaDasar + $kinerjaPrestasi - $potongan) - $bersihTpdVal;
-            }
+            $kinerjaDasar = $tukinDasar[$index] ?? 0;
+            $kinerjaPrestasi = $tukinPrestasi[$index] ?? 0;
+            $potongan = $tukinPotongan[$index] ?? 0;
+            $bersihTpdVal = $tukinBersihSerdos[$index] ?? 0;
+            $nilaiBersihTukin = $bersihTpd[$index] ?? 0;
+            $jabatanText = (!empty($golonganBulanan[$index]) && $golonganBulanan[$index] !== '-') ? $golonganBulanan[$index] : '-';
 
             $totGaji += $gaji;
             $totTukin += $nominalTukin;
@@ -256,9 +310,9 @@ $months = [
         @endphp
         <tr>
           <td class="text-center">{{ $selectedYear ?? '-' }}</td>
-          <td>{{ $month }}</td>
+          <td class="col-bulan">{{ $month }}</td>
           <td class="text-center">{{ $kodeUsulanBulanan[$index] ?? '-' }}</td>
-          <td class="text-center">{{ $golonganBulanan[$index] ?? '-' }} - {{ $tahunBulanan[$index] ?? '-' }}</td>
+          <td class="text-center">{{ $jabatanText }}</td>
           <td class="text-end">{{ number_format($gaji,0,',','.') }}</td>
           <td class="text-end">{{ number_format($nominalTukin,0,',','.') }}</td>
           <td class="text-end">{{ number_format($kinerjaDasar,0,',','.') }}</td>
@@ -266,9 +320,9 @@ $months = [
           <td class="text-end">{{ number_format($potongan,0,',','.') }}</td>
           <td class="text-end">{{ number_format($bersihTpdVal,0,',','.') }}</td>
           <td class="text-end">{{ number_format($nilaiBersihTukin,0,',','.') }}</td>
-          <td class="text-center" style="font-size:11px;">-</td>
-          <td class="text-center" style="font-size:11px;">-</td>
-          <td class="text-end fw-bold text-success">0</td>
+          <td class="text-center" style="font-size:11px;">{{ $noSp2d[$index] ?? '-' }}</td>
+          <td class="text-center" style="font-size:11px;">{{ !empty($tglSp2d[$index]) && $tglSp2d[$index] !== '-' ? date('d/m/Y', strtotime($tglSp2d[$index])) : '-' }}</td>
+          <td class="text-end fw-bold text-success">{{ $selisihBulanan[$index] > 0 ? '+' : ($selisihBulanan[$index] < 0 ? '-' : '') }}{{ number_format(abs($selisihBulanan[$index] ?? 0), 0, ',', '.') }}</td>
           <td class="text-center">@if($st && isset($statusMap[$st]))<span class="badge {{ $statusMap[$st][0] }}" style="font-size:10px;">{{ $statusMap[$st][1] }}</span>@elseif($st && str_starts_with($st, 'kode:'))<span class="badge bg-label-secondary" style="font-size:10px;">{{ substr($st, 5) }}</span>@else - @endif</td>
         </tr>
         @endforeach
@@ -347,32 +401,48 @@ $months = [
       @else
       <thead>
         <tr>
-          <th class="text-center align-middle">Tahun</th>
-          <th class="text-center align-middle">Bulan</th>
-          <th class="text-center align-middle">Kode Usulan</th>
-          <th class="text-center align-middle">Gol/MK</th>
-          <th class="text-center align-middle">Gaji</th>
-          <th class="text-center align-middle">Nominal SPTJM</th>
-          @if($hasTkgb)<th class="text-center align-middle tkgb-col">Nominal TUKIN</th>@endif
-          <th class="text-center align-middle">Bersih SPTJM</th>
-          @if($hasTkgb)<th class="text-center align-middle tkgb-col">Bersih TUKIN</th>@endif
-          <th class="text-center align-middle">NO SP2D</th>
-          <th class="text-center align-middle">TGL SP2D</th>
-          <th class="text-center align-middle">Selisih</th>
-          <th class="text-center align-middle">Status</th>
+          <th class="text-center">Tahun</th>
+          <th class="text-center">Bulan</th>
+          @if(!$isSemua)<th class="text-center">Kode Usulan</th>@endif
+          <th class="text-center">Jabatan / Gol/MK</th>
+          <th class="text-center">Gaji</th>
+          <th class="text-center">Nominal SPTJM</th>
+          @if(($jenisTunjangan ?? 'semua') == 'sptjm')<th class="text-center">Pajak SPTJM</th>@endif
+          @if($hasTkgb)<th class="text-center tkgb-col">Nominal TUKIN</th>@endif
+          <th class="text-center">Bersih SPTJM</th>
+          @if($hasTkgb)<th class="text-center tkgb-col">Bersih TUKIN</th>@endif
+          <th class="text-center">NO SP2D</th>
+          <th class="text-center">TGL SP2D</th>
+          <th class="text-center">Selisih</th>
+          <th class="text-center">Status</th>
         </tr>
       </thead>
       <tbody>
         @foreach ($months as $index => $month)
-        @php $sel = $selisihBulanan[$index] ?? 0; $st = $statusBulanan[$index] ?? null; @endphp
+        @php 
+            $gaji = $gajiBulanan[$index] ?? 0;
+            $nomSptjm = $kotorTpd[$index] ?? 0;
+            $nomTukin = $kotorTkgb[$index] ?? 0;
+            $st = $statusBulanan[$index] ?? null;
+            
+            if ($isSemua) {
+                $sel = $gaji - ($nomSptjm + $nomTukin);
+                if ($sel > 0) $st = 'kurang';
+                elseif ($sel < 0) $st = 'lebih';
+                else $st = 'selesai';
+            } else {
+                $sel = $selisihBulanan[$index] ?? 0;
+            }
+        @endphp
         <tr>
           <td class="text-center">{{ $selectedYear ?? '-' }}</td>
           <td>{{ $month }}</td>
-          <td class="text-center">{{ $kodeUsulanBulanan[$index] ?? '-' }}</td>
+          @if(!$isSemua)<td class="text-center">{{ $kodeUsulanBulanan[$index] ?? '-' }}</td>@endif
           <td class="text-center">{{ $golonganBulanan[$index] ?? '-' }} - {{ $tahunBulanan[$index] ?? '-' }}</td>
-          <td class="text-end">{{ number_format($gajiBulanan[$index] ?? 0,0,',','.') }}</td>
-          <td class="text-end">{{ number_format($kotorTpd[$index] ?? 0,0,',','.') }}</td>
-          @if($hasTkgb)<td class="text-end tkgb-col">{{ number_format($kotorTkgb[$index] ?? 0,0,',','.') }}</td>@endif
+          <td class="text-end">{{ number_format($gaji,0,',','.') }}</td>
+          <td class="text-end">{{ number_format($nomSptjm,0,',','.') }}</td>
+          @if(($jenisTunjangan ?? 'semua') == 'sptjm')<td class="text-end">{{ number_format($pajakTpd[$index] ?? 0,0,',','.') }}</td>@endif
+          @if($hasTkgb)<td class="text-end tkgb-col">{{ number_format($nomTukin,0,',','.') }}</td>@endif
           <td class="text-end">{{ number_format($bersihTpd[$index] ?? 0,0,',','.') }}</td>
           @if($hasTkgb)<td class="text-end tkgb-col">{{ number_format($bersihTkgb[$index] ?? 0,0,',','.') }}</td>@endif
           <td class="text-center" style="font-size:11px;">{{ $noSp2d[$index] ?? '-' }}</td>
@@ -388,9 +458,10 @@ $months = [
         </tr>
         @endforeach
         <tr class="fw-bold table-light">
-          <td colspan="4" class="text-center">Jumlah</td>
+          <td colspan="{{ $isSemua ? 3 : 4 }}" class="text-center">Jumlah</td>
           <td class="text-end">{{ number_format($totalGaji,0,',','.') }}</td>
           <td class="text-end">{{ number_format($totalKotorTpd,0,',','.') }}</td>
+          @if(($jenisTunjangan ?? 'semua') == 'sptjm')<td class="text-end">{{ number_format($totalPajakTpd,0,',','.') }}</td>@endif
           @if($hasTkgb)<td class="text-end tkgb-col">{{ number_format($totalKotorTkgb,0,',','.') }}</td>@endif
           <td class="text-end">{{ number_format($totalBersihTpd,0,',','.') }}</td>
           @if($hasTkgb)<td class="text-end tkgb-col">{{ number_format($totalBersihTkgb,0,',','.') }}</td>@endif
@@ -412,22 +483,24 @@ $months = [
            $pjLebih = ($jenisTunjangan ?? 'semua') === 'sptjm' ? '<td class="text-end">'.number_format($lPajakRow,0,',','.').'</td>'.($hasTkgb?'<td class="text-end tkgb-col">0</td>':'') : '';
         @endphp
         <tr class="fw-bold" style="background-color: #ffdcdc">
-          <td colspan="5" class="text-center">Pembayaran Kekurangan</td>
+          <td colspan="4" class="text-center">Pembayaran Kekurangan</td>
+          <td></td>
           <td class="text-end">{{ number_format($kGrossRow,0,',','.') }}</td>
           @if($hasTkgb)<td class="text-end tkgb-col">0</td>@endif
           {!! $pjKurang !!}
           <td class="text-end">{{ number_format($kNetRow,0,',','.') }}</td>
           @if($hasTkgb)<td class="text-end tkgb-col">0</td>@endif
-          {!! $endCols !!}
+          @if(($jenisTunjangan ?? 'semua') == 'tukin')<td colspan="7"></td>@else<td colspan="2"></td><td colspan="2"></td>@endif
         </tr>
         <tr class="fw-bold" style="background-color: #dbeafe">
-          <td colspan="5" class="text-center">Pengembalian Kelebihan</td>
+          <td colspan="4" class="text-center">Pengembalian Kelebihan</td>
+          <td></td>
           <td class="text-end">{{ number_format($lGrossRow,0,',','.') }}</td>
           @if($hasTkgb)<td class="text-end tkgb-col">0</td>@endif
           {!! $pjLebih !!}
           <td class="text-end">{{ number_format($lNetRow,0,',','.') }}</td>
           @if($hasTkgb)<td class="text-end tkgb-col">0</td>@endif
-          {!! $endCols !!}
+          <td colspan="2"></td><td colspan="2"></td>
         </tr>
 
         @php
@@ -442,14 +515,14 @@ $months = [
             $pjTa = ($jenisTunjangan ?? 'semua') === 'sptjm' ? '<td class="text-end">'.number_format($totalAkhirPajakTpd,0,',','.').'</td>'.($hasTkgb?'<td class="text-end tkgb-col">0</td>':'') : '';
         @endphp
         <tr class="fw-bold" style="background-color: #d1fae5;">
-          <td colspan="4" class="text-center">Total Akhir</td>
+          <td colspan="{{ $isSemua ? 3 : 4 }}" class="text-center">Total Akhir</td>
           <td class="text-end">{{ number_format($totalGaji,0,',','.') }}</td>
           <td class="text-end">{{ number_format($totalAkhirKotorTpd,0,',','.') }}</td>
           @if($hasTkgb)<td class="text-end tkgb-col">0</td>@endif
           {!! $pjTa !!}
           <td class="text-end">{{ number_format($totalAkhirBersihTpd,0,',','.') }}</td>
           @if($hasTkgb)<td class="text-end tkgb-col">0</td>@endif
-          {!! $endCols !!}
+          @if(($jenisTunjangan ?? 'semua') == 'tukin')<td colspan="7"></td>@else<td colspan="2"></td><td colspan="2"></td>@endif
         </tr>
       </tbody>
     </table>
@@ -585,7 +658,20 @@ $months = [
             }
         });
 
-        // Tampilkan state loading
+        // Toggle wrap untuk tabel khusus tukin
+        const wrapper = document.getElementById('mp-table-wrapper');
+        const table = document.getElementById('mp-table');
+        if (wrapper) {
+            if (currentJenis === 'tukin') {
+                wrapper.classList.remove('text-nowrap');
+                if (table) table.classList.add('tukin-wrap');
+            } else {
+                wrapper.classList.add('text-nowrap');
+                if (table) table.classList.remove('tukin-wrap');
+            }
+        }
+
+        // Tampilkan state loading agar tidak terasa "mentok"
         filterSelect.disabled = true;
 
         fetch("{{ route('pts.monitoring-pembayaran.data') }}", {
@@ -632,12 +718,11 @@ $months = [
           const thead=tbl?.querySelector('thead');
           if(thead){
             if (currentJenis === 'tukin') {
-                thead.innerHTML=`<tr><th class="text-center">Tahun</th><th class="text-center">Bulan</th><th class="text-center">Kode Usulan</th><th class="text-center">Gol/MK</th><th class="text-center">Gaji</th><th class="text-center">Nominal TUKIN</th><th class="text-center">Nominal Kinerja Dasar</th><th class="text-center">Nominal Kinerja Prestasi</th><th class="text-center">Potongan Periodik</th><th class="text-center">Nominal Bersih TPD</th><th class="text-center">Nilai Bersih TUKIN</th><th class="text-center">No SP2D</th><th class="text-center">Tgl SP2D</th><th class="text-center">Selisih</th><th class="text-center">Status</th></tr>`;
-            } else if (currentJenis === 'sptjm') {
-                  const nc=hasTkgb?6:3;
-                  thead.innerHTML=`<tr><th rowspan="2" class="text-center align-middle">Tahun</th><th rowspan="2" class="text-center align-middle">Bulan</th><th rowspan="2" class="text-center align-middle">Kode Usulan</th><th rowspan="2" class="text-center align-middle">Gol/MK</th><th rowspan="2" class="text-center align-middle">Gaji</th><th colspan="${nc}" class="text-center align-middle">Nominal</th><th rowspan="2" class="text-center align-middle">NO SP2D</th><th rowspan="2" class="text-center align-middle">TGL SP2D</th><th rowspan="2" class="text-center align-middle">Selisih</th><th rowspan="2" class="text-center align-middle">Status</th></tr><tr><th class="text-center align-middle">Kotor TPD</th>${hasTkgb?'<th class="text-center align-middle tkgb-col">Kotor TKGB</th>':''}<th class="text-center align-middle">Pajak TPD</th>${hasTkgb?'<th class="text-center align-middle tkgb-col">Pajak TKGB</th>':''}<th class="text-center align-middle">Bersih TPD</th>${hasTkgb?'<th class="text-center align-middle tkgb-col">Bersih TKGB</th>':''}</tr>`;
-              } else {
-                thead.innerHTML=`<tr><th class="text-center">Tahun</th><th class="text-center">Bulan</th><th class="text-center">Kode Usulan</th><th class="text-center">Gol/MK</th><th class="text-center">Gaji</th><th class="text-center">Nominal SPTJM</th>${hasTkgb?'<th class="text-center tkgb-col">Nominal TUKIN</th>':''}<th class="text-center">Bersih SPTJM</th>${hasTkgb?'<th class="text-center tkgb-col">Bersih TUKIN</th>':''}<th class="text-center">NO SP2D</th><th class="text-center">TGL SP2D</th><th class="text-center">Selisih</th><th class="text-center">Status</th></tr>`;
+                thead.innerHTML=`<tr><th class="text-center">Tahun</th><th class="text-center col-bulan">Bulan</th><th class="text-center">Kode Usulan</th><th class="text-center">Jabatan / Gol/MK</th><th class="text-center">Nominal TUKIN</th><th class="text-center">Nominal Diterima</th><th class="text-center">Nominal kinerja dasar</th><th class="text-center">Nominal Kinerja Prestasi</th><th class="text-center">Potongan Periodik</th><th class="text-center">Nominal Bersih TPD</th><th class="text-center">NilaiBersih TUKIN</th><th class="text-center">NO SP2D</th><th class="text-center">TGL SP2D</th><th class="text-center">Selisih</th><th class="text-center">Status</th></tr>`;
+            } else if (currentJenis === 'semua') {
+                thead.innerHTML=`<tr><th class="text-center">Tahun</th><th class="text-center">Bulan</th><th class="text-center">Jabatan / Gol/MK</th><th class="text-center">Gaji</th><th class="text-center">Nominal SPTJM</th>${hasTkgb?'<th class="text-center tkgb-col">Nominal TUKIN</th>':''}<th class="text-center">Bersih SPTJM</th>${hasTkgb?'<th class="text-center tkgb-col">Bersih TUKIN</th>':''}<th class="text-center">NO SP2D</th><th class="text-center">TGL SP2D</th><th class="text-center">Selisih</th><th class="text-center">Status</th></tr>`;
+            } else {
+                thead.innerHTML=`<tr><th class="text-center">Tahun</th><th class="text-center">Bulan</th><th class="text-center">Kode Usulan</th><th class="text-center">Jabatan / Gol/MK</th><th class="text-center">Gaji</th><th class="text-center">Nominal SPTJM</th><th class="text-center">Pajak SPTJM</th>${hasTkgb?'<th class="text-center tkgb-col">Nominal TUKIN</th>':''}<th class="text-center">Bersih SPTJM</th>${hasTkgb?'<th class="text-center tkgb-col">Bersih TUKIN</th>':''}<th class="text-center">NO SP2D</th><th class="text-center">TGL SP2D</th><th class="text-center">Selisih</th><th class="text-center">Status</th></tr>`;
             }
           }
 
@@ -657,20 +742,20 @@ $months = [
                     const nominalTukin = data.kotorTpd[i] ?? 0;
                     
                     const kinerjaDasar = nominalTukin * 0.6;
-                    const kinerjaPrestasi = 0;
-                    const potongan = 0;
-                    const bersihTpdVal = 0;
+                    const kinerjaPrestasi = 0; // Tidak tersedia dari backend
+                    const potongan = 0; // Tidak tersedia dari backend
+                    const bersihTpdVal = 0; // Tidak tersedia (bersihTpd tertimpa nilai bersih tukin dari DB)
                     
                     let nilaiBersihTukin = 0;
                     if (nominalTukin > 0) {
                         nilaiBersihTukin = (kinerjaDasar + kinerjaPrestasi - potongan) - bersihTpdVal;
                     }
-                    
+
                     totGaji += gaji; totTukin += nominalTukin; totDasar += kinerjaDasar;
                     totPrestasi += kinerjaPrestasi; totPotongan += potongan;
                     totBersihTpd += bersihTpdVal; totNilaiBersih += nilaiBersihTukin;
                     
-                    tbody.innerHTML += `<tr><td class="text-center">${data.selectedYear||'-'}</td><td>${months[i]}</td><td class="text-center">${data.kodeUsulanBulanan[i]??'-'}</td><td class="text-center">${data.golonganBulanan[i]??'-'} - ${data.tahunBulanan[i]??'-'}</td><td class="text-end">${fmt(gaji)}</td><td class="text-end">${fmt(nominalTukin)}</td><td class="text-end">${fmtDec(kinerjaDasar)}</td><td class="text-end">${fmtDec(kinerjaPrestasi)}</td><td class="text-end">${fmtDec(potongan)}</td><td class="text-end">${fmt(bersihTpdVal)}</td><td class="text-end">${fmt(nilaiBersihTukin)}</td><td class="text-center" style="font-size:11px">-</td><td class="text-center" style="font-size:11px">-</td><td class="text-end fw-bold text-success">0</td><td class="text-center">${stH}</td></tr>`;
+                    tbody.innerHTML += `<tr><td class="text-center">${data.selectedYear||'-'}</td><td>${months[i]}</td><td class="text-center">${data.kodeUsulanBulanan[i]??'-'}</td><td class="text-center">${data.golonganBulanan[i]??'-'} - ${data.tahunBulanan[i]??'-'}</td><td class="text-end">${fmt(gaji)}</td><td class="text-end">${fmt(nominalTukin)}</td><td class="text-end">${fmt(kinerjaDasar)}</td><td class="text-end">${fmt(kinerjaPrestasi)}</td><td class="text-end">${fmt(potongan)}</td><td class="text-end">${fmt(bersihTpdVal)}</td><td class="text-end">${fmt(nilaiBersihTukin)}</td><td class="text-center" style="font-size:11px">-</td><td class="text-center" style="font-size:11px">-</td><td class="text-end fw-bold text-success">0</td><td class="text-center">${stH}</td></tr>`;
                 }
                 tbody.innerHTML += `<tr class="fw-bold table-light"><td colspan="4" class="text-center">Jumlah</td><td class="text-end">${fmt(totGaji)}</td><td class="text-end">${fmt(totTukin)}</td><td class="text-end">${fmtDec(totDasar)}</td><td class="text-end">${fmtDec(totPrestasi)}</td><td class="text-end">${fmtDec(totPotongan)}</td><td class="text-end">${fmt(totBersihTpd)}</td><td class="text-end">${fmt(totNilaiBersih)}</td><td colspan="2"></td><td colspan="2"></td></tr>`;
             } else if (currentJenis === 'sptjm') {
@@ -701,9 +786,28 @@ $months = [
                 tbody.innerHTML+=`<tr class="fw-bold table-light"><td colspan="4" class="text-center">Jumlah</td><td class="text-end">${fmt(tSptjm.gaji||0)}</td>${sumCols}<td colspan="2"></td><td colspan="2"></td></tr>`;
             } else {
                 for(let i=0;i<months.length;i++){
-                  const s=sb[i]||0, st=stb[i], sc=s<0?'text-end text-danger fw-bold':(s>0?'text-end text-success fw-bold':'text-end text-success fw-bold'), ss='';
+                  const gaji = data.gajiBulanan[i]??0;
+                  const nomSptjm = data.kotorTpd[i]??0;
+                  const nomTukin = data.kotorTkgb[i]??0;
+                  
+                  let s = sb[i]||0;
+                  let st = stb[i];
+                  
+                  if (currentJenis === 'semua') {
+                      s = gaji - (nomSptjm + nomTukin);
+                      if (s > 0) st = 'kurang';
+                      else if (s < 0) st = 'lebih';
+                      else st = 'selesai';
+                  }
+
+                  let sc=s<0?'text-end text-danger fw-bold':(s>0?'text-end text-success fw-bold':'text-end text-success fw-bold'), ss='';
                   const pfx=s<0?'-':(s>0?'+':'');
-                  let stH='-'; if(st&&statusCfg[st]) stH=`<span class="badge ${statusCfg[st][0]}" style="font-size:10px">${statusCfg[st][1]}</span>`; else if(st&&st.startsWith('kode:')) stH=`<span class="badge bg-label-secondary" style="font-size:10px">${st.substring(5)}</span>`;
+                  let stH='-'; 
+                  if(st&&statusCfg[st]) {
+                      stH=`<span class="badge ${statusCfg[st][0]}" style="font-size:10px">${statusCfg[st][1]}</span>`; 
+                  } else if(st&&st.startsWith('kode:')) {
+                      stH=`<span class="badge bg-label-secondary" style="font-size:10px">${st.substring(5)}</span>`;
+                  }
                   
                   let tglMain = data.tglSp2d[i] ?? '-';
                   if (tglMain !== '' && tglMain !== '-') {
@@ -715,52 +819,55 @@ $months = [
                           tglMain = `${d}/${m}/${y}`;
                       }
                   }
-
-                  const gaji = data.gajiBulanan[i]??0;
-                  const kotorTpdCol = `<td class="text-end">${fmt(data.kotorTpd[i]??0)}</td>`;
-                  const kotorTkgbCol = tkc(data.kotorTkgb[i]??0);
+                  
+                  const kotorTpdCol = `<td class="text-end">${fmt(nomSptjm)}</td>`;
+                  const pajakTpdCol = currentJenis === 'sptjm' ? `<td class="text-end">${fmt(data.pajakTpd[i]??0)}</td>` : '';
+                  const kotorTkgbCol = tkc(nomTukin);
                   const bersihTpdCol = `<td class="text-end">${fmt(data.bersihTpd[i]??0)}</td>`;
                   const bersihTkgbCol = tkc(data.bersihTkgb[i]??0);
                   
-                  let nomCols = kotorTpdCol + kotorTkgbCol + bersihTpdCol + bersihTkgbCol;
+                  let nomCols = kotorTpdCol + pajakTpdCol + kotorTkgbCol + bersihTpdCol + bersihTkgbCol;
+                  
+                  let kodeUsulanCol = currentJenis === 'semua' ? '' : `<td class="text-center">${data.kodeUsulanBulanan[i]??'-'}</td>`;
     
-                  tbody.innerHTML+=`<tr><td class="text-center">${data.selectedYear||'-'}</td><td>${months[i]}</td><td class="text-center">${data.kodeUsulanBulanan[i]??'-'}</td><td class="text-center">${data.golonganBulanan[i]??'-'} - ${data.tahunBulanan[i]??'-'}</td><td class="text-end">${fmt(gaji)}</td>${nomCols}<td class="text-center" style="font-size:11px">${data.noSp2d[i]??'-'}</td><td class="text-center" style="font-size:11px">${tglMain}</td><td class="${sc}" style="${ss}">${pfx}${fmt(Math.abs(s))}</td><td class="text-center">${stH}</td></tr>`;
+                  tbody.innerHTML+=`<tr><td class="text-center">${data.selectedYear||'-'}</td><td>${months[i]}</td>${kodeUsulanCol}<td class="text-center">${data.golonganBulanan[i]??'-'} - ${data.tahunBulanan[i]??'-'}</td><td class="text-end">${fmt(gaji)}</td>${nomCols}<td class="text-center" style="font-size:11px">${data.noSp2d[i]??'-'}</td><td class="text-center" style="font-size:11px">${tglMain}</td><td class="${sc}" style="${ss}">${pfx}${fmt(Math.abs(s))}</td><td class="text-center">${stH}</td></tr>`;
                 }
     
                 // Totals
-                let tSemua=data.totals||{};
-                let sumCols = `<td class="text-end">${fmt(tSemua.kotorTpd||0)}</td>${tkc(tSemua.kotorTkgb||0)}<td class="text-end">${fmt(tSemua.bersihTpd||0)}</td>${tkc(tSemua.bersihTkgb||0)}`;
-                tbody.innerHTML+=`<tr class="fw-bold table-light"><td colspan="4" class="text-center">Jumlah</td><td class="text-end">${fmt(tSemua.gaji||0)}</td>${sumCols}<td colspan="2"></td><td colspan="2"></td></tr>`;
+                const t=data.totals||{};
+                let sumCols = `<td class="text-end">${fmt(t.kotorTpd||0)}</td>${tkc(t.kotorTkgb||0)}<td class="text-end">${fmt(t.bersihTpd||0)}</td>${tkc(t.bersihTkgb||0)}`;
+                tbody.innerHTML+=`<tr class="fw-bold table-light"><td colspan="4" class="text-center">Jumlah</td><td class="text-end">${fmt(t.gaji||0)}</td>${sumCols}<td colspan="2"></td><td colspan="2"></td></tr>`;
+    
+                // Pembayaran Kekurangan dan Pengembalian Kelebihan (Nilai Asli)
+                const sumOri = data.summaryOriginal || {};
+                const valKGrRow = sumOri.k_gross || 0;
+                const valKPjRow = sumOri.k_pajak || 0;
+                const valKNeRow = sumOri.k_net || 0;
+                const valLGrRow = sumOri.l_gross || 0;
+                const valLPjRow = sumOri.l_pajak || 0;
+                const valLNeRow = sumOri.l_net || 0;
+                
+                tbody.innerHTML+=`<tr class="fw-bold" style="background-color:#ffdcdc"><td colspan="4" class="text-center">Pembayaran Kekurangan</td><td></td><td class="text-end">${fmt(valKGrRow)}</td>${tkc(0)}<td class="text-end">${fmt(valKPjRow)}</td>${tkc(0)}<td class="text-end">${fmt(valKNeRow)}</td>${tkc(0)}<td colspan="2"></td><td colspan="2"></td></tr>`;
+                tbody.innerHTML+=`<tr class="fw-bold" style="background-color:#dbeafe"><td colspan="4" class="text-center">Pengembalian Kelebihan</td><td></td><td class="text-end">${fmt(valLGrRow)}</td>${tkc(0)}<td class="text-end">${fmt(valLPjRow)}</td>${tkc(0)}<td class="text-end">${fmt(valLNeRow)}</td>${tkc(0)}<td colspan="2"></td><td colspan="2"></td></tr>`;
+    
+                // Total Akhir (Sisa)
+                const sumRekap = data.summaryRekap || {};
+                const valKGr = sumRekap.k_gross || 0;
+                const valKPj = sumRekap.k_pajak || 0;
+                const valKNe = sumRekap.k_net || 0;
+                const valLGr = sumRekap.l_gross || 0;
+                const valLPj = sumRekap.l_pajak || 0;
+                const valLNe = sumRekap.l_net || 0;
+    
+                const jmKotorTpd = (t.kotorTpd||0) + (t.kotorTkgb||0);
+                const jmPajakTpd = (t.pajakTpd||0) + (t.pajakTkgb||0);
+                const jmBersihTpd = (t.bersihTpd||0) + (t.bersihTkgb||0);
+                
+                const taKotorTpd = jmKotorTpd + valKGrRow - valLGrRow;
+                const taPajakTpd = jmPajakTpd + valKPjRow - valLPjRow;
+                const taBersihTpd = jmBersihTpd + valKNeRow - valLNeRow;
+                tbody.innerHTML+=`<tr class="fw-bold" style="background-color:#d1fae5"><td colspan="4" class="text-center">Total Akhir</td><td class="text-end">${fmt(t.gaji||0)}</td><td class="text-end">${fmt(taKotorTpd)}</td>${tkc(0)}<td class="text-end">${fmt(taPajakTpd)}</td>${tkc(0)}<td class="text-end">${fmt(taBersihTpd)}</td>${tkc(0)}<td colspan="2"></td><td colspan="2"></td></tr>`;
             }
-
-            // Pembayaran Kekurangan dan Pengembalian Kelebihan (Nilai Asli)
-            const sumOri = data.summaryOriginal || {};
-            const valKGrRow = sumOri.k_gross || 0;
-            const valKPjRow = sumOri.k_pajak || 0;
-            const valKNeRow = sumOri.k_net || 0;
-            const valLGrRow = sumOri.l_gross || 0;
-            const valLPjRow = sumOri.l_pajak || 0;
-            const valLNeRow = sumOri.l_net || 0;
-            
-            const endCols = currentJenis === 'tukin' ? '<td colspan="8"></td>' : '<td colspan="2"></td><td colspan="2"></td>';
-            const pjKurang = currentJenis === 'sptjm' ? `<td class="text-end">${fmt(valKPjRow)}</td>${tkc(0)}` : '';
-            const pjLebih = currentJenis === 'sptjm' ? `<td class="text-end">${fmt(valLPjRow)}</td>${tkc(0)}` : '';
-
-            tbody.innerHTML+=`<tr class="fw-bold" style="background-color:#ffdcdc"><td colspan="5" class="text-center">Pembayaran Kekurangan</td><td class="text-end">${fmt(valKGrRow)}</td>${tkc(0)}${pjKurang}<td class="text-end">${fmt(valKNeRow)}</td>${tkc(0)}${endCols}</tr>`;
-            tbody.innerHTML+=`<tr class="fw-bold" style="background-color:#dbeafe"><td colspan="5" class="text-center">Pengembalian Kelebihan</td><td class="text-end">${fmt(valLGrRow)}</td>${tkc(0)}${pjLebih}<td class="text-end">${fmt(valLNeRow)}</td>${tkc(0)}${endCols}</tr>`;
-
-            // Total Akhir (Sisa)
-            const tTotals = data.totals || {};
-            const jmKotorTpd = (tTotals.kotorTpd||0) + (tTotals.kotorTkgb||0);
-            const jmPajakTpd = (tTotals.pajakTpd||0) + (tTotals.pajakTkgb||0);
-            const jmBersihTpd = (tTotals.bersihTpd||0) + (tTotals.bersihTkgb||0);
-            
-            const taKotorTpd = jmKotorTpd + valKGrRow - valLGrRow;
-            const taPajakTpd = jmPajakTpd + valKPjRow - valLPjRow;
-            const taBersihTpd = jmBersihTpd + valKNeRow - valLNeRow;
-
-            const pjTa = currentJenis === 'sptjm' ? `<td class="text-end">${fmt(taPajakTpd)}</td>${tkc(0)}` : '';
-            tbody.innerHTML+=`<tr class="fw-bold" style="background-color:#d1fae5"><td colspan="4" class="text-center">Total Akhir</td><td class="text-end">${fmt(tTotals.gaji||0)}</td><td class="text-end">${fmt(taKotorTpd)}</td>${tkc(0)}${pjTa}<td class="text-end">${fmt(taBersihTpd)}</td>${tkc(0)}${endCols}</tr>`;
           }
 
           // UPDATE TABEL KEDUA (URAIAN PEMBAYARAN)

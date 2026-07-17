@@ -1,4 +1,4 @@
-﻿@extends('layouts/contentNavbarLayoutDosen')
+@extends('layouts/contentNavbarLayoutDosen')
 
 @section('title', 'SPTJM Online')
 
@@ -25,7 +25,6 @@
             </a>
           </div>
 
-          <div class="table-responsive text-nowrap">
             <table id="myTable" class="table table-bordered table-hover" style="width:100%; border-collapse: collapse;">
               <thead>
                 <tr>
@@ -92,7 +91,6 @@
                 </tr>
               </tfoot>
             </table>
-          </div>
 
           <style>
             table { border-collapse: collapse; }
@@ -168,6 +166,7 @@
               columns.push({ data: 'total_tkgb', orderable: false, searchable: false, render: renderFieldNumber() });
 
               $('#myTable').DataTable({
+                dom: '<"table-responsive pb-3"<"d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3 px-3"lf><"text-nowrap"rt><"d-flex justify-content-between align-items-center flex-wrap gap-2 mt-3 px-3"ip>>',
                 processing: true,
                 serverSide: true,
                 order: [],

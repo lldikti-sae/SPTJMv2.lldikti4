@@ -4,10 +4,20 @@
 
 @section('content')
 
-<div class="card">
-    <h5 class="card-header">Detail Data Dosen </h5>
-    <div class="table-responsive text-nowrap">
-        <div class="card-body">
+<div class="md2-page-header">
+    <div class="page-titles">
+        <h3>Detail Data Dosen</h3>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="#">Data Dosen</a></li>
+                <li class="breadcrumb-item active">Detail Data Dosen</li>
+            </ol>
+        </nav>
+    </div>
+</div>
+
+<div class="card md2-card">
+    <div class="card-body px-4 pb-4 pt-4">
                 {{-- Jabatan/Golongan/Masa Kerja/Biaya disediakan oleh controller sebagai aliases: jabatan, gol, masa_kerja, gaji --}}
             <form>
                 <div class="row mb-3">

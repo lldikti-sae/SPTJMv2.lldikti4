@@ -4,9 +4,20 @@
 
 @section('content')
 
-    <div class="card">
-        <h5 class="card-header">Keluhan Pembayaran</h5>
-        <div class="table-responsive text-nowrap">
+<div class="md2-page-header">
+    <div class="page-titles">
+        <h3>Keluhan Pembayaran</h3>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="#">Lainnya</a></li>
+                <li class="breadcrumb-item active">Keluhan Pembayaran</li>
+            </ol>
+        </nav>
+    </div>
+</div>
+
+<div class="card md2-card">
+    <div class="card-body px-4 pb-4 pt-4">
             <div class="d-flex justify-content-end align-items-center mb-3 px-3">
                 <div class="input-group me-3" id="DataTables_Table_0_filter" style="max-width: 200px;">
                     <span class="input-group-text"><i class="bx bx-search"></i></span>
@@ -19,8 +30,9 @@
                 </button>
             </div>
 
-            <table class="table">
-                <thead>
+            <div class="table-responsive text-nowrap border rounded mb-4">
+            <table class="table table-hover md2-table m-0">
+                <thead style="background-color: #dbdee0;">
                     <tr>
                         <th>Project</th>
                         <th>Client</th>

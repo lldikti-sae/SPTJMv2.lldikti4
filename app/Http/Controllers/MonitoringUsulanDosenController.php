@@ -37,7 +37,7 @@ class MonitoringUsulanDosenController extends Controller
 
     $search = $request->filled('search') ? trim((string) $request->input('search')) : '';
 
-    $allowedPerPage = [10, 15, 25, 50, 100, 500];
+    $allowedPerPage = [10, 15, 25, 50, 100, 250, 500];
     $perPage = (int) $request->input('perPage', 10);
     if (!in_array($perPage, $allowedPerPage, true)) {
       $perPage = 10;

@@ -4,13 +4,23 @@
 
 @section('content')
 
-<div class="card" style="width: 100%; padding: 10px;">
-  <h5 class="card-header text-start p-2">Data Grade</h5>
-  <hr>
+<div class="md2-page-header">
+    <div class="page-titles">
+        <h3>Data Grade</h3>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="#">Data Dosen</a></li>
+                <li class="breadcrumb-item active">Data Grade</li>
+            </ol>
+        </nav>
+    </div>
+</div>
 
-  <div class="table-responsive text-nowrap">
-    <table class="table table-sm table-hover" id="gradeTable">
-      <thead style="background-color: #dbdee0;">
+<div class="card md2-card">
+  <div class="card-body px-4 pb-4 pt-4">
+    <div class="table-responsive text-nowrap border rounded mb-4">
+      <table class="table table-hover md2-table m-0" id="gradeTable">
+        <thead style="background-color: #dbdee0;">
         <tr>
           <th>Kode</th>
           <th>Golongan</th>
@@ -19,6 +29,7 @@
         </tr>
       </thead>
     </table>
+    </div>
   </div>
 </div>
 
