@@ -315,7 +315,7 @@
             <div class="d-flex align-items-center gap-2" style="font-size: 0.82rem; color: #475569;">
                 <span>Show</span>
                 <select id="perPageSelect" class="form-select form-select-sm" style="width: auto; display: inline-block; border: 1.5px solid #dde3ed; border-radius: 6px; padding: 2px 8px; font-size: 0.79rem; color: #475569; background: #f8fafc; height: 28px;">
-                    @foreach ([10,15,25,50,100,500] as $pp)
+                    @foreach ([10,15,25,50,100,250,500] as $pp)
                     <option value="{{ $pp }}" {{ request('perPage', 10) == $pp ? 'selected' : '' }}>{{ $pp }}</option>
                     @endforeach
                 </select>

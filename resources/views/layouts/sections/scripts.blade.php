@@ -20,8 +20,8 @@
                i = info
                p = pagination
             */
-            dom: '<"d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3"lf>rt<"d-flex justify-content-between align-items-center flex-wrap gap-2 mt-3"ip>',
-            lengthMenu: [[10, 25, 50, 100, 250, 500], [10, 25, 50, 100, 250, 500]],
+            dom: '<"d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3"lf><"table-responsive text-nowrap"rt><"d-flex justify-content-between align-items-center flex-wrap gap-2 mt-3"ip>',
+            lengthMenu: [[10, 15, 25, 50, 100, 250, 500], [10, 15, 25, 50, 100, 250, 500]],
             pageLength: 10,
             language: {
                 search: "",

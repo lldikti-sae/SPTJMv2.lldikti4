@@ -1,16 +1,27 @@
-﻿@extends('layouts/contentNavbarLayoutPts')
+@extends('layouts/contentNavbarLayoutPts')
 
 @section('title', 'SPTJM Online')
 
 @section('content')
 
-<div class="card" style="width: 100%; padding: 10px;">
-    <h5 class="card-header text-start p-2">Tabel Riwayat Pengajuan</h5>
-    <hr>
-    <div class="table-responsive text-nowrap">
-        <!-- Table Display -->
-        <table class="table table-sm table-hover" id="riwayatTable">
-            <thead style="background-color: #dbdee0;">
+<div class="md2-page-header">
+    <div class="page-titles">
+        <h3>Riwayat Pengajuan</h3>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="#">Usulan</a></li>
+                <li class="breadcrumb-item active">Riwayat Pengajuan</li>
+            </ol>
+        </nav>
+    </div>
+</div>
+
+<div class="card md2-card">
+    <div class="card-body px-4 pb-4 pt-4">
+        <div class="table-responsive text-nowrap border rounded mb-4">
+            <!-- Table Display -->
+            <table class="table table-hover md2-table m-0" id="riwayatTable">
+                <thead style="background-color: #dbdee0;">
                 <tr>
                     <th>No</th>
                     <th>Tahun</th>
@@ -26,6 +37,7 @@
                 <!-- Data akan dimuat melalui DataTables AJAX -->
             </tbody>
         </table>
+        </div>
     </div>
 </div>
 

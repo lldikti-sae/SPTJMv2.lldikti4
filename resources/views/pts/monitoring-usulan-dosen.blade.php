@@ -77,7 +77,7 @@
                         <th>Nama</th>
                         <th>Jenis</th>
                         <th>Kode PT</th>
-                        <th class="text-center" style="text-align: center !important;">PTS</th>
+                        <th class="text-start">PTS</th>
                         <th>Bulan</th>
                     </tr>
                 </thead>
@@ -90,7 +90,7 @@
                         <td class="text-start" style="white-space: normal; max-width: 220px;">{{ $data->Nama }}</td>
                         <td class="text-center">{{ $data->Jenis }}</td>
                         <td class="text-center">{{ $data->Kode_PT }}</td>
-                        <td style="white-space: normal; max-width: 220px; text-align: center !important;">{{ $data->PTS }}</td>
+                        <td class="text-start" style="white-space: normal; max-width: 220px;">{{ $data->PTS }}</td>
                         <td class="text-center">
                             <button type="button"
                                 class="badge bg-label-warning border-0 py-2 px-3 fw-bold cursor-pointer"
@@ -131,13 +131,14 @@
 
 
 {{-- JavaScript --}}
+@push('scripts')
 <script>
-  // Filter Pencarian
-  document.getElementById("searchInput").addEventListener("keyup", function() {
-    const filter = this.value.toLowerCase();
-    document.querySelectorAll("#monitoringTable tbody tr").forEach(row => {
-      row.style.display = row.textContent.toLowerCase().includes(filter) ? "" : "none";
-    });
+  $(document).ready(function() {
+      if ($.fn.DataTable) {
+          $('#monitoringTable').DataTable({
+              "order": [] // disable initial sort
+          });
+      }
   });
 
   // Export now uses form submission with `formaction` so no JS builder is required.
@@ -155,4 +156,5 @@
     modal.show();
   }
 </script>
+@endpush
 @endsection

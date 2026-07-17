@@ -22,7 +22,7 @@
                  style="height: 38px; width: auto; display: block; max-width: 100%; object-fit: contain;">
            <span class="sptjm-logo-subtitle"
            style="color:#64748b;
-           font-size:1rem;
+           font-size:1.15rem;
            font-weight:700;
            letter-spacing:2px;
            text-transform:uppercase;

@@ -52,10 +52,10 @@ $jumlahNonPnsTidakAktif = (clone $baseQuery)->where('jenis', 'NON PNS')->where('
 
 @section('content')
 
-<div class="container-xxl d-flex justify-content-center">
-    <div class="mb-3">
-        <div class="card">
-            <div class="card-body text-center">
+<div class="container-xxl d-flex justify-content-center mt-3">
+    <div class="mb-4 w-100">
+        <div class="card md2-card">
+            <div class="card-body text-center py-4 px-4">
                 
                     @php
                         $sptjmOpen = $aktifSptjm->isNotEmpty();
@@ -95,109 +95,81 @@ $jumlahNonPnsTidakAktif = (clone $baseQuery)->where('jenis', 'NON PNS')->where('
 
 <hr class="my-3">
 
-<div class="row g-3 mb-3">
-    <div class="col-12 col-md-4">
-        <div class="card">
-            <div class="card-body">
-                <div class="d-flex align-items-start justify-content-between">
-                    <div class="content-left">
-                        <span class="text-heading">Dosen PNS Aktif</span>
-                        <div class="d-flex align-items-center my-1">
-                            <h4 class="mb-0 me-2">{{ $jumlahPnsAktif }}</h4>
-                        </div>
-                    </div>
-                    <div class="avatar">
-                        <span class="avatar-initial rounded bg-label-success p-4">
-                            <i class="bx bx-user-check bx-lg"></i>
-                        </span>
-                    </div>
+<div class="row g-2 mb-2">
+    <!-- Jumlah Seluruh Dosen -->
+    <div class="col-12 col-md-6 col-lg-4">
+        <div class="sptjm-stat-card">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <div class="sptjm-stat-title">Seluruh Dosen {{ session('tahun') }}</div>
+                    <div class="sptjm-stat-value val-primary">{{ number_format($jumlahDosen, 0, ',', '.') }}</div>
+                </div>
+                <div class="sptjm-stat-icon-wrapper icon-bg-primary">
+                    <i class="bx bx-group"></i>
                 </div>
             </div>
         </div>
     </div>
 
-    <div class="col-12 col-md-4">
-        <div class="card">
-            <div class="card-body">
-                <div class="d-flex align-items-start justify-content-between">
-                    <div class="content-left">
-                        <span class="text-heading">Dosen PNS Tidak Aktif</span>
-                        <div class="d-flex align-items-center my-1">
-                            <h4 class="mb-0 me-2">{{ $jumlahPnsTidakAktif }}</h4>
-                        </div>
-                    </div>
-                    <div class="avatar">
-                        <span class="avatar-initial rounded bg-label-danger p-4">
-                            <i class="bx bx-user-x bx-lg"></i>
-                        </span>
-                    </div>
+    <!-- Dosen PNS Aktif -->
+    <div class="col-12 col-md-6 col-lg-4">
+        <div class="sptjm-stat-card">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <div class="sptjm-stat-title">Dosen PNS Aktif</div>
+                    <div class="sptjm-stat-value val-primary">{{ number_format($jumlahPnsAktif, 0, ',', '.') }}</div>
+                </div>
+                <div class="sptjm-stat-icon-wrapper icon-bg-primary">
+                    <i class="bx bx-user-check"></i>
                 </div>
             </div>
         </div>
     </div>
 
-    <div class="col-12 col-md-4">
-        <div class="card">
-            <div class="card-body">
-                <div class="d-flex align-items-start justify-content-between">
-                    <div class="content-left">
-                        <span class="text-heading">Seluruh Dosen {{ session('tahun') }}</span>
-                        <div class="d-flex align-items-center my-1">
-                            <h4 class="mb-0 me-2">{{ $jumlahDosen }}</h4>
-                        </div>
-                    </div>
-                    <div class="avatar">
-                        <span class="avatar-initial rounded bg-label-primary p-4">
-                            <i class="bx bx-group bx-lg"></i>
-                        </span>
-                    </div>
+    <!-- Dosen PNS Tidak Aktif -->
+    <div class="col-12 col-md-6 col-lg-4">
+        <div class="sptjm-stat-card">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <div class="sptjm-stat-title">Dosen PNS Tidak Aktif</div>
+                    <div class="sptjm-stat-value val-danger">{{ number_format($jumlahPnsTidakAktif, 0, ',', '.') }}</div>
                 </div>
-            </div>
-        </div>
-    </div>
-</div>
-
-<div class="row g-3 mb-3">
-    <div class="col-12 col-md-4">
-        <div class="card">
-            <div class="card-body">
-                <div class="d-flex align-items-start justify-content-between">
-                    <div class="content-left">
-                        <span class="text-heading">Dosen Non-PNS Aktif</span>
-                        <div class="d-flex align-items-center my-1">
-                            <h4 class="mb-0 me-2">{{ $jumlahNonPnsAktif }}</h4>
-                        </div>
-                    </div>
-                    <div class="avatar">
-                        <span class="avatar-initial rounded bg-label-success p-4">
-                            <i class="bx bx-user-check bx-lg"></i>
-                        </span>
-                    </div>
+                <div class="sptjm-stat-icon-wrapper icon-bg-danger">
+                    <i class="bx bx-user-x"></i>
                 </div>
             </div>
         </div>
     </div>
 
-    <div class="col-12 col-md-4">
-        <div class="card">
-            <div class="card-body">
-                <div class="d-flex align-items-start justify-content-between">
-                    <div class="content-left">
-                        <span class="text-heading">Dosen Non-PNS Tidak Aktif</span>
-                        <div class="d-flex align-items-center my-1">
-                            <h4 class="mb-0 me-2">{{ $jumlahNonPnsTidakAktif }}</h4>
-                        </div>
-                    </div>
-                    <div class="avatar">
-                        <span class="avatar-initial rounded bg-label-danger p-4">
-                            <i class="bx bx-user-x bx-lg"></i>
-                        </span>
-                    </div>
+    <!-- Dosen Non-PNS Aktif -->
+    <div class="col-12 col-md-6 col-lg-4">
+        <div class="sptjm-stat-card">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <div class="sptjm-stat-title">Dosen Non-PNS Aktif</div>
+                    <div class="sptjm-stat-value val-primary">{{ number_format($jumlahNonPnsAktif, 0, ',', '.') }}</div>
+                </div>
+                <div class="sptjm-stat-icon-wrapper icon-bg-primary">
+                    <i class="bx bx-user-check"></i>
                 </div>
             </div>
         </div>
     </div>
 
+    <!-- Dosen Non-PNS Tidak Aktif -->
+    <div class="col-12 col-md-6 col-lg-4">
+        <div class="sptjm-stat-card">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <div class="sptjm-stat-title">Dosen Non-PNS Tidak Aktif</div>
+                    <div class="sptjm-stat-value val-danger">{{ number_format($jumlahNonPnsTidakAktif, 0, ',', '.') }}</div>
+                </div>
+                <div class="sptjm-stat-icon-wrapper icon-bg-danger">
+                    <i class="bx bx-user-x"></i>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 
 <hr class="my-4">

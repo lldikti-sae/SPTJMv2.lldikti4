@@ -1,13 +1,23 @@
-﻿@extends('layouts/contentNavbarLayoutPts')
+@extends('layouts/contentNavbarLayoutPts')
 
 @section('title', 'SPTJM Online')
 
 @section('content')
-<div class="card w-100 p-3">
-    <h5 class="card-header text-start p-2">Tabel Riwayat Pengajuan</h5>
-    <hr>
+<div class="md2-page-header">
+    <div class="page-titles">
+        <h3>Detail Riwayat Pengajuan</h3>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="#">Usulan</a></li>
+                <li class="breadcrumb-item"><a href="{{ route('pts.riwayat-pengajuan') }}">Riwayat Pengajuan</a></li>
+                <li class="breadcrumb-item active">Detail</li>
+            </ol>
+        </nav>
+    </div>
+</div>
 
-    <div class="card-body">
+<div class="card md2-card">
+    <div class="card-body px-4 pb-4 pt-4">
         {{-- Informasi Usulan --}}
         <div class="mb-4">
             <div class="row mb-2">
@@ -22,9 +32,9 @@
         </div>
 
         {{-- Tabel Dosen (PNS) --}}
-        <h6 class="mb-2">Daftar Nama Dosen (PNS) :</h6>
-        <div class="table-responsive mb-4">
-            <table class="table table-sm table-hover table-bordered">
+        <h6 class="mt-3 mb-2 fw-bold" style="color: #64748b; font-size: 0.85rem; text-transform: uppercase;">Daftar Nama Dosen (PNS) :</h6>
+        <div class="table-responsive border rounded mb-4">
+            <table class="table table-hover md2-table m-0">
                 <thead style="background-color: #dbdee0;">
                     <tr>
                         <th>No</th>
@@ -55,9 +65,9 @@
         </div>
 
         {{-- Tabel Dosen (NON PNS) --}}
-        <h6 class="mb-2">Daftar Nama Dosen (NON PNS) :</h6>
-        <div class="table-responsive mb-4">
-            <table class="table table-sm table-hover table-bordered">
+        <h6 class="mt-3 mb-2 fw-bold" style="color: #64748b; font-size: 0.85rem; text-transform: uppercase;">Daftar Nama Dosen (NON PNS) :</h6>
+        <div class="table-responsive border rounded mb-4">
+            <table class="table table-hover md2-table m-0">
                 <thead style="background-color: #dbdee0;">
                     <tr>
                         <th>No</th>

@@ -69,14 +69,25 @@
 @endsection
 
 @section('content')
-<div class="card" style="width: 100%; padding: 10px;">
-  <h5 class="card-header text-start p-2">Complain</h5>
-  <hr>
-  <div>
+<div class="md2-page-header">
+    <div class="page-titles">
+        <h3>Complain</h3>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="#">Lainnya</a></li>
+                <li class="breadcrumb-item active">Complain</li>
+            </ol>
+        </nav>
+    </div>
+</div>
+
+<div class="card md2-card">
+  <div class="card-body px-4 pb-4 pt-4">
     <!-- 'Buat Complain' button hidden for PTS -->
 
-    <table class="table table-sm table-hover" id="complainTable">
-      <thead style="background-color: #dbdee0;">
+    <div class="table-responsive text-nowrap border rounded mb-4">
+      <table class="table table-hover md2-table m-0" id="complainTable">
+        <thead style="background-color: #dbdee0;">
         <tr>
           <th>ID</th>
           <th>Judul</th>
@@ -87,6 +98,7 @@
         </tr>
       </thead>
     </table>
+    </div>
   </div>
 </div>
 

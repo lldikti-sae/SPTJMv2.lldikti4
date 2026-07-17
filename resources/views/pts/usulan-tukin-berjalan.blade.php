@@ -3,15 +3,23 @@
 @section('title', 'SPTJM Online')
 
 @section('content')
+<div class="md2-page-header">
+    <div class="page-titles">
+        <h3>Usulan Tukin Berjalan</h3>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="#">Usulan</a></li>
+                <li class="breadcrumb-item active">Tukin Berjalan</li>
+            </ol>
+        </nav>
+    </div>
+</div>
+
 <div class="row">
 	<div class="col-12">
 		<!-- Filter Form -->
-		<div class="card mb-4">
-			<div class="card-header pb-2">
-				<h5 class="mb-1">Usulan Tukin Berjalan</h5>
-				<hr>
-			</div>
-			<div class="card-body ">
+		<div class="card md2-card mb-4">
+			<div class="card-body px-4 pb-4 pt-4">
 				@php
 				use Carbon\Carbon;
 				$bulanSekarang = Carbon::now()->month;
@@ -57,14 +65,12 @@
 					});
 				</script>
 			</div>
+			</div>
 		</div>
 
-		<hr>
-
 		<!-- TABEL -->
-		<div class="card mb-4">
-			<h5 class="card-header">Tabel Usulan Tukin Berjalan</h5>
-			<div class="card-body">
+		<div class="card md2-card mb-4">
+			<div class="card-body px-4 pb-4 pt-4">
 				@if(session('info'))
 					<div class="alert alert-info">{{ session('info') }}</div>
 				@endif
@@ -75,9 +81,9 @@
 
 				<span class="fw-semibold">Jumlah Dosen PNS: <span id="jumlahDosen">{{ $countPns }}</span></span>
 
-				<h6 class="mt-3 mb-2">Daftar Nama Dosen PNS ({{ $countPns }})</h6>
-				<div class="table-responsive text-nowrap">
-					<table class="table table-sm table-hover mt-1" id="dosenTablePns">
+				<h6 class="mt-3 mb-2 fw-bold" style="color: #64748b; font-size: 0.85rem; text-transform: uppercase;">Daftar Nama Dosen PNS ({{ $countPns }})</h6>
+				<div class="table-responsive text-nowrap border rounded mb-4">
+					<table class="table table-hover md2-table m-0" id="dosenTablePns">
 						<thead style="background-color: #dbdee0;">
 							<tr>
 								<th>No</th>
