@@ -424,6 +424,9 @@ table.dataTable thead th,
 .sptjm-btn-info { background-color: #fef9e7 !important; color: #d97706 !important; }
 .sptjm-btn-info:hover { background-color: #fef3c7 !important; color: #b45309 !important; }
 
+.sptjm-btn-secondary { background-color: #f1f5f9 !important; color: #475569 !important; }
+.sptjm-btn-secondary:hover { background-color: #e2e8f0 !important; color: #334155 !important; }
+
 .btn-edit-pt { background-color: #fef9e7 !important; color: #d97706 !important; }
 .btn-edit-pt:hover { background-color: #fef3c7 !important; color: #b45309 !important; }
 
@@ -699,4 +702,44 @@ ul.pagination .page-item.disabled:not(:first-child):not(:last-child) .page-link 
 .merged-card-header .breadcrumb {
     margin: 0 !important;
     margin-top: 1px !important;
+}
+
+/* ─── NAVBAR USER PROFILE AVATAR FIX ─── */
+.sptjm-user-info-wrap {
+    display: flex !important;
+    align-items: center !important;
+    gap: 10px !important;
+    cursor: pointer !important;
+    text-decoration: none !important;
+    padding: 6px 0 !important;
+    flex-shrink: 0 !important;
+}
+.sptjm-user-info-wrap .sptjm-user-text {
+    text-align: right !important;
+    line-height: 1 !important;
+}
+.sptjm-user-info-wrap .sptjm-user-name {
+    display: block !important;
+    font-size: 0.84rem !important;
+    font-weight: 600 !important;
+    color: #1e293b !important;
+    line-height: 1.25 !important;
+}
+.sptjm-user-info-wrap .sptjm-user-role {
+    display: block !important;
+    font-size: 0.72rem !important;
+    font-weight: 400 !important;
+    color: #64748b !important;
+    line-height: 1.25 !important;
+}
+.sptjm-avatar,
+.sptjm-user-info-wrap .sptjm-avatar {
+    width: 34px !important;
+    height: 34px !important;
+    max-width: 34px !important;
+    max-height: 34px !important;
+    border-radius: 50% !important;
+    object-fit: cover !important;
+    border: 2px solid #e2e8f0 !important;
+    flex-shrink: 0 !important;
 }

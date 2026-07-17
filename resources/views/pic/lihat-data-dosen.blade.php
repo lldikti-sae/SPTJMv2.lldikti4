@@ -6,32 +6,44 @@
 
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-<div class="card" style="width: 100%; padding: 10px;">
-  <h5 class="card-header text-start p-2">Data Dosen PTS</h5>
-  <hr>
-  <div>
-    <table class="table table-sm table-hover table-bordered" id="dosenTable">
-      <thead style="text-align: center; background-color: #dbdee0;">
-        <tr>
-          <th>No</th>
-          <th>NIDN</th>
-          <th>NUPTK</th>
-          <th>Nama Dosen</th>
-          <th>Golongan</th>
-          <th>Masa Kerja</th>
-          <th>Jabatan</th>
-          <th>Kode PTS</th>
-          <th>PTS</th>
-          <th>BKD Genap TL<br>(P = Jan - Feb)</th>
-          <th>BKD Ganjil TL<br>(P = Mar - Agu)</th>
-          <th>BKD Genap BJ<br>(P = Sep - Des)</th>
-          <th>Status</th>
-          <th>Keterangan</th>
-          <th>Aksi</th>
-        </tr>
-      </thead>
+{{-- Page Header --}}
+<div class="md-page-header">
+    <div class="page-titles">
+        <h3>Data Dosen</h3>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="#">Data Dosen</a></li>
+                <li class="breadcrumb-item active">Data Dosen PTS</li>
+            </ol>
+        </nav>
+    </div>
+</div>
 
-    </table>
+<div class="card md-card">
+  <div class="md-card-inner">
+    <div class="table-responsive text-nowrap">
+      <table class="table table-hover" id="dosenTable" style="width: 100%;">
+        <thead>
+          <tr>
+            <th>No</th>
+            <th>NIDN</th>
+            <th>NUPTK</th>
+            <th>Nama Dosen</th>
+            <th>Golongan</th>
+            <th>Masa Kerja</th>
+            <th>Jabatan</th>
+            <th>Kode PTS</th>
+            <th>PTS</th>
+            <th>BKD Genap TL<br>(P = Jan - Feb)</th>
+            <th>BKD Ganjil TL<br>(P = Mar - Agu)</th>
+            <th>BKD Genap BJ<br>(P = Sep - Des)</th>
+            <th>Status</th>
+            <th>Keterangan</th>
+            <th>Aksi</th>
+          </tr>
+        </thead>
+      </table>
+    </div>
   </div>
 </div>
 

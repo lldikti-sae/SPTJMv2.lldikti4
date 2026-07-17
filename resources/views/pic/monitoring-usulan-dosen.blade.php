@@ -3,7 +3,7 @@
 @section('title', 'SPTJM Online')
 
 @section('content')
-<div class="md2-page-header">
+<div class="md-page-header">
     <div class="page-titles">
         <h3>Monitoring Usulan Dosen</h3>
         <nav aria-label="breadcrumb">
@@ -15,8 +15,8 @@
     </div>
 </div>
 
-<div class="card md2-card mb-4">
-    <div class="card-body px-4 pb-4 pt-0">
+<div class="card md-card mb-4">
+    <div class="md-card-inner">
 
         {{-- Filter Section --}}
         <div class="pt-3 pb-3 mb-3 border-bottom">
@@ -55,10 +55,10 @@
 
                 <div class="col-md-4 col-sm-12 text-md-end align-self-end">
                     <div class="d-flex justify-content-end gap-2">
-                        <a href="{{ route('pic.monitoring-usulan-dosen.export', request()->query()) }}" target="_blank" class="btn btn-success d-flex align-items-center gap-1" style="border-radius: 8px; font-weight: 600; font-size: 0.88rem; height: 38px; padding: 0 20px;">
+                        <a href="{{ route('pic.monitoring-usulan-dosen.export', request()->query()) }}" target="_blank" class="btn btn-success rounded-pill d-flex align-items-center gap-1" style="font-weight: 600; font-size: 0.88rem; height: 38px; padding: 0 20px;">
                             <i class="bx bx-download"></i> Export XLS
                         </a>
-                        <button type="submit" class="btn btn-primary d-flex align-items-center gap-1" style="border-radius: 8px; font-weight: 600; font-size: 0.88rem; height: 38px; padding: 0 20px; background-color: #0b3d91; border-color: #0b3d91;">
+                        <button type="submit" class="btn btn-primary rounded-pill d-flex align-items-center gap-1" style="font-weight: 600; font-size: 0.88rem; height: 38px; padding: 0 20px; background-color: #0b3d91; border-color: #0b3d91;">
                             <i class="bx bx-search-alt"></i> Tampilkan
                         </button>
                     </div>
@@ -67,7 +67,7 @@
         </div>
 
         <div class="table-responsive text-nowrap">
-            <table class="table table-hover md2-table text-center" id="monitoringTable" style="width: 100%;">
+            <table class="table table-hover text-center" id="monitoringTable" style="width: 100%;">
                 <thead>
                     <tr>
                         <th style="width: 50px;">No</th>

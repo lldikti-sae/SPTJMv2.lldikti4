@@ -7,7 +7,10 @@
                 $active = 'active open';
                 $currentRouteName = Route::currentRouteName();
 
-                if ($currentRouteName === $submenu->slug) {
+                // Cek kecocokan berdasarkan nama route, slug, atau URL path saat ini
+                $isUrlActive = isset($submenu->url) && (request()->is(trim($submenu->url, '/')) || request()->is(trim($submenu->url, '/') . '/*'));
+                
+                if ($currentRouteName === $submenu->slug || $isUrlActive) {
                     $activeClass = 'active';
                 } elseif (isset($submenu->submenu)) {
                     if (gettype($submenu->slug) === 'array') {
@@ -42,7 +45,7 @@
 
                 {{-- submenu --}}
                 @if (isset($submenu->submenu))
-                    @include('layouts.sections.menu.submenu', ['menu' => $submenu->submenu])
+                    @include('layouts.sections.menu.submenuPic', ['menu' => $submenu->submenu])
                 @endif
             </li>
         @endforeach

@@ -7,11 +7,22 @@
 
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-<div class="card w-100 p-3">
-    <h5 class="card-header text-start p-2">Riwayat Data Dosen Usulan</h5>
-    <hr>
+{{-- Page Header --}}
+<div class="md-page-header">
+    <div class="page-titles">
+        <h3>Validasi Usulan</h3>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="#">Validasi</a></li>
+                <li class="breadcrumb-item"><a href="{{ route('pic.validasi-usulan') }}">Validasi Usulan SPTJM</a></li>
+                <li class="breadcrumb-item active">Detail Dosen Usulan</li>
+            </ol>
+        </nav>
+    </div>
+</div>
 
-    <div class="card-body">
+<div class="card md-card">
+    <div class="md-card-inner">
         {{-- Informasi Usulan --}}
         <div class="mb-2">
             <div class="row mb-1">
@@ -102,15 +113,16 @@
         </div>
 
         {{-- Tombol Aksi --}}
-        <div class="d-flex justify-content-center gap-2">
+        <div class="d-flex justify-content-center gap-2 mt-4">
             <form id="prosesForm" action="{{ url('/pic/validasi-usulan/' . $pengajuan->id_usulan . '/proses') }}"
                 method="POST" class="d-inline">
                 @csrf
                 <input type="hidden" name="no" value="{{ $pengajuan->no }}">
-                <button type="submit" class="btn btn-warning" id="prosesBtn">Proses</button>
+                <button type="submit" class="btn btn-warning rounded-pill px-4" id="prosesBtn">Proses</button>
             </form>
-            <button type="button" class="btn btn-danger"
+            <button type="button" class="btn btn-danger rounded-pill px-4"
                 onclick="handleTolak('{{ $pengajuan->no }}', '{{ $pengajuan->id_usulan }}', '{{ $pengajuan->bulan }}')">Tolak</button>
+            <a href="{{ route('pic.validasi-usulan') }}" class="btn btn-secondary rounded-pill px-4">Kembali</a>
         </div>
     </div>
 </div>

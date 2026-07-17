@@ -90,7 +90,7 @@ class MasterDosenController extends Controller
                     'nama_dosen' => $r->nama_dosen,
                     'aktif' => $r->aktif,
                     'wilayah' => $r->wilayah,
-                    'tanggal_update' => $r->tanggal_update,
+                    'tanggal_upphp date' => $r->tanggal_update,
                     'aksi' => '<div class="d-flex justify-content-center gap-1">' . $editBtn . $resetBtn . $deleteBtn . '</div>',
                 ];
             });

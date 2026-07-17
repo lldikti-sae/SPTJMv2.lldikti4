@@ -3,29 +3,40 @@
 @section('title', 'SPTJM Online')
 
 @section('content')
-<div class="card w-100 p-3">
-    <h5 class="card-header text-start p-2">Tabel Riwayat Pengajuan</h5>
-    <hr>
 
-    <div class="card-body">
+{{-- Page Header --}}
+<div class="md-page-header">
+    <div class="page-titles">
+        <h3>Riwayat Pengajuan</h3>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="#">Monitoring</a></li>
+                <li class="breadcrumb-item"><a href="{{ url('pic/riwayat-pengajuan') }}">Riwayat Pengajuan</a></li>
+                <li class="breadcrumb-item active">Detail</li>
+            </ol>
+        </nav>
+    </div>
+</div>
+
+<div class="card md-card">
+    <div class="md-card-inner">
         {{-- Informasi Usulan --}}
         <div class="mb-4">
             <div class="row mb-2">
-                <div class="col-md-2 fw-bold">Nomor Usulan</div>
+                <div class="col-md-2 fw-semibold text-muted" style="font-size: 0.85rem;">Nomor Usulan</div>
                 <div class="col-md-10">: {{ $pengajuan->id_usulan ?? '-' }}</div>
-
             </div>
             <div class="row mb-3">
-                <div class="col-md-2 fw-bold">Tanggal Usulan</div>
+                <div class="col-md-2 fw-semibold text-muted" style="font-size: 0.85rem;">Tanggal Usulan</div>
                 <div class="col-md-10">: {{ $pengajuan->tanggal_usulan ?? '-' }}</div>
             </div>
         </div>
 
         {{-- Tabel Dosen PNS --}}
-        <h6 class="mb-2">Daftar Nama Dosen (PNS) :</h6>
+        <h6 class="mb-2 fw-bold">Daftar Nama Dosen (PNS) :</h6>
         <div class="table-responsive mb-4">
-            <table class="table table-sm table-hover table-bordered">
-                <thead style="background-color: #dbdee0;">
+            <table class="table table-hover table-bordered">
+                <thead>
                     <tr>
                         <th>No</th>
                         <th>NIDN/NUPTK</th>
@@ -55,10 +66,10 @@
         </div>
 
         {{-- Tabel Dosen NON PNS --}}
-        <h6 class="mb-2">Daftar Nama Dosen (NON PNS) :</h6>
+        <h6 class="mb-2 fw-bold">Daftar Nama Dosen (NON PNS) :</h6>
         <div class="table-responsive mb-4">
-            <table class="table table-sm table-hover table-bordered">
-                <thead style="background-color: #dbdee0;">
+            <table class="table table-hover table-bordered">
+                <thead>
                     <tr>
                         <th>No</th>
                         <th>NIDN/NUPTK</th>
@@ -87,7 +98,9 @@
             </table>
         </div>
 
-
+        <div class="d-flex justify-content-center mt-2">
+            <a href="{{ url('pic/riwayat-pengajuan') }}" class="btn btn-secondary rounded-pill px-4">Kembali</a>
+        </div>
     </div>
 </div>
 @endsection

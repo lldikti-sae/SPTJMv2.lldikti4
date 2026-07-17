@@ -50,9 +50,21 @@ $months = [
 ];
 @endphp
 
-<div class="card" style="width: 100%; padding: 10px;">
-  <h5 class="card-header text-start p-2">Monitoring Pembayaran</h5>
-  <hr>
+{{-- Page Header --}}
+<div class="md-page-header">
+    <div class="page-titles">
+        <h3>Monitoring Pembayaran</h3>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="#">Dashboard</a></li>
+                <li class="breadcrumb-item active">Monitoring Pembayaran</li>
+            </ol>
+        </nav>
+    </div>
+</div>
+
+<div class="card md-card">
+  <div class="md-card-inner">
 
   @if (session('error'))
   <div class="alert alert-danger alert-dismissible fade show" role="alert">
@@ -844,6 +856,7 @@ $months = [
     });
   </script>
   @endif
+  </div>
 </div>
 
 @endsection

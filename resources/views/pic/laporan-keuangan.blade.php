@@ -1,12 +1,24 @@
-﻿@extends('layouts/contentNavbarLayoutPic')
+@extends('layouts/contentNavbarLayoutPic')
 
 @section('title', 'SPTJM Online')
 
 @section('content')
 
-<div class="card" style="width: 100%; padding: 10px;">
-  <h5 class="card-header text-start p-2">Laporan Keuangan</h5>
-  <hr>
+{{-- Page Header --}}
+<div class="md-page-header">
+    <div class="page-titles">
+        <h3>Laporan Keuangan</h3>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="#">Monitoring</a></li>
+                <li class="breadcrumb-item active">Laporan Keuangan</li>
+            </ol>
+        </nav>
+    </div>
+</div>
+
+<div class="card md-card">
+  <div class="md-card-inner">
 
   @if (session('error'))
   <div class="alert alert-danger alert-dismissible fade show" role="alert">
@@ -15,52 +27,47 @@
   </div>
   @endif
 
-  <div class="table-responsive text-nowrap">
-    <div class="col-12">
-      <div>
-        <div class="card-body">
-          <form method="GET" action="{{ url('pic/laporan-keuangan') }}" id="filterForm">
-            <div class="row mb-3">
-              <div class="d-inline-flex">
-                <!-- Kode PT -->
-                <div class="me-2">
-                  <select class="form-control" id="basic-default-kodept" name="kode_pt">
-                    <option value="">-- Kode PT (opsional) --</option>
-                    <option value="Semua" {{ (($kode_pt ?? request('kode_pt')) === 'Semua') ? 'selected' : '' }}>Semua</option>
-                    @foreach(($ptsList ?? []) as $pt)
-                      <option value="{{ $pt->kode_pts }}" {{ (($kode_pt ?? request('kode_pt')) === $pt->kode_pts) ? 'selected' : '' }}>
-                        {{ $pt->kode_pts }} - {{ $pt->nama_pts }}
-                      </option>
-                    @endforeach
-                  </select>
-                </div>
-                
-                <!-- NIDN or NUPTK -->
-                <div class="me-2">
-                  <input type="text" class="form-control" id="basic-default-nidn" name="nidn"
-                    placeholder="Masukkan NIDN/NUPTK" value="{{ request('nidn') }}">
-                </div>
+  <form method="GET" action="{{ url('pic/laporan-keuangan') }}" id="filterForm">
+    <div class="row mb-3 align-items-end">
+      <div class="d-flex flex-wrap gap-2">
+        <!-- Kode PT -->
+        <div>
+          <select class="form-control" id="basic-default-kodept" name="kode_pt" style="border-radius: 8px; min-width: 200px;">
+            <option value="">-- Kode PT (opsional) --</option>
+            <option value="Semua" {{ (($kode_pt ?? request('kode_pt')) === 'Semua') ? 'selected' : '' }}>Semua</option>
+            @foreach(($ptsList ?? []) as $pt)
+              <option value="{{ $pt->kode_pts }}" {{ (($kode_pt ?? request('kode_pt')) === $pt->kode_pts) ? 'selected' : '' }}>
+                {{ $pt->kode_pts }} - {{ $pt->nama_pts }}
+              </option>
+            @endforeach
+          </select>
+        </div>
+        
+        <!-- NIDN or NUPTK -->
+        <div>
+          <input type="text" class="form-control" id="basic-default-nidn" name="nidn"
+            placeholder="Masukkan NIDN/NUPTK" value="{{ request('nidn') }}" style="border-radius: 8px;">
+        </div>
 
-                <!-- Button Cari -->
-                <div class="me-2">
-                  <button type="submit" class="btn btn-success" name="submit">
-                    <span class="tf-icons bx bx-search"></span>&nbsp; Cari
-                  </button>
-                </div>
+        <!-- Button Cari -->
+        <div>
+          <button type="submit" class="btn btn-primary rounded-pill px-4" name="submit">
+            <span class="tf-icons bx bx-search"></span>&nbsp; Cari
+          </button>
+        </div>
 
-                @if (($kode_pt ?? request('kode_pt')) || request('nidn'))
-                <a href="{{ route('laporan-keuangan-pic.export', ['kode_pt' => $kode_pt ?? request('kode_pt'), 'nidn' => request('nidn'), 'tahun' => session('tahun')]) }}"
-                  class="btn btn-success">
-                  <span class="tf-icons bx bx-download"></span>&nbsp; Export XLS
-                </a>
-                @endif
+        @if (($kode_pt ?? request('kode_pt')) || request('nidn'))
+        <a href="{{ route('laporan-keuangan-pic.export', ['kode_pt' => $kode_pt ?? request('kode_pt'), 'nidn' => request('nidn'), 'tahun' => session('tahun')]) }}"
+          class="btn btn-success rounded-pill px-4">
+          <span class="tf-icons bx bx-download"></span>&nbsp; Export XLS
+        </a>
+        @endif
 
-              </div>
-            </div>
+      </div>
+    </div>
 
             <!-- Tabel hasil pencarian -->
-            <div class="table-responsive text-nowrap">
-
+    <div class="table-responsive text-nowrap mt-3">
               <!-- Table Display -->
               <table id="myTable" class="table table-bordered table-hover"
                 style="width:100%; border-collapse: collapse;">
@@ -130,31 +137,8 @@
                   </tr>
                 </tfoot>
               </table>
-
-              <style>
-                table {
-                  border-collapse: collapse;
-                }
-
-                th,
-                td {
-                  border: 1px solid rgb(193, 195, 197);
-                  /* Garis tepi */
-                  padding: 8px;
-                  /* Ruang dalam sel */
-                  text-align: center;
-                  /* Rata tengah */
-                }
-
-                thead th {
-                  background-color: white;
-                  /* Ubah warna latar belakang header menjadi putih */
-                }
-              </style>
             </div>
           </form>
-        </div>
-      </div>
     </div>
   </div>
 

@@ -186,9 +186,12 @@ html.layout-menu-collapsed .navbar-toggle-icon-closed { display: inline-block !i
                                     $userRole = 'Operator PTS';
                                 } elseif (Auth::guard('web')->check()) {
                                     $user = Auth::guard('web')->user();
-                                    $userName = $user->cp;
-                                    if (!$userName) {
-                                        $userName = ($user->email === 'admin') ? 'Administrator' : ucfirst($user->email);
+                                    // Use email as display name (what the user logs in with)
+                                    // cp stores a phone number, not a display name
+                                    if ($user->email === 'admin') {
+                                        $userName = 'Administrator';
+                                    } else {
+                                        $userName = ucfirst($user->email);
                                     }
                                     if ($user->role === 'admin') {
                                         $userRole = 'SystemBoot';

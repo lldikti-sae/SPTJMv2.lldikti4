@@ -22,9 +22,21 @@ $months = [
 ];
 @endphp
 
-<div class="card" style="width: 100%; padding: 10px;">
-  <h5 class="card-header text-start p-2">Monitoring Pembayaran</h5>
-  <hr>
+{{-- Page Header --}}
+<div class="md-page-header">
+    <div class="page-titles">
+        <h3>Monitoring Dosen</h3>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="#">Monitoring</a></li>
+                <li class="breadcrumb-item active">Monitoring Pembayaran Dosen</li>
+            </ol>
+        </nav>
+    </div>
+</div>
+
+<div class="card md-card">
+  <div class="md-card-inner">
 
   @if (session('error'))
   <div class="alert alert-danger alert-dismissible fade show" role="alert">
@@ -35,7 +47,7 @@ $months = [
 
   <form action="{{ route('monitoring-dosen.cari') }}" method="POST">
     @csrf
-    <div class="row mb-3 mx-2">
+    <div class="row mb-3 mx-2 align-items-center">
       <label class="col-sm-2 col-form-label"><b style="font-size: 12px;">NIDN / NUPTK</b></label>
       <div class="col-sm-8">
         <input type="text" class="form-control" name="nidn" value="{{ old('nidn', $nidn ?? '') }}"
@@ -43,7 +55,7 @@ $months = [
         <div class="form-text">Bisa menggunakan NIDN atau NUPTK; sebagian/seluruh nilai diterima.</div>
       </div>
       <div class="col-sm-2">
-        <button type="submit" class="btn btn-primary w-100">
+        <button type="submit" class="btn btn-primary rounded-pill px-4 w-100" style="height: 38px;">
           <span class="tf-icons bx bx-search"></span>&nbsp; Cari
         </button>
       </div>
@@ -144,6 +156,7 @@ $months = [
     </table>
   </div>
   @endif
+  </div>
 </div>
 
 @endsection

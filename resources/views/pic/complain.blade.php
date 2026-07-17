@@ -2,80 +2,26 @@
 
 @section('title', 'SPTJM Online')
 
-@section('page-style')
-<style>
-.dt-toolbar {
-    display: flex;
-    align-items: center;
-    justify-content: flex-end;
-    flex-wrap: wrap;
-    gap: 10px;
-    padding: 10px 0 12px;
-}
-.dt-toolbar .dt-search-wrap {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-}
-.dt-toolbar .dt-search-wrap label {
-    font-size: 0.83rem;
-    font-weight: 600;
-    color: #64748b;
-    margin-bottom: 0;
-    white-space: nowrap;
-}
-.dt-toolbar .dt-search-wrap input {
-    border: 1.5px solid #cbd5e1;
-    border-radius: 8px;
-    padding: 5px 10px;
-    font-size: 0.85rem;
-    height: 34px;
-    width: 220px;
-    outline: none;
-    color: #374151;
-}
-.dt-toolbar .dt-search-wrap input:focus {
-    border-color: #696cff;
-    box-shadow: 0 0 0 2px rgba(105,108,255,0.1);
-}
-.dataTables_info { font-size: 0.82rem; color: #64748b; }
-.dataTables_paginate { display: flex; align-items: center; gap: 4px; }
-.dataTables_paginate .paginate_button {
-    border: 1.5px solid #e2e8f0 !important;
-    border-radius: 6px !important;
-    padding: 4px 10px !important;
-    font-size: 0.82rem !important;
-    color: #374151 !important;
-    background: #f8fafc !important;
-    cursor: pointer;
-    transition: all 0.2s;
-}
-.dataTables_paginate .paginate_button:hover,
-.dataTables_paginate .paginate_button.current {
-    background: #696cff !important;
-    color: #fff !important;
-    border-color: #696cff !important;
-}
-.dataTables_paginate .paginate_button.disabled { opacity: 0.4; cursor: not-allowed; }
-.dt-bottom-row {
-    display: flex;
-    align-items: center;
-    justify-content: flex-end;
-    flex-wrap: wrap;
-    gap: 8px;
-    margin-top: 12px;
-}
-</style>
-@endsection
-
 @section('content')
-<div class="card" style="width: 100%; padding: 10px;">
-  <h5 class="card-header text-start p-2">Complain (PIC)</h5>
-  <hr>
-  <div>
-    <div class="d-flex gap-2 mb-2 align-items-center">
-      <label class="mb-0"><strong>Status:</strong></label>
-      <select id="filterStatus" class="form-select form-select-sm" style="width:220px;">
+
+{{-- Page Header --}}
+<div class="md-page-header">
+    <div class="page-titles">
+        <h3>Complain</h3>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="#">Dashboard</a></li>
+                <li class="breadcrumb-item active">Complain</li>
+            </ol>
+        </nav>
+    </div>
+</div>
+
+<div class="card md-card mb-4">
+  <div class="md-card-inner">
+    <div class="d-flex gap-2 mb-3 align-items-center">
+      <label class="mb-0 fw-bold text-uppercase" style="font-size: 0.75rem; color: #64748b; letter-spacing: 0.05em;">Status:</label>
+      <select id="filterStatus" class="form-select form-select-sm" style="width:220px; border: 1.5px solid #cbd5e1; border-radius: 8px;">
         <option value="">Semua</option>
         <option value="open">OPEN</option>
         <option value="setuju">SETUJU</option>
@@ -83,24 +29,27 @@
       </select>
     </div>
 
-    <table class="table table-sm table-hover" id="complainTable">
-      <thead style="background-color: #dbdee0;">
-        <tr>
-          <th>ID</th>
-          <th>Tipe</th>
-          <th>Kode PTS</th>
-          <th>NIDN</th>
-          <th>NUPTK</th>
-          <th>PIC</th>
-          <th>Nama</th>
-          <th>Judul</th>
-          <th>Status</th>
-          <th>Tanggal Handle</th>
-          <th>Tanggal</th>
-          <th>Aksi</th>
-        </tr>
-      </thead>
-    </table>
+    <div class="table-responsive text-nowrap">
+      <table class="table table-hover" id="complainTable" style="width: 100%;">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Tipe</th>
+            <th>Kode PTS</th>
+            <th>NIDN</th>
+            <th>NUPTK</th>
+            <th>PIC</th>
+            <th>Nama</th>
+            <th>Judul</th>
+            <th>Status</th>
+            <th>Tanggal Handle</th>
+            <th>Tanggal</th>
+            <th>Aksi</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
   </div>
 </div>
 
@@ -144,8 +93,8 @@
           </div>
         </div>
         <div class="modal-footer">
-          <button type="submit" class="btn btn-primary">Simpan</button>
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+          <button type="submit" class="btn btn-primary rounded-pill px-4">Simpan</button>
+          <button type="button" class="btn btn-secondary rounded-pill px-4" data-bs-dismiss="modal">Batal</button>
         </div>
       </form>
     </div>
@@ -181,7 +130,7 @@
       processing: true,
       serverSide: true,
       responsive: true,
-      dom: "<'dt-toolbar'<'dt-search-wrap'f>><'table-responsive text-nowrap't><'dt-bottom-row'ip>",
+      dom: "<'md-toolbar'<'entries-wrap'l><'search-wrap'f>><'table-responsive text-nowrap't><'row dt-bottom-row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
       ajax: {
         url: "{{ route('pic.complain.index') }}",
         data: function (d) {
@@ -207,13 +156,12 @@
       ],
       order: [[10, 'desc']],
       language: {
-        paginate: { first: 'Awal', last: 'Akhir', next: '→', previous: '←' },
-        emptyTable: 'Data Tidak Tersedia',
-        zeroRecords: 'Data Tidak Tersedia',
-        infoEmpty: 'Data Tidak Tersedia',
-        searchPlaceholder: 'Cari data...',
-        search: 'Cari:'
-      },
+        lengthMenu: "Show _MENU_ entries",
+        zeroRecords: "Tidak ada data yang cocok",
+        info: "Menampilkan _START_ sampai _END_ dari _TOTAL_ entri",
+        infoEmpty: "Menampilkan 0 sampai 0 dari 0 entri",
+        paginate: { previous: "Sebelumnya", next: "Berikutnya" }
+      }
     });
 
     document.getElementById('filterStatus')?.addEventListener('change', function () {

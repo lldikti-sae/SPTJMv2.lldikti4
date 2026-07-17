@@ -183,9 +183,18 @@ class ValidasiUsulanPicController extends Controller
     //   $item->kode_pts = Str::mask($item->kode_pts, '*', -2, 1);
     // }
 
+    $counts = [
+      'Usulan' => DB::table('q_sptjm')->where('tahun', $currentYear)->where('wilayah', $emailPIC)->where('status', 'Usulan')->count(),
+      'Validasi' => DB::table('q_sptjm')->where('tahun', $currentYear)->where('wilayah', $emailPIC)->where('status', 'Validasi')->count(),
+      'Proses' => DB::table('q_sptjm')->where('tahun', $currentYear)->where('wilayah', $emailPIC)->where('status', 'Proses')->count(),
+      'Selesai' => DB::table('q_sptjm')->where('tahun', $currentYear)->where('wilayah', $emailPIC)->where('status', 'Selesai')->count(),
+      'Tolak' => DB::table('q_sptjm')->where('tahun', $currentYear)->where('wilayah', $emailPIC)->where('status', 'Tolak')->count(),
+    ];
+
     return response()->json([
       'success' => true,
       'data' => $dataUsulan,
+      'counts' => $counts,
     ]);
   }
 
