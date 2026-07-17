@@ -298,7 +298,11 @@ class MonitoringPembayaranController extends Controller
 
       $tDasar = 0; $tPrestasi = 0; $tPotongan = 0; $tBersihSerdos = 0;
 
-      if ($jenisTunjangan === 'tukin') {
+      if ($jenisTunjangan === 'sptjm') {
+          $kotorTkgbVal = 0;
+          $pajakTkgbVal = 0;
+          $bersihTkgbVal = 0;
+      } elseif ($jenisTunjangan === 'tukin') {
           $kotorTkgbVal = 0;
           $pajakTkgbVal = 0;
           $bersihTkgbVal = 0;
@@ -884,7 +888,11 @@ class MonitoringPembayaranController extends Controller
 
       $tDasar = 0; $tPrestasi = 0; $tPotongan = 0; $tBersihSerdos = 0;
 
-      if ($jenisTunjangan === 'tukin') {
+      if ($jenisTunjangan === 'sptjm') {
+          $kotorTkgbVal = 0;
+          $pajakTkgbVal = 0;
+          $bersihTkgbVal = 0;
+      } elseif ($jenisTunjangan === 'tukin') {
           $kotorTkgbVal = 0;
           $pajakTkgbVal = 0;
           $bersihTkgbVal = 0;
@@ -1418,8 +1426,8 @@ class MonitoringPembayaranController extends Controller
               $kodeUsulan = $tk->Kode_Usulan ?? '-';
               $gaji = (float) ($tk->Nilai_tukin_Jabatan ?? 0);
               $kotorTpd = (float) ($tk->Nilai_Tukin ?? 0);
-              $pajakTpd = 0; 
-              $bersihTpd = $kotorTpd; 
+              $pajakTpd = 0;
+              $bersihTpd = $kotorTpd;
           } else {
               $kodeUsulan = '-';
               $gaji = 0;
@@ -1641,7 +1649,6 @@ class MonitoringPembayaranController extends Controller
           'spt_tahun' => ['x' => $css->xPt('x5') - 11, 'y' => $css->yPt('y24') + 13, 'font' => 10],
           'spt_nidn_nuptk' => ['x' => $css->xPt('x27'), 'y' => $css->yPt('y24') + 13, 'font' => 10],
 
-          // Dummy coordinates (offset from old single-field NPWP coordinate)
           'penerima_npwp_potong' => ['x' => $css->xPt('xd') + 10, 'y' => $css->yPt('y2f') - 7, 'font' => 10],
           'penerima_npwp_3_selanjutnya' => ['x' => $css->xPt('x23'), 'y' => $css->yPt('y2f') - 7, 'font' => 10],
           'penerima_npwp_3_belakang' => ['x' => $css->xPt('x2d'), 'y' => $css->yPt('y2f') - 7, 'font' => 10],
@@ -1657,23 +1664,19 @@ class MonitoringPembayaranController extends Controller
           'pemotong_tanggal_mm' => ['x' => $css->xPt('x27') + 4, 'y' => $css->yPt('y1a'), 'font' => 10],
           'pemotong_tanggal_yyyy' => ['x' => $css->xPt('x30') - 20, 'y' => $css->yPt('y1a'), 'font' => 10],
 
-          // Kode Objek Pajak (dummy coordinates)
           'kode_objek_pajak1' => ['x' => $css->xPt('xf'), 'y' => $css->yPt('y13') - 2, 'font' => 10],
           'kode_objek_pajak2' => ['x' => $css->xPt('x1d'), 'y' => $css->yPt('y13') - 2, 'font' => 10],
           'kode_objek_pajak3' => ['x' => $css->xPt('xd') + 40, 'y' => $css->yPt('y13') - 2, 'font' => 10],
 
-          // BAGIAN B. PPh PASAL 21 YANG DIPOTONG
           'bagianb_jumlah_penghasilan_bruto' => ['x' => $css->xPt('xe') -15, 'y' => $css->yPt('y13') - 2, 'font' => 10],
           'bagianb_tarif' => ['x' => $css->xPt('x20') - 10, 'y' => $css->yPt('y13') - 2, 'font' => 10],
           'bagianb_pph_dipotong' => ['x' => $css->xPt('x14'), 'y' => $css->yPt('y13') - 2, 'font' => 10],
           'bagianb_dasar_pengenaan_pajak' => ['x' => $css->xPt('x24') - 15, 'y' => $css->yPt('y13') - 2, 'font' => 10],
         ],
         'signature' => ['x' => $css->xPt('x22') - 5, 'y' => $css->yPt('y1b'), 'w' => 75, 'h' => 40.5],
-        // Dummy coordinates for cap/stamp (can be adjusted later)
         'cap' => ['x' => $css->xPt('x20') - 15, 'y' => $css->yPt('y1c') - 20, 'w' => 120, 'h' => 120],
       ];
         
-    // Split tanggal cetak into DD/MM/YYYY for separate fields
     $dd = null; $mm = null; $yyyy = null;
     try {
       $dt = \DateTime::createFromFormat('d-m-Y', $tanggalCetak);

@@ -1,0 +1,150 @@
+﻿          <td class="text-end">{{ number_format($kinerjaPrestasi,0,',','.') }}</td>
+          <td class="text-end">{{ number_format($potongan,0,',','.') }}</td>
+          <td class="text-end">{{ number_format($bersihTpdVal,0,',','.') }}</td>
+          <td class="text-end">{{ number_format($nilaiBersihTukin,0,',','.') }}</td>
+          <td class="text-center" style="font-size:11px;">-</td>
+          <td class="text-center" style="font-size:11px;">-</td>
+          <td class="text-end fw-bold text-success">0</td>
+          <td class="text-center">@if($st && isset($statusMap[$st]))<span class="badge {{ $statusMap[$st][0] }}" style="font-size:10px;">{{ $statusMap[$st][1] }}</span>@elseif($st && str_starts_with($st, 'kode:'))<span class="badge bg-label-secondary" style="font-size:10px;">{{ substr($st, 5) }}</span>@else - @endif</td>
+        </tr>
+        @endforeach
+        <tr class="fw-bold table-light">
+          <td colspan="4" class="text-center">Jumlah</td>
+          <td class="text-end">{{ number_format($totGaji,0,',','.') }}</td>
+          <td class="text-end">{{ number_format($totTukin,0,',','.') }}</td>
+          <td class="text-end">{{ number_format($totDasar,0,',','.') }}</td>
+          <td class="text-end">{{ number_format($totPrestasi,0,',','.') }}</td>
+          <td class="text-end">{{ number_format($totPotongan,0,',','.') }}</td>
+          <td class="text-end">{{ number_format($totBersihTpd,0,',','.') }}</td>
+          <td class="text-end">{{ number_format($totNilaiBersih,0,',','.') }}</td>
+          <td colspan="2"></td><td colspan="2"></td>
+        </tr>
+      @elseif (($jenisTunjangan ?? 'semua') == 'sptjm')
+      <thead>
+        <tr>
+          <th rowspan="2" class="text-center align-middle">Tahun</th>
+          <th rowspan="2" class="text-center align-middle">Bulan</th>
+          <th rowspan="2" class="text-center align-middle">Kode Usulan</th>
+          <th rowspan="2" class="text-center align-middle">Gol/MK</th>
+          <th rowspan="2" class="text-center align-middle">Gaji</th>
+          <th colspan="{{ $nomColspan }}" class="text-center align-middle">Nominal</th>
+          <th rowspan="2" class="text-center align-middle">NO SP2D</th>
+          <th rowspan="2" class="text-center align-middle">TGL SP2D</th>
+          <th rowspan="2" class="text-center align-middle">Selisih</th>
+          <th rowspan="2" class="text-center align-middle">Status</th>
+        </tr>
+        <tr>
+          <th class="text-center align-middle">Kotor TPD</th>
+          @if($hasTkgb)<th class="text-center align-middle tkgb-col">Kotor TKGB</th>@endif
+          <th class="text-center align-middle">Pajak TPD</th>
+          @if($hasTkgb)<th class="text-center align-middle tkgb-col">Pajak TKGB</th>@endif
+          <th class="text-center align-middle">Bersih TPD</th>
+          @if($hasTkgb)<th class="text-center align-middle tkgb-col">Bersih TKGB</th>@endif
+        </tr>
+      </thead>
+      <tbody>
+        @foreach ($months as $index => $month)
+        @php $sel = $selisihBulanan[$index] ?? 0; $st = $statusBulanan[$index] ?? null; @endphp
+        <tr>
+          <td class="text-center">{{ $selectedYear ?? '-' }}</td>
+          <td>{{ $month }}</td>
+          <td class="text-center">{{ $kodeUsulanBulanan[$index] ?? '-' }}</td>
+          <td class="text-center">{{ $golonganBulanan[$index] ?? '-' }} - {{ $tahunBulanan[$index] ?? '-' }}</td>
+          <td class="text-end">{{ number_format($gajiBulanan[$index] ?? 0,0,',','.') }}</td>
+          <td class="text-end">{{ number_format($kotorTpd[$index] ?? 0,0,',','.') }}</td>
+          @if($hasTkgb)<td class="text-end tkgb-col">{{ number_format($kotorTkgb[$index] ?? 0,0,',','.') }}</td>@endif
+          <td class="text-end">{{ number_format($pajakTpd[$index] ?? 0,0,',','.') }}</td>
+          @if($hasTkgb)<td class="text-end tkgb-col">{{ number_format($pajakTkgb[$index] ?? 0,0,',','.') }}</td>@endif
+          <td class="text-end">{{ number_format($bersihTpd[$index] ?? 0,0,',','.') }}</td>
+          @if($hasTkgb)<td class="text-end tkgb-col">{{ number_format($bersihTkgb[$index] ?? 0,0,',','.') }}</td>@endif
+          <td class="text-center" style="font-size:11px;">{{ $noSp2d[$index] ?? '-' }}</td>
+          @php
+             $tglSp2dStr = $tglSp2d[$index] ?? '-';
+             if ($tglSp2dStr !== '' && $tglSp2dStr !== '-') {
+                 try { $tglSp2dStr = \Carbon\Carbon::parse($tglSp2dStr)->format('d/m/Y'); } catch(\Exception $e) {}
+             }
+          @endphp
+          <td class="text-center" style="font-size:11px;">{{ $tglSp2dStr }}</td>
+          <td class="text-end fw-bold {{ $sel < 0 ? 'text-danger' : ($sel > 0 ? 'text-success' : 'text-success') }}">{{ $sel < 0 ? '-' : ($sel > 0 ? '+' : '') }}{{ number_format(abs($sel),0,',','.') }}</td>
+          <td class="text-center">@if($st && isset($statusMap[$st]))<span class="badge {{ $statusMap[$st][0] }}" style="font-size:10px;">{{ $statusMap[$st][1] }}</span>@elseif($st && str_starts_with($st, 'kode:'))<span class="badge bg-label-secondary" style="font-size:10px;">{{ substr($st, 5) }}</span>@else - @endif</td>
+        </tr>
+        @endforeach
+
+
+
+        <tr class="fw-bold table-light">
+          <td colspan="4" class="text-center">Jumlah</td>
+          <td class="text-end">{{ number_format($totalGaji,0,',','.') }}</td>
+          <td class="text-end">{{ number_format($totalKotorTpd,0,',','.') }}</td>
+          @if($hasTkgb)<td class="text-end tkgb-col">{{ number_format($totalKotorTkgb,0,',','.') }}</td>@endif
+          <td class="text-end">{{ number_format($totalBersihTpd,0,',','.') }}</td>
+          @if($hasTkgb)<td class="text-end tkgb-col">{{ number_format($totalBersihTkgb,0,',','.') }}</td>@endif
+          <td colspan="2"></td><td colspan="2"></td>
+        </tr>
+      @endif
+
+        @php
+           // Mengambil selisih asli TANPA dikurangi pembayaran dan tanpa netting
+           $kGrossRow = $summaryOriginal['k_gross'] ?? 0;
+           $kPajakRow = $summaryOriginal['k_pajak'] ?? 0;
+           $kNetRow   = $summaryOriginal['k_net'] ?? 0;
+           
+           $lGrossRow = $summaryOriginal['l_gross'] ?? 0;
+           $lPajakRow = $summaryOriginal['l_pajak'] ?? 0;
+           $lNetRow   = $summaryOriginal['l_net'] ?? 0;
+
+           // Sisa Akhir
+           $kGrossM = $summaryRekap['k_gross'] ?? 0;
+           $kPajakM = $summaryRekap['k_pajak'] ?? 0;
+           $kNetM = $summaryRekap['k_net'] ?? 0;
+           $lGrossM = $summaryRekap['l_gross'] ?? 0;
+           $lPajakM = $summaryRekap['l_pajak'] ?? 0;
+           $lNetM = $summaryRekap['l_net'] ?? 0;
+        @endphp
+        <tr class="fw-bold" style="background-color: #ffdcdc">
+          <td colspan="4" class="text-center">Pembayaran Kekurangan</td>
+          <td></td>
+          <td class="text-end">{{ number_format($kGrossRow,0,',','.') }}</td>
+          @if($hasTkgb)<td class="text-end tkgb-col">0</td>@endif
+          @if(($jenisTunjangan ?? 'semua') == 'sptjm')<td class="text-end">{{ number_format($kPajakRow,0,',','.') }}</td>
+          @if($hasTkgb)<td class="text-end tkgb-col">0</td>@endif @endif
+          <td class="text-end">{{ number_format($kNetRow,0,',','.') }}</td>
+          @if($hasTkgb)<td class="text-end tkgb-col">0</td>@endif
+          <td colspan="2"></td><td colspan="2"></td>
+        </tr>
+        <tr class="fw-bold" style="background-color: #dbeafe">
+          <td colspan="4" class="text-center">Pengembalian Kelebihan</td>
+          <td></td>
+          <td class="text-end">{{ number_format($lGrossRow,0,',','.') }}</td>
+          @if($hasTkgb)<td class="text-end tkgb-col">0</td>@endif
+          @if(($jenisTunjangan ?? 'semua') == 'sptjm')<td class="text-end">{{ number_format($lPajakRow,0,',','.') }}</td>
+          @if($hasTkgb)<td class="text-end tkgb-col">0</td>@endif @endif
+          <td class="text-end">{{ number_format($lNetRow,0,',','.') }}</td>
+          @if($hasTkgb)<td class="text-end tkgb-col">0</td>@endif
+          <td colspan="2"></td><td colspan="2"></td>
+        </tr>
+
+        @php
+            $jmKotorTpd = $totalKotorTpd + $totalKotorTkgb;
+            $jmPajakTpd = $totalPajakTpd + $totalPajakTkgb;
+            $jmBersihTpd = $totalBersihTpd + $totalBersihTkgb;
+
+            $totalAkhirKotorTpd = $jmKotorTpd + $kGrossRow - $lGrossRow;
+            $totalAkhirPajakTpd = $jmPajakTpd + $kPajakRow - $lPajakRow;
+            $totalAkhirBersihTpd = $jmBersihTpd + $kNetRow - $lNetRow;
+        @endphp
+        <tr class="fw-bold" style="background-color: #d1fae5;">
+          <td colspan="4" class="text-center">Total Akhir</td>
+          <td class="text-end">{{ number_format($totalGaji,0,',','.') }}</td>
+          <td class="text-end">{{ number_format($totalAkhirKotorTpd,0,',','.') }}</td>
+          @if($hasTkgb)<td class="text-end tkgb-col">0</td>@endif
+          @if(($jenisTunjangan ?? 'semua') == 'sptjm')<td class="text-end">{{ number_format($totalAkhirPajakTpd,0,',','.') }}</td>
+          @if($hasTkgb)<td class="text-end tkgb-col">0</td>@endif @endif
+          <td class="text-end">{{ number_format($totalAkhirBersihTpd,0,',','.') }}</td>
+          @if($hasTkgb)<td class="text-end tkgb-col">0</td>@endif
+          <td colspan="2"></td><td colspan="2"></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
