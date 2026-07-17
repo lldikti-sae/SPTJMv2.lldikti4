@@ -110,32 +110,62 @@ class RekapPencairanController extends Controller
 
       // Update kolom No_sp2d_{n} dan Tgl_sp2d_{n} sesuai bulan yang berisi pencairan_ke.
       // Contoh: jika pencairan_ke=5 ada di kolom Jan, maka update No_sp2d_1 & Tgl_sp2d_1.
-      for ($i = 1; $i <= 12; $i++) {
-        $bulanField = $bulanPendek[$i - 1];
-        $baseFilter()
-          ->where($bulanField, $pencairan_ke)
-          ->update([
-            'No_sp2d_' . $i => $request->no_sp2d,
-            'Tgl_sp2d_' . $i => $formattedDate,
-            'Kode_PT_' . $i => DB::raw('Kode_PT'),
-            'Nama_PT_' . $i => DB::raw('PTS'),
-          ]);
-      }
+      if (isset($prosesCair->tipe_sptjm) && $prosesCair->tipe_sptjm === 'TUKIN') {
+        try {
+          $formattedDateDb = \Carbon\Carbon::parse($request->tanggal_sp2d)->format('Y-m-d');
+        } catch (\Exception $e) {
+          $formattedDateDb = $request->tanggal_sp2d;
+        }
 
-      // Ambil kode PT yang terkait (untuk update status q_sptjm)
-      $kodePTList = DB::table('s_transaksi_2')
-        ->whereIn('nidn', $nidns)
-        ->where('bank', $prosesCair->bank)
-        ->where('jenis', $prosesCair->status_pegawai)
-        ->where('eligible_span', $prosesCair->eligible_span)
-        ->where('tahun_versi', $prosesCair->tahun)
-        ->where(function ($q) use ($pencairan_ke, $bulanPendek) {
-          for ($i = 1; $i <= 12; $i++) {
-            $q->orWhere($bulanPendek[$i - 1], $pencairan_ke);
-          }
-        })
-        ->distinct()
-        ->pluck('Kode_PT');
+        DB::table('s_tunjangan_kinerja')
+          ->where(function($q) use ($nidns) {
+              $q->whereIn('NIDN', $nidns)
+                ->orWhereIn('NUPTK', $nidns);
+          })
+          ->where('Kode_Cair', (string) $pencairan_ke)
+          ->where('Tahun', $prosesCair->tahun)
+          ->update([
+              'No_SP2D' => $request->no_sp2d,
+              'Tanggal_SP2D' => $formattedDateDb
+          ]);
+
+        $kodePTList = DB::table('s_tunjangan_kinerja')
+          ->where(function($q) use ($nidns) {
+              $q->whereIn('NIDN', $nidns)
+                ->orWhereIn('NUPTK', $nidns);
+          })
+          ->where('Kode_Cair', (string) $pencairan_ke)
+          ->where('Tahun', $prosesCair->tahun)
+          ->distinct()
+          ->pluck('Kode_PTS');
+      } else {
+        for ($i = 1; $i <= 12; $i++) {
+          $bulanField = $bulanPendek[$i - 1];
+          $baseFilter()
+            ->where($bulanField, $pencairan_ke)
+            ->update([
+              'No_sp2d_' . $i => $request->no_sp2d,
+              'Tgl_sp2d_' . $i => $formattedDate,
+              'Kode_PT_' . $i => DB::raw('Kode_PT'),
+              'Nama_PT_' . $i => DB::raw('PTS'),
+            ]);
+        }
+
+        // Ambil kode PT yang terkait (untuk update status q_sptjm)
+        $kodePTList = DB::table('s_transaksi_2')
+          ->whereIn('nidn', $nidns)
+          ->where('bank', $prosesCair->bank)
+          ->where('jenis', $prosesCair->status_pegawai)
+          ->where('eligible_span', $prosesCair->eligible_span)
+          ->where('tahun_versi', $prosesCair->tahun)
+          ->where(function ($q) use ($pencairan_ke, $bulanPendek) {
+            for ($i = 1; $i <= 12; $i++) {
+              $q->orWhere($bulanPendek[$i - 1], $pencairan_ke);
+            }
+          })
+          ->distinct()
+          ->pluck('Kode_PT');
+      }
 
       //update selesai
       DB::table('q_sptjm')
@@ -235,19 +265,24 @@ class RekapPencairanController extends Controller
     // Ambil data dari s_transaksi dengan filter NIDN, bank, jenis pegawai, eligible, dan tahun
     $bulanPendek = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Ags', 'Sep', 'Okt', 'Nov', 'Des'];
 
-    $dataTransaksi = DB::table('s_transaksi_2 as s')
-      ->whereIn('nidn', $nidns)
-      ->where(function ($q) use ($pencairan_ke, $bulanPendek) {
-        for ($i = 1; $i <= 12; $i++) {
-          $q->orWhere($bulanPendek[$i - 1], $pencairan_ke);
-        }
-      })
-      ->where('bank', $prosesCair->bank)
-      ->where('jenis', $prosesCair->status_pegawai)
-      ->where('eligible_span', $prosesCair->eligible_span)
-      ->where('tahun_versi', $prosesCair->tahun)
-      ->get();
+    $bulanPendek = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Ags', 'Sep', 'Okt', 'Nov', 'Des'];
 
+    if (isset($prosesCair->tipe_sptjm) && $prosesCair->tipe_sptjm === 'TUKIN') {
+        $dataTransaksi = $this->fetchTukinAsTransaksi($prosesCair);
+    } else {
+        $dataTransaksi = DB::table('s_transaksi_2 as s')
+          ->whereIn('nidn', $nidns)
+          ->where(function ($q) use ($pencairan_ke, $bulanPendek) {
+            for ($i = 1; $i <= 12; $i++) {
+              $q->orWhere($bulanPendek[$i - 1], $pencairan_ke);
+            }
+          })
+          ->where('bank', $prosesCair->bank)
+          ->where('jenis', $prosesCair->status_pegawai)
+          ->where('eligible_span', $prosesCair->eligible_span)
+          ->where('tahun_versi', $prosesCair->tahun)
+          ->get();
+    }
 
 
     // Nama bulan
@@ -373,18 +408,23 @@ class RekapPencairanController extends Controller
     $bulanPendek = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Ags', 'Sep', 'Okt', 'Nov', 'Des'];
 
     // Ambil data keuangan
-    $dataTransaksi = DB::table('s_transaksi_2 as s')
-      ->whereIn('nidn', $nidns)
-      ->where(function ($q) use ($pencairan_ke, $bulanPendek) {
-        for ($i = 1; $i <= 12; $i++) {
-          $q->orWhere($bulanPendek[$i - 1], $pencairan_ke);
-        }
-      })
-      ->where('bank', $prosesCair->bank)
-      ->where('jenis', $prosesCair->status_pegawai)
-      ->where('eligible_span', $prosesCair->eligible_span)
-      ->where('tahun_versi', $prosesCair->tahun)
-      ->get();
+    // Ambil data keuangan
+    if (isset($prosesCair->tipe_sptjm) && $prosesCair->tipe_sptjm === 'TUKIN') {
+        $dataTransaksi = $this->fetchTukinAsTransaksi($prosesCair);
+    } else {
+        $dataTransaksi = DB::table('s_transaksi_2 as s')
+          ->whereIn('nidn', $nidns)
+          ->where(function ($q) use ($pencairan_ke, $bulanPendek) {
+            for ($i = 1; $i <= 12; $i++) {
+              $q->orWhere($bulanPendek[$i - 1], $pencairan_ke);
+            }
+          })
+          ->where('bank', $prosesCair->bank)
+          ->where('jenis', $prosesCair->status_pegawai)
+          ->where('eligible_span', $prosesCair->eligible_span)
+          ->where('tahun_versi', $prosesCair->tahun)
+          ->get();
+    }
 
     // Nama bulan lengkap
     $months = [
@@ -436,5 +476,80 @@ class RekapPencairanController extends Controller
       new RekapPencairanExport($dataTransaksi, $prosesCair, $months, $bulanPendek, $pejabat, $showMonths),
       'rekap_pencairan_' . $prosesCair->tahun . '.xlsx'
     );
+  }
+
+  private function fetchTukinAsTransaksi($prosesCair)
+  {
+      $pencairan_ke = $prosesCair->pencairan_ke;
+      $nidns = explode(',', $prosesCair->nidns);
+      $tahun = $prosesCair->tahun;
+
+      $query = DB::table('s_tunjangan_kinerja as tk')
+        ->join('s_transaksi_2 as t2', function($join) use ($tahun) {
+            $join->on(DB::raw('COALESCE(tk.NIDN, tk.NUPTK)'), '=', DB::raw('COALESCE(t2.NIDN, t2.NUPTK)'))
+                 ->where('t2.Tahun_Versi', '=', $tahun)
+                 ->where('t2.Aktif', '=', '1');
+        })
+        ->select(
+            'tk.NIDN', 'tk.NUPTK', 'tk.Nama as nama_dosen', 'tk.Kode_Cair', 'tk.Nilai_Bersih', 'tk.Nilai_Pajak', 'tk.Nilai_Tukin', 'tk.Bulan',
+            't2.Bank as bank', 't2.Jenis as jenis', 't2.Eligible_span as eligible_span', 't2.Sertifikat_Dosen', 't2.Jabatan12', 't2.Gol12', 't2.Tahun12', 't2.Aktif', 't2.No_Rek', 't2.NPWP'
+        )
+        ->where('tk.Tahun', $tahun)
+        ->whereIn(DB::raw('COALESCE(tk.NIDN, tk.NUPTK)'), $nidns)
+        ->where('tk.Kode_Cair', (string) $pencairan_ke);
+
+      $rows = $query->get();
+
+      $dosenList = [];
+      foreach ($rows as $item) {
+          $ident = trim((string) ($item->NIDN ?? '')) ?: trim((string) ($item->NUPTK ?? ''));
+          if (!$ident) continue;
+
+          if (!isset($dosenList[$ident])) {
+              $obj = new \stdClass();
+              $obj->NIDN = $item->NIDN;
+              $obj->NUPTK = $item->NUPTK;
+              $obj->nidn = $item->NIDN;
+              $obj->nuptk = $item->NUPTK;
+              $obj->nama = $item->nama_dosen;
+              $obj->Nama = $item->nama_dosen;
+              $obj->bank = $item->bank;
+              $obj->Bank = $item->bank;
+              $obj->jenis = $item->jenis;
+              $obj->Jenis = $item->jenis;
+              $obj->eligible_span = $item->eligible_span;
+              $obj->tahun_versi = $tahun;
+              $obj->Tahun_Versi = $tahun;
+              $obj->jabatan12 = $item->Jabatan12;
+              $obj->gol12 = $item->Gol12;
+              $obj->No_Rek = $item->No_Rek;
+              $obj->NPWP = $item->NPWP;
+              $obj->no_rekening = $item->No_Rek;
+              $obj->npwp = $item->NPWP;
+              
+              // initialize month columns for TPD and TKGB
+              for ($i = 1; $i <= 12; $i++) {
+                  $obj->{'TPD'.$i} = 0;
+                  $obj->{'TKGB'.$i} = 0;
+                  $obj->{'nilaiPajakTPD'.$i} = 0;
+                  $obj->{'bersihTPD'.$i} = 0;
+              }
+              $dosenList[$ident] = $obj;
+          }
+
+          $bulanAngka = [
+              'Januari' => 1, 'Februari' => 2, 'Maret' => 3, 'April' => 4, 'Mei' => 5, 'Juni' => 6,
+              'Juli' => 7, 'Agustus' => 8, 'September' => 9, 'Oktober' => 10, 'November' => 11, 'Desember' => 12
+          ];
+          
+          $mIdx = $bulanAngka[$item->Bulan] ?? null;
+          if ($mIdx) {
+              $dosenList[$ident]->{'TPD'.$mIdx} += (float) ($item->Nilai_Tukin ?? 0);
+              $dosenList[$ident]->{'nilaiPajakTPD'.$mIdx} += 0;
+              $dosenList[$ident]->{'bersihTPD'.$mIdx} += (float) ($item->Nilai_Tukin ?? 0);
+          }
+      }
+
+      return collect(array_values($dosenList));
   }
 }

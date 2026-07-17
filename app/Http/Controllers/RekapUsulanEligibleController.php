@@ -316,6 +316,10 @@ class RekapUsulanEligibleController extends Controller
   // AJAX endpoint untuk DataTables (server-side)
   public function data(Request $request)
   {
+    $tipe_sptjm = $request->input('tipe_sptjm', 'SPTJM');
+    if ($tipe_sptjm === 'TUKIN') {
+        return $this->dataTukin($request);
+    }
     $pencairan_ke = $request->pencairan_ke ?? 'Semua';
     $bank = $request->bank ?? 'Semua';
     $status_pegawai = $request->status_pegawai ?? 'Semua';
@@ -576,6 +580,10 @@ class RekapUsulanEligibleController extends Controller
   //kode baru 1
   public function proses(Request $request)
   {
+    $tipe_sptjm = (string) ($request->tipe_sptjm ?? 'SPTJM');
+    if ($tipe_sptjm === 'TUKIN') {
+        return $this->prosesTukin($request);
+    }
     // Avoid timeouts for large processing
     @set_time_limit(0);
     @ini_set('max_execution_time', '0');
@@ -869,5 +877,347 @@ class RekapUsulanEligibleController extends Controller
     }
 
     return redirect()->back()->with('success', 'Data berhasil di proses.');
+  }
+
+  private function indexTukin(Request $request)
+  {
+    $pencairan_ke = $request->pencairan_ke ?? 'Semua';
+    $bank = $request->bank ?? 'Semua';
+    $status_pegawai = $request->status_pegawai ?? 'Semua';
+    $eligible_span = $request->Eligible_span ?? 'YA';
+    $tunjangan = $request->tunjangan ?? 'Semua';
+    $tipe_sptjm = 'TUKIN';
+    $tahun = session('tahun');
+
+    // To group by Bank, we need s_transaksi_2
+    $query = DB::table('s_tunjangan_kinerja as tk')
+      ->join('s_transaksi_2 as t2', function($join) use ($tahun) {
+          $join->on(DB::raw('COALESCE(tk.NIDN, tk.NUPTK)'), '=', DB::raw('COALESCE(t2.NIDN, t2.NUPTK)'))
+               ->where('t2.Tahun_Versi', '=', $tahun)
+               ->where('t2.Aktif', '=', '1');
+      })
+      ->select(
+          'tk.NIDN', 'tk.NUPTK', 'tk.Kode_Cair', 'tk.Nilai_Bersih', 'tk.Nilai_Pajak', 'tk.Nilai_Tukin',
+          't2.Bank', 't2.Jenis', 't2.Eligible_span'
+      )
+      ->where('tk.Tahun', $tahun);
+
+    if ($eligible_span != "Semua") {
+        $query->where('t2.Eligible_span', $eligible_span);
+    }
+
+    $bulanMap = [1 => 'Januari', 2 => 'Februari', 3 => 'Maret', 4 => 'April', 5 => 'Mei', 6 => 'Juni', 7 => 'Juli', 8 => 'Agustus', 9 => 'September', 10 => 'Oktober', 11 => 'November', 12 => 'Desember'];
+    $namaBulan = [];
+    $hasFilter = $request->filled('pencairan_ke', 'bank', 'status_pegawai', 'Eligible_span', 'tunjangan');
+
+    if ($hasFilter) {
+      if ($pencairan_ke != "Semua") {
+        $query->where('tk.Kode_Cair', $pencairan_ke);
+        $query->whereNull('tk.No_SP2D');
+      } else {
+        $query->whereNotNull('tk.Kode_Cair')->where('tk.Kode_Cair', '!=', '0')->where('tk.Kode_Cair', '!=', '');
+      }
+
+      if ($bank != "Semua") {
+        $query->where('t2.Bank', $bank);
+      }
+
+      // Status Pegawai untuk Tukin selalu PNS (tapi kita ikuti t2.Jenis)
+      $query->where('t2.Jenis', 'PNS');
+    }
+
+    // $this->applyExcludeProcessedToQuery($query, (string) $pencairan_ke, (string) $eligible_span, (string) $tipe_sptjm);
+
+    $cursor = $query->cursor();
+    $data = [];
+    $rekap = [];
+    $batas = 4985000000;
+
+    $addToRekap = function (string $bankLabel, string $statusPegawai, string $tunjanganLabel, float $addKotor, float $addPajak, float $addBersih, string $identifier) use (&$rekap, $batas) {
+      $key = $bankLabel . '|' . $statusPegawai . '|' . $tunjanganLabel;
+      if (!isset($rekap[$key])) {
+        $rekap[$key] = [];
+        $rekap[$key][] = [
+          'bank' => $bankLabel,
+          'status_pegawai' => $statusPegawai,
+          'tunjangan' => $tunjanganLabel,
+          'jmlh_dosen' => 0,
+          'total_kotor_semua' => 0,
+          'total_pajak_semua' => 0,
+          'total_bersih_semua' => 0,
+          'nidns' => [],
+        ];
+      }
+      $index = count($rekap[$key]) - 1;
+      if (($rekap[$key][$index]['total_kotor_semua'] + $addKotor) > $batas) {
+        $rekap[$key][] = [
+          'bank' => $bankLabel,
+          'status_pegawai' => $statusPegawai,
+          'tunjangan' => $tunjanganLabel,
+          'jmlh_dosen' => 0,
+          'total_kotor_semua' => 0,
+          'total_pajak_semua' => 0,
+          'total_bersih_semua' => 0,
+          'nidns' => [],
+        ];
+        $index++;
+      }
+      $rekap[$key][$index]['jmlh_dosen']++;
+      $rekap[$key][$index]['total_kotor_semua'] += $addKotor;
+      $rekap[$key][$index]['total_pajak_semua'] += $addPajak;
+      $rekap[$key][$index]['total_bersih_semua'] += $addBersih;
+      $rekap[$key][$index]['nidns'][] = $identifier;
+    };
+
+    // We need to aggregate by NIDN since 1 NIDN might have multiple rows (months) in s_tunjangan_kinerja for the SAME Kode_Cair
+    $aggregated = [];
+    foreach ($cursor as $item) {
+        $ident = trim((string) ($item->NIDN ?? '')) ?: trim((string) ($item->NUPTK ?? ''));
+        if (!$ident) continue;
+        
+        if (!isset($aggregated[$ident])) {
+            $aggregated[$ident] = [
+                'bank' => strtoupper(trim((string) ($item->Bank ?? ''))) ?: '-',
+                'jenis' => $item->Jenis ?? '-',
+                'kotor' => 0,
+                'pajak' => 0,
+                'bersih' => 0,
+            ];
+        }
+        $aggregated[$ident]['kotor'] += (float) ($item->Nilai_Tukin ?? 0);
+        $aggregated[$ident]['pajak'] += 0; // Tukin tidak kena pajak
+        $aggregated[$ident]['bersih'] += (float) ($item->Nilai_Tukin ?? 0); // Bersih = Kotor
+    }
+
+    foreach ($aggregated as $ident => $v) {
+        if ($v['kotor'] > 0 || $v['pajak'] > 0 || $v['bersih'] > 0) {
+            $addToRekap($v['bank'], $v['jenis'], 'TPD', $v['kotor'], $v['pajak'], $v['bersih'], $ident);
+        }
+    }
+
+    return view('admin.rekap-usulan-eligible', [
+      'data' => $data,
+      'rekap' => $rekap,
+      'hasFilter' => $hasFilter,
+      'filter' => $request->all(),
+      'namaBulan' => $namaBulan,
+      'bulanMap' => $bulanMap,
+      'success' => 'Data berhasil di dapatkan!'
+    ]);
+  }
+
+  private function dataTukin(Request $request)
+  {
+    $pencairan_ke = $request->pencairan_ke ?? 'Semua';
+    $bank = $request->bank ?? 'Semua';
+    $status_pegawai = $request->status_pegawai ?? 'Semua';
+    $eligible_span = $request->Eligible_span ?? 'YA';
+    $tunjangan = $request->tunjangan ?? 'Semua';
+    $tipe_sptjm = 'TUKIN';
+    $tahun = session('tahun');
+
+    $query = DB::table('s_tunjangan_kinerja as tk')
+      ->join('s_transaksi_2 as t2', function($join) use ($tahun) {
+          $join->on(DB::raw('COALESCE(tk.NIDN, tk.NUPTK)'), '=', DB::raw('COALESCE(t2.NIDN, t2.NUPTK)'))
+               ->where('t2.Tahun_Versi', '=', $tahun)
+               ->where('t2.Aktif', '=', '1');
+      })
+      ->select(
+          'tk.NIDN', 'tk.NUPTK', 'tk.Nama', 'tk.Kode_Cair', 'tk.Nilai_Bersih', 'tk.Nilai_Pajak', 'tk.Nilai_Tukin', 'tk.Bulan',
+          't2.Bank', 't2.Jenis', 't2.Eligible_span', 't2.Sertifikat_Dosen', 't2.Jabatan12', 't2.Gol12', 't2.Tahun12', 't2.Aktif', 't2.No_Rek', 't2.NPWP'
+      )
+      ->where('tk.Tahun', $tahun);
+
+    if ($eligible_span != "Semua") {
+        $query->where('t2.Eligible_span', $eligible_span);
+    }
+
+    if ($pencairan_ke != "Semua") {
+        $query->where('tk.Kode_Cair', $pencairan_ke);
+        $query->whereNull('tk.No_SP2D');
+    } else {
+        $query->whereNotNull('tk.Kode_Cair')->where('tk.Kode_Cair', '!=', '0')->where('tk.Kode_Cair', '!=', '');
+    }
+
+    if ($bank != "Semua") {
+        $query->where('t2.Bank', $bank);
+    }
+    $query->where('t2.Jenis', 'PNS'); // Tukin is only for PNS
+
+    // global search
+    if ($request->filled('search') && isset($request->search['value']) && $request->search['value'] !== '') {
+      $search = $request->search['value'];
+      $query->where(function ($q) use ($search) {
+        $q->where('tk.NIDN', 'like', "%{$search}%")
+          ->orWhere('t2.Sertifikat_Dosen', 'like', "%{$search}%")
+          ->orWhere('tk.Nama', 'like', "%{$search}%");
+      });
+    }
+
+    // $this->applyExcludeProcessedToQuery($query, (string) $pencairan_ke, (string) $eligible_span, (string) $tipe_sptjm);
+
+    // Grouping by NIDN in PHP
+    $rows = $query->get();
+    
+    // Process $rows into unique dosen with pivoted months
+    $dosenList = [];
+    foreach ($rows as $item) {
+        $ident = trim((string) ($item->NIDN ?? '')) ?: trim((string) ($item->NUPTK ?? ''));
+        if (!$ident) continue;
+
+        if (!isset($dosenList[$ident])) {
+            $dosenList[$ident] = [
+                'NIDN' => $item->NIDN,
+                'NUPTK' => $item->NUPTK,
+                'Sertifikat_Dosen' => $item->Sertifikat_Dosen,
+                'Nama' => $item->Nama,
+                'Jabatan12' => $item->Jabatan12,
+                'Gol12' => $item->Gol12,
+                'Tahun12' => $item->Tahun12,
+                'Jenis' => $item->Jenis,
+                'Bank' => $item->Bank,
+                'Eligible_span' => $item->Eligible_span,
+                'Aktif' => $item->Aktif,
+                'No_Rek' => $item->No_Rek,
+                'NPWP' => $item->NPWP,
+                'Tahun_Versi' => $tahun,
+                // months data
+                'kotor' => array_fill(1, 12, 0),
+                'pajak' => array_fill(1, 12, 0),
+                'bersih' => array_fill(1, 12, 0),
+            ];
+        }
+
+        $bulanAngka = [
+            'Januari' => 1, 'Februari' => 2, 'Maret' => 3, 'April' => 4, 'Mei' => 5, 'Juni' => 6,
+            'Juli' => 7, 'Agustus' => 8, 'September' => 9, 'Oktober' => 10, 'November' => 11, 'Desember' => 12
+        ];
+        
+        $mIdx = $bulanAngka[$item->Bulan] ?? null;
+        if ($mIdx) {
+            $dosenList[$ident]['kotor'][$mIdx] += (float) ($item->Nilai_Tukin ?? 0);
+            $dosenList[$ident]['pajak'][$mIdx] += 0; // Tukin tidak kena pajak
+            $dosenList[$ident]['bersih'][$mIdx] += (float) ($item->Nilai_Tukin ?? 0); // Bersih = Kotor
+        }
+    }
+
+    $recordsTotal = DB::table('s_tunjangan_kinerja')->where('Tahun', $tahun)->distinct('NIDN')->count();
+    $recordsFiltered = count($dosenList);
+
+    // Apply simple pagination manually since we pivoted in memory
+    $dosenList = array_values($dosenList);
+    $start = intval($request->input('start', 0));
+    $length = intval($request->input('length', 25));
+    $pageData = array_slice($dosenList, $start, $length);
+
+    $out = [];
+    foreach ($pageData as $item) {
+      $row = [];
+      $row[] = (string) $item['NIDN'];
+      $row[] = (string) ($item['NUPTK'] ?? '-');
+      $row[] = (string) $item['Sertifikat_Dosen'];
+      $row[] = (string) $item['Nama'];
+
+      $row[] = (string) $item['Jabatan12'];
+      $row[] = (string) $item['Gol12'];
+      $row[] = (string) $item['Tahun12'];
+
+      $row[] = (string) $item['Jenis'];
+      $row[] = (string) $item['Bank'];
+      $row[] = (string) $item['Eligible_span'];
+      $row[] = (string) ($item['Aktif'] == 1 ? 'Aktif' : 'Tidak Aktif');
+      $row[] = (string) $item['Tahun_Versi'];
+
+      $totalKotor = 0; $totalPajak = 0; $totalBersih = 0;
+      for ($i = 1; $i <= 12; $i++) {
+          $val = $item['kotor'][$i];
+          $row[] = (string) number_format($val, 0, ',', '.');
+          $totalKotor += $val;
+          $totalPajak += $item['pajak'][$i];
+          $totalBersih += $item['bersih'][$i];
+      }
+
+      // summary columns: kotor TPD, kotor TKGB, pajak TPD, pajak TKGB, bersih TPD, bersih TKGB
+      $row[] = (string) number_format($totalKotor, 0, ',', '.');
+      $row[] = (string) number_format(0, 0, ',', '.');
+      $row[] = (string) number_format($totalPajak, 0, ',', '.');
+      $row[] = (string) number_format(0, 0, ',', '.');
+      $row[] = (string) number_format($totalBersih, 0, ',', '.');
+      $row[] = (string) number_format(0, 0, ',', '.');
+      $row[] = (string) $item['No_Rek'];
+      $row[] = (string) $item['NPWP'];
+
+      $out[] = $row;
+    }
+
+    return response()->json([
+      'draw' => intval($request->input('draw')),
+      'recordsTotal' => $recordsTotal,
+      'recordsFiltered' => $recordsFiltered,
+      'data' => $out,
+    ]);
+  }
+
+  private function prosesTukin(Request $request)
+  {
+    @set_time_limit(0);
+    @ini_set('max_execution_time', '0');
+    DB::disableQueryLog();
+
+    $rekap = json_decode($request->rekap_json, true);
+    $tipe_sptjm = 'TUKIN';
+    $pencairan_ke = (string) $request->pencairan_ke;
+    $eligible_span = (string) $request->eligible_span;
+    $tahun = session('tahun');
+
+    if (!$tahun) {
+      return redirect()->back()->with('error', 'Tahun versi tidak ditemukan di sesi. Silakan login ulang.');
+    }
+    
+    if ($pencairan_ke === 'Semua') {
+      return redirect()->back()->with('error', 'Untuk Tukin, Anda wajib memilih spesifik Pencairan ke berapa.');
+    }
+
+    if (!is_array($rekap) || empty($rekap)) {
+      return redirect()->back()->with('error', 'Data rekap tidak valid.');
+    }
+
+    // Normal path: pencairan_ke spesifik
+    $data = [];
+    foreach ($rekap as $r) {
+      $mappedIds = [];
+      if (!empty($r['nidns']) && is_array($r['nidns'])) {
+        $seen = [];
+        foreach ($r['nidns'] as $ident) {
+          $ident = trim((string) $ident);
+          if ($ident === '') continue;
+          if (!isset($seen[$ident])) {
+            $seen[$ident] = true;
+            $mappedIds[] = $ident;
+          }
+        }
+      }
+
+      $data[] = [
+        "tahun" => $tahun,
+        "pencairan_ke" => $pencairan_ke,
+        "status_pegawai" => $r['status_pegawai'],
+        "jenis" => $r['tunjangan'], // TPD (mapped from Tukin)
+        "bank" => $r['bank'],
+        "eligible_span" => $eligible_span,
+        "tipe_sptjm" => $tipe_sptjm,
+        "jumlah_kotor" => $r['total_kotor_semua'] ?? $r['total_kotor'] ?? 0,
+        "jumlah_pajak" => $r['total_pajak_semua'] ?? $r['total_pajak'] ?? 0,
+        "jumlah_bersih" => $r['total_bersih_semua'] ?? $r['total_bersih'] ?? 0,
+        "nidns" => implode(',', $mappedIds),
+        "created_at" => now(),
+      ];
+    }
+
+    foreach (array_chunk($data, 200) as $chunk) {
+      DB::table('r_proses_cair')->insert($chunk);
+    }
+
+    return redirect()->back()->with('success', 'Data Tukin berhasil di proses untuk pencairan ke-' . $pencairan_ke);
   }
 }

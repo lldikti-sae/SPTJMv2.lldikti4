@@ -272,6 +272,10 @@ class MonitoringPembayaranController extends Controller
     $gajiBulanan = [];
     $tahunBulanan = [];
     $kotorTpd = [];
+    $tukinDasar = [];
+    $tukinPrestasi = [];
+    $tukinPotongan = [];
+    $tukinBersihSerdos = [];
     $kotorTkgb = [];
     $pajakTpd = [];
     $pajakTkgb = [];
@@ -292,11 +296,9 @@ class MonitoringPembayaranController extends Controller
       $bersihTpdVal = $transaksiTahun ? (float) ($transaksiTahun->{'bersihTPD' . $suffix} ?? 0) : 0;
       $bersihTkgbVal = $transaksiTahun ? (float) ($transaksiTahun->{'bersihTKGB' . $suffix} ?? 0) : 0;
 
-      if ($jenisTunjangan === 'sptjm') {
-          $kotorTkgbVal = 0;
-          $pajakTkgbVal = 0;
-          $bersihTkgbVal = 0;
-      } elseif ($jenisTunjangan === 'tukin') {
+      $tDasar = 0; $tPrestasi = 0; $tPotongan = 0; $tBersihSerdos = 0;
+
+      if ($jenisTunjangan === 'tukin') {
           $kotorTkgbVal = 0;
           $pajakTkgbVal = 0;
           $bersihTkgbVal = 0;
@@ -304,15 +306,31 @@ class MonitoringPembayaranController extends Controller
               $tk = $tukinRecords[$i];
               $gajiAsli = (float) ($tk->Nilai_tukin_Jabatan ?? 0);
               $kotorTpdVal = (float) ($tk->Nilai_Tukin ?? 0);
-              $pajakTpdVal = (float) ($tk->Nilai_Pajak ?? 0);
-              $bersihTpdVal = (float) ($tk->Nilai_Bersih ?? 0);
+              $pajakTpdVal = 0; // Tukin tidak kena pajak
+              $bersihTpdVal = $kotorTpdVal; // Bersih = Kotor
+              
+              $tDasar = (float) ($tk->KD ?? 0);
+              $tPrestasi = (float) ($tk->KP ?? 0);
+              $tPotongan = (float) ($tk->PP ?? 0);
+              $tBersihSerdos = (float) ($tk->Nilai_Bersih_Serdos ?? 0);
+              
+              $golonganBulanan[count($golonganBulanan)-1] = trim($tk->Jabatan ?? '-');
+              $tahunBulanan[count($tahunBulanan)-1] = '';
           } else {
               $gajiAsli = 0;
               $kotorTpdVal = 0;
               $pajakTpdVal = 0;
               $bersihTpdVal = 0;
+
+              $golonganBulanan[count($golonganBulanan)-1] = '-';
+              $tahunBulanan[count($tahunBulanan)-1] = '-';
           }
       }
+      
+      $tukinDasar[] = $tDasar;
+      $tukinPrestasi[] = $tPrestasi;
+      $tukinPotongan[] = $tPotongan;
+      $tukinBersihSerdos[] = $tBersihSerdos;
 
       $gajiBulanan[] = $gajiAsli;
 
@@ -323,8 +341,22 @@ class MonitoringPembayaranController extends Controller
       $bersihTpd[] = $bersihTpdVal;
       $bersihTkgb[] = $bersihTkgbVal;
       
-      $noSp2d[] = $transaksiTahun ? ($transaksiTahun->{'No_sp2d_' . $suffix} ?? '-') : '-';
-      $tglSp2d[] = $transaksiTahun ? ($transaksiTahun->{'Tgl_sp2d_' . $suffix} ?? '-') : '-';
+      $noSp2dVal = $transaksiTahun ? ($transaksiTahun->{'No_sp2d_' . $suffix} ?? '-') : '-';
+      $tglSp2dVal = $transaksiTahun ? ($transaksiTahun->{'Tgl_sp2d_' . $suffix} ?? '-') : '-';
+
+      if ($jenisTunjangan === 'tukin') {
+          if (isset($tukinRecords[$i])) {
+              $tk = $tukinRecords[$i];
+              $noSp2dVal = !empty($tk->No_SP2D) ? $tk->No_SP2D : '-';
+              $tglSp2dVal = !empty($tk->Tanggal_SP2D) ? $tk->Tanggal_SP2D : '-';
+          } else {
+              $noSp2dVal = '-';
+              $tglSp2dVal = '-';
+          }
+      }
+
+      $noSp2d[] = $noSp2dVal;
+      $tglSp2d[] = $tglSp2dVal;
     }
 
     $kodeUsulanBulanan = [];
@@ -697,6 +729,10 @@ class MonitoringPembayaranController extends Controller
         'golonganBulanan',
         'gajiBulanan',
         'tahunBulanan',
+        'tukinDasar',
+        'tukinPrestasi',
+        'tukinPotongan',
+        'tukinBersihSerdos',
         'selisihTotals',
         'selisihBulanan',
         'statusBulanan',
@@ -815,6 +851,10 @@ class MonitoringPembayaranController extends Controller
     $gajiBulanan = [];
     $tahunBulanan = [];
     $kotorTpd = [];
+    $tukinDasar = [];
+    $tukinPrestasi = [];
+    $tukinPotongan = [];
+    $tukinBersihSerdos = [];
     $kotorTkgb = [];
     $pajakTpd = [];
     $pajakTkgb = [];
@@ -842,11 +882,9 @@ class MonitoringPembayaranController extends Controller
       $bersihTpdVal = $transaksiTahun ? (float) ($transaksiTahun->{'bersihTPD' . $s} ?? 0) : 0;
       $bersihTkgbVal = $transaksiTahun ? (float) ($transaksiTahun->{'bersihTKGB' . $s} ?? 0) : 0;
 
-      if ($jenisTunjangan === 'sptjm') {
-          $kotorTkgbVal = 0;
-          $pajakTkgbVal = 0;
-          $bersihTkgbVal = 0;
-      } elseif ($jenisTunjangan === 'tukin') {
+      $tDasar = 0; $tPrestasi = 0; $tPotongan = 0; $tBersihSerdos = 0;
+
+      if ($jenisTunjangan === 'tukin') {
           $kotorTkgbVal = 0;
           $pajakTkgbVal = 0;
           $bersihTkgbVal = 0;
@@ -854,15 +892,31 @@ class MonitoringPembayaranController extends Controller
               $tk = $tukinRecords[$i];
               $gajiAsli = (float) ($tk->Nilai_tukin_Jabatan ?? 0);
               $kotorTpdVal = (float) ($tk->Nilai_Tukin ?? 0);
-              $pajakTpdVal = (float) ($tk->Nilai_Pajak ?? 0);
-              $bersihTpdVal = (float) ($tk->Nilai_Bersih ?? 0);
+              $pajakTpdVal = 0; // Tukin tidak kena pajak
+              $bersihTpdVal = $kotorTpdVal; // Bersih = Kotor
+              
+              $tDasar = (float) ($tk->KD ?? 0);
+              $tPrestasi = (float) ($tk->KP ?? 0);
+              $tPotongan = (float) ($tk->PP ?? 0);
+              $tBersihSerdos = (float) ($tk->Nilai_Bersih_Serdos ?? 0);
+              
+              $golonganBulanan[count($golonganBulanan)-1] = trim($tk->Jabatan ?? '-');
+              $tahunBulanan[count($tahunBulanan)-1] = '';
           } else {
               $gajiAsli = 0;
               $kotorTpdVal = 0;
               $pajakTpdVal = 0;
               $bersihTpdVal = 0;
+
+              $golonganBulanan[count($golonganBulanan)-1] = '-';
+              $tahunBulanan[count($tahunBulanan)-1] = '-';
           }
       }
+
+      $tukinDasar[] = $tDasar;
+      $tukinPrestasi[] = $tPrestasi;
+      $tukinPotongan[] = $tPotongan;
+      $tukinBersihSerdos[] = $tBersihSerdos;
 
       $gajiBulanan[] = $gajiAsli;
 
@@ -873,8 +927,22 @@ class MonitoringPembayaranController extends Controller
       $bersihTpd[] = $bersihTpdVal;
       $bersihTkgb[] = $bersihTkgbVal;
       
-      $noSp2d[] = $transaksiTahun ? ($transaksiTahun->{'No_sp2d_' . $s} ?? '-') : '-';
-      $tglSp2d[] = $transaksiTahun ? ($transaksiTahun->{'Tgl_sp2d_' . $s} ?? '-') : '-';
+      $noSp2dVal = $transaksiTahun ? ($transaksiTahun->{'No_sp2d_' . $s} ?? '-') : '-';
+      $tglSp2dVal = $transaksiTahun ? ($transaksiTahun->{'Tgl_sp2d_' . $s} ?? '-') : '-';
+
+      if ($jenisTunjangan === 'tukin') {
+          if (isset($tukinRecords[$i])) {
+              $tk = $tukinRecords[$i];
+              $noSp2dVal = !empty($tk->No_SP2D) ? $tk->No_SP2D : '-';
+              $tglSp2dVal = !empty($tk->Tanggal_SP2D) ? $tk->Tanggal_SP2D : '-';
+          } else {
+              $noSp2dVal = '-';
+              $tglSp2dVal = '-';
+          }
+      }
+
+      $noSp2d[] = $noSp2dVal;
+      $tglSp2d[] = $tglSp2dVal;
     }
 
     $totals = [
@@ -1236,6 +1304,10 @@ class MonitoringPembayaranController extends Controller
       'kodeUsulanBulanan' => $kodeUsulanBulanan,
       'golonganBulanan' => $golonganBulanan,
       'tahunBulanan' => $tahunBulanan,
+      'tukinDasar' => $tukinDasar,
+      'tukinPrestasi' => $tukinPrestasi,
+      'tukinPotongan' => $tukinPotongan,
+      'tukinBersihSerdos' => $tukinBersihSerdos,
       'gajiBulanan' => $gajiBulanan,
       'kotorTpd' => $kotorTpd,
       'kotorTkgb' => $kotorTkgb,
@@ -1346,8 +1418,8 @@ class MonitoringPembayaranController extends Controller
               $kodeUsulan = $tk->Kode_Usulan ?? '-';
               $gaji = (float) ($tk->Nilai_tukin_Jabatan ?? 0);
               $kotorTpd = (float) ($tk->Nilai_Tukin ?? 0);
-              $pajakTpd = (float) ($tk->Nilai_Pajak ?? 0);
-              $bersihTpd = (float) ($tk->Nilai_Bersih ?? 0);
+              $pajakTpd = 0; 
+              $bersihTpd = $kotorTpd; 
           } else {
               $kodeUsulan = '-';
               $gaji = 0;
