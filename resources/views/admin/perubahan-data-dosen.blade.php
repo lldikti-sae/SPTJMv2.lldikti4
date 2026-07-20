@@ -554,7 +554,6 @@ hr { border-color: #e2e8f0; opacity: 1; }
                 </div>
 
 
-                </div> <!-- End demo-inline-spacing -->
             </div> <!-- End card-body -->
         </div> <!-- End card -->
         </form>

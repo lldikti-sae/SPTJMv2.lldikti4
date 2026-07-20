@@ -73,7 +73,7 @@ class MasterDosenController extends Controller
                 $resetBtn = '<form method="POST" action="/admin/master-dosen/' . $r->id . '/reset-password" class="d-inline reset-form" style="display:inline">'
                     . csrf_field()
                     . '<button type="button" class="sptjm-icon-btn sptjm-btn-reset reset-password" title="Reset Password">'
-                    . '<i class="bx bx-upload"></i></button></form>';
+                    . '<i class="bx bx-key"></i></button></form>';
 
                 $deleteBtn = '<form method="POST" action="/admin/master-dosen/' . $r->id . '" class="d-inline delete-form" style="display:inline">'
                     . csrf_field()
