@@ -135,12 +135,7 @@ class MonitoringPembayaranController extends Controller
   public function index()
   {
     // Ambil daftar tahun yang tersedia dari kolom Tahun_Versi pada tabel s_transaksi_2
-    $years = DB::table('s_transaksi_2')
-      ->select('tahun_versi')
-      ->distinct()
-      ->orderBy('tahun_versi')
-      ->pluck('tahun_versi')
-      ->toArray();
+    $years = ['2023', '2024', '2025', '2026'];
 
     return view('admin.monitoring-pembayaran', compact('years'));
   }
@@ -154,12 +149,17 @@ class MonitoringPembayaranController extends Controller
     $selectedYear = $request->input('tahun_versi');
     $jenisTunjangan = strtolower($request->input('jenis_tunjangan', 'semua'));
 
-    $availableYears = DB::table('s_transaksi_2')
-      ->select('tahun_versi')
-      ->distinct()
-      ->orderBy('tahun_versi')
-      ->pluck('tahun_versi')
-      ->toArray();
+    $availableYears = ['2023', '2024', '2025', '2026'];
+
+    if (!empty($startYear) && !in_array($startYear, $availableYears)) {
+        $startYear = '2023';
+    }
+    if (!empty($endYear) && !in_array($endYear, $availableYears)) {
+        $endYear = '2026';
+    }
+    if (!empty($selectedYear) && !in_array($selectedYear, $availableYears)) {
+        $selectedYear = null;
+    }
 
     if (empty($availableYears)) {
       return redirect()->back()->with('error', 'Data tahun tidak tersedia.');
@@ -248,6 +248,19 @@ class MonitoringPembayaranController extends Controller
 
     $selisihTotals = SelisihBayar::computeFromTransaksi($transaksiTahun);
 
+    // Ambil data pencairan SPTJM (TPD) dari r_proses_cair
+    $prosesCairTpd = [];
+    if ($jenisTunjangan === 'sptjm' || $jenisTunjangan === 'semua') {
+        $cairData = DB::table('r_proses_cair')
+            ->where('tahun', $selectedYear)
+            ->where('jenis', 'TPD')
+            ->whereRaw('FIND_IN_SET(?, nidns)', [$nidn])
+            ->get();
+        foreach ($cairData as $c) {
+            $prosesCairTpd[$c->pencairan_ke] = $c;
+        }
+    }
+
     // Ambil data TUKIN jika diperlukan
     $tukinRecords = [];
     if ($jenisTunjangan === 'tukin' || $jenisTunjangan === 'semua') {
@@ -269,6 +282,7 @@ class MonitoringPembayaranController extends Controller
 
     // Ambil data dari bulan 1–12
     $golonganBulanan = [];
+    $jabatanBulanan = [];
     $gajiBulanan = [];
     $tahunBulanan = [];
     $kotorTpd = [];
@@ -287,6 +301,7 @@ class MonitoringPembayaranController extends Controller
     for ($i = 1; $i <= 12; $i++) {
       $suffix = $i;
       $golonganBulanan[] = $transaksiTahun ? ($transaksiTahun->{'Gol' . $suffix} ?? '-') : '-';
+      $jabatanBulanan[] = $transaksiTahun ? ($transaksiTahun->{'Jabatan' . $suffix} ?? '-') : '-';
       $tahunBulanan[] = $transaksiTahun ? ($transaksiTahun->{'Tahun' . $suffix} ?? '-') : '-';
       $gajiAsli = $transaksiTahun ? (float) ($transaksiTahun->{'Gaji' . $suffix} ?? 0) : 0;
       $kotorTpdVal = $transaksiTahun ? (float) ($transaksiTahun->{'TPD' . $suffix} ?? 0) : 0;
@@ -309,24 +324,22 @@ class MonitoringPembayaranController extends Controller
           if (isset($tukinRecords[$i])) {
               $tk = $tukinRecords[$i];
               $gajiAsli = (float) ($tk->Nilai_tukin_Jabatan ?? 0);
-              $kotorTpdVal = (float) ($tk->Nilai_Tukin ?? 0);
-              $pajakTpdVal = 0; // Tukin tidak kena pajak
-              $bersihTpdVal = $kotorTpdVal; // Bersih = Kotor
+              // Tidak menimpa $kotorTpdVal, $pajakTpdVal, dan $bersihTpdVal agar nilai SPTJM tetap ada untuk kolom Bersih TPD
               
-              $tDasar = (float) ($tk->KD ?? 0);
+              $tDasar = (float) ($tk->KD ?? 0.60);
               $tPrestasi = (float) ($tk->KP ?? 0);
               $tPotongan = (float) ($tk->PP ?? 0);
               $tBersihSerdos = (float) ($tk->Nilai_Bersih_Serdos ?? 0);
               
               $golonganBulanan[count($golonganBulanan)-1] = trim($tk->Jabatan ?? '-');
+              $jabatanBulanan[count($jabatanBulanan)-1] = '-';
               $tahunBulanan[count($tahunBulanan)-1] = '';
           } else {
               $gajiAsli = 0;
-              $kotorTpdVal = 0;
-              $pajakTpdVal = 0;
-              $bersihTpdVal = 0;
+              $tDasar = 0.60;
 
               $golonganBulanan[count($golonganBulanan)-1] = '-';
+              $jabatanBulanan[count($jabatanBulanan)-1] = '-';
               $tahunBulanan[count($tahunBulanan)-1] = '-';
           }
       }
@@ -347,6 +360,10 @@ class MonitoringPembayaranController extends Controller
       
       $noSp2dVal = $transaksiTahun ? ($transaksiTahun->{'No_sp2d_' . $suffix} ?? '-') : '-';
       $tglSp2dVal = $transaksiTahun ? ($transaksiTahun->{'Tgl_sp2d_' . $suffix} ?? '-') : '-';
+
+      if (($jenisTunjangan === 'sptjm' || $jenisTunjangan === 'semua') && isset($prosesCairTpd[$i])) {
+          $noSp2dVal = !empty($prosesCairTpd[$i]->no_sp2d) ? $prosesCairTpd[$i]->no_sp2d : $noSp2dVal;
+      }
 
       if ($jenisTunjangan === 'tukin') {
           if (isset($tukinRecords[$i])) {
@@ -731,6 +748,7 @@ class MonitoringPembayaranController extends Controller
         'bersihTpd',
         'bersihTkgb',
         'golonganBulanan',
+        'jabatanBulanan',
         'gajiBulanan',
         'tahunBulanan',
         'tukinDasar',
@@ -757,12 +775,17 @@ class MonitoringPembayaranController extends Controller
     $selectedYear = $request->input('tahun_versi');
     $jenisTunjangan = strtolower($request->input('jenis_tunjangan', 'semua'));
 
-    $availableYears = DB::table('s_transaksi_2')
-      ->select('tahun_versi')
-      ->distinct()
-      ->orderBy('tahun_versi')
-      ->pluck('tahun_versi')
-      ->toArray();
+    $availableYears = ['2023', '2024', '2025', '2026'];
+    
+    if (!empty($startYear) && !in_array($startYear, $availableYears)) {
+        $startYear = '2023';
+    }
+    if (!empty($endYear) && !in_array($endYear, $availableYears)) {
+        $endYear = '2026';
+    }
+    if (!empty($selectedYear) && !in_array($selectedYear, $availableYears)) {
+        $selectedYear = null;
+    }
 
     if (empty($availableYears)) {
       return response()->json(['success' => false, 'message' => 'Data tahun tidak tersedia.']);
@@ -827,6 +850,19 @@ class MonitoringPembayaranController extends Controller
 
     $selisihTotals = SelisihBayar::computeFromTransaksi($transaksiTahun);
 
+    // Ambil data pencairan SPTJM (TPD) dari r_proses_cair
+    $prosesCairTpd = [];
+    if ($jenisTunjangan === 'sptjm' || $jenisTunjangan === 'semua') {
+        $cairData = DB::table('r_proses_cair')
+            ->where('tahun', $selectedYear)
+            ->where('jenis', 'TPD')
+            ->whereRaw('FIND_IN_SET(?, nidns)', [$nidn])
+            ->get();
+        foreach ($cairData as $c) {
+            $prosesCairTpd[$c->pencairan_ke] = $c;
+        }
+    }
+
     // Ambil data TUKIN jika diperlukan
     $tukinRecords = [];
     if ($jenisTunjangan === 'tukin' || $jenisTunjangan === 'semua') {
@@ -852,6 +888,7 @@ class MonitoringPembayaranController extends Controller
     $kodeUsulanBulanan = [];
     $kodeCairBulanan = [];
     $golonganBulanan = [];
+    $jabatanBulanan = [];
     $gajiBulanan = [];
     $tahunBulanan = [];
     $kotorTpd = [];
@@ -877,6 +914,7 @@ class MonitoringPembayaranController extends Controller
       $kcCol = $kodeCairMapping[$i];
       $kodeCairBulanan[] = $transaksiTahun ? ($transaksiTahun->{$kcCol} ?? null) : null;
       $golonganBulanan[] = $transaksiTahun ? ($transaksiTahun->{'Gol' . $s} ?? '-') : '-';
+      $jabatanBulanan[] = $transaksiTahun ? ($transaksiTahun->{'Jabatan' . $s} ?? '-') : '-';
       $tahunBulanan[] = $transaksiTahun ? ($transaksiTahun->{'Tahun' . $s} ?? '-') : '-';
       $gajiAsli = $transaksiTahun ? (float) ($transaksiTahun->{'Gaji' . $s} ?? 0) : 0;
       $kotorTpdVal = $transaksiTahun ? (float) ($transaksiTahun->{'TPD' . $s} ?? 0) : 0;
@@ -899,24 +937,22 @@ class MonitoringPembayaranController extends Controller
           if (isset($tukinRecords[$i])) {
               $tk = $tukinRecords[$i];
               $gajiAsli = (float) ($tk->Nilai_tukin_Jabatan ?? 0);
-              $kotorTpdVal = (float) ($tk->Nilai_Tukin ?? 0);
-              $pajakTpdVal = 0; // Tukin tidak kena pajak
-              $bersihTpdVal = $kotorTpdVal; // Bersih = Kotor
+              // Tidak menimpa $kotorTpdVal, $pajakTpdVal, dan $bersihTpdVal agar nilai SPTJM tetap ada untuk kolom Bersih TPD
               
-              $tDasar = (float) ($tk->KD ?? 0);
+              $tDasar = (float) ($tk->KD ?? 0.60);
               $tPrestasi = (float) ($tk->KP ?? 0);
               $tPotongan = (float) ($tk->PP ?? 0);
               $tBersihSerdos = (float) ($tk->Nilai_Bersih_Serdos ?? 0);
               
               $golonganBulanan[count($golonganBulanan)-1] = trim($tk->Jabatan ?? '-');
+              $jabatanBulanan[count($jabatanBulanan)-1] = '-';
               $tahunBulanan[count($tahunBulanan)-1] = '';
           } else {
               $gajiAsli = 0;
-              $kotorTpdVal = 0;
-              $pajakTpdVal = 0;
-              $bersihTpdVal = 0;
+              $tDasar = 0.60;
 
               $golonganBulanan[count($golonganBulanan)-1] = '-';
+              $jabatanBulanan[count($jabatanBulanan)-1] = '-';
               $tahunBulanan[count($tahunBulanan)-1] = '-';
           }
       }
@@ -937,6 +973,10 @@ class MonitoringPembayaranController extends Controller
       
       $noSp2dVal = $transaksiTahun ? ($transaksiTahun->{'No_sp2d_' . $s} ?? '-') : '-';
       $tglSp2dVal = $transaksiTahun ? ($transaksiTahun->{'Tgl_sp2d_' . $s} ?? '-') : '-';
+
+      if (($jenisTunjangan === 'sptjm' || $jenisTunjangan === 'semua') && isset($prosesCairTpd[$i])) {
+          $noSp2dVal = !empty($prosesCairTpd[$i]->no_sp2d) ? $prosesCairTpd[$i]->no_sp2d : $noSp2dVal;
+      }
 
       if ($jenisTunjangan === 'tukin') {
           if (isset($tukinRecords[$i])) {
@@ -1311,6 +1351,7 @@ class MonitoringPembayaranController extends Controller
       'months' => $months,
       'kodeUsulanBulanan' => $kodeUsulanBulanan,
       'golonganBulanan' => $golonganBulanan,
+      'jabatanBulanan' => $jabatanBulanan,
       'tahunBulanan' => $tahunBulanan,
       'tukinDasar' => $tukinDasar,
       'tukinPrestasi' => $tukinPrestasi,

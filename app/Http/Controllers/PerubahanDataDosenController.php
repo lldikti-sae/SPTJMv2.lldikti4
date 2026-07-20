@@ -2210,13 +2210,18 @@ class PerubahanDataDosenController extends Controller
                             THEN 1
                             ELSE 0
                         END AS can_delete";
-      $query = Transaksi::where('Aktif', '0')
+      $aktifValues = ['1', 'YA', 'Ya', 'ya', 'Y'];
+      $query = Transaksi::where(function($q) use ($aktifValues) {
+            $q->where('Aktif', '0')
+              ->orWhereNotIn('Eligible_span', $aktifValues)
+              ->orWhereNull('Eligible_span');
+        })
         ->where('Tahun_Versi', $year)
         ->select(DB::raw('NIDN AS nidn'), DB::raw('NUPTK AS nuptk'), 'Nama', 'Kode_PT', 'PTS', 'Jenis', 'Keterangan', DB::raw($cekKodeUsulan));
       // apply keterangan filter if provided (client sends 'all' for no-filter)
       $keterangan = $request->input('keterangan', 'all');
       if (!empty($keterangan) && $keterangan !== 'all') {
-        $query->where('Keterangan', $keterangan);
+        $query->where('Keterangan', 'LIKE', '%' . $keterangan . '%');
       }
 
       return DataTables::of($query)
@@ -2269,10 +2274,15 @@ class PerubahanDataDosenController extends Controller
   public function hapusDataDosenTidakAktif($id)
   {
     $year = session('tahun');
+    $aktifValues = ['1', 'YA', 'Ya', 'ya', 'Y'];
     $dosen = Transaksi::where(function ($q) use ($id) {
       $q->where('NIDN', $id)->orWhere('NUPTK', $id);
     })
-      ->where('Aktif', '0')
+      ->where(function($q) use ($aktifValues) {
+          $q->where('Aktif', '0')
+            ->orWhereNotIn('Eligible_span', $aktifValues)
+            ->orWhereNull('Eligible_span');
+      })
       ->where('Tahun_Versi', $year)
       ->first();
 
@@ -2288,10 +2298,15 @@ class PerubahanDataDosenController extends Controller
       }
     }
 
+    $aktifValues = ['1', 'YA', 'Ya', 'ya', 'Y'];
     Transaksi::where(function ($q) use ($id) {
       $q->where('NIDN', $id)->orWhere('NUPTK', $id);
     })
-      ->where('Aktif', '0')
+      ->where(function($q) use ($aktifValues) {
+          $q->where('Aktif', '0')
+            ->orWhereNotIn('Eligible_span', $aktifValues)
+            ->orWhereNull('Eligible_span');
+      })
       ->where('Tahun_Versi', $year)
       ->delete();
 

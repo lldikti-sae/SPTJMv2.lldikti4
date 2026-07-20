@@ -115,7 +115,7 @@
                         <th>NAMA DOSEN</th>
                         <th>KODE PTS</th>
                         <th>NAMA PTS</th>
-                        <th>ELIGIBLE SPAN</th>
+                        <th class="text-center">STATUS KEAKTIFAN</th>
                         <th>AKSI</th>
                     </tr>
                 </thead>
@@ -176,7 +176,7 @@
                                                     <th>Kode PTS</th>
                                                     <th>Nama PTS</th>
                                                     <th>Status</th>
-                                                    <th>Eligible Span</th>
+                                                    <th>Status Keaktifan</th>
                                                 </tr>
                                             </thead>
                             <tbody>
@@ -616,14 +616,15 @@ document.addEventListener('DOMContentLoaded', function() {
             {
                 data: 'eligible_span',
                 name: 'eligible_span',
+                className: 'text-center',
                 render: function(data, type, row) {
                     const val = (data || '').toString().toUpperCase();
                     if (val === 'YA' || val === 'Y' || val === '1') {
-                        return '<span class="badge-ya">YA</span>';
+                        return '<div class="text-center"><span class="badge-ya">YA</span></div>';
                     } else if (val === 'TIDAK' || val === 'TDK' || val === 'N' || val === '0') {
-                        return '<span class="badge-tidak">TIDAK</span>';
+                        return '<div class="text-center"><span class="badge-tidak">TIDAK</span></div>';
                     }
-                    return data;
+                    return '<div class="text-center">' + data + '</div>';
                 }
             },
             {
@@ -768,7 +769,9 @@ document.addEventListener('DOMContentLoaded', function() {
                                 <td>${row.kode_pt}</td>
                                 <td>${row.pts}</td>
                                 <td>${status}</td>
-                                <td>${row.eligible_span ?? ''}</td>
+                                <td class="text-center">
+                                    ${row.eligible_span ? (['YA', 'Y', '1'].includes(String(row.eligible_span).toUpperCase()) ? '<span class="badge-ya">YA</span>' : '<span class="badge-tidak">TIDAK</span>') : ''}
+                                </td>
                             </tr>
                         `;
                     });

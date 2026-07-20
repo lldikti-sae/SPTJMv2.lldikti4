@@ -4,5 +4,5 @@ $app = require_once __DIR__ . '/bootstrap/app.php';
 $kernel = $app->make(Illuminate\Contracts\Http\Kernel::class);
 $kernel->bootstrap();
 
-$row = DB::table('s_tunjangan_kinerja')->orderBy('NO', 'desc')->first();
+$row = DB::table('r_proses_cair')->whereNotNull('no_sp2d')->where('no_sp2d', '!=', '')->first();
 print_r($row);
