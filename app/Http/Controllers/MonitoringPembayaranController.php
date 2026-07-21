@@ -249,6 +249,18 @@ class MonitoringPembayaranController extends Controller
     if (!$transaksiTahun && !empty($selectedYear) && (string) ($transaksi->tahun_versi ?? '') === (string) $selectedYear) {
       $transaksiTahun = $transaksi;
     }
+
+    $isGuruBesar = DB::table('s_transaksi_2')
+        ->where(function($q) use ($nidn) {
+            $q->where('nidn', $nidn)->orWhere('NUPTK', $nidn);
+        })
+        ->where(function($q) {
+            for ($i=1; $i<=12; $i++) {
+                $q->orWhere('Jabatan'.$i, 'like', '%guru besar%')
+                  ->orWhere('Jabatan'.$i, 'like', '%prof%');
+            }
+        })
+        ->exists();
     
     // Gunakan status Aktif dari transaksi tahun yang dipilih agar header sesuai dengan tahun tersebut
     if ($transaksiTahun) {
@@ -794,6 +806,7 @@ class MonitoringPembayaranController extends Controller
         'summaryRekap',
         'summaryOriginal',
         'riwayatPembayaran',
+        'isGuruBesar'
       )
     );
   }
@@ -883,6 +896,18 @@ class MonitoringPembayaranController extends Controller
     if (!$transaksiTahun && (string) ($transaksi->tahun_versi ?? '') === (string) $selectedYear) {
       $transaksiTahun = $transaksi;
     }
+
+    $isGuruBesar = DB::table('s_transaksi_2')
+        ->where(function($q) use ($nidn) {
+            $q->where('nidn', $nidn)->orWhere('NUPTK', $nidn);
+        })
+        ->where(function($q) {
+            for ($i=1; $i<=12; $i++) {
+                $q->orWhere('Jabatan'.$i, 'like', '%guru besar%')
+                  ->orWhere('Jabatan'.$i, 'like', '%prof%');
+            }
+        })
+        ->exists();
 
     $selisihTotals = SelisihBayar::computeFromTransaksi($transaksiTahun);
 
@@ -1418,6 +1443,7 @@ class MonitoringPembayaranController extends Controller
       'summaryOriginal' => $summaryOriginal,
       'riwayatPembayaran' => $riwayatPembayaran,
       'isPns' => $isPns,
+      'isGuruBesar' => $isGuruBesar,
     ]);
   }
 

@@ -258,7 +258,7 @@ $months = [
     .mp-tbl.tukin-wrap td, .mp-tbl.tukin-wrap th.col-bulan { white-space: nowrap !important; min-width: auto; word-break: normal; }
   </style>
   @php
-    $hasTkgb = collect($kotorTkgb)->merge($pajakTkgb)->merge($bersihTkgb)->sum() != 0;
+    $hasTkgb = $isGuruBesar ?? false;
     $isSemua = ($jenisTunjangan ?? 'semua') === 'semua';
     $totalGaji = array_sum($gajiBulanan);
     $totalKotorTpd = array_sum($kotorTpd);
@@ -362,7 +362,7 @@ $months = [
           <th rowspan="2" class="text-center align-middle">Kode Usulan</th>
           <th rowspan="2" class="text-center align-middle">Jabatan / Gol/MK</th>
           <th rowspan="2" class="text-center align-middle">Gaji</th>
-          <th colspan="2" class="text-center align-middle">Nominal</th>
+          <th colspan="{{ $hasTkgb ? 6 : 2 }}" class="text-center align-middle">Nominal</th>
           <th rowspan="2" class="text-center align-middle">NO SP2D</th>
           <th rowspan="2" class="text-center align-middle">TGL SP2D</th>
           @if(!$isPns)
@@ -373,6 +373,10 @@ $months = [
         <tr>
           <th class="text-center align-middle">Kotor TPD</th>
           <th class="text-center align-middle">Bersih TPD</th>
+          @if($hasTkgb)
+          <th class="text-center align-middle tkgb-col">Kotor TKGB</th>
+          <th class="text-center align-middle tkgb-col">Bersih TKGB</th>
+          @endif
         </tr>
       </thead>
       <tbody>
@@ -733,8 +737,7 @@ $months = [
           const si=document.getElementById('sum-selisih-icon');
           if(si){si.className='avatar-initial rounded '+((sm.totalSelisih||0)==0?'bg-label-success':'bg-label-danger')+' me-2';}
 
-          const sumTkgb=[...(data.kotorTkgb||[]),...(data.pajakTkgb||[]),...(data.bersihTkgb||[])].reduce((a,b)=>a+Number(b),0);
-          let hasTkgb=sumTkgb!=0;
+          let hasTkgb = data.isGuruBesar || false;
           const tbl=document.getElementById('mp-table');
           if(tbl) tbl.dataset.hasTkgb=hasTkgb?'1':'0';
 

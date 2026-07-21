@@ -1,0 +1,3027 @@
+<!DOCTYPE html>
+
+<html class="light-style layout-menu-fixed" data-theme="theme-default" data-assets-path="http://localhost/assets/"
+    data-base-url="http://localhost" data-framework="laravel" data-template="vertical-menu-laravel-template-free">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>Monitoring Pembayaran - SPTJM Online </title>
+    <meta name="description"
+        content="Most Powerful &amp; Comprehensive Bootstrap 5 HTML Admin Dashboard Template built for developers!" />
+    <meta name="keywords"
+        content="dashboard, bootstrap 5 dashboard, bootstrap 5 design, bootstrap 5, bootstrap 5 free, free admin template">
+
+    <!-- Preload Logo and Fonts to prevent blinking/flashing on page load -->
+    <link rel="preload" as="image" href="http://localhost/assets/img/favicon/logo-lldikti-4.png">
+    <link rel="preload" href="http://localhost/assets/vendor/fonts/boxicons/boxicons.woff2" as="font" type="font/woff2" crossorigin>
+    <!-- laravel CRUD token -->
+    <meta name="csrf-token" content="">
+    <!-- Canonical SEO -->
+    <link rel="canonical" href="https://themeselection.com/item/sneat-free-bootstrap-html-laravel-admin-template/">
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="http://localhost/assets/img/icon.png" />
+    <!-- Include Styles -->
+    <!-- BEGIN: Theme CSS-->
+<!-- Fonts -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link
+    href="https://fonts.googleapis.com/css2?family=Public+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&display=swap"
+    rel="stylesheet">
+
+<link rel="stylesheet" href="http://localhost/assets/vendor/fonts/boxicons.css?id=cb2abd8588b1a15b00487f17a31ce6dd" />
+
+<!-- Core CSS -->
+<link rel="stylesheet" href="http://localhost/assets/vendor/css/core.css?id=55d83a3f34ab8f93237fd536f4357bbe" />
+<link rel="stylesheet" href="http://localhost/assets/vendor/css/theme-default.css?id=ad02d36a38b47334e07e25d3b9cd8393" />
+<link rel="stylesheet" href="http://localhost/assets/css/demo.css?id=26811a6be46b69571be58f693512c683" />
+<!-- Vendors CSS -->
+<link rel="stylesheet" href="http://localhost/assets/vendor/libs/perfect-scrollbar/perfect-scrollbar.css?id=858f7088631c9c1fe122f541dcad3a4d" />
+<!-- DataTables CSS with Bootstrap 5 -->
+<link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css" />
+<link rel="stylesheet" href="https://cdn.datatables.net/fixedheader/3.4.0/css/fixedHeader.bootstrap5.min.css">
+
+<!-- SPTJM Global DataTable Standardization CSS -->
+<link rel="stylesheet" href="http://localhost/assets/css/sptjm-datatable.css?v=1784606333" />
+<!-- SPTJM Global Custom Modern System CSS -->
+<link rel="stylesheet" href="http://localhost/assets/css/sptjm-custom.css?v=1784606333" />
+
+<!-- Vendor Styles -->
+
+
+<!-- Page Styles -->
+<style>
+.md2-page-header { display:flex; align-items:flex-start; justify-content:space-between; flex-wrap:wrap; gap:12px; margin-bottom:24px; }
+
+.md2-page-header .breadcrumb { margin:0; font-size:0.8rem; background:none; padding:0; }
+.md2-page-header .breadcrumb-item a { color:#696cff; text-decoration:none; }
+.md2-page-header .breadcrumb-item.active { color:#8592a3; }
+.md2-page-header .breadcrumb-item+.breadcrumb-item::before { color:#8592a3; }
+
+/* ── Status Filter Buttons ── */
+.md-status-filters {
+    display: flex;
+    gap: 8px;
+}
+.md-status-btn {
+    background-color: #fff;
+    border: 1px solid #e2e8f0;
+    color: #4a5568;
+    font-weight: 500;
+    font-size: 0.82rem;
+    padding: 5px 18px;
+    border-radius: 20px;
+    transition: all 0.2s;
+    cursor: pointer !important;
+    position: relative;
+    z-index: 10;
+    pointer-events: auto !important;
+}
+.md-status-btn.active {
+    background-color: #0b3d91;
+    border-color: #0b3d91;
+    color: #fff;
+}
+.md-status-btn:hover:not(.active) {
+    background-color: #f8fafc;
+    border-color: #cbd5e1;
+}
+</style>
+
+<!-- Stylesheets consolidated into sptjm-custom.css -->
+
+    <!-- Global zoom: scale overall UI on desktop -->
+    <style>
+        @media (min-width: 768px) {
+            html {
+                zoom: 1.0;
+            }
+        }
+    </style>
+    <!-- Make tables responsive: allow horizontal scrolling and ensure full-width tables -->
+    <style>
+        /* wrapper for tables to enable horizontal scroll on small screens */
+        .table-responsive {
+            width: 100%;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        /* ensure tables expand to container width when possible */
+        table {
+            width: 100% !important;
+            table-layout: auto;
+        }
+
+        /* make DataTables wrapper allow overflow if needed */
+        .dataTables_wrapper {
+            width: 100%;
+            overflow-x: auto;
+        }
+
+        /* small tweak: keep action columns from shrinking too much */
+        table th:last-child,
+        table td:last-child {
+            white-space: nowrap;
+        }
+    </style>
+
+    <script>
+        // Disable transitions instantly to prevent sidebar accordion from blinking/jumping on page load
+        document.documentElement.classList.add('sptjm-no-transition');
+        window.addEventListener('load', function() {
+            // Re-enable transitions once ALL scripts (including menu.js) have fully initialized
+            setTimeout(function() {
+                document.documentElement.classList.remove('sptjm-no-transition');
+            }, 50);
+        });
+    </script>
+    <style>
+        .sptjm-no-transition .layout-menu,
+        .sptjm-no-transition .layout-menu * {
+            transition: none !important;
+            animation: none !important;
+        }
+    </style>
+
+    <!-- Sidebar brand should stay visible when menu scrolls -->
+    <style>
+        /* Keep the brand/header above the scrollable menu items */
+        .layout-menu .app-brand {
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            background: inherit;
+        }
+
+        /* Ensure shadow doesn't cover brand text */
+        .layout-menu .menu-inner-shadow {
+            position: sticky;
+            top: 0;
+            z-index: 9;
+            background: inherit;
+        }
+
+        /* Menu content stays beneath the brand */
+        .layout-menu .menu-inner {
+            position: relative;
+            z-index: 1;
+        }
+            .sptjm-dashboard-title {
+                font-size: clamp(0.95rem, 2.2vw, 1.25rem);
+                line-height: 1.2;
+            }
+    </style>
+
+
+    <style>
+        /* ─── SIDEBAR BACKGROUND ─────────────────────── */
+        .bg-menu-theme {
+            background-color: #ffffff !important;
+            border-right: 1px solid #e2e8f0 !important;
+        }
+
+        /* ─── Sidebar Toggle Button (Chevron Left) ─── */
+        .layout-menu .app-brand .layout-menu-toggle {
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            width: 28px !important;
+            height: 28px !important;
+            border-radius: 50% !important;
+            background: #eef2ff !important;
+            border: 1px solid #e2e8f0 !important;
+            transition: all 0.2s ease !important;
+            cursor: pointer !important;
+            text-decoration: none !important;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05) !important;
+        }
+        .layout-menu .app-brand .layout-menu-toggle:hover {
+            background: #1a56db !important;
+            border-color: #1a56db !important;
+        }
+        .layout-menu .app-brand .layout-menu-toggle:hover i {
+            color: #ffffff !important;
+        }
+        
+        /* Hide logo subtitle when sidebar collapsed */
+        html.layout-menu-collapsed .sptjm-logo-subtitle {
+            opacity: 0 !important;
+            pointer-events: none !important;
+        }
+
+        /* ─── FORCE FULL-HIDE SIDEBAR for layout-menu-fixed + collapsed ─── */
+        /* Sneat excludes layout-menu-fixed from mini-collapse — we override
+           to fully hide the sidebar and expand content to full width. */
+        @media (min-width: 1200px) {
+            html.layout-menu-collapsed.layout-menu-fixed .layout-menu {
+                width: 0 !important;
+                min-width: 0 !important;
+                overflow: hidden !important;
+                transition: width 0.3s ease !important;
+            }
+            html.layout-menu-collapsed.layout-menu-fixed .layout-page {
+                padding-left: 0 !important;
+                transition: padding-left 0.3s ease !important;
+            }
+            html.layout-menu-collapsed.layout-menu-fixed .layout-navbar {
+                left: 0 !important;
+                transition: left 0.3s ease !important;
+            }
+        }
+
+        /* ─── TOP-LEVEL: Parent aktif atau terbuka (open) ─── */
+        .menu-vertical .menu-inner > .menu-item.active > .menu-link,
+        .menu-vertical .menu-inner > .menu-item.open > .menu-link {
+            background-color: #eef2ff !important;
+            color: #1a56db !important;
+            font-weight: 600 !important;
+            border-radius: 8px !important;
+        }
+        .menu-vertical .menu-inner > .menu-item.active > .menu-link i,
+        .menu-vertical .menu-inner > .menu-item.open > .menu-link i {
+            color: #1a56db !important;
+        }
+
+        /* Hilangkan strip/bar default bawaan template di parent */
+        .bg-menu-theme .menu-inner > .menu-item.active::before {
+            display: none !important;
+        }
+
+        /* ─── TOP-LEVEL: Parent biasa (non-aktif, tidak terbuka) ─── */
+        .menu-vertical .menu-inner > .menu-item:not(.active):not(.open) > .menu-link {
+            color: #4a5568 !important;
+        }
+        .menu-vertical .menu-inner > .menu-item:not(.active):not(.open) > .menu-link i {
+            color: #6b7a8d !important;
+        }
+
+        /* ─── TOP-LEVEL: Hover ─── */
+        .menu-vertical .menu-inner > .menu-item > .menu-link:hover {
+            background-color: #f1f5f9 !important;
+            border-radius: 8px !important;
+        }
+
+        /* ─── APP BRAND AREA (Logo Horizontal) ─── */
+        .layout-menu .app-brand.demo {
+            height: auto !important;
+            min-height: 72px !important;
+            padding: 12px 16px !important;
+            overflow: hidden !important;
+            border-bottom: 1px solid #eef0f4 !important;
+            display: flex !important;
+            flex-direction: row !important;
+            align-items: center !important;
+            justify-content: space-between !important;
+            width: 100% !important;
+            box-sizing: border-box !important;
+            position: relative !important;
+        }
+        .layout-menu .app-brand.demo .app-brand-link {
+            display: flex !important;
+            flex-direction: column !important;
+            align-items: flex-start !important;
+            gap: 2px !important;
+            overflow: hidden !important;
+            flex: 1 !important;
+        }
+
+        /* ─── MENU INNER: Kurangi padding atas/bawah ─── */
+        .menu-vertical .menu-inner {
+            padding-top: 0.5rem !important;
+            padding-bottom: 0.5rem !important;
+        }
+        /* Kurangi tinggi setiap menu link parent ─── */
+        .menu-vertical .menu-inner > .menu-item > .menu-link {
+            padding-top: 0.5rem !important;
+            padding-bottom: 0.5rem !important;
+        }
+
+        /* ─── MENU ITEM ICONS (Parent Level) ─── */
+        .menu-vertical .menu-inner > .menu-item > .menu-link .menu-icon {
+            font-size: 1.25rem !important;
+            color: #6b7a8d !important;
+            margin-right: 0.6rem !important;
+        }
+        .menu-vertical .menu-inner > .menu-item.active > .menu-link .menu-icon,
+        .menu-vertical .menu-inner > .menu-item.open > .menu-link .menu-icon {
+            color: #1a56db !important;
+        }
+
+        /* ─── SUBMENU WRAPPER (Garis Vertikal Kiri) ─── */
+        .menu-vertical .menu-sub {
+            border-left: 1.5px solid #dbeafe !important; /* garis vertikal tipis biru/abu */
+            margin-left: 2.15rem !important; /* diposisikan tepat di bawah ikon induk */
+            padding-left: 0 !important;
+            position: relative !important;
+            /* FIX OVERLAP: overflow harus visible agar parent .menu-item bisa menghitung
+               tingginya secara otomatis saat submenu nested dibuka. overflow:hidden
+               yang lama memblokir reflow dan menyebabkan sibling tumpang-tindih. */
+            overflow: visible !important;
+        }
+
+        /* ─── SAFETY NET: Pastikan .menu-item yang sudah terbuka selalu auto-height ─── */
+        /* Ketika menu.js selesai animasi, ia menghapus height inline via clearItemStyle().
+           Rule ini menjadi fallback agar tidak ada pixel-height yang tersisa
+           pada elemen yang sudah open tapi TIDAK sedang dianimasikan. */
+        .menu-vertical .menu-item.open:not(.menu-item-animating) {
+            height: auto !important;
+            overflow: visible !important;
+        }
+
+        /* FIX: Hentikan animasi transition pada menu-icon yang menyebabkan icon bocor ke submenu */
+        .menu-vertical .menu-inner > .menu-item > .menu-link .menu-icon,
+        .menu-vertical .menu-sub .menu-icon {
+            transition: none !important;
+            position: static !important;
+        }
+
+        /* FIX: Sembunyikan icon yang ada di dalam submenu (submenu tidak punya icon) */
+        .menu-vertical .menu-sub > .menu-item > .menu-link .menu-icon {
+            display: none !important;
+        }
+
+        /* Hapus total bullet dot default */
+        .menu-vertical .menu-sub > .menu-item > .menu-link::before {
+            display: none !important;
+            content: none !important;
+        }
+
+        /* ─── SUBMENU: Item biasa ─── */
+        .menu-vertical .menu-sub > .menu-item > .menu-link {
+            color: #4a5568 !important;
+            font-size: 0.84rem !important;
+            position: relative !important;
+            padding-left: 0.9rem !important; /* jarak teks ke garis vertikal kiri */
+            margin-left: 0 !important;
+        }
+
+        /* ─── SUBMENU: Item AKTIF (sesuai screenshot 2) ─── */
+        .menu-vertical .menu-sub > .menu-item.active > .menu-link {
+            background-color: #e8f0fe !important;
+            color: #1a56db !important;
+            font-weight: 700 !important;
+            /* Bar vertikal biru di kanan — sesuai screenshot */
+            border-right: 4px solid #1a56db !important;
+            border-radius: 4px 0 0 4px !important;
+            padding-left: 0.9rem !important;
+        }
+
+        /* ─── SUBMENU: Hover ─── */
+        .menu-vertical .menu-sub > .menu-item > .menu-link:hover {
+            background-color: #f8fafc !important;
+            border-radius: 4px !important;
+        }
+
+        /* ─── SECTION HEADER LABEL (misal "MASTER DATA") ─── */
+        .menu-inner > .menu-header > span {
+            color: #9ca3af !important;
+            font-size: 0.68rem !important;
+            font-weight: 700 !important;
+            letter-spacing: 0.08em !important;
+            text-transform: uppercase !important;
+        }
+
+        /* ─── STATUS BADGE GLOBAL STANDARDIZATION ─── */
+        /* Aktif = Biru */
+        .badge.bg-label-primary,
+        .badge-aktif,
+        .vdd-badge-aktif {
+            background-color: rgba(26, 86, 219, 0.1) !important;
+            color: #1a56db !important;
+            font-weight: 600 !important;
+            font-size: 0.73rem !important;
+            padding: 3px 10px !important;
+            border-radius: 20px !important;
+            border: 1px solid rgba(26,86,219,0.18) !important;
+            display: inline-block !important;
+        }
+        /* Tidak Aktif / Non / Merah */
+        .badge.bg-label-danger,
+        .badge-nonaktif,
+        .badge-tidak,
+        .vdd-badge-nonaktif,
+        .vdd-badge-tidak {
+            background-color: rgba(220, 38, 38, 0.1) !important;
+            color: #dc2626 !important;
+            font-weight: 600 !important;
+            font-size: 0.73rem !important;
+            padding: 3px 10px !important;
+            border-radius: 20px !important;
+            border: 1px solid rgba(220,38,38,0.18) !important;
+            display: inline-block !important;
+        }
+        /* Sukses = Hijau */
+        .badge.bg-label-success {
+            background-color: rgba(5, 150, 105, 0.1) !important;
+            color: #059669 !important;
+            font-weight: 600 !important;
+            font-size: 0.73rem !important;
+            padding: 3px 10px !important;
+            border-radius: 20px !important;
+            border: 1px solid rgba(5,150,105,0.18) !important;
+            display: inline-block !important;
+        }
+        /* Warning = Kuning */
+        .badge.bg-label-warning {
+            background-color: rgba(217, 119, 6, 0.1) !important;
+            color: #d97706 !important;
+            font-weight: 600 !important;
+            font-size: 0.73rem !important;
+            padding: 3px 10px !important;
+            border-radius: 20px !important;
+            border: 1px solid rgba(217,119,6,0.18) !important;
+            display: inline-block !important;
+        }
+        /* Info = Abu-abu */
+        .badge.bg-label-secondary,
+        .badge.bg-label-info {
+            background-color: rgba(100, 116, 139, 0.1) !important;
+            color: #64748b !important;
+            font-weight: 600 !important;
+            font-size: 0.73rem !important;
+            padding: 3px 10px !important;
+            border-radius: 20px !important;
+            border: 1px solid rgba(100,116,139,0.18) !important;
+            display: inline-block !important;
+        }
+
+        /* ─── LINK LIHAT DOKUMEN ─── */
+        a:has(> .bx-file),
+        a.link-lihat-dokumen {
+            color: #1a56db !important;
+            font-weight: 500 !important;
+            text-decoration: none !important;
+            background: transparent !important;
+            border: none !important;
+            box-shadow: none !important;
+            padding: 0 !important;
+        }
+        a:has(> .bx-file):hover,
+        a.link-lihat-dokumen:hover {
+            text-decoration: underline !important;
+        }
+
+        /* ─── TOMBOL SINKRONISASI (ORANGE) ─── */
+        .btn-sinkron-md,
+        button[class*="sinkron"],
+        .btn-sptjm-sinkron {
+            background-color: #d97706 !important;
+            color: #fff !important;
+            border: none !important;
+        }
+    </style>
+
+    <!-- Include Scripts for customizer, helper, analytics, config -->
+    <!-- laravel style -->
+<script src="http://localhost/assets/vendor/js/helpers.js"></script>
+
+<!--? Config:  Mandatory theme config file contain global vars & default theme options, Set your preferred theme option in this file.  -->
+<script src="http://localhost/assets/js/config.js"></script>
+
+<!-- Place this tag in your head or just before your close body tag. -->
+<script async defer src="https://buttons.github.io/buttons.js"></script>
+<script src="https://code.jquery.com/jquery-3.7.0.js"></script>
+
+<!-- Reusable SweetAlert helper (loads SweetAlert2 on demand) -->
+<script src="http://localhost/assets/js/sptjm-alert.js"></script>
+</head>
+
+<body>
+
+
+    <!-- Layout Content -->
+        <div class="layout-wrapper layout-content-navbar ">
+        <div class="layout-container">
+
+                                                <aside id="layout-menu" class="layout-menu menu-vertical menu bg-menu-theme">
+
+    <style>
+        /* --- Brand area layout --- */
+        .layout-menu .app-brand.demo {
+    padding: 12px 1.2rem 22px !important;
+    min-height: 90px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: flex-start !important;
+    gap: 10px !important;
+    border-bottom: 1px solid #eef0f4 !important;
+    margin-bottom: 12px !important;
+}
+    </style>
+
+    <!-- App Brand -->
+    <div class="app-brand demo">
+        <a href="http://localhost" class="app-brand-link" style="text-decoration:none;">
+            <img src="http://localhost/assets/img/favicon/logo-lldikti-4.png"
+                 alt="LLDIKTI 4"
+                 style="height: 38px; width: auto; display: block; max-width: 100%; object-fit: contain;">
+           <span class="sptjm-logo-subtitle"
+           style="color:#64748b;
+           font-size:1.15rem;
+           font-weight:700;
+           letter-spacing:2px;
+           text-transform:uppercase;
+           text-align:center;
+           display:block;
+           margin-top:2px;
+           margin-left:45px ;">
+    SPTJM ONLINE
+</span>
+        </a>
+        <a href="javascript:void(0);" class="layout-menu-toggle menu-link text-large ms-auto">
+            <i class="bx bx-chevron-left" style="font-size: 1.9rem !important; color: #1a56db !important;"></i>
+        </a>
+    </div>
+
+    <div class="menu-inner-shadow"></div>
+
+    <ul class="menu-inner pt-5 pb-3">
+                    
+
+            
+                            
+                
+                <li class="menu-item ">
+                    <a href="http://localhost/admin/dashboard"
+                        class="menu-link"
+                        >
+                                                    <i class="menu-icon tf-icons bx bx-grid-alt"></i>
+                                                <div>Dashboard</div>
+                                            </a>
+
+                    
+                                    </li>
+                                
+
+            
+                            
+                
+                <li class="menu-item ">
+                    <a href="javascript:void(0);"
+                        class="menu-link menu-toggle"
+                        >
+                                                    <i class="menu-icon tf-icons bx bx-data"></i>
+                                                <div>Master Data</div>
+                                            </a>
+
+                    
+                                            <ul class="menu-sub">
+                        
+            
+            <li class="menu-item ">
+                <a href="http://localhost/admin/daftar-pt"
+                    class="menu-link"
+                    >
+                                        <div>Data Perguruan Tinggi</div>
+                                    </a>
+
+                
+                            </li>
+                    
+            
+            <li class="menu-item ">
+                <a href="http://localhost/admin/master-dosen"
+                    class="menu-link"
+                    >
+                                        <div>Data Akun Dosen</div>
+                                    </a>
+
+                
+                            </li>
+                    
+            
+            <li class="menu-item ">
+                <a href="http://localhost/admin/data-bank"
+                    class="menu-link"
+                    >
+                                        <div>Data Bank</div>
+                                    </a>
+
+                
+                            </li>
+                    
+            
+            <li class="menu-item ">
+                <a href="http://localhost/admin/data-grade"
+                    class="menu-link"
+                    >
+                                        <div>Data Grade</div>
+                                    </a>
+
+                
+                            </li>
+                    
+            
+            <li class="menu-item ">
+                <a href="http://localhost/admin/grade-serdos"
+                    class="menu-link"
+                    >
+                                        <div>Data Grade Serdos</div>
+                                    </a>
+
+                
+                            </li>
+                    
+            
+            <li class="menu-item ">
+                <a href="http://localhost/admin/data-pajak"
+                    class="menu-link"
+                    >
+                                        <div>Data Pajak</div>
+                                    </a>
+
+                
+                            </li>
+                    
+            
+            <li class="menu-item ">
+                <a href="http://localhost/admin/jabatan"
+                    class="menu-link"
+                    >
+                                        <div>Data Jabatan</div>
+                                    </a>
+
+                
+                            </li>
+                    
+            
+            <li class="menu-item ">
+                <a href="http://localhost/admin/status-keaktifan"
+                    class="menu-link"
+                    >
+                                        <div>Status Keaktifan</div>
+                                    </a>
+
+                
+                            </li>
+                    
+            
+            <li class="menu-item ">
+                <a href="http://localhost/admin/status-pegawai"
+                    class="menu-link"
+                    >
+                                        <div>Status Pegawai</div>
+                                    </a>
+
+                
+                            </li>
+                    
+            
+            <li class="menu-item ">
+                <a href="http://localhost/admin/status-perubahan"
+                    class="menu-link"
+                    >
+                                        <div>Status Perubahan</div>
+                                    </a>
+
+                
+                            </li>
+                    
+            
+            <li class="menu-item ">
+                <a href="http://localhost/admin/master-kop-surat"
+                    class="menu-link"
+                    >
+                                        <div>Kop Surat</div>
+                                    </a>
+
+                
+                            </li>
+                    
+            
+            <li class="menu-item ">
+                <a href="http://localhost/admin/master-penandatangan"
+                    class="menu-link"
+                    >
+                                        <div>Penandatangan</div>
+                                    </a>
+
+                
+                            </li>
+            </ul>
+                                    </li>
+                                
+
+            
+                            
+                
+                <li class="menu-item ">
+                    <a href="javascript:void(0);"
+                        class="menu-link menu-toggle"
+                        >
+                                                    <i class="menu-icon tf-icons bx bx-id-card"></i>
+                                                <div>Data Dosen</div>
+                                            </a>
+
+                    
+                                            <ul class="menu-sub">
+                        
+            
+            <li class="menu-item ">
+                <a href="http://localhost/admin/data-dosen"
+                    class="menu-link"
+                    >
+                                        <div>Lihat Data Dosen</div>
+                                    </a>
+
+                
+                            </li>
+                    
+            
+            <li class="menu-item ">
+                <a href="http://localhost/admin/histori-dosen"
+                    class="menu-link"
+                    >
+                                        <div>Histori Data Dosen</div>
+                                    </a>
+
+                
+                            </li>
+                    
+            
+            <li class="menu-item ">
+                <a href="http://localhost/admin/monitoring-usulan-dosen"
+                    class="menu-link"
+                    >
+                                        <div>Monitoring Usulan Dosen</div>
+                                    </a>
+
+                
+                            </li>
+                    
+            
+            <li class="menu-item ">
+                <a href="http://localhost/admin/hapus-data-dosen-tidak-aktif"
+                    class="menu-link"
+                    >
+                                        <div>Hapus Data Dosen Tidak Aktif</div>
+                                    </a>
+
+                
+                            </li>
+                    
+            
+            <li class="menu-item ">
+                <a href="http://localhost/admin/skpp"
+                    class="menu-link"
+                    >
+                                        <div>SKPP</div>
+                                    </a>
+
+                
+                            </li>
+            </ul>
+                                    </li>
+                                
+
+            
+                            
+                
+                <li class="menu-item ">
+                    <a href="javascript:void(0);"
+                        class="menu-link menu-toggle"
+                        >
+                                                    <i class="menu-icon tf-icons bx bx-windows"></i>
+                                                <div>Data Sisternas</div>
+                                            </a>
+
+                    
+                                            <ul class="menu-sub">
+                        
+            
+            <li class="menu-item ">
+                <a href="http://localhost/admin/data-sisternas"
+                    class="menu-link"
+                    >
+                                        <div>Data Sisternas</div>
+                                    </a>
+
+                
+                            </li>
+                    
+            
+            <li class="menu-item ">
+                <a href="http://localhost/admin/cutoff-sisternas"
+                    class="menu-link"
+                    >
+                                        <div>Cut Off Data Sisternas</div>
+                                    </a>
+
+                
+                            </li>
+            </ul>
+                                    </li>
+                                
+
+            
+                            
+                
+                <li class="menu-item active open">
+                    <a href="javascript:void(0);"
+                        class="menu-link menu-toggle"
+                        >
+                                                    <i class="menu-icon tf-icons bx bx-money"></i>
+                                                <div>Proses Pembayaran</div>
+                                            </a>
+
+                    
+                                            <ul class="menu-sub">
+                        
+            
+            <li class="menu-item ">
+                <a href="http://localhost/admin/pengaturan-usulan"
+                    class="menu-link"
+                    >
+                                        <div>Pengaturan Usulan</div>
+                                    </a>
+
+                
+                            </li>
+                    
+            
+            <li class="menu-item ">
+                <a href="http://localhost/admin/usulan-sptjm"
+                    class="menu-link"
+                    >
+                                        <div>Monitoring Usulan</div>
+                                    </a>
+
+                
+                            </li>
+                    
+            
+            <li class="menu-item ">
+                <a href="javascript:void(0)"
+                    class="menu-link menu-toggle"
+                    >
+                                        <div>Rekapitulasi Usulan</div>
+                                    </a>
+
+                
+                                    <ul class="menu-sub">
+                        
+            
+            <li class="menu-item ">
+                <a href="http://localhost/admin/rekap-usulan-eligible"
+                    class="menu-link"
+                    >
+                                        <div>Eligible</div>
+                                    </a>
+
+                
+                            </li>
+                    
+            
+            <li class="menu-item ">
+                <a href="http://localhost/admin/rekap-usulan-non-el"
+                    class="menu-link"
+                    >
+                                        <div>Non Eligible</div>
+                                    </a>
+
+                
+                            </li>
+            </ul>
+                            </li>
+                    
+            
+            <li class="menu-item ">
+                <a href="http://localhost/admin/rekap-pencairan"
+                    class="menu-link"
+                    >
+                                        <div>Rekapitulasi Pencairan</div>
+                                    </a>
+
+                
+                            </li>
+                    
+            
+            <li class="menu-item ">
+                <a href="http://localhost/admin/laporan-keuangan"
+                    class="menu-link"
+                    >
+                                        <div>Laporan Keuangan</div>
+                                    </a>
+
+                
+                            </li>
+            </ul>
+                                    </li>
+                                
+
+            
+                            
+                
+                <li class="menu-item ">
+                    <a href="javascript:void(0);"
+                        class="menu-link menu-toggle"
+                        >
+                                                    <i class="menu-icon tf-icons bx bx-desktop"></i>
+                                                <div>Monitoring</div>
+                                            </a>
+
+                    
+                                            <ul class="menu-sub">
+                        
+            
+            <li class="menu-item ">
+                <a href="http://localhost/admin/monitoring-pembayaran"
+                    class="menu-link"
+                    >
+                                        <div>Monitoring Pembayaran</div>
+                                    </a>
+
+                
+                            </li>
+                    
+            
+            <li class="menu-item ">
+                <a href="http://localhost/admin/kekurangan-bayar"
+                    class="menu-link"
+                    >
+                                        <div>Kurang/Lebih Bayar</div>
+                                    </a>
+
+                
+                            </li>
+                    
+            
+            <li class="menu-item ">
+                <a href="http://localhost/admin/koreksi"
+                    class="menu-link"
+                    >
+                                        <div>Koreksi Data</div>
+                                    </a>
+
+                
+                            </li>
+                    
+            
+            <li class="menu-item ">
+                <a href="http://localhost/admin/sinkronisasi"
+                    class="menu-link"
+                    >
+                                        <div>Sinkronisasi Data</div>
+                                    </a>
+
+                
+                            </li>
+            </ul>
+                                    </li>
+                                
+
+            
+                            
+                
+                <li class="menu-item ">
+                    <a href="http://localhost/admin/complain"
+                        class="menu-link"
+                        >
+                                                    <i class="menu-icon tf-icons bx bx-message-square-dots"></i>
+                                                <div>Complain</div>
+                                            </a>
+
+                    
+                                    </li>
+                                
+
+            
+                            
+                
+                <li class="menu-item ">
+                    <a href="javascript:void(0);"
+                        class="menu-link menu-toggle"
+                        >
+                                                    <i class="menu-icon tf-icons bx bx-cog"></i>
+                                                <div>Pengaturan</div>
+                                            </a>
+
+                    
+                                            <ul class="menu-sub">
+                        
+            
+            <li class="menu-item ">
+                <a href="http://localhost/admin/pengguna-akun"
+                    class="menu-link"
+                    >
+                                        <div>Daftar Pengguna Akun</div>
+                                    </a>
+
+                
+                            </li>
+                    
+            
+            <li class="menu-item ">
+                <a href="http://localhost/admin/hak-akses-pic"
+                    class="menu-link"
+                    >
+                                        <div>Hak Akses PIC</div>
+                                    </a>
+
+                
+                            </li>
+                    
+            
+            <li class="menu-item ">
+                <a href="http://localhost/admin/tambah-versi"
+                    class="menu-link"
+                    >
+                                        <div>Tambah Versi</div>
+                                    </a>
+
+                
+                            </li>
+                    
+            
+            <li class="menu-item ">
+                <a href="http://localhost/admin/migrasi"
+                    class="menu-link"
+                    >
+                                        <div>Migrasi Data</div>
+                                    </a>
+
+                
+                            </li>
+                    
+            
+            <li class="menu-item ">
+                <a href="http://localhost/admin/background"
+                    class="menu-link"
+                    >
+                                        <div>Background</div>
+                                    </a>
+
+                
+                            </li>
+            </ul>
+                                    </li>
+                        </ul>
+
+</aside>
+                            
+
+            <!-- Layout page -->
+            <div class="layout-page">
+                <!-- BEGIN: Navbar-->
+                                                            <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<style>
+/* ─── NAVBAR — Unified, symmetric, proportional ─────────── */
+
+/* ── Navbar container ── */
+#layout-navbar {
+    background: #ffffff !important;
+    border-bottom: 1px solid #e2e8f0 !important;
+    box-shadow: 0 1px 8px rgba(0, 0, 0, 0.05) !important;
+    padding: 0 20px !important;
+    min-height: 58px !important;
+    height: 58px !important;
+}
+
+/* ── Inner nav row ── */
+#layout-navbar .navbar-nav-right {
+    width: 100% !important;
+    display: flex !important;
+    align-items: center !important;
+    height: 100% !important;
+    gap: 0 !important;
+}
+
+/* ── Hamburger toggle ── */
+.sptjm-nav-hamburger {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    width: 36px !important;
+    height: 36px !important;
+    border-radius: 8px !important;
+    background: transparent !important;
+    border: none !important;
+    cursor: pointer !important;
+    text-decoration: none !important;
+    transition: background 0.15s ease !important;
+    flex-shrink: 0 !important;
+    margin-right: 12px !important;
+}
+.sptjm-nav-hamburger:hover {
+    background: rgba(15, 57, 148, 0.07) !important;
+}
+.sptjm-nav-hamburger i {
+    font-size: 1.45rem !important;
+    color: #0f3994 !important;
+}
+
+/* Toggle icon open/closed state */
+html:not(.layout-menu-collapsed) .navbar-toggle-icon-open  { display: inline-block !important; }
+html:not(.layout-menu-collapsed) .navbar-toggle-icon-closed { display: none !important; }
+html.layout-menu-collapsed .navbar-toggle-icon-open  { display: none !important; }
+html.layout-menu-collapsed .navbar-toggle-icon-closed { display: inline-block !important; }
+
+/* Desktop (≥1200px): hide hamburger when sidebar expanded */
+@media (min-width: 1200px) {
+    html:not(.layout-menu-collapsed) .sptjm-nav-hamburger { display: none !important; }
+    html.layout-menu-collapsed .sptjm-nav-hamburger { display: flex !important; }
+}
+
+/* ── Page title ── */
+#layout-navbar .sptjm-nav-title {
+    font-size: 1.0rem !important;
+    font-weight: 600 !important;
+    color: #1e293b !important;
+    letter-spacing: -0.1px !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+}
+
+/* ── Divider between title and user info ── */
+.sptjm-nav-divider {
+    width: 1px;
+    height: 28px;
+    background: #e2e8f0;
+    flex-shrink: 0;
+    margin: 0 16px;
+}
+
+/* ── User info block ── */
+.sptjm-user-info-wrap {
+    display: flex !important;
+    align-items: center !important;
+    gap: 10px !important;
+    cursor: pointer !important;
+    text-decoration: none !important;
+    padding: 6px 0 !important;
+    flex-shrink: 0 !important;
+}
+.sptjm-user-info-wrap .sptjm-user-text {
+    text-align: right !important;
+    line-height: 1 !important;
+}
+.sptjm-user-info-wrap .sptjm-user-name {
+    display: block !important;
+    font-size: 0.84rem !important;
+    font-weight: 600 !important;
+    color: #1e293b !important;
+    line-height: 1.25 !important;
+}
+.sptjm-user-info-wrap .sptjm-user-role {
+    display: block !important;
+    font-size: 0.72rem !important;
+    font-weight: 400 !important;
+    color: #64748b !important;
+    line-height: 1.25 !important;
+}
+.sptjm-user-info-wrap .sptjm-avatar {
+    width: 34px !important;
+    height: 34px !important;
+    border-radius: 50% !important;
+    object-fit: cover !important;
+    border: 2px solid #e2e8f0 !important;
+    flex-shrink: 0 !important;
+}
+
+/* ── Dropdown arrow hidden ── */
+.dropdown-user .hide-arrow::after { display: none !important; }
+
+/* ── Dropdown menu ── */
+.dropdown-user .dropdown-menu {
+    min-width: 200px !important;
+    border: 1px solid #e2e8f0 !important;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.10) !important;
+    border-radius: 10px !important;
+    padding: 6px !important;
+    margin-top: 6px !important;
+}
+.dropdown-user .dropdown-item {
+    border-radius: 6px !important;
+    font-size: 0.84rem !important;
+    padding: 8px 12px !important;
+    color: #374151 !important;
+    font-weight: 400 !important;
+}
+.dropdown-user .dropdown-item:hover {
+    background: #f1f5f9 !important;
+    color: #1e293b !important;
+}
+</style>
+
+<!-- Navbar -->
+<nav class="layout-navbar container-xxl navbar navbar-expand-xl navbar-detached align-items-center bg-navbar-theme"
+    id="layout-navbar">
+        
+                <!-- Hamburger — always visible, toggles sidebar on all screen sizes -->
+                <a href="javascript:void(0);"
+                   class="sptjm-nav-hamburger layout-menu-toggle"
+                   aria-label="Toggle sidebar">
+                    <i class="bx bx-chevron-left navbar-toggle-icon-open"></i>
+                    <i class="bx bx-chevron-right navbar-toggle-icon-closed" style="display: none;"></i>
+                </a>
+
+                <div class="navbar-nav-right d-flex align-items-center" id="navbar-collapse">
+                    <!-- Title -->
+                    <div class="d-flex align-items-center flex-grow-1" style="min-width: 0;">
+                        <span class="sptjm-nav-title d-none d-md-inline">Dashboard Admin Tahun </span>
+                        <span class="sptjm-nav-title d-inline d-md-none" style="font-size:0.9rem;">Dashboard Admin </span>
+                    </div>
+                    <!-- /Title -->
+
+                    <ul class="navbar-nav flex-row align-items-center ms-auto">
+                        <!-- User -->
+                        <li class="nav-item navbar-dropdown dropdown-user dropdown">
+                                                        <a class="nav-link dropdown-toggle hide-arrow sptjm-user-info-wrap pe-0" href="javascript:void(0);" data-bs-toggle="dropdown">
+                                <div class="sptjm-user-text">
+                                    <span class="sptjm-user-name">Administrator</span>
+                                    <span class="sptjm-user-role">SystemBoot</span>
+                                </div>
+                                <img src="http://localhost/assets/img/avatars/user.png" alt="avatar" class="sptjm-avatar">
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-end">
+                                <li>
+                                    <a class="dropdown-item" href="javascript:void(0);">
+                                        <div class="d-flex align-items-center">
+                                            <div class="flex-shrink-0 me-3">
+                                                <div class="avatar avatar-online">
+                                                    <img src="http://localhost/assets/img/avatars/user.png" alt class="w-px-40 h-auto rounded-circle">
+                                                </div>
+                                            </div>
+                                            <div class="flex-grow-1">
+                                                <span class="fw-medium d-block text-dark">Administrator</span>
+                                                <small class="text-muted">SystemBoot</small>
+                                            </div>
+                                        </div>
+                                    </a>
+                                </li>
+                                <li><div class="dropdown-divider"></div></li>
+                                <li>
+                                    <form id="logout-form" action="http://localhost/logout" method="POST">
+                                        <input type="hidden" name="_token" value="" autocomplete="off">                                        <button type="button" id="btn-logout" class="dropdown-item">
+                                            <i class='bx bx-power-off me-2'></i>
+                                            <span class="align-middle">Log Out</span>
+                                        </button>
+                                    </form>
+                                </li>
+                            </ul>
+                        </li>
+                        <!--/ User -->
+                    </ul>
+                </div>
+                </nav>
+    <!-- / Navbar -->
+    <script>
+    document.addEventListener("DOMContentLoaded", () => {
+        const btnLogout = document.getElementById("btn-logout");
+        if (btnLogout) {
+            btnLogout.addEventListener('click', (e) => {
+                Swal.fire({
+                    title: "Apakah Anda Yakin?",
+                    text: "Kamu akan logout dan tidak bisa kembali!",
+                    icon: "warning",
+                    showCancelButton: true,
+                    confirmButtonColor: "#3085d6",
+                    cancelButtonColor: "#d33",
+                    confirmButtonText: "Ya, logout!",
+                    cancelButtonText: "Batal!"
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        const form = document.getElementById("logout-form");
+                        form.submit();
+                    }
+                });
+            });
+        }
+    });
+    </script>
+                                                    <!-- END: Navbar-->
+
+
+                <!-- Content wrapper -->
+                <div class="content-wrapper" style="position: relative; min-height: 80vh;">
+                                        <!-- Preloader to prevent FOUC on content area only -->
+                    <style>
+                        #sptjm-content-preloader {
+                            position: absolute;
+                            top: 0;
+                            left: 0;
+                            width: 100%;
+                            height: 100%;
+                            background: #f5f5f9; /* Match body background */
+                            z-index: 9999;
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                            transition: opacity 0.4s ease, visibility 0.4s ease;
+                            border-radius: inherit;
+                        }
+                        .sptjm-spinner {
+                            width: 48px;
+                            height: 48px;
+                            border: 4px solid #e2e8f0;
+                            border-bottom-color: #1a56db;
+                            border-radius: 50%;
+                            display: inline-block;
+                            box-sizing: border-box;
+                            animation: sptjm-rotation 1s linear infinite;
+                        }
+                        @keyframes sptjm-rotation {
+                            0% { transform: rotate(0deg); }
+                            100% { transform: rotate(360deg); }
+                        }
+                    </style>
+                    <div id="sptjm-content-preloader">
+                        <div style="display: flex; flex-direction: column; align-items: center; gap: 1rem;">
+                            <span class="sptjm-spinner"></span>
+                            <h6 style="color: #64748b; font-weight: 600; letter-spacing: 0.05em; font-family: 'Public Sans', sans-serif; margin: 0;">Memuat Data...</h6>
+                        </div>
+                    </div>
+                    <script>
+                        window.addEventListener('load', function() {
+                            var preloader = document.getElementById('sptjm-content-preloader');
+                            if(preloader) {
+                                preloader.style.opacity = '0';
+                                preloader.style.visibility = 'hidden';
+                                setTimeout(function() {
+                                    preloader.remove();
+                                }, 400);
+                            }
+                        });
+                    </script>
+                    
+                    <!-- Content -->
+                                                <div class="container-xxl flex-grow-1 container-p-y">
+                    
+                    
+
+<div class="md2-page-header">
+    <div class="page-titles">
+        <h1>Monitoring Pembayaran</h1>
+        <nav aria-label="breadcrumb"><ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="#">Monitoring</a></li>
+            <li class="breadcrumb-item active">Monitoring Pembayaran</li>
+        </ol></nav>
+    </div>
+</div>
+
+<div class="card" style="width: 100%; padding: 20px 10px 10px;">
+
+  
+  <form action="http://localhost/admin/monitoring-pembayaran" method="POST">
+    <input type="hidden" name="_token" value="" autocomplete="off">    <div class="row mb-3 mx-2">
+      <label class="col-sm-2 col-form-label"><b style="font-size: 12px;">NIDN / NUPTK</b></label>
+      <div class="col-sm-6">
+        <input type="text" class="form-control" name="nidn" id="search_nidn" value="314626737"
+          placeholder="Masukkan NIDN/NUPTK" required>
+      </div>
+      <div class="col-sm-2">
+        <button type="submit" class="btn btn-primary w-100">
+          <span class="tf-icons bx bx-search"></span>&nbsp; Cari
+        </button>
+      </div>
+    </div>
+
+    <div class="row mb-3 mx-2">
+      <label class="col-sm-2 col-form-label"><b style="font-size: 12px;">Tahun</b></label>
+      <div class="col-sm-2">
+        <select name="start_year" class="form-select">
+                                                <option value="2023" selected>2023</option>
+                          <option value="2024" >2024</option>
+                          <option value="2025" >2025</option>
+                          <option value="2026" >2026</option>
+                              </select>
+      </div>
+      <div class="col-auto d-flex align-items-center">
+        <strong style="margin:0 6px;">s/d</strong>
+      </div>
+      <div class="col-sm-2">
+        <select name="end_year" class="form-select">
+                                                <option value="2023" >2023</option>
+                          <option value="2024" >2024</option>
+                          <option value="2025" >2025</option>
+                          <option value="2026" selected>2026</option>
+                              </select>
+      </div>
+    </div>
+  </form>
+  
+    
+  <div class="row mb-2 mx-2 mt-3">
+    <label class="col-sm-2 col-form-label py-1" style="font-size:13px;font-weight:600;">NIDN - Nama</label>
+    <div class="col-sm-10">
+      <input id="hdr-nidn" type="text" class="form-control" readonly style="background:#eceef1;font-size:14px;font-weight:600;" value="314626737 - TEST DOSEN GURU BESAR 1050">
+    </div>
+  </div>
+  <div class="row mb-2 mx-2">
+    <label class="col-sm-2 col-form-label py-1" style="font-size:13px;font-weight:600;">Status Keaktifan</label>
+    <div class="col-sm-10">
+      <div class="form-control d-flex align-items-center" style="background:#eceef1;font-size:14px;min-height:38px;">
+        <span id="hdr-status-jenis" style="font-weight:700;color:#dc3545;">Non PNS</span>
+        <span class="mx-1">-</span>
+        <span id="hdr-status-aktif" style="font-weight:500;color:#4a5568;">Aktif</span>
+      </div>
+    </div>
+  </div>
+  <div class="row mb-2 mx-2">
+    <label class="col-sm-2 col-form-label py-1" style="font-size:13px;font-weight:600;">Perguruan Tinggi</label>
+    <div class="col-sm-10">
+      <input id="hdr-pt" type="text" class="form-control" readonly style="background:#eceef1;font-size:14px;" value="41057 - UNIVERSITAS TELKOM">
+    </div>
+  </div>
+
+  
+    <div class="row mx-2 mb-2 mt-1 g-2">
+    <div class="col-md-4">
+      <div class="card shadow-none border mb-0"><div class="card-body py-1 px-2">
+        <div class="d-flex align-items-center">
+          <span class="avatar-initial rounded bg-label-danger me-2" style="width:28px;height:28px;display:flex;align-items:center;justify-content:center;font-size:14px;"><i class="bx bx-upload"></i></span>
+          <div><span style="font-size:11px; font-weight:700; color:#1a1a2e; display:block;">Total Kewajiban (OUT)</span><strong id="sum-kewajiban" style="font-size:13px; color:#1a1a2e !important; font-weight:800 !important;">Rp 0</strong></div>
+        </div>
+      </div></div>
+    </div>
+    <div class="col-md-4">
+      <div class="card shadow-none border mb-0"><div class="card-body py-1 px-2">
+        <div class="d-flex align-items-center">
+          <span class="avatar-initial rounded bg-label-info me-2" style="width:28px;height:28px;display:flex;align-items:center;justify-content:center;font-size:14px;"><i class="bx bx-download"></i></span>
+          <div><span style="font-size:11px; font-weight:700; color:#1a1a2e; display:block;">Total Dibayar (IN)</span><strong id="sum-dibayar" style="font-size:13px; color:#1a1a2e !important; font-weight:800 !important;">Rp 0</strong></div>
+        </div>
+      </div></div>
+    </div>
+    <div class="col-md-4">
+      <div class="card shadow-none border mb-0"><div class="card-body py-1 px-2">
+        <div class="d-flex align-items-center">
+          <span id="sum-selisih-icon" class="avatar-initial rounded bg-label-success me-2" style="width:28px;height:28px;display:flex;align-items:center;justify-content:center;font-size:14px;"><i class="bx bx-transfer"></i></span>
+          <div><span style="font-size:11px; font-weight:700; color:#1a1a2e; display:block;">Total Selisih</span><strong id="sum-selisih" style="font-size:13px; color:#1a1a2e !important; font-weight:800 !important;" class="text-success">Rp 0</strong></div>
+        </div>
+      </div></div>
+    </div>
+  </div>
+
+  <hr class="my-2">
+
+  <div class="d-flex justify-content-between align-items-end flex-wrap gap-3 mb-3">
+    <!-- Kiri: Filter Tahun & Tabs -->
+    <div class="d-flex align-items-end gap-3">
+      <div>
+        <label class="form-label mb-1" style="font-size:11px;">Filter Tahun</label>
+        <select name="tahun_versi" class="form-select form-select-sm">
+                      <option value="2023" >2023</option>
+                      <option value="2024" selected>2024</option>
+                      <option value="2025" >2025</option>
+                      <option value="2026" >2026</option>
+                  </select>
+      </div>
+      
+      <div class="md-status-filters">
+                <button type="button" class="md-status-btn active" data-jenis="sptjm">SPTJM</button>
+              </div>
+    </div>
+
+    <!-- Kanan: Tombol Cetak -->
+    <div class="d-flex gap-2">
+      <form action="http://localhost/admin/monitoring-pembayaran/export-excel" method="POST">
+        <input type="hidden" name="_token" value="" autocomplete="off">        <input type="hidden" name="nidn" value="314626737">
+        <input type="hidden" name="tahun_versi" id="export_tahun_versi" value="2024">
+        <input type="hidden" name="jenis_tunjangan" id="export_jenis_tunjangan" value="sptjm">
+        <button type="submit" class="btn btn-success btn-sm">
+          <span class="tf-icons bx bx-download"></span>&nbsp; Cetak
+        </button>
+      </form>
+
+      <form action="http://localhost/admin/monitoring-pembayaran/cetak-spt" method="POST">
+        <input type="hidden" name="_token" value="" autocomplete="off">        <input type="hidden" name="nidn" value="314626737">
+        <input type="hidden" name="tahun_versi" id="cetak_spt_tahun_versi" value="2024">
+        <button type="submit" class="btn btn-primary btn-sm">
+          <span class="tf-icons bx bx-printer"></span>&nbsp; Cetak SPT
+        </button>
+      </form>
+
+      <a
+        href="http://localhost/admin/monitoring-pembayaran/cek-koordinat-spt-pdf?nidn=314626737&amp;tahun_versi=2024"
+        target="_blank"
+        rel="noopener"
+        class="btn btn-outline-danger btn-sm d-none"
+      >
+        <span class="tf-icons bx bx-target-lock"></span>&nbsp; Cek Koordinat
+      </a>
+    </div>
+  </div>
+  
+  <input type="hidden" name="start_year" id="hidden_start_year" value="2023">
+  <input type="hidden" name="end_year" id="hidden_end_year" value="2026">
+  <input type="hidden" name="jenis_tunjangan" id="hidden_jenis_tunjangan" value="sptjm">
+
+  <style>
+    .mp-tbl{font-size:12px;line-height:1.3}
+    .mp-tbl th,.mp-tbl td{padding:3px 5px!important;vertical-align:middle}
+    .mp-tbl.tukin-wrap th { white-space: normal !important; min-width: 70px; word-break: break-word; }
+    .mp-tbl.tukin-wrap td, .mp-tbl.tukin-wrap th.col-bulan { white-space: nowrap !important; min-width: auto; word-break: normal; }
+  </style>
+    <div id="mp-table-wrapper" class="table-responsive text-nowrap mt-2" style="overflow:auto;padding-right:0;">
+    <table class="table table-bordered table-hover table-sm mp-tbl " id="mp-table" style="width:100%" data-has-tkgb="0">
+            <thead>
+        <tr>
+          <th rowspan="2" class="text-center align-middle">Tahun</th>
+          <th rowspan="2" class="text-center align-middle">Bulan</th>
+          <th rowspan="2" class="text-center align-middle">Kode Usulan</th>
+          <th rowspan="2" class="text-center align-middle">Jabatan / Gol/MK</th>
+          <th rowspan="2" class="text-center align-middle">Gaji</th>
+          <th colspan="2" class="text-center align-middle">Nominal</th>
+          <th rowspan="2" class="text-center align-middle">NO SP2D</th>
+          <th rowspan="2" class="text-center align-middle">TGL SP2D</th>
+                    <th rowspan="2" class="text-center align-middle">Selisih</th>
+                    <th rowspan="2" class="text-center align-middle">Status</th>
+        </tr>
+        <tr>
+          <th class="text-center align-middle">Kotor TPD</th>
+          <th class="text-center align-middle">Bersih TPD</th>
+        </tr>
+      </thead>
+      <tbody>
+                        <tr>
+          <td class="text-center">2024</td>
+          <td>Januari</td>
+          <td class="text-center">-</td>
+          <td class="text-center">- / - - -</td>
+          <td class="text-end">0</td>
+          <td class="text-end">0</td>
+          <td class="text-end">0</td>
+          <td class="text-center" style="font-size:11px;">-</td>
+                    <td class="text-center" style="font-size:11px;">-</td>
+                              <td class="text-end fw-bold text-success">0</td>
+                    <td class="text-center"> - </td>
+        </tr>
+                        <tr>
+          <td class="text-center">2024</td>
+          <td>Februari</td>
+          <td class="text-center">-</td>
+          <td class="text-center">- / - - -</td>
+          <td class="text-end">0</td>
+          <td class="text-end">0</td>
+          <td class="text-end">0</td>
+          <td class="text-center" style="font-size:11px;">-</td>
+                    <td class="text-center" style="font-size:11px;">-</td>
+                              <td class="text-end fw-bold text-success">0</td>
+                    <td class="text-center"> - </td>
+        </tr>
+                        <tr>
+          <td class="text-center">2024</td>
+          <td>Maret</td>
+          <td class="text-center">-</td>
+          <td class="text-center">- / - - -</td>
+          <td class="text-end">0</td>
+          <td class="text-end">0</td>
+          <td class="text-end">0</td>
+          <td class="text-center" style="font-size:11px;">-</td>
+                    <td class="text-center" style="font-size:11px;">-</td>
+                              <td class="text-end fw-bold text-success">0</td>
+                    <td class="text-center"> - </td>
+        </tr>
+                        <tr>
+          <td class="text-center">2024</td>
+          <td>April</td>
+          <td class="text-center">-</td>
+          <td class="text-center">- / - - -</td>
+          <td class="text-end">0</td>
+          <td class="text-end">0</td>
+          <td class="text-end">0</td>
+          <td class="text-center" style="font-size:11px;">-</td>
+                    <td class="text-center" style="font-size:11px;">-</td>
+                              <td class="text-end fw-bold text-success">0</td>
+                    <td class="text-center"> - </td>
+        </tr>
+                        <tr>
+          <td class="text-center">2024</td>
+          <td>Mei</td>
+          <td class="text-center">-</td>
+          <td class="text-center">- / - - -</td>
+          <td class="text-end">0</td>
+          <td class="text-end">0</td>
+          <td class="text-end">0</td>
+          <td class="text-center" style="font-size:11px;">-</td>
+                    <td class="text-center" style="font-size:11px;">-</td>
+                              <td class="text-end fw-bold text-success">0</td>
+                    <td class="text-center"> - </td>
+        </tr>
+                        <tr>
+          <td class="text-center">2024</td>
+          <td>Juni</td>
+          <td class="text-center">-</td>
+          <td class="text-center">- / - - -</td>
+          <td class="text-end">0</td>
+          <td class="text-end">0</td>
+          <td class="text-end">0</td>
+          <td class="text-center" style="font-size:11px;">-</td>
+                    <td class="text-center" style="font-size:11px;">-</td>
+                              <td class="text-end fw-bold text-success">0</td>
+                    <td class="text-center"> - </td>
+        </tr>
+                        <tr>
+          <td class="text-center">2024</td>
+          <td>Juli</td>
+          <td class="text-center">-</td>
+          <td class="text-center">- / - - -</td>
+          <td class="text-end">0</td>
+          <td class="text-end">0</td>
+          <td class="text-end">0</td>
+          <td class="text-center" style="font-size:11px;">-</td>
+                    <td class="text-center" style="font-size:11px;">-</td>
+                              <td class="text-end fw-bold text-success">0</td>
+                    <td class="text-center"> - </td>
+        </tr>
+                        <tr>
+          <td class="text-center">2024</td>
+          <td>Agustus</td>
+          <td class="text-center">-</td>
+          <td class="text-center">- / - - -</td>
+          <td class="text-end">0</td>
+          <td class="text-end">0</td>
+          <td class="text-end">0</td>
+          <td class="text-center" style="font-size:11px;">-</td>
+                    <td class="text-center" style="font-size:11px;">-</td>
+                              <td class="text-end fw-bold text-success">0</td>
+                    <td class="text-center"> - </td>
+        </tr>
+                        <tr>
+          <td class="text-center">2024</td>
+          <td>September</td>
+          <td class="text-center">-</td>
+          <td class="text-center">- / - - -</td>
+          <td class="text-end">0</td>
+          <td class="text-end">0</td>
+          <td class="text-end">0</td>
+          <td class="text-center" style="font-size:11px;">-</td>
+                    <td class="text-center" style="font-size:11px;">-</td>
+                              <td class="text-end fw-bold text-success">0</td>
+                    <td class="text-center"> - </td>
+        </tr>
+                        <tr>
+          <td class="text-center">2024</td>
+          <td>Oktober</td>
+          <td class="text-center">-</td>
+          <td class="text-center">- / - - -</td>
+          <td class="text-end">0</td>
+          <td class="text-end">0</td>
+          <td class="text-end">0</td>
+          <td class="text-center" style="font-size:11px;">-</td>
+                    <td class="text-center" style="font-size:11px;">-</td>
+                              <td class="text-end fw-bold text-success">0</td>
+                    <td class="text-center"> - </td>
+        </tr>
+                        <tr>
+          <td class="text-center">2024</td>
+          <td>November</td>
+          <td class="text-center">-</td>
+          <td class="text-center">- / - - -</td>
+          <td class="text-end">0</td>
+          <td class="text-end">0</td>
+          <td class="text-end">0</td>
+          <td class="text-center" style="font-size:11px;">-</td>
+                    <td class="text-center" style="font-size:11px;">-</td>
+                              <td class="text-end fw-bold text-success">0</td>
+                    <td class="text-center"> - </td>
+        </tr>
+                        <tr>
+          <td class="text-center">2024</td>
+          <td>Desember</td>
+          <td class="text-center">-</td>
+          <td class="text-center">- / - - -</td>
+          <td class="text-end">0</td>
+          <td class="text-end">0</td>
+          <td class="text-end">0</td>
+          <td class="text-center" style="font-size:11px;">-</td>
+                    <td class="text-center" style="font-size:11px;">-</td>
+                              <td class="text-end fw-bold text-success">0</td>
+                    <td class="text-center"> - </td>
+        </tr>
+                <tr class="fw-bold table-light">
+          <td colspan="4" class="text-center">Jumlah</td>
+          <td class="text-end">0</td>
+          <td class="text-end">0</td>
+          <td class="text-end">0</td>
+          <td colspan="4"></td>
+        </tr>
+      </tbody>
+              
+              <tr class="fw-bold" style="background-color: #ffdcdc">
+          <td colspan="4" class="text-center">Pembayaran Kekurangan</td>
+          <td></td>
+          <td class="text-end">0</td>
+          <td class="text-end">0</td>
+          <td colspan="4"></td>
+        </tr>
+        <tr class="fw-bold" style="background-color: #dbeafe">
+          <td colspan="4" class="text-center">Pengembalian Kelebihan</td>
+          <td></td>
+          <td class="text-end">0</td>
+          <td class="text-end">0</td>
+          <td colspan="4"></td>
+        </tr>
+        <tr class="fw-bold" style="background-color: #d1fae5">
+          <td colspan="4" class="text-center">Total Akhir</td>
+          <td class="text-end">0</td>
+          <td class="text-end">0</td>
+          <td class="text-end">0</td>
+          <td colspan="4"></td>
+        </tr>
+            </tbody>
+    </table>
+  </div>
+
+  <hr class="mt-5 mb-4">
+  <h6 class="text-start px-2 fw-bold" style="color: #566a7f;">Uraian Pembayaran</h6>
+  
+  <div class="table-responsive text-nowrap mb-4" style="overflow:auto; padding-right:0;">
+    <table class="table table-bordered table-hover" id="tabel-riwayat" style="width:100%">
+      <thead>
+        <tr>
+          <th class="text-center">No</th>
+          <th class="text-center">Uraian Pembayaran</th>
+          <th class="text-center">Bulan</th>
+          <th class="text-center">Nominal</th>
+          <th class="text-center">Pajak</th>
+          <th class="text-center">Bersih</th>
+          <th class="text-center">No SP2D</th>
+          <th class="text-center">Tanggal</th>
+        </tr>
+      </thead>
+      <tbody>
+                        <tr>
+          <td colspan="8" class="text-center">Tidak ada data riwayat pembayaran</td>
+        </tr>
+                        <tr class="fw-bold table-light">
+          <td colspan="3" class="text-start">Total Pembayaran</td>
+          <td class="text-end">0</td>
+          <td class="text-end">0</td>
+          <td class="text-end">0</td>
+          <td colspan="2"></td>
+        </tr>
+        <tr class="fw-bold" style="background-color: #ffdcdc;">
+          <td colspan="3" class="text-start">Pembayaran Kekurangan </td>
+          <td class="text-end">0</td>
+          <td class="text-end">0</td>
+          <td class="text-end">0</td>
+          <td colspan="2"></td>
+        </tr>
+        <tr class="fw-bold" style="background-color: #dbeafe;">
+          <td colspan="3" class="text-start">Pengembalian Kelebihan </td>
+          <td class="text-end">0</td>
+          <td class="text-end">0</td>
+          <td class="text-end">0</td>
+          <td colspan="2"></td>
+        </tr>
+        <tr class="fw-bold" style="background-color: #d1fae5;">
+          <td colspan="3" class="text-start">Total Akhir</td>
+          <td class="text-end">0</td>
+          <td class="text-end">0</td>
+          <td class="text-end">0</td>
+          <td colspan="2"></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const filterSelect = document.querySelector('select[name="tahun_versi"]');
+      if (!filterSelect) return;
+      const token = document.querySelector('input[name="_token"]')?.value;
+      const nidnInput = document.getElementById('search_nidn');
+      const startYearInput = document.getElementById('hidden_start_year');
+      const endYearInput = document.getElementById('hidden_end_year');
+      const jenisTunjanganInput = document.getElementById('hidden_jenis_tunjangan');
+      let currentJenis = jenisTunjanganInput ? jenisTunjanganInput.value : 'sptjm';
+      
+      const fmt = n => Number(n).toLocaleString('id-ID',{maximumFractionDigits:0});
+      const fmtDec = n => Number(n).toLocaleString('id-ID',{minimumFractionDigits:2, maximumFractionDigits:2});
+      const statusCfg = {usulan:['bg-label-warning','Usulan'],proses:['bg-label-info','Proses'],kurang:['bg-label-danger','Kurang'],lebih:['bg-label-secondary','Lebih'],selesai:['bg-label-success','Selesai']};
+
+      function loadData() {
+        const tahun = filterSelect.value, nidn = nidnInput?.value||'', sy = startYearInput?.value||'', ey = endYearInput?.value||'';
+        const exy = document.getElementById('export_tahun_versi'); if(exy) exy.value=tahun;
+        const csy = document.getElementById('cetak_spt_tahun_versi'); if(csy) csy.value=tahun;
+        if(jenisTunjanganInput) jenisTunjanganInput.value = currentJenis;
+
+        // Update active class on buttons
+        document.querySelectorAll('.md-status-btn').forEach(btn => {
+            btn.classList.remove('active');
+            if (btn.getAttribute('data-jenis') === currentJenis) {
+                btn.classList.add('active');
+            }
+        });
+
+        // Toggle wrap untuk tabel khusus tukin
+        const wrapper = document.getElementById('mp-table-wrapper');
+        const table = document.getElementById('mp-table');
+        if (wrapper) {
+            if (currentJenis === 'tukin') {
+                wrapper.classList.remove('text-nowrap');
+                if (table) table.classList.add('tukin-wrap');
+            } else {
+                wrapper.classList.add('text-nowrap');
+                if (table) table.classList.remove('tukin-wrap');
+            }
+        }
+
+        // Tampilkan state loading agar tidak terasa "mentok"
+        filterSelect.disabled = true;
+
+        fetch("http://localhost/admin/monitoring-pembayaran/data", {
+          method:'POST', headers:{'Content-Type':'application/json','X-CSRF-TOKEN':token},
+          body: JSON.stringify({nidn,start_year:sy,end_year:ey,tahun_versi:tahun,jenis_tunjangan:currentJenis})
+        }).then(r=>r.json()).then(data=>{
+          filterSelect.disabled = false;
+          if(!data.success){
+              alert("Gagal memuat data: " + data.message);
+              console.error(data.message);
+              return;
+          }
+          const h=data.header||{};
+
+          // Header
+          const el1=document.getElementById('hdr-nidn'); if(el1) el1.value=(h.NIDN||'')+' - '+(h.Nama||'');
+          const spanJenis=document.getElementById('hdr-status-jenis');
+          const spanAktif=document.getElementById('hdr-status-aktif');
+          if(spanJenis && spanAktif) {
+              const j=(h.Jenis||'').toUpperCase(), pns=j.indexOf('PNS')!==-1&&j.indexOf('NON')===-1;
+              spanJenis.textContent = pns ? 'PNS' : 'Non PNS';
+              spanJenis.style.color = pns ? '#0056b3' : '#dc3545';
+              spanAktif.textContent = h.Aktif==1 ? 'Aktif' : 'Tidak Aktif';
+          }
+          const el3=document.getElementById('hdr-pt'); if(el3) el3.value=(h.Kode_PT||'')+' - '+(h.PTS||'');
+
+
+          const sm=data.summary||{};
+          const ek=document.getElementById('sum-kewajiban'); if(ek) ek.textContent='Rp '+fmt(sm.totalKewajiban||0);
+          const ed=document.getElementById('sum-dibayar'); if(ed) ed.textContent='Rp '+fmt(sm.totalDibayar||0);
+          const es=document.getElementById('sum-selisih');
+          if(es){es.textContent='Rp '+fmt(sm.totalSelisih||0); es.className=(sm.totalSelisih||0)==0?'text-success':'text-danger';}
+          const si=document.getElementById('sum-selisih-icon');
+          if(si){si.className='avatar-initial rounded '+((sm.totalSelisih||0)==0?'bg-label-success':'bg-label-danger')+' me-2';}
+
+          let isGuruBesar = false;
+          if (data.jabatanBulanan) {
+              let keys = Object.keys(data.jabatanBulanan);
+              for (let i = 0; i < keys.length; i++) {
+                  let jb = String(data.jabatanBulanan[keys[i]] || '').toLowerCase();
+                  if (jb.includes('guru besar') || jb.includes('profesor')) {
+                      isGuruBesar = true;
+                      break;
+                  }
+              }
+          }
+          let hasTkgb = isGuruBesar;
+          const tbl=document.getElementById('mp-table');
+          if(tbl) tbl.dataset.hasTkgb=hasTkgb?'1':'0';
+
+          const thead=tbl?.querySelector('thead');
+          if(thead){
+            if (currentJenis === 'tukin') {
+                thead.innerHTML=`<tr><th class="text-center align-middle">Tahun</th><th class="text-center align-middle col-bulan">Bulan</th><th class="text-center align-middle">Kode Usulan</th><th class="text-center align-middle">Jabatan / Gol-MK</th><th class="text-center align-middle">Nominal TUKIN</th><th class="text-center align-middle">% KD</th><th class="text-center align-middle">Nominal Kinerja Dasar</th><th class="text-center align-middle">% KP</th><th class="text-center align-middle">Nominal Kinerja Prestasi</th><th class="text-center align-middle">Nominal Bersih TPD</th><th class="text-center align-middle">% PP </th><th class="text-center align-middle">Potongan Periodik</th><th class="text-center align-middle">Nilai Bersih TUKIN</th><th class="text-center align-middle">No SP2D</th><th class="text-center align-middle">Tgl SP2D</th><th class="text-center align-middle">Status</th></tr>`;
+            } else if (currentJenis === 'sptjm') {
+                thead.innerHTML=`<tr><th rowspan="2" class="text-center align-middle">Tahun</th><th rowspan="2" class="text-center align-middle">Bulan</th><th rowspan="2" class="text-center align-middle">Kode Usulan</th><th rowspan="2" class="text-center align-middle">Jabatan / Gol/MK</th><th rowspan="2" class="text-center align-middle">Gaji</th><th colspan="2" class="text-center align-middle">Nominal</th><th rowspan="2" class="text-center align-middle">NO SP2D</th><th rowspan="2" class="text-center align-middle">TGL SP2D</th>${!data.isPns ? '<th rowspan="2" class="text-center align-middle">Selisih</th>' : ''}<th rowspan="2" class="text-center align-middle">Status</th></tr><tr><th class="text-center align-middle">Kotor TPD</th><th class="text-center align-middle">Bersih TPD</th></tr>`;
+            } else {
+                thead.innerHTML=`<tr><th class="text-center">Tahun</th><th class="text-center">Bulan</th><th class="text-center">Jabatan / Gol-MK</th><th class="text-center">Gaji</th><th class="text-center">Nominal SPTJM</th>${hasTkgb?'<th class="text-center tkgb-col">Nominal TUKIN</th>':''}<th class="text-center">Bersih SPTJM</th>${hasTkgb?'<th class="text-center tkgb-col">Bersih TUKIN</th>':''}<th class="text-center">NO SP2D</th><th class="text-center">TGL SP2D</th><th class="text-center">Selisih</th><th class="text-center">Status</th></tr>`;
+            }
+          }
+
+          const tbody=tbl?.querySelector('tbody'); 
+          if(tbody) {
+            tbody.innerHTML='';
+            const months=data.months||[], sb=data.selisihBulanan||[], stb=data.statusBulanan||[];
+            const tkc=(v)=>hasTkgb?`<td class="text-end tkgb-col">${fmt(v)}</td>`:'';
+            
+            let totGaji=0, totDasar=0, totPrestasi=0, totBersihTpd=0, totPotongan=0, totNilaiBersih=0;
+
+            if (currentJenis === 'tukin') {
+                for(let i=0;i<months.length;i++){
+                    const st=stb[i];
+                    let stH='-'; if(st&&statusCfg[st]) stH=`<span class="badge ${statusCfg[st][0]}" style="font-size:10px">${statusCfg[st][1]}</span>`; else if(st&&st.startsWith('kode:')) stH=`<span class="badge bg-label-secondary" style="font-size:10px">${st.substring(5)}</span>`;
+                    
+                    const nominalTukin = data.gajiBulanan[i] ?? 0;
+                    
+                    const persenDasar = data.tukinDasar ? (data.tukinDasar[i] ?? 0.60) : 0.60;
+                    const persenPrestasi = data.tukinPrestasi ? (data.tukinPrestasi[i] ?? 0) : 0;
+                    const persenPotongan = data.tukinPotongan ? (data.tukinPotongan[i] ?? 0) : 0;
+                    
+                    const nominalDasar = nominalTukin * persenDasar;
+                    const nominalPrestasi = nominalTukin * persenPrestasi;
+                    const nominalBersihTpd = data.bersihTpd ? (data.bersihTpd[i] ?? 0) : 0;
+                    const nominalPotongan = nominalTukin * persenPotongan;
+                    
+                    const nilaiBersihTukin = nominalDasar + nominalPrestasi - nominalBersihTpd - nominalPotongan;
+
+                    let jb = data.jabatanBulanan[i] ?? '-';
+                    let gl = data.golonganBulanan[i] ?? '-';
+                    let mk = data.tahunBulanan[i] ?? '-';
+                    const jabatanText = `${jb} / ${gl}-${mk}`;
+                    
+                    let tglMain = data.tglSp2d[i] ?? '-';
+                    if (tglMain !== '' && tglMain !== '-') {
+                        const dMain = new Date(tglMain);
+                        if(!isNaN(dMain)) {
+                            const d = String(dMain.getDate()).padStart(2, '0');
+                            const m = String(dMain.getMonth() + 1).padStart(2, '0');
+                            const y = dMain.getFullYear();
+                            tglMain = `${d}/${m}/${y}`;
+                        }
+                    }
+
+                    totGaji += nominalTukin; totDasar += nominalDasar; totPrestasi += nominalPrestasi;
+                    totBersihTpd += nominalBersihTpd; totPotongan += nominalPotongan; totNilaiBersih += nilaiBersihTukin;
+                    
+                    const pDasarStr = String(Math.round(persenDasar * 100 * 100) / 100) + '%';
+                    const pPrestasiStr = String(Math.round(persenPrestasi * 100 * 100) / 100) + '%';
+                    const pPotonganStr = String(Math.round(persenPotongan * 100 * 100) / 100) + '%';
+
+                    tbody.innerHTML += `<tr><td class="text-center">${data.selectedYear||'-'}</td><td class="col-bulan">${months[i]}</td><td class="text-center">${data.kodeUsulanBulanan[i]??'-'}</td><td class="text-center">${jabatanText}</td><td class="text-end">${fmt(nominalTukin)}</td><td class="text-center">${pDasarStr}</td><td class="text-end">${fmt(nominalDasar)}</td><td class="text-center">${pPrestasiStr}</td><td class="text-end">${fmt(nominalPrestasi)}</td><td class="text-end">${fmt(nominalBersihTpd)}</td><td class="text-center">${pPotonganStr}</td><td class="text-end">${fmt(nominalPotongan)}</td><td class="text-end">${fmt(nilaiBersihTukin)}</td><td class="text-center" style="font-size:11px">${data.noSp2d[i]??'-'}</td><td class="text-center" style="font-size:11px">${tglMain}</td><td class="text-center">${stH}</td></tr>`;
+                }
+                tbody.innerHTML += `<tr class="fw-bold table-light"><td colspan="4" class="text-center">Jumlah</td><td class="text-end">${fmt(totGaji)}</td><td></td><td class="text-end">${fmt(totDasar)}</td><td></td><td class="text-end">${fmt(totPrestasi)}</td><td class="text-end">${fmt(totBersihTpd)}</td><td></td><td class="text-end">${fmt(totPotongan)}</td><td class="text-end">${fmt(totNilaiBersih)}</td><td colspan="3"></td></tr>`;
+              } else if (currentJenis === 'sptjm') {
+                for(let i=0;i<months.length;i++){
+                  const st=stb[i];
+                  let stH='-'; if(st&&statusCfg[st]) stH=`<span class="badge ${statusCfg[st][0]}" style="font-size:10px">${statusCfg[st][1]}</span>`; else if(st&&st.startsWith('kode:')) stH=`<span class="badge bg-label-secondary" style="font-size:10px">${st.substring(5)}</span>`;
+                  
+                  let tglMain=data.tglSp2d[i]??'-';
+                  if(tglMain!=='-'){ try{ const pd=new Date(tglMain); if(!isNaN(pd)) tglMain=('0'+pd.getDate()).slice(-2)+'/'+('0'+(pd.getMonth()+1)).slice(-2)+'/'+pd.getFullYear(); }catch(e){} }
+                  
+                  const gaji = data.gajiBulanan[i]??0;
+                  const kotorTpdCol = `<td class="text-end">${fmt(data.kotorTpd[i]??0)}</td>`;
+                  const bersihTpdCol = `<td class="text-end">${fmt(data.bersihTpd[i]??0)}</td>`;
+                  const nomCols = kotorTpdCol + bersihTpdCol;
+                  
+                  let selTd = '';
+                  if (!data.isPns) {
+                      let s = sb[i]||0;
+                      let sc=s<0?'text-end text-danger fw-bold':(s>0?'text-end text-success fw-bold':'text-end text-success fw-bold');
+                      let pfx=s<0?'-':(s>0?'+':'');
+                      selTd = `<td class="${sc}">${pfx}${fmt(Math.abs(s))}</td>`;
+                  }
+                  
+                  tbody.innerHTML+=`<tr><td class="text-center">${data.selectedYear||'-'}</td><td>${months[i]}</td><td class="text-center">${data.kodeUsulanBulanan[i]??'-'}</td><td class="text-center">${data.jabatanBulanan[i]??'-'} / ${data.golonganBulanan[i]??'-'} - ${data.tahunBulanan[i]??'-'}</td><td class="text-end">${fmt(gaji)}</td>${nomCols}<td class="text-center" style="font-size:11px">${data.noSp2d[i]??'-'}</td><td class="text-center" style="font-size:11px">${tglMain}</td>${selTd}<td class="text-center">${stH}</td></tr>`;
+                }
+    
+                // Totals
+                const t=data.totals||{};
+                const sumCols = `<td class="text-end">${fmt(t.kotorTpd||0)}</td><td class="text-end">${fmt(t.bersihTpd||0)}</td>`;
+                tbody.innerHTML+=`<tr class="fw-bold table-light"><td colspan="4" class="text-center">Jumlah</td><td class="text-end">${fmt(t.gaji||0)}</td>${sumCols}<td colspan="${!data.isPns ? '4' : '3'}"></td></tr>`;
+              } else {
+                for(let i=0;i<months.length;i++){
+                  const gaji = data.gajiBulanan[i]??0;
+                  const nomSptjm = data.kotorTpd[i]??0;
+                  const nomTukin = data.kotorTkgb[i]??0;
+                  
+                  let s = sb[i]||0;
+                  let st = stb[i];
+                  
+                  if (currentJenis === 'semua') {
+                      s = gaji - (nomSptjm + nomTukin);
+                      if (s > 0) st = 'kurang';
+                      else if (s < 0) st = 'lebih';
+                      else st = 'selesai';
+                  }
+
+                  let sc=s<0?'text-end text-danger fw-bold':(s>0?'text-end text-success fw-bold':'text-end text-success fw-bold'), ss='';
+                  const pfx=s<0?'-':(s>0?'+':'');
+                  let stH='-'; 
+                  if(st&&statusCfg[st]) {
+                      stH=`<span class="badge ${statusCfg[st][0]}" style="font-size:10px">${statusCfg[st][1]}</span>`; 
+                  } else if(st&&st.startsWith('kode:')) {
+                      stH=`<span class="badge bg-label-secondary" style="font-size:10px">${st.substring(5)}</span>`;
+                  }
+                  
+                  let tglMain = data.tglSp2d[i] ?? '-';
+                  if (tglMain !== '' && tglMain !== '-') {
+                      const dMain = new Date(tglMain);
+                      if(!isNaN(dMain)) {
+                          const dd = String(dMain.getDate()).padStart(2, '0');
+                          const mm = String(dMain.getMonth() + 1).padStart(2, '0');
+                          const yy = dMain.getFullYear();
+                          tglMain = `${dd}/${mm}/${yy}`;
+                      }
+                  }
+    
+                  const kotorTpdCol = `<td class="text-end">${fmt(nomSptjm)}</td>`;
+                  const kotorTkgbCol = tkc(nomTukin);
+                  const bersihTpdCol = `<td class="text-end">${fmt(data.bersihTpd[i]??0)}</td>`;
+                  const bersihTkgbCol = tkc(data.bersihTkgb[i]??0);
+                  
+                  let nomCols = kotorTpdCol + kotorTkgbCol + bersihTpdCol + bersihTkgbCol;
+                  
+                  let jb = data.jabatanBulanan[i] ?? '-';
+                  let gl = data.golonganBulanan[i] ?? '-';
+                  let mk = data.tahunBulanan[i] ?? '-';
+                  let jabatanGolMk = `${jb} / ${gl}-${mk}`;
+    
+                  tbody.innerHTML+=`<tr><td class="text-center">${data.selectedYear||'-'}</td><td>${months[i]}</td><td class="text-center">${jabatanGolMk}</td><td class="text-end">${fmt(gaji)}</td>${nomCols}<td class="text-center" style="font-size:11px">${data.noSp2d[i]??'-'}</td><td class="text-center" style="font-size:11px">${tglMain}</td><td class="${sc}">${pfx}${fmt(Math.abs(s))}</td><td class="text-center">${stH}</td></tr>`;
+                }
+    
+                const t=data.totals||{};
+                let sumCols = `<td class="text-end">${fmt(t.kotorTpd||0)}</td>${tkc(t.kotorTkgb||0)}<td class="text-end">${fmt(t.bersihTpd||0)}</td>${tkc(t.bersihTkgb||0)}`;
+                tbody.innerHTML+=`<tr class="fw-bold table-light"><td colspan="3" class="text-center">Jumlah</td><td class="text-end">${fmt(t.gaji||0)}</td>${sumCols}<td colspan="4"></td></tr>`;
+            }
+            
+            const tTotals = data.totals || {};
+            const sumOri = data.summaryOriginal || {};
+            const valKGrRow = sumOri.k_gross || 0;
+            const valKNeRow = sumOri.k_net || 0;
+            const valLGrRow = sumOri.l_gross || 0;
+            const valLNeRow = sumOri.l_net || 0;
+
+            if (currentJenis === 'tukin') {
+                tbody.innerHTML+=`<tr class="fw-bold" style="background-color:#ffdcdc"><td colspan="4" class="text-center">Pembayaran Kekurangan</td><td colspan="12"></td></tr>`;
+                tbody.innerHTML+=`<tr class="fw-bold" style="background-color:#dbeafe"><td colspan="4" class="text-center">Pengembalian Kelebihan</td><td colspan="12"></td></tr>`;
+                tbody.innerHTML+=`<tr class="fw-bold" style="background-color:#d1fae5"><td colspan="4" class="text-center">Total Akhir</td><td class="text-end">${fmt(totGaji)}</td><td></td><td class="text-end">${fmt(totDasar)}</td><td></td><td class="text-end">${fmt(totPrestasi)}</td><td class="text-end">${fmt(totBersihTpd)}</td><td></td><td class="text-end">${fmt(totPotongan)}</td><td class="text-end">${fmt(totNilaiBersih)}</td><td colspan="3"></td></tr>`;
+            } else if (currentJenis === 'sptjm') {
+                const taKotorTpd = (tTotals.kotorTpd||0) + valKGrRow - valLGrRow;
+                const taBersihTpd = (tTotals.bersihTpd||0) + valKNeRow - valLNeRow;
+                tbody.innerHTML+=`<tr class="fw-bold" style="background-color:#ffdcdc"><td colspan="4" class="text-center">Pembayaran Kekurangan</td><td></td><td class="text-end">${fmt(valKGrRow)}</td><td class="text-end">${fmt(valKNeRow)}</td><td colspan="${!data.isPns ? '4' : '3'}"></td></tr>`;
+                tbody.innerHTML+=`<tr class="fw-bold" style="background-color:#dbeafe"><td colspan="4" class="text-center">Pengembalian Kelebihan</td><td></td><td class="text-end">${fmt(valLGrRow)}</td><td class="text-end">${fmt(valLNeRow)}</td><td colspan="${!data.isPns ? '4' : '3'}"></td></tr>`;
+                tbody.innerHTML+=`<tr class="fw-bold" style="background-color:#d1fae5"><td colspan="4" class="text-center">Total Akhir</td><td class="text-end">${fmt(tTotals.gaji||0)}</td><td class="text-end">${fmt(taKotorTpd)}</td><td class="text-end">${fmt(taBersihTpd)}</td><td colspan="${!data.isPns ? '4' : '3'}"></td></tr>`;
+            } else {
+                const taKotorTpd = (tTotals.kotorTpd||0) + (tTotals.kotorTkgb||0) + valKGrRow - valLGrRow;
+                const taBersihTpd = (tTotals.bersihTpd||0) + (tTotals.bersihTkgb||0) + valKNeRow - valLNeRow;
+                tbody.innerHTML+=`<tr class="fw-bold" style="background-color:#ffdcdc"><td colspan="3" class="text-center">Pembayaran Kekurangan</td><td></td><td class="text-end">${fmt(valKGrRow)}</td>${tkc(0)}<td class="text-end">${fmt(valKNeRow)}</td>${tkc(0)}<td colspan="4"></td></tr>`;
+                tbody.innerHTML+=`<tr class="fw-bold" style="background-color:#dbeafe"><td colspan="3" class="text-center">Pengembalian Kelebihan</td><td></td><td class="text-end">${fmt(valLGrRow)}</td>${tkc(0)}<td class="text-end">${fmt(valLNeRow)}</td>${tkc(0)}<td colspan="4"></td></tr>`;
+                tbody.innerHTML+=`<tr class="fw-bold" style="background-color:#d1fae5"><td colspan="3" class="text-center">Total Akhir</td><td class="text-end">${fmt(tTotals.gaji||0)}</td><td class="text-end">${fmt(taKotorTpd)}</td>${tkc(0)}<td class="text-end">${fmt(taBersihTpd)}</td>${tkc(0)}<td colspan="4"></td></tr>`;
+            }
+          }
+
+          // UPDATE TABEL KEDUA (URAIAN PEMBAYARAN)
+          const tbodyRiwayat = document.querySelector('#tabel-riwayat tbody');
+          if (tbodyRiwayat) {
+            tbodyRiwayat.innerHTML = '';
+            const riwayatData = data.riwayatPembayaran || [];
+            
+            let totalUraianBersih = 0;
+            let totalUraianNominal = 0;
+            let totalUraianPajak = 0;
+            
+            if (riwayatData.length === 0) {
+              tbodyRiwayat.innerHTML = '<tr><td colspan="8" class="text-center">Tidak ada data riwayat pembayaran</td></tr>';
+            } else {
+              riwayatData.forEach((item, index) => {
+                totalUraianBersih += parseFloat(item.bersih || 0);
+                totalUraianNominal += parseFloat(item.nominal || 0);
+                totalUraianPajak += parseFloat(item.pajak || 0);
+                
+                const tr = document.createElement('tr');
+                
+                let tglFormat = '-';
+                if(item.tanggal) {
+                   const d = new Date(item.tanggal);
+                   tglFormat = d.toLocaleDateString('id-ID', { day:'2-digit', month:'short', year:'2-digit' }).replace(/ /g, '-');
+                }
+
+                tr.innerHTML = `
+                  <td class="text-center">${index + 1}</td>
+                  <td>${(() => {
+                      let u = item.uraian_pembayaran ? item.uraian_pembayaran.charAt(0).toUpperCase() + item.uraian_pembayaran.slice(1) : '-';
+                      const mn = ['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'];
+                      mn.forEach(m => {
+                          const regex = new RegExp('\\s+' + m, 'gi');
+                          u = u.replace(regex, '');
+                      });
+                      return u;
+                  })()}</td>
+                  <td class="text-center">${(() => { const mn = ['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember']; const b = parseInt(item.bulan); return (b >= 1 && b <= 12) ? mn[b-1] : (item.bulan || '-'); })()}</td>
+                  <td class="text-end">${fmt(item.nominal || 0)}</td>
+                  <td class="text-end">${fmt(item.pajak || 0)}</td>
+                  <td class="text-end">${fmt(item.bersih || 0)}</td>
+                  <td>${item.nomor || '-'}</td>
+                  <td class="text-center">${tglFormat}</td>
+                `;
+                tbodyRiwayat.appendChild(tr);
+              });
+            }
+
+              const sumOriU = data.summaryOriginal || {};
+              const nettingText = '';
+
+              const kGross = sumOriU.k_gross || 0;
+              const kPajak = sumOriU.k_pajak || 0;
+              const kNet = sumOriU.k_net || 0;
+              const lGross = sumOriU.l_gross || 0;
+              const lPajak = sumOriU.l_pajak || 0;
+              const lNet = sumOriU.l_net || 0;
+
+              const sumKotorTpd = (data.kotorTpd || []).reduce((a,b)=>a+parseFloat(b||0), 0);
+              const sumKotorTkgb = (data.kotorTkgb || []).reduce((a,b)=>a+parseFloat(b||0), 0);
+              const sumPajakTpd = (data.pajakTpd || []).reduce((a,b)=>a+parseFloat(b||0), 0);
+              const sumPajakTkgb = (data.pajakTkgb || []).reduce((a,b)=>a+parseFloat(b||0), 0);
+              const sumBersihTpd = (data.bersihTpd || []).reduce((a,b)=>a+parseFloat(b||0), 0);
+              const sumBersihTkgb = (data.bersihTkgb || []).reduce((a,b)=>a+parseFloat(b||0), 0);
+
+              const totalAkhirGross = sumKotorTpd + sumKotorTkgb + kGross - lGross;
+              const totalAkhirPajak = sumPajakTpd + sumPajakTkgb + kPajak - lPajak;
+              const totalAkhirNet = sumBersihTpd + sumBersihTkgb + kNet - lNet;
+
+              // Row: Total Pembayaran
+              const trTotal = document.createElement('tr');
+              trTotal.className = 'fw-bold table-light';
+              trTotal.innerHTML = `
+                <td colspan="3" class="text-start">Total Pembayaran</td>
+                <td class="text-end">${fmt(totalUraianNominal)}</td>
+                <td class="text-end">${fmt(totalUraianPajak)}</td>
+                <td class="text-end">${fmt(totalUraianBersih)}</td>
+                <td colspan="2"></td>
+              `;
+              tbodyRiwayat.appendChild(trTotal);
+
+              // Row: Pembayaran Kekurangan
+              const trKurang = document.createElement('tr');
+              trKurang.className = 'fw-bold';
+              trKurang.style.backgroundColor = '#ffdcdc';
+              trKurang.innerHTML = `
+                <td colspan="3" class="text-start">Pembayaran Kekurangan ${kGross > 0 ? nettingText : ''}</td>
+                <td class="text-end">${fmt(kGross)}</td>
+                <td class="text-end">${fmt(kPajak)}</td>
+                <td class="text-end">${fmt(kNet)}</td>
+                <td colspan="2"></td>
+              `;
+              tbodyRiwayat.appendChild(trKurang);
+
+              // Row: Pengembalian Kelebihan
+              const trLebih = document.createElement('tr');
+              trLebih.className = 'fw-bold';
+              trLebih.style.backgroundColor = '#dbeafe';
+              trLebih.innerHTML = `
+                <td colspan="3" class="text-start">Pengembalian Kelebihan ${lGross > 0 ? nettingText : ''}</td>
+                <td class="text-end">${fmt(lGross)}</td>
+                <td class="text-end">${fmt(lPajak)}</td>
+                <td class="text-end">${fmt(lNet)}</td>
+                <td colspan="2"></td>
+              `;
+              tbodyRiwayat.appendChild(trLebih);
+
+              // Row: Total Akhir
+              const trAkhir = document.createElement('tr');
+              trAkhir.className = 'fw-bold';
+              trAkhir.style.backgroundColor = '#d1fae5';
+              trAkhir.innerHTML = `
+                <td colspan="3" class="text-start">Total Akhir</td>
+                <td class="text-end">${fmt(totalAkhirGross)}</td>
+                <td class="text-end">${fmt(totalAkhirPajak)}</td>
+                <td class="text-end">${fmt(totalAkhirNet)}</td>
+                <td colspan="2"></td>
+              `;
+              tbodyRiwayat.appendChild(trAkhir);
+          }
+
+        }).catch(err=>{
+            filterSelect.disabled = false;
+            alert("Terjadi kesalahan: " + err.message);
+            console.error(err);
+        });
+      }
+
+      filterSelect.addEventListener('change', loadData);
+
+      document.querySelectorAll('.md-status-btn').forEach(btn => {
+          btn.addEventListener('click', function() {
+              currentJenis = this.getAttribute('data-jenis');
+              // Append a hidden input to the main form so it remembers the filter if user clicks "Cari"
+              let form = document.querySelector('form[action="http://localhost/admin/monitoring-pembayaran"]');
+              if (form) {
+                  let hiddenInput = form.querySelector('input[name="jenis_tunjangan"]');
+                  if (!hiddenInput) {
+                      hiddenInput = document.createElement('input');
+                      hiddenInput.type = 'hidden';
+                      hiddenInput.name = 'jenis_tunjangan';
+                      form.appendChild(hiddenInput);
+                  }
+                  hiddenInput.value = currentJenis;
+              }
+              loadData();
+          });
+      });
+      
+      // Initialize form hidden input
+      let mainForm = document.querySelector('form[action="http://localhost/admin/monitoring-pembayaran"]');
+      if (mainForm && currentJenis) {
+          let hiddenInput = mainForm.querySelector('input[name="jenis_tunjangan"]');
+          if (!hiddenInput) {
+              hiddenInput = document.createElement('input');
+              hiddenInput.type = 'hidden';
+              hiddenInput.name = 'jenis_tunjangan';
+              mainForm.appendChild(hiddenInput);
+          }
+          hiddenInput.value = currentJenis;
+      }
+    });
+  </script>
+  </div>
+
+
+                </div>
+                <!-- / Content -->
+
+                <!-- Footer -->
+
+                <!-- / Footer -->
+                <div class="content-backdrop fade"></div>
+            </div>
+            <!--/ Content wrapper -->
+        </div>
+        <!-- / Layout page -->
+    </div>
+
+            <!-- Overlay -->
+        <div class="layout-overlay layout-menu-toggle"></div>
+        <!-- Drag Target Area To SlideIn Menu On Small Screens -->
+    <div class="drag-target"></div>
+    </div>
+    <!-- / Layout wrapper -->
+    <!--/ Layout Content -->
+
+
+    <!-- Include Scripts -->
+    <!-- BEGIN: Vendor JS-->
+<script src="http://localhost/assets/vendor/libs/jquery/jquery.js?id=d6912bbf9b29bbcc108b2a81baac5fb1"></script>
+<script src="http://localhost/assets/vendor/libs/popper/popper.js?id=f5aae921cb2529b79f3186eebddf5a32"></script>
+<script src="http://localhost/assets/vendor/js/bootstrap.js?id=9ee397a51dca143298f37f61af6c4492"></script>
+<script src="http://localhost/assets/vendor/libs/perfect-scrollbar/perfect-scrollbar.js?id=7c36751c61f8450005e3e6f02bb84ab6"></script>
+<script src="http://localhost/assets/vendor/js/menu.js?id=32837f9cf1016b86b72ee7a7394ddde4"></script>
+<!-- DataTables Bootstrap 5 JS -->
+<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
+<script src="https://cdn.datatables.net/fixedheader/3.4.0/js/dataTables.fixedHeader.min.js"></script>
+<!-- ——— SPTJM GLOBAL DATATABLE DEFAULTS ——— -->
+<script>
+    if (typeof $ !== 'undefined' && $.fn && $.fn.dataTable) {
+        $.extend(true, $.fn.dataTable.defaults, {
+            /* DOM layout:
+               l = length (Show Entries) — kiri
+               f = filter (Search)       — kanan
+               r = processing
+               t = table
+               i = info
+               p = pagination
+            */
+            dom: '<"d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3"lf><"table-responsive text-nowrap"rt><"d-flex justify-content-between align-items-center flex-wrap gap-2 mt-3"ip>',
+            lengthMenu: [[10, 15, 25, 50, 100, 250, 500], [10, 15, 25, 50, 100, 250, 500]],
+            pageLength: 10,
+            language: {
+                search: "",
+                searchPlaceholder: "Cari data...",
+                lengthMenu: "Show _MENU_ Entries",
+                paginate: {
+                    first: 'Awal',
+                    last: 'Akhir',
+                    next: '→',
+                    previous: '←'
+                },
+                zeroRecords: 'Data tidak ditemukan',
+                infoEmpty: 'Tidak ada data tersedia',
+                info: 'Menampilkan _START_–_END_ dari _TOTAL_ entri'
+            }
+        });
+    }
+</script>
+<!-- ——— SPTJM: Prevent hover-ghost icon effect across page navigation ——— -->
+<script>
+    (function() {
+        window.addEventListener('beforeunload', function() {
+            document.documentElement.classList.add('page-transitioning');
+        });
+        document.addEventListener('click', function(e) {
+            var link = e.target && e.target.closest ? e.target.closest('a[href], button[type="submit"]') : null;
+            if (link && !link.getAttribute('data-bs-toggle')) {
+                document.documentElement.classList.add('page-transitioning');
+            }
+        }, true);
+    })();
+</script>
+<!-- Vendors JS -->
+<!-- END: Page Vendor JS-->
+<!-- BEGIN: Theme JS-->
+<script>
+	(function () {
+		'use strict';
+
+		const getScope = () => {
+			const path = (window.location && window.location.pathname) ? window.location.pathname : '';
+			const first = path.replace(/^\/+/, '').split('/')[0] || 'root';
+			// keep it short & deterministic
+			return first.toLowerCase();
+		};
+
+		const scope = getScope();
+		const STORAGE_OPEN = 'sptjm.sidebar.' + scope + '.openKeys';
+		const STORAGE_SCROLL = 'sptjm.sidebar.' + scope + '.scrollTop';
+		const STORAGE_PREFIX = 'sptjm.sidebar.';
+
+		const clearAllSidebarState = () => {
+			try {
+				for (let i = localStorage.length - 1; i >= 0; i--) {
+					const key = localStorage.key(i);
+					if (key && key.indexOf(STORAGE_PREFIX) === 0) {
+						localStorage.removeItem(key);
+					}
+				}
+			} catch (e) {
+				// ignore
+			}
+		};
+
+		const isLoginPage = () => {
+			const path = (window.location && window.location.pathname) ? window.location.pathname.toLowerCase() : '';
+			if (path.includes('/login')) return true;
+			// fallback heuristic: any form that looks like a login form
+			const form = document.querySelector('form');
+			if (!form) return false;
+			const action = (form.getAttribute('action') || '').toLowerCase();
+			return action.includes('login');
+		};
+
+		const isDashboardPage = () => {
+			// Only match URLs that end exactly with "/dashboard" (no extra suffix)
+			const path = (window.location && window.location.pathname) ? window.location.pathname.toLowerCase() : '';
+			return /(^|\/)dashboard$/.test(path);
+		};
+
+		const closeAllOpenMenuItems = () => {
+			const menuEl = getMenuEl();
+			if (!menuEl) return;
+			menuEl.querySelectorAll('.menu-item.open').forEach((item) => item.classList.remove('open'));
+		};
+
+		/**
+		 * Kembalikan open-state dari localStorage HANYA untuk submenu
+		 * yang ROOT-nya sudah di-render oleh server sebagai 'open'.
+		 *
+		 * Kenapa perlu filter ini?
+		 * ─ Server PHP sudah tahu menu mana yang aktif berdasarkan URL.
+		 * ─ Jika user pindah dari "Proses Pembayaran" ke "Data Dosen",
+		 *   server merender "Data Dosen" sebagai active-open dan
+		 *   "Proses Pembayaran" tanpa open.
+		 * ─ Tanpa filter, localStorage akan membuka ulang "Proses Pembayaran"
+		 *   padahal user sudah pindah menu — inilah sumber bug.
+		 * ─ Dengan filter, hanya submenu dalam cabang yang SAMA dengan
+		 *   halaman aktif yang dipulihkan.
+		 */
+		const applyOpenKeysWithoutAnimation = (keys) => {
+			const menuEl = getMenuEl();
+			if (!menuEl || !Array.isArray(keys) || !keys.length) return;
+
+			// Kumpulkan root-level .menu-item yang sudah di-mark 'open' oleh server (PHP).
+			// Ini adalah "kebenaran" navigasi saat ini berdasarkan URL yang sedang aktif.
+			const menuInner = menuEl.querySelector('.menu-inner');
+			const serverOpenRoots = new Set(
+				menuInner
+					? Array.from(menuInner.querySelectorAll(':scope > .menu-item.open'))
+					: []
+			);
+
+			const toggles = menuEl.querySelectorAll('a.menu-toggle');
+			toggles.forEach((a) => {
+				const key = getToggleKey(a);
+				if (!key || !keys.includes(key)) return;
+
+				let item = a.closest ? a.closest('.menu-item') : null;
+				if (!item) return;
+
+				// Temukan root ancestor dari item ini (level paling atas di menu-inner)
+				let rootItem = item;
+				let parentCheck = rootItem.parentElement
+					? rootItem.parentElement.closest('.menu-item')
+					: null;
+				while (parentCheck) {
+					rootItem = parentCheck;
+					parentCheck = rootItem.parentElement
+						? rootItem.parentElement.closest('.menu-item')
+						: null;
+				}
+
+				// GUARD: Hanya pulihkan jika root menu-nya server-mark sebagai open.
+				// Jika serverOpenRoots kosong (tidak ada menu aktif, misal halaman lain),
+				// tidak ada state yang dipulihkan — ini perilaku yang benar.
+				if (!serverOpenRoots.has(rootItem)) return;
+
+				// Buka item ini dan semua ancestor-nya (tanpa animasi)
+				while (item) {
+					item.classList.add('open');
+					item = item.parentElement && item.parentElement.closest
+						? item.parentElement.closest('.menu-item')
+						: null;
+				}
+			});
+		};
+
+		const getMenuEl = () => document.getElementById('layout-menu');
+		const getMenuInner = () => {
+			const menuEl = getMenuEl();
+			return menuEl ? menuEl.querySelector('.menu-inner') : null;
+		};
+
+		const getToggleKey = (toggleLink) => {
+			if (!toggleLink) return '';
+			const parts = [];
+			let current = toggleLink;
+			while (current) {
+				if (current.matches && current.matches('a.menu-toggle')) {
+					const label = (current.textContent || '').replace(/\s+/g, ' ').trim();
+					if (label) parts.unshift(label);
+				}
+
+				// go up to parent menu item, then find parent menu item toggle
+				const item = current.closest ? current.closest('.menu-item') : null;
+				if (!item) break;
+
+				const parentSub = item.parentElement && item.parentElement.closest ? item.parentElement.closest('.menu-item') : null;
+				if (!parentSub) break;
+				current = parentSub.querySelector(':scope > a.menu-toggle');
+			}
+			return parts.join(' > ');
+		};
+
+		const collectOpenKeys = () => {
+			const menuEl = getMenuEl();
+			if (!menuEl) return [];
+
+			const openItems = menuEl.querySelectorAll('.menu-item.open > a.menu-toggle');
+			const keys = [];
+			openItems.forEach((a) => {
+				const key = getToggleKey(a);
+				if (key) keys.push(key);
+			});
+			// de-dup
+			return Array.from(new Set(keys));
+		};
+
+		const restoreOpenKeys = (keys) => {
+			const menuEl = getMenuEl();
+			if (!menuEl || !Array.isArray(keys) || !keys.length) return;
+
+			const instance = menuEl.menuInstance || (window.Helpers && window.Helpers.mainMenu) || null;
+			const toggles = menuEl.querySelectorAll('a.menu-toggle');
+			toggles.forEach((a) => {
+				const key = getToggleKey(a);
+				if (!key) return;
+				if (keys.includes(key)) {
+					try {
+						if (instance && typeof instance.open === 'function') {
+							instance.open(a, false);
+						} else {
+							const item = a.closest('.menu-item');
+							if (item) item.classList.add('open');
+						}
+					} catch (e) {
+						// ignore
+					}
+				}
+			});
+		};
+
+		/**
+		 * Pastikan hanya SATU root menu yang terbuka — menu yang memiliki
+		 * item aktif. Jika localStorage membuka menu lain, tutup paksa.
+		 * Ini adalah safety-net global setelah applyOpenKeysWithoutAnimation.
+		 */
+		const enforceSingleRootOpen = () => {
+			const menuEl = getMenuEl();
+			if (!menuEl) return;
+			const menuInner = menuEl.querySelector('.menu-inner');
+			if (!menuInner) return;
+
+			// Root items = direct children of .menu-inner
+			const rootOpenItems = Array.from(menuInner.querySelectorAll(':scope > .menu-item.open'));
+			if (rootOpenItems.length <= 1) return;
+
+			// Preferensikan root item yang memiliki child active (server truth)
+			let keep = rootOpenItems.find(
+				(it) => it.classList.contains('active')
+					|| it.querySelector('.menu-link.active')
+					|| it.querySelector('.menu-item.active')
+			);
+			if (!keep) keep = rootOpenItems[0];
+
+			// Tutup paksa semua root item yang bukan 'keep', termasuk semua child-nya
+			rootOpenItems.forEach((item) => {
+				if (item === keep) return;
+				try {
+					// Tutup semua submenu di dalamnya
+					item.querySelectorAll('.menu-item.open').forEach((child) => {
+						child.classList.remove('open');
+						child.style.height = '';
+						child.style.overflow = '';
+					});
+					item.classList.remove('open');
+					item.style.height = '';
+					item.style.overflow = '';
+				} catch (e) {
+					// ignore
+				}
+			});
+		};
+
+		const saveState = () => {
+			try {
+				localStorage.setItem(STORAGE_OPEN, JSON.stringify(collectOpenKeys()));
+			} catch (e) {
+				// ignore
+			}
+
+			try {
+				const inner = getMenuInner();
+				if (inner) localStorage.setItem(STORAGE_SCROLL, String(inner.scrollTop || 0));
+			} catch (e) {
+				// ignore
+			}
+		};
+
+		// Pre-apply state BEFORE main.js/menu.js runs, so the UI doesn't flicker
+		// from closed -> open when navigating.
+		(function preApplySidebarState() {
+			if (isLoginPage()) {
+				clearAllSidebarState();
+				return;
+			}
+
+			if (!getMenuEl()) return;
+
+			if (isDashboardPage()) {
+				clearAllSidebarState();
+				closeAllOpenMenuItems();
+				return;
+			}
+
+			let openKeys = [];
+			try {
+				openKeys = JSON.parse(localStorage.getItem(STORAGE_OPEN) || '[]');
+			} catch (e) {
+				openKeys = [];
+			}
+
+			applyOpenKeysWithoutAnimation(openKeys);
+			enforceSingleRootOpen();
+
+			// Apply stored scroll early to reduce visible jump
+			try {
+				const inner = getMenuInner();
+				const top = parseInt(localStorage.getItem(STORAGE_SCROLL) || '0', 10);
+
+				// If we are restoring a non-zero scroll position, prevent the theme
+				// from auto-scrolling to the active item (it causes a visible jump).
+				if (isFinite(top) && top > 0) {
+					window.__sptjmSkipScrollToActive = true;
+				}
+				if (inner && isFinite(top)) {
+					inner.scrollTop = top;
+				}
+			} catch (e) {
+				// ignore
+			}
+		})();
+
+		document.addEventListener('DOMContentLoaded', function () {
+			// If login page, we already cleared state; nothing else to do.
+			if (isLoginPage()) return;
+
+			// Re-enable transitions after initial sidebar state is applied
+			try {
+				setTimeout(() => {
+					document.documentElement.classList.remove('sptjm-no-menu-transition');
+				}, 0);
+			} catch (e) {
+				// ignore
+			}
+
+			// Restore scroll after menu + PerfectScrollbar are initialized.
+			if (!isDashboardPage()) {
+				try {
+					const inner = getMenuInner();
+					const top = parseInt(localStorage.getItem(STORAGE_SCROLL) || '0', 10);
+					if (inner && isFinite(top)) {
+						// only set if different to avoid visible jump
+						if (Math.abs((inner.scrollTop || 0) - top) > 2) {
+							setTimeout(() => {
+								inner.scrollTop = top;
+							}, 0);
+						}
+					}
+				} catch (e) {
+					// ignore
+				}
+			}
+
+			const menuEl = getMenuEl();
+			if (menuEl) {
+				// Reset persisted sidebar state when user clicks logout
+				document.addEventListener('click', function (e) {
+					const a = e.target && e.target.closest ? e.target.closest('a') : null;
+					if (!a) return;
+					const href = (a.getAttribute('href') || '').toLowerCase();
+					// common patterns: /logout, route name contains logout, etc.
+					if (href.includes('logout')) {
+						clearAllSidebarState();
+					}
+				});
+
+				// Save when user expands/collapses submenus
+				menuEl.addEventListener('click', function (e) {
+					const toggle = e.target && e.target.closest ? e.target.closest('a.menu-toggle') : null;
+					if (toggle) {
+						// after Menu handles click
+						setTimeout(saveState, 0);
+					}
+				});
+			}
+
+			const inner = getMenuInner();
+			if (inner) {
+				inner.addEventListener('scroll', function () {
+					// lightweight throttle
+					window.clearTimeout(inner.__sptjmScrollT);
+					inner.__sptjmScrollT = window.setTimeout(() => {
+						try {
+							localStorage.setItem(STORAGE_SCROLL, String(inner.scrollTop || 0));
+						} catch (e) {
+							// ignore
+						}
+					}, 150);
+				});
+			}
+
+			// ──────────────────────────────────────────────────────────────────────
+			// ACCORDION SYNC: Tutup semua submenu dari menu lain saat user klik
+			// link leaf (bukan toggle). Ini memastikan saveState() pada beforeunload
+			// menyimpan state yang bersih — hanya menu aktif yang tersimpan.
+			// Tanpa ini: user klik "Eligible" lalu navigasi ke "Data Dosen" →
+			// beforeunload menyimpan "Proses Pembayaran" sebagai open → bug restore.
+			// ──────────────────────────────────────────────────────────────────────
+			if (menuEl) {
+				menuEl.addEventListener('click', function (e) {
+					// Hanya proses klik pada link biasa (BUKAN toggle accordion)
+					const link = e.target && e.target.closest
+						? e.target.closest('a.menu-link')
+						: null;
+					if (!link) return;
+					if (link.classList.contains('menu-toggle')) return; // accordion click, skip
+
+					// Temukan root menu yang mengandung link ini
+					const clickedRootItem = (() => {
+						let item = link.closest ? link.closest('.menu-item') : null;
+						if (!item) return null;
+						let rootItem = item;
+						let parent = rootItem.parentElement
+							? rootItem.parentElement.closest('.menu-item')
+							: null;
+						while (parent) {
+							rootItem = parent;
+							parent = rootItem.parentElement
+								? rootItem.parentElement.closest('.menu-item')
+								: null;
+						}
+						return rootItem;
+					})();
+
+					// Tutup semua root menu LAIN beserta seluruh child-nya
+					const menuInnerEl = getMenuInner();
+					if (menuInnerEl) {
+						menuInnerEl.querySelectorAll(':scope > .menu-item.open').forEach((rootItem) => {
+							if (rootItem === clickedRootItem) return;
+							rootItem.querySelectorAll('.menu-item.open').forEach((child) => {
+								child.classList.remove('open');
+								child.style.height = '';
+								child.style.overflow = '';
+							});
+							rootItem.classList.remove('open');
+							rootItem.style.height = '';
+							rootItem.style.overflow = '';
+						});
+					}
+
+					// Simpan state bersih segera setelah penutupan (sebelum navigasi)
+					setTimeout(saveState, 0);
+				});
+			}
+		});
+
+		window.addEventListener('beforeunload', saveState);
+	})();
+</script>
+
+<script src="http://localhost/assets/js/main.js?id=0c91cceb5195b308a36d5ac021b16464"></script>
+
+<!-- ================================================================
+     SPTJM: Menu Nested Submenu Overlap Fix
+     Root cause: menu.js hanya menganimasikan .menu-item yang diklik,
+     tapi tidak memperbarui ancestor .menu-item yang sudah open.
+     Saat submenu child dibuka, ancestor bisa terjebak di pixel-height
+     lama → sibling menu di bawahnya tidak terdorong ke bawah.
+     Fix: setelah setiap animasi selesai, hapus height/overflow inline
+     dari semua ancestor .menu-item yang sudah open.
+     ================================================================ -->
+<script>
+(function () {
+    'use strict';
+
+    /**
+     * Hapus style height & overflow dari semua ancestor .menu-item yang sudah open.
+     * Ini memastikan parent selalu expand ke height:auto setelah child selesai animasi.
+     */
+    function clearAncestorHeights(startItem) {
+        var parent = startItem && startItem.parentElement
+            ? startItem.parentElement.closest('.menu-item')
+            : null;
+        while (parent) {
+            // Hanya clear jika parent sudah open dan TIDAK sedang dianimasikan
+            if (parent.classList.contains('open') && !parent.classList.contains('menu-item-animating')) {
+                parent.style.height = '';
+                parent.style.overflow = '';
+            }
+            parent = parent.parentElement
+                ? parent.parentElement.closest('.menu-item')
+                : null;
+        }
+    }
+
+    /**
+     * Patch menu.js setelah ia terinisialisasi (main.js memanggil new Menu()).
+     * Kita intercept _toggleAnimation agar clearAncestorHeights dipanggil
+     * setelah animasi item yang diklik selesai.
+     */
+    function patchMenuInstance() {
+        var menuEl = document.getElementById('layout-menu');
+        if (!menuEl || !menuEl.menuInstance) return false;
+
+        var instance = menuEl.menuInstance;
+        var originalOnOpened = instance._onOpened;
+        var originalOnClosed  = instance._onClosed;
+
+        // Setelah submenu dibuka, bersihkan height ancestor
+        instance._onOpened = function (menu, item, link, sub) {
+            if (typeof originalOnOpened === 'function') originalOnOpened(menu, item, link, sub);
+            // Beri sedikit jeda agar menu.js clearItemStyle() selesai dahulu
+            setTimeout(function () { clearAncestorHeights(item); }, 20);
+        };
+
+        // Setelah submenu ditutup, bersihkan juga (untuk konsistensi)
+        instance._onClosed = function (menu, item, link, sub) {
+            if (typeof originalOnClosed === 'function') originalOnClosed(menu, item, link, sub);
+            setTimeout(function () { clearAncestorHeights(item); }, 20);
+        };
+
+        return true;
+    }
+
+    // Coba patch segera (jika main.js sudah jalan secara sinkron)
+    if (!patchMenuInstance()) {
+        // Jika belum siap, tunggu DOMContentLoaded lalu coba lagi
+        document.addEventListener('DOMContentLoaded', function () {
+            if (!patchMenuInstance()) {
+                // Fallback: polling ringan selama maks 2 detik
+                var attempts = 0;
+                var interval = setInterval(function () {
+                    attempts++;
+                    if (patchMenuInstance() || attempts >= 20) clearInterval(interval);
+                }, 100);
+            }
+        });
+    }
+
+    // ─── Fallback tambahan: event listener langsung di menu ───────────────
+    // Jika patch di atas gagal (mis. menu.js diupdate), fallback ini tetap bekerja.
+    document.addEventListener('DOMContentLoaded', function () {
+        var menuEl = document.getElementById('layout-menu');
+        if (!menuEl) return;
+
+        menuEl.addEventListener('click', function (e) {
+            var toggle = e.target && e.target.closest
+                ? e.target.closest('a.menu-toggle')
+                : null;
+            if (!toggle) return;
+
+            var clickedItem = toggle.closest('.menu-item');
+            if (!clickedItem) return;
+
+            // Jalankan setelah menu.js memproses klik dan setelah animasi selesai (~380ms)
+            setTimeout(function () { clearAncestorHeights(clickedItem); }, 400);
+        });
+    });
+})();
+</script>
+
+
+
+<!-- Pricing Modal JS-->
+<!-- END: Pricing Modal JS-->
+<!-- BEGIN: Page JS-->
+<!-- END: Page JS-->
+
+<!-- ================================================================
+     SPTJM: Desktop Sidebar Toggle Patch
+     Sneat free template's _setCollapsed() only handles mobile.
+     This script patches Helpers.toggleCollapsed for desktop screens.
+     ================================================================ -->
+<script>
+(function () {
+    'use strict';
+
+    var STORAGE_KEY = 'sptjm.sidebar.collapsed';
+
+    function isDesktop() {
+        return (window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth) >= 1200;
+    }
+
+    function isCollapsedDesktop() {
+        return document.documentElement.classList.contains('layout-menu-collapsed');
+    }
+
+    function collapseDesktop() {
+        document.documentElement.classList.add('layout-menu-collapsed');
+        try { localStorage.setItem(STORAGE_KEY, '1'); } catch(e) {}
+    }
+
+    function expandDesktop() {
+        document.documentElement.classList.remove('layout-menu-collapsed');
+        try { localStorage.removeItem(STORAGE_KEY); } catch(e) {}
+    }
+
+    function toggleDesktop() {
+        if (isCollapsedDesktop()) {
+            expandDesktop();
+        } else {
+            collapseDesktop();
+        }
+        // Trigger resize so layout recalculates
+        setTimeout(function() {
+            window.dispatchEvent(new Event('resize'));
+        }, 300);
+    }
+
+    // Restore previous state on page load
+    function restoreState() {
+        if (!isDesktop()) return;
+        try {
+            if (localStorage.getItem(STORAGE_KEY) === '1') {
+                document.documentElement.classList.add('layout-menu-collapsed');
+            }
+        } catch(e) {}
+    }
+
+    // Patch Helpers.toggleCollapsed to support desktop
+    function patchHelpers() {
+        if (window.Helpers && typeof window.Helpers.toggleCollapsed === 'function') {
+            var _original = window.Helpers.toggleCollapsed.bind(window.Helpers);
+            window.Helpers.toggleCollapsed = function(animate) {
+                if (isDesktop()) {
+                    toggleDesktop();
+                } else {
+                    _original(animate);
+                }
+            };
+        }
+    }
+
+    // Bind click events on all .layout-menu-toggle elements
+    // Note: main.js already binds these â€” we only need the Helpers patch above.
+    // We intentionally skip re-binding here to avoid double-fire.
+    function bindToggles() {
+        // no-op: main.js handles .layout-menu-toggle clicks via patched Helpers.toggleCollapsed
+    }
+
+    // Run
+    restoreState();
+    document.addEventListener('DOMContentLoaded', function() {
+        patchHelpers();
+        bindToggles();
+    });
+
+    // --- SPTJM GLOBAL UI STANDARDIZATION ---
+    function applySptjmGlobalStyles() {
+        // 1. Badge Status / Jenis Coloring
+        $('span.badge, span.badge-jenis, button.badge-bulan').each(function() {
+            var text = $(this).text().trim().toLowerCase();
+            // Aktif = Biru
+            if (text === 'aktif' || text === 'ya' || text === 'eligible') {
+                $(this).css({
+                    'background-color': '#e0e7ff',
+                    'color': '#1a56db',
+                    'border': '1px solid rgba(26,86,219,0.2)'
+                }).removeClass('bg-label-danger bg-label-warning bg-label-secondary bg-label-primary');
+            } 
+            // Tidak Aktif / Merah
+            else if (text.includes('tidak') || text.includes('non') || text === 'tolak' || text.includes('gagal') || text.includes('belum')) {
+                $(this).css({
+                    'background-color': '#fee2e2',
+                    'color': '#dc2626',
+                    'border': '1px solid rgba(220,38,38,0.2)'
+                }).removeClass('bg-label-primary bg-label-success bg-label-info bg-label-warning bg-label-secondary');
+            }
+        });
+
+        // 2. Link Lihat Dokumen -> Teks biru
+        $('a').each(function() {
+            if ($(this).text().trim().toLowerCase().includes('lihat dokumen')) {
+                $(this).addClass('link-lihat-dokumen').removeClass('text-white btn-primary btn-outline-primary');
+                $(this).css({'color': '#1a56db', 'font-weight': '600', 'border': 'none', 'background': 'transparent', 'box-shadow': 'none'});
+                $(this).find('i').css('color', '#1a56db');
+            }
+        });
+
+        // 3. Tombol Sinkronisasi -> Kuning/Orange
+        $('button, a').each(function() {
+            var text = $(this).text().trim().toLowerCase();
+            if (text.includes('sinkronisasi') || text.includes('sinkron')) {
+                if ($(this).hasClass('btn') || $(this).attr('type') === 'button' || $(this).attr('class') && $(this).attr('class').includes('sptjm-')) {
+                    $(this).removeClass('btn-primary btn-success btn-sptjm-primary btn-sptjm-success btn-outline-primary bg-primary bg-success');
+                    $(this).addClass('btn-sptjm-sinkron');
+                }
+            }
+        });
+    }
+    
+    if (typeof $ !== 'undefined') {
+        function mergePageHeadersIntoCards() {
+            $('.pt-page-header, .sptjm-page-header, .md-page-header, .md2-page-header, .vdd-page-header').each(function() {
+                var $header = $(this);
+                if ($header.hasClass('merged-card-header')) return;
+                
+                // Find next sibling card or content-wrapper containing a card
+                var $card = $header.nextAll('.card, .pt-card, .md-card, .md2-card, .sptjm-card, .sptjm-table-card, .content-wrapper').first();
+                if (!$card.length) {
+                    $card = $header.nextAll().find('.card, .pt-card, .md-card, .md2-card, .sptjm-card, .sptjm-table-card').first();
+                } else if ($card.hasClass('content-wrapper')) {
+                    $card = $card.find('.card, .pt-card, .md-card, .md2-card, .sptjm-card, .sptjm-table-card').first();
+                }
+                
+                if ($card.length) {
+                    $card.prepend($header);
+                    $header.addClass('merged-card-header');
+                }
+            });
+
+            // Standardize cards with legacy embedded headers (e.g. Kop Surat, Penandatangan, Complain, SKPP)
+            $('.card').each(function() {
+                var $card = $(this);
+                if ($card.closest('.modal').length) return; // Ignore modals
+                
+                var $header = $card.find('h5.card-header, .card-header').first();
+                if ($header.length && !$header.hasClass('merged-card-header') && !$header.hasClass('modal-header')) {
+                    if ($header.closest('.card-body').length) return; // Ignore nested headers
+                    
+                    var $hr = $header.next('hr');
+                    if (!$hr.length) {
+                        $hr = $header.parent().next('hr');
+                    }
+                    
+                    var titleText = $header.clone().children().remove().end().text().trim();
+                    var $parentDiv = $header.parent();
+                    var $actionBtn = null;
+                    if (!$parentDiv.hasClass('card') && ($parentDiv.hasClass('d-flex') || ($parentDiv.is('div') && $parentDiv.css('display') === 'flex'))) {
+                        $actionBtn = $parentDiv.find('button, a').not($header);
+                        $header = $parentDiv;
+                    }
+                    
+                    $header.addClass('merged-card-header');
+                    $header.html('<div class="page-titles"><h1>' + titleText + '</h1></div>');
+                    
+                    if ($actionBtn && $actionBtn.length) {
+                        var $btnContainer = $('<div class="d-flex align-items-center gap-2"></div>');
+                        $btnContainer.append($actionBtn);
+                        $header.append($btnContainer);
+                    }
+                    
+                    if ($hr.length) {
+                        $hr.hide();
+                    }
+                    
+                    $card.css('padding', '0');
+                    if (!$header.parent().is($card) && !$header.parent().parent().is($card)) {
+                        $card.prepend($header);
+                    }
+                }
+            });
+        }
+
+        $(document).ready(function() {
+            applySptjmGlobalStyles();
+            mergePageHeadersIntoCards();
+            
+            // Ensure styles apply after any ajax calls or datatable renders
+            $(document).ajaxComplete(function() {
+                applySptjmGlobalStyles();
+                mergePageHeadersIntoCards();
+            });
+            
+            if ($.fn.dataTable) {
+                // Ensure drawCallback triggers the function globally for all DataTables
+                $(document).on('draw.dt', function() {
+                    applySptjmGlobalStyles();
+                    mergePageHeadersIntoCards();
+                });
+            }
+        });
+    }
+})();
+</script>
+
+    
+    
+    <!-- Stylesheets consolidated into sptjm-custom.css -->
+
+</body>
+
+</html>
