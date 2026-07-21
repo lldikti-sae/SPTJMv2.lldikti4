@@ -319,9 +319,7 @@ class MonitoringPembayaranController extends Controller
       $tDasar = 0; $tPrestasi = 0; $tPotongan = 0; $tBersihSerdos = 0;
 
       if ($jenisTunjangan === 'sptjm') {
-          $kotorTkgbVal = 0;
-          $pajakTkgbVal = 0;
-          $bersihTkgbVal = 0;
+          // Do not zero out TKGB values so we can display them in the UI
       } elseif ($jenisTunjangan === 'tukin') {
           $kotorTkgbVal = 0;
           $pajakTkgbVal = 0;
@@ -964,9 +962,7 @@ class MonitoringPembayaranController extends Controller
       $tDasar = 0; $tPrestasi = 0; $tPotongan = 0; $tBersihSerdos = 0;
 
       if ($jenisTunjangan === 'sptjm') {
-          $kotorTkgbVal = 0;
-          $pajakTkgbVal = 0;
-          $bersihTkgbVal = 0;
+          // Do not zero out TKGB values so we can display them in the UI
       } elseif ($jenisTunjangan === 'tukin') {
           $kotorTkgbVal = 0;
           $pajakTkgbVal = 0;
