@@ -764,13 +764,12 @@ $months = [
             }
           }
 
+          let totGaji=0, totDasar=0, totPrestasi=0, totBersihTpd=0, totPotongan=0, totNilaiBersih=0;
           const tbody=tbl?.querySelector('tbody'); 
           if(tbody) {
             tbody.innerHTML='';
             const months=data.months||[], sb=data.selisihBulanan||[], stb=data.statusBulanan||[];
             const tkc=(v)=>hasTkgb?`<td class="text-end tkgb-col">${fmt(v)}</td>`:'';
-            
-            let totGaji=0, totDasar=0, totPrestasi=0, totBersihTpd=0, totPotongan=0, totNilaiBersih=0;
 
             if (currentJenis === 'tukin') {
                 for(let i=0;i<months.length;i++){
@@ -1057,7 +1056,7 @@ $months = [
 
         }).catch(err=>{
             filterSelect.disabled = false;
-            alert("Terjadi kesalahan: " + err.message);
+            alert("Terjadi kesalahan: " + err.message + "\n\nStack: " + err.stack);
             console.error(err);
         });
       }
