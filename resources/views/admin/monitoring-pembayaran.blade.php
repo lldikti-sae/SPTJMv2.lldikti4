@@ -413,8 +413,11 @@ $months = [
           <td colspan="4" class="text-center">Jumlah</td>
           <td class="text-end">{{ number_format($totalGaji,0,',','.') }}</td>
           <td class="text-end">{{ number_format($totalKotorTpd,0,',','.') }}</td>
-          @if($showTkgbSptjm)<td class="text-end">{{ number_format($totalKotorTkgb,0,',','.') }}</td>@endif
           <td class="text-end">{{ number_format($totalBersihTpd,0,',','.') }}</td>
+          @if($hasTkgb)
+          <td class="text-end tkgb-col">{{ number_format($totalKotorTkgb,0,',','.') }}</td>
+          <td class="text-end tkgb-col">{{ number_format($totalBersihTkgb,0,',','.') }}</td>
+          @endif
           <td colspan="{{ !$isPns ? '4' : '3' }}"></td>
         </tr>
       </tbody>
