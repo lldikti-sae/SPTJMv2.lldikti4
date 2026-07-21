@@ -908,6 +908,7 @@ $months = [
           const tfoot=tbl?.querySelector('tfoot');
           if(tfoot) {
             tfoot.innerHTML='';
+            const tTotals = data.totals || {};
             const sumOri = data.summaryOriginal || {};
             const valKGrRow = sumOri.k_gross || 0;
             const valKNeRow = sumOri.k_net || 0;
