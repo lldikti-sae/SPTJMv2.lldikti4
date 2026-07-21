@@ -177,6 +177,7 @@
 
     if (window.CKEDITOR) {
       CKEDITOR.replace('pesan', {
+        versionCheck: false,
         height: 220,
         allowedContent: true,
         extraAllowedContent: 'style;*[class];*[style];*(*);*{*}'
@@ -184,6 +185,7 @@
 
       if (!CKEDITOR.instances.dPesan) {
         CKEDITOR.replace('dPesan', {
+          versionCheck: false,
           readOnly: true,
           toolbar: [],
           removePlugins: 'elementspath',
@@ -196,6 +198,7 @@
 
       if (!CKEDITOR.instances.dBalasan) {
         CKEDITOR.replace('dBalasan', {
+          versionCheck: false,
           readOnly: true,
           toolbar: [],
           removePlugins: 'elementspath',

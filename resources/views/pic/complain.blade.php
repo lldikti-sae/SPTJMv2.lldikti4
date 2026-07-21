@@ -106,11 +106,12 @@
 <script>
   document.addEventListener('DOMContentLoaded', function() {
     if (window.CKEDITOR && !CKEDITOR.instances.admin_balasan) {
-      CKEDITOR.replace('admin_balasan');
+      CKEDITOR.replace('admin_balasan', { versionCheck: false });
     }
 
     if (window.CKEDITOR && !CKEDITOR.instances.pesan_view) {
       CKEDITOR.replace('pesan_view', {
+        versionCheck: false,
         readOnly: true,
         toolbar: [],
         removePlugins: 'elementspath',

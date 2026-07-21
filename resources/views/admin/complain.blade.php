@@ -174,6 +174,7 @@
   document.addEventListener('DOMContentLoaded', function() {
     if (window.CKEDITOR && !CKEDITOR.instances.pesan_view) {
       CKEDITOR.replace('pesan_view', {
+        versionCheck: false,
         readOnly: true,
         toolbar: [],
         removePlugins: 'elementspath',

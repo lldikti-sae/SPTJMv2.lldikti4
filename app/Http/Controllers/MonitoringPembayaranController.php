@@ -208,6 +208,11 @@ class MonitoringPembayaranController extends Controller
         ->with('error', 'Data dengan NIDN tersebut tidak ditemukan untuk rentang tahun ' . $startYear . ' s.d. ' . $endYear);
     }
 
+    $isPns = $this->resolveIsPns($transaksi, $request);
+    if (!$isPns && $jenisTunjangan !== 'sptjm') {
+        $jenisTunjangan = 'sptjm';
+    }
+
     // Override header properties from a_dosen (master) to ensure it shows the latest PTS
     $masterDosen = DB::table('a_dosen')->where(function ($q) use ($nidn) {
         $q->where('nidn', $nidn)->orWhere('nuptk', $nidn);
@@ -323,24 +328,43 @@ class MonitoringPembayaranController extends Controller
           $bersihTkgbVal = 0;
           if (isset($tukinRecords[$i])) {
               $tk = $tukinRecords[$i];
+              
+              $jabatanBulanan[$i - 1] = $tk->Jabatan ?? '-';
+              $golonganBulanan[$i - 1] = $tk->Kelas_Jabatan ?? '-';
+              $tahunBulanan[$i - 1] = '-';
+
               $gajiAsli = (float) ($tk->Nilai_tukin_Jabatan ?? 0);
-              // Tidak menimpa $kotorTpdVal, $pajakTpdVal, dan $bersihTpdVal agar nilai SPTJM tetap ada untuk kolom Bersih TPD
+              // Tidak menimpa $kotorTpdVal, $pajakTpdVal, dan $bersihTpdVal secara global, 
+              // tapi untuk kolom Bersih TPD pada TUKIN kita ambil dari Nilai_Bersih_Serdos
               
               $tDasar = (float) ($tk->KD ?? 0.60);
               $tPrestasi = (float) ($tk->KP ?? 0);
               $tPotongan = (float) ($tk->PP ?? 0);
               $tBersihSerdos = (float) ($tk->Nilai_Bersih_Serdos ?? 0);
               
-              $golonganBulanan[count($golonganBulanan)-1] = trim($tk->Jabatan ?? '-');
-              $jabatanBulanan[count($jabatanBulanan)-1] = '-';
-              $tahunBulanan[count($tahunBulanan)-1] = '';
+              $bersihTpdVal = $tBersihSerdos;
+              
           } else {
               $gajiAsli = 0;
               $tDasar = 0.60;
-
-              $golonganBulanan[count($golonganBulanan)-1] = '-';
-              $jabatanBulanan[count($jabatanBulanan)-1] = '-';
-              $tahunBulanan[count($tahunBulanan)-1] = '-';
+          }
+      } elseif ($jenisTunjangan === 'semua') {
+          if (isset($tukinRecords[$i])) {
+              $tk = $tukinRecords[$i];
+              $nominalTukin = (float) ($tk->Nilai_tukin_Jabatan ?? 0);
+              $tDasar = (float) ($tk->KD ?? 0.60);
+              $tPrestasi = (float) ($tk->KP ?? 0);
+              $tPotongan = (float) ($tk->PP ?? 0);
+              
+              $nominalDasar = $nominalTukin * $tDasar;
+              $nominalPrestasi = $nominalTukin * $tPrestasi;
+              $nominalPotongan = $nominalTukin * $tPotongan;
+              
+              $kotorTkgbVal = $nominalTukin;
+              $bersihTkgbVal = $nominalDasar + $nominalPrestasi - $bersihTpdVal - $nominalPotongan;
+          } else {
+              $kotorTkgbVal = 0;
+              $bersihTkgbVal = 0;
           }
       }
       
@@ -539,31 +563,38 @@ class MonitoringPembayaranController extends Controller
       // Status logic — use origHasSp2d for original status, hasSp2d for resolved display
       $isResolved = (abs($originalSelisihBulan) > 0.01 && abs($selisihBulan) < 0.01) || isset($resolvedMonths[$bulanNum]);
       
-      if (!$hasData && !$kode && !$hasKodeCair) {
-        $statusBulanan[] = null;
-      } elseif ($isResolved && $hasData && abs($selisihBulan) < 0.01) {
-        $statusBulanan[] = 'selesai';
-      } elseif ($origHasSp2d) { // SP2D is present -> it's evaluating selisih immediately
-        if (abs($selisihBulan) <= 0.01) {
-          $statusBulanan[] = 'selesai';
-        } elseif ($selisihBulan < -0.01) {
-          $statusBulanan[] = 'kurang';
-        } elseif ($selisihBulan > 0.01) {
-          $statusBulanan[] = 'lebih';
-        }
-      } elseif ($hasKodeCair && !$origHasSp2d) { // Has kode cair but no SP2D -> Proses
-        $statusBulanan[] = 'proses';
-      } elseif (!$hasKodeCair && ($hasData || $kode)) { // No kode cair
-        // Jika ada kode usulan tapi gaji null/0, status = nama kode usulan (misal: Tugas Belajar, Mutasi, dll)
-        // Jika ada kode usulan DAN gaji > 0, status tetap 'usulan'
-        $kodeStr = is_string($kode) ? trim($kode) : '';
-        if ($kodeStr !== '' && $kodeStr !== '-' && $gaji == 0) {
-          $statusBulanan[] = 'kode:' . $kodeStr;
-        } else {
-          $statusBulanan[] = 'usulan';
-        }
+      if ($jenisTunjangan === 'tukin' && isset($tukinRecords[$bulanNum])) {
+          $tk = $tukinRecords[$bulanNum];
+          if (!empty($tk->Keterangan_Status)) {
+              $statusBulanan[] = 'kode:' . $tk->Keterangan_Status;
+          } else {
+              $statusBulanan[] = 'usulan';
+          }
       } else {
-        $statusBulanan[] = null;
+          if (!$hasData && !$kode && !$hasKodeCair) {
+            $statusBulanan[] = null;
+          } elseif ($isResolved && $hasData && abs($selisihBulan) < 0.01) {
+            $statusBulanan[] = 'selesai';
+          } elseif ($origHasSp2d) { // SP2D is present -> it's evaluating selisih immediately
+            if (abs($selisihBulan) <= 0.01) {
+              $statusBulanan[] = 'selesai';
+            } elseif ($selisihBulan < -0.01) {
+              $statusBulanan[] = 'kurang';
+            } elseif ($selisihBulan > 0.01) {
+              $statusBulanan[] = 'lebih';
+            }
+          } elseif ($hasKodeCair && !$origHasSp2d) { // Has kode cair but no SP2D -> Proses
+            $statusBulanan[] = 'proses';
+          } elseif (!$hasKodeCair && ($hasData || $kode)) { // No kode cair
+            $kodeStr = is_string($kode) ? trim($kode) : '';
+            if ($kodeStr !== '' && $kodeStr !== '-' && $gaji == 0) {
+              $statusBulanan[] = 'kode:' . $kodeStr;
+            } else {
+              $statusBulanan[] = 'usulan';
+            }
+          } else {
+            $statusBulanan[] = null;
+          }
       }
     }
     
@@ -747,6 +778,7 @@ class MonitoringPembayaranController extends Controller
         'pajakTkgb',
         'bersihTpd',
         'bersihTkgb',
+        'isPns',
         'golonganBulanan',
         'jabatanBulanan',
         'gajiBulanan',
@@ -816,6 +848,11 @@ class MonitoringPembayaranController extends Controller
 
     if (!$transaksi) {
       return response()->json(['success' => false, 'message' => 'Data profil tidak ditemukan untuk rentang tahun.']);
+    }
+
+    $isPns = $this->resolveIsPns($transaksi, $request);
+    if (!$isPns && $jenisTunjangan !== 'sptjm') {
+        $jenisTunjangan = 'sptjm';
     }
 
     // Override header properties from a_dosen (master) to ensure it shows the latest PTS
@@ -944,16 +981,27 @@ class MonitoringPembayaranController extends Controller
               $tPotongan = (float) ($tk->PP ?? 0);
               $tBersihSerdos = (float) ($tk->Nilai_Bersih_Serdos ?? 0);
               
-              $golonganBulanan[count($golonganBulanan)-1] = trim($tk->Jabatan ?? '-');
-              $jabatanBulanan[count($jabatanBulanan)-1] = '-';
-              $tahunBulanan[count($tahunBulanan)-1] = '';
           } else {
               $gajiAsli = 0;
               $tDasar = 0.60;
-
-              $golonganBulanan[count($golonganBulanan)-1] = '-';
-              $jabatanBulanan[count($jabatanBulanan)-1] = '-';
-              $tahunBulanan[count($tahunBulanan)-1] = '-';
+          }
+      } elseif ($jenisTunjangan === 'semua') {
+          if (isset($tukinRecords[$i])) {
+              $tk = $tukinRecords[$i];
+              $nominalTukin = (float) ($tk->Nilai_tukin_Jabatan ?? 0);
+              $tDasar = (float) ($tk->KD ?? 0.60);
+              $tPrestasi = (float) ($tk->KP ?? 0);
+              $tPotongan = (float) ($tk->PP ?? 0);
+              
+              $nominalDasar = $nominalTukin * $tDasar;
+              $nominalPrestasi = $nominalTukin * $tPrestasi;
+              $nominalPotongan = $nominalTukin * $tPotongan;
+              
+              $kotorTkgbVal = $nominalTukin;
+              $bersihTkgbVal = $nominalDasar + $nominalPrestasi - $bersihTpdVal - $nominalPotongan;
+          } else {
+              $kotorTkgbVal = 0;
+              $bersihTkgbVal = 0;
           }
       }
 
@@ -1374,6 +1422,7 @@ class MonitoringPembayaranController extends Controller
       'summaryRekap' => $summaryRekap,
       'summaryOriginal' => $summaryOriginal,
       'riwayatPembayaran' => $riwayatPembayaran,
+      'isPns' => $isPns,
     ]);
   }
 
