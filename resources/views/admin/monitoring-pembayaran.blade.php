@@ -265,6 +265,7 @@ $months = [
     });
 
     $isSemua = ($jenisTunjangan ?? 'semua') === 'semua';
+<<<<<<< HEAD
     $isSptjm = ($jenisTunjangan ?? 'semua') === 'sptjm';
     
     if ($isSemua) {
@@ -272,6 +273,8 @@ $months = [
     }
     
     $showTkgbSptjm = $isSptjm && $isGuruBesar;
+=======
+>>>>>>> 6b5b2b7dc91a8993194111cdcf2047c66d114147
     $totalGaji = array_sum($gajiBulanan);
     $totalKotorTpd = array_sum($kotorTpd);
     $totalKotorTkgb = array_sum($kotorTkgb);
@@ -423,6 +426,7 @@ $months = [
           <td class="text-end">{{ number_format($totalBersihTpd,0,',','.') }}</td>
           <td colspan="{{ !$isPns ? '4' : '3' }}"></td>
         </tr>
+      </tbody>
       @else
       <thead>
         <tr>
@@ -447,7 +451,9 @@ $months = [
           <td class="text-center">{{ $jabatanBulanan[$index] ?? '-' }} / {{ $golonganBulanan[$index] ?? '-' }}-{{ $tahunBulanan[$index] ?? '-' }}</td>
           <td class="text-end">{{ number_format($gajiBulanan[$index] ?? 0,0,',','.') }}</td>
           <td class="text-end">{{ number_format($kotorTpd[$index] ?? 0,0,',','.') }}</td>
+          @if(($jenisTunjangan ?? 'semua') == 'sptjm')<td class="text-end">{{ number_format($pajakTpd[$index] ?? 0,0,',','.') }}</td>@endif
           @if($hasTkgb)<td class="text-end tkgb-col">{{ number_format($kotorTkgb[$index] ?? 0,0,',','.') }}</td>@endif
+          @if(($jenisTunjangan ?? 'semua') == 'sptjm' && $hasTkgb)<td class="text-end tkgb-col">{{ number_format($pajakTkgb[$index] ?? 0,0,',','.') }}</td>@endif
           <td class="text-end">{{ number_format($bersihTpd[$index] ?? 0,0,',','.') }}</td>
           @if($hasTkgb)<td class="text-end tkgb-col">{{ number_format($bersihTkgb[$index] ?? 0,0,',','.') }}</td>@endif
           <td class="text-end fw-bold {{ $sel < 0 ? 'text-danger' : ($sel > 0 ? 'text-success' : 'text-success') }}">{{ $sel < 0 ? '-' : ($sel > 0 ? '+' : '') }}{{ number_format(abs($sel),0,',','.') }}</td>
@@ -463,10 +469,9 @@ $months = [
           @if($hasTkgb)<td class="text-end tkgb-col">{{ number_format($totalBersihTkgb,0,',','.') }}</td>@endif
           <td colspan="2"></td>
         </tr>
+      </tbody>
       @endif
-
         @php
-           // Mengambil selisih asli TANPA dikurangi pembayaran dan tanpa netting
            $kGrossRow = $summaryOriginal['k_gross'] ?? 0;
            $kPajakRow = $summaryOriginal['k_pajak'] ?? 0;
            $kNetRow   = $summaryOriginal['k_net'] ?? 0;
@@ -474,6 +479,17 @@ $months = [
            $lGrossRow = $summaryOriginal['l_gross'] ?? 0;
            $lPajakRow = $summaryOriginal['l_pajak'] ?? 0;
            $lNetRow   = $summaryOriginal['l_net'] ?? 0;
+
+            $jmKotorTpd = $totalKotorTpd + $totalKotorTkgb;
+            $jmPajakTpd = $totalPajakTpd + $totalPajakTkgb;
+            $jmBersihTpd = $totalBersihTpd + $totalBersihTkgb;
+
+            $taKotorTpdSptjm = $totalKotorTpd + $kGrossRow - $lGrossRow;
+            $taPajakTpdSptjm = $totalPajakTpd + $kPajakRow - $lPajakRow;
+            $taBersihTpdSptjm = $totalBersihTpd + $kNetRow - $lNetRow;
+            
+            $taKotorTpdSemua = $jmKotorTpd + $kGrossRow - $lGrossRow;
+            $taBersihTpdSemua = $jmBersihTpd + $kNetRow - $lNetRow;
         @endphp
 
       @if (($jenisTunjangan ?? 'semua') == 'tukin')
@@ -659,7 +675,7 @@ $months = [
       const startYearInput = document.getElementById('hidden_start_year');
       const endYearInput = document.getElementById('hidden_end_year');
       const jenisTunjanganInput = document.getElementById('hidden_jenis_tunjangan');
-      let currentJenis = jenisTunjanganInput ? jenisTunjanganInput.value : 'semua';
+      let currentJenis = jenisTunjanganInput ? jenisTunjanganInput.value : 'sptjm';
       
       const fmt = n => Number(n).toLocaleString('id-ID',{maximumFractionDigits:0});
       const fmtDec = n => Number(n).toLocaleString('id-ID',{minimumFractionDigits:2, maximumFractionDigits:2});
@@ -730,11 +746,14 @@ $months = [
 
           const sumTkgb=[...(data.kotorTkgb||[]),...(data.pajakTkgb||[]),...(data.bersihTkgb||[])].reduce((a,b)=>a+Number(b),0);
           let hasTkgb=sumTkgb!=0;
+<<<<<<< HEAD
           let isGuruBesar = (data.jabatanBulanan || []).some(j => j && j.toLowerCase().includes('guru besar'));
           let showTkgbSptjm = currentJenis === 'sptjm' && isGuruBesar;
           if (currentJenis === 'semua') {
               hasTkgb = true;
           }
+=======
+>>>>>>> 6b5b2b7dc91a8993194111cdcf2047c66d114147
           const tbl=document.getElementById('mp-table');
           if(tbl) tbl.dataset.hasTkgb=hasTkgb?'1':'0';
 

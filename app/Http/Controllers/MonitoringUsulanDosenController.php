@@ -118,7 +118,19 @@ class MonitoringUsulanDosenController extends Controller
     $query->having('bulan_belum_usulan', '>', 0);
     $query->orderBy('bulan_belum_usulan', 'DESC')->orderBy('s_transaksi_2.Nama', 'ASC');
 
-    $paginator = $query->paginate($perPage, ['*'], 'page', $currentPage);
+    $total = DB::table(DB::raw("({$query->toSql()}) as sub"))
+        ->mergeBindings($query)
+        ->count();
+
+    $items = $query->forPage($currentPage, $perPage)->get();
+    
+    $paginator = new \Illuminate\Pagination\LengthAwarePaginator(
+        $items,
+        $total,
+        $perPage,
+        $currentPage,
+        ['path' => \Illuminate\Pagination\Paginator::resolveCurrentPath()]
+    );
 
     $paginator->getCollection()->transform(function ($row) use ($awal, $akhir, $bulanIndonesia) {
       $bulanKosong = [];

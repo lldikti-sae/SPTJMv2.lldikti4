@@ -273,7 +273,7 @@ class DataDosenController extends Controller
         ->get();
 
       $jumlahDipindah = 0;
-      $jumlahDijadwalkan = 0;
+      $jumlahGagal = 0;
       $wilayahBaru = strtolower($ptsTujuan->wilayah ?? '');
 
       foreach ($dosens as $dosen) {
@@ -281,39 +281,8 @@ class DataDosenController extends Controller
           if (!$identifier) continue;
 
           if ($this->hasActiveUsulan($identifier, $tahun)) {
-              // Jadwalkan pindah PTS
-              $existing = DB::table('j_jadwal_pindah_pts')
-                  ->where(function($q) use ($identifier) {
-                      $q->where('nidn', $identifier)
-                        ->orWhere('nuptk', $identifier);
-                  })
-                  ->where('status', 'pending')
-                  ->first();
-
-              if ($existing) {
-                  DB::table('j_jadwal_pindah_pts')
-                      ->where('id', $existing->id)
-                      ->update([
-                          'kode_pt_baru' => $kodePtsTujuan,
-                          'nama_pts_baru' => $ptsTujuan->nama_pts,
-                          'pemegang_wilayah_baru' => $wilayahBaru,
-                          'pengguna' => auth()->user()->email ?? 'admin',
-                          'updated_at' => now()
-                      ]);
-              } else {
-                  DB::table('j_jadwal_pindah_pts')->insert([
-                      'nidn' => $dosen->NIDN,
-                      'nuptk' => $dosen->NUPTK,
-                      'kode_pt_baru' => $kodePtsTujuan,
-                      'nama_pts_baru' => $ptsTujuan->nama_pts,
-                      'pemegang_wilayah_baru' => $wilayahBaru,
-                      'status' => 'pending',
-                      'pengguna' => auth()->user()->email ?? 'admin',
-                      'created_at' => now(),
-                      'updated_at' => now()
-                  ]);
-              }
-              $jumlahDijadwalkan++;
+              // Tidak bisa dipindah, catat jumlah gagal
+              $jumlahGagal++;
           } else {
               // Pindah langsung
               Transaksi::where(function ($q) use ($identifier) {
@@ -332,8 +301,8 @@ class DataDosenController extends Controller
       if ($jumlahDipindah > 0) {
           $msg[] = "$jumlahDipindah data dosen berhasil dipindahkan ke PTS tujuan.";
       }
-      if ($jumlahDijadwalkan > 0) {
-          $msg[] = "$jumlahDijadwalkan data dosen dijadwalkan pindah karena proses pencairan aktif.";
+      if ($jumlahGagal > 0) {
+          $msg[] = "$jumlahGagal data dosen tidak bisa dipindah karena proses pencairan aktif.";
       }
       
       $finalMessage = implode(' ', $msg);

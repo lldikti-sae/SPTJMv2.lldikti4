@@ -147,7 +147,7 @@ class MonitoringPembayaranController extends Controller
     $startYear = $request->input('start_year');
     $endYear = $request->input('end_year');
     $selectedYear = $request->input('tahun_versi');
-    $jenisTunjangan = strtolower($request->input('jenis_tunjangan', 'semua'));
+    $jenisTunjangan = strtolower($request->input('jenis_tunjangan', 'sptjm'));
 
     $availableYears = ['2023', '2024', '2025', '2026'];
 
@@ -221,7 +221,6 @@ class MonitoringPembayaranController extends Controller
         $transaksi->Nama = $masterDosen->nama_dosen ?? $transaksi->Nama;
         $transaksi->Kode_PT = $masterDosen->kode_pts ?? $transaksi->Kode_PT;
         $transaksi->PTS = $masterDosen->nama_pts ?? $transaksi->PTS;
-        $transaksi->Aktif = $masterDosen->aktif ?? $transaksi->Aktif;
     }
 
     // Default tahun yang ditampilkan: tahun awal (agar saat klik Cari langsung baca tahun awal)
@@ -249,6 +248,11 @@ class MonitoringPembayaranController extends Controller
     // dan tahun_versi-nya sama dengan yang dipilih, gunakan transaksi utama.
     if (!$transaksiTahun && !empty($selectedYear) && (string) ($transaksi->tahun_versi ?? '') === (string) $selectedYear) {
       $transaksiTahun = $transaksi;
+    }
+    
+    // Gunakan status Aktif dari transaksi tahun yang dipilih agar header sesuai dengan tahun tersebut
+    if ($transaksiTahun) {
+        $transaksi->Aktif = $transaksiTahun->Aktif ?? $transaksi->Aktif;
     }
 
     $selisihTotals = SelisihBayar::computeFromTransaksi($transaksiTahun);
@@ -318,9 +322,13 @@ class MonitoringPembayaranController extends Controller
 
       $tDasar = 0; $tPrestasi = 0; $tPotongan = 0; $tBersihSerdos = 0;
 
+<<<<<<< HEAD
       if ($jenisTunjangan === 'sptjm') {
           // Do not zero out TKGB values so we can display them in the UI
       } elseif ($jenisTunjangan === 'tukin') {
+=======
+      if ($jenisTunjangan === 'tukin') {
+>>>>>>> 6b5b2b7dc91a8993194111cdcf2047c66d114147
           $kotorTkgbVal = 0;
           $pajakTkgbVal = 0;
           $bersihTkgbVal = 0;
@@ -803,7 +811,7 @@ class MonitoringPembayaranController extends Controller
     $startYear = $request->input('start_year');
     $endYear = $request->input('end_year');
     $selectedYear = $request->input('tahun_versi');
-    $jenisTunjangan = strtolower($request->input('jenis_tunjangan', 'semua'));
+    $jenisTunjangan = strtolower($request->input('jenis_tunjangan', 'sptjm'));
 
     $availableYears = ['2023', '2024', '2025', '2026'];
     
@@ -861,7 +869,6 @@ class MonitoringPembayaranController extends Controller
         $transaksi->Nama = $masterDosen->nama_dosen ?? $transaksi->Nama;
         $transaksi->Kode_PT = $masterDosen->kode_pts ?? $transaksi->Kode_PT;
         $transaksi->PTS = $masterDosen->nama_pts ?? $transaksi->PTS;
-        $transaksi->Aktif = $masterDosen->aktif ?? $transaksi->Aktif;
     }
 
     // default selectedYear to the latest transaction year if not provided
@@ -961,9 +968,13 @@ class MonitoringPembayaranController extends Controller
 
       $tDasar = 0; $tPrestasi = 0; $tPotongan = 0; $tBersihSerdos = 0;
 
+<<<<<<< HEAD
       if ($jenisTunjangan === 'sptjm') {
           // Do not zero out TKGB values so we can display them in the UI
       } elseif ($jenisTunjangan === 'tukin') {
+=======
+      if ($jenisTunjangan === 'tukin') {
+>>>>>>> 6b5b2b7dc91a8993194111cdcf2047c66d114147
           $kotorTkgbVal = 0;
           $pajakTkgbVal = 0;
           $bersihTkgbVal = 0;
@@ -1051,7 +1062,7 @@ class MonitoringPembayaranController extends Controller
       'NIDN' => !empty($transaksi->NIDN) ? $transaksi->NIDN : ($transaksi->NUPTK ?? ''),
       'Nama' => $transaksi->Nama ?? '',
       'JabatanSelected' => ($transaksiTahun && isset($transaksiTahun->{'Jabatan' . ((int)session('bulan') ?: 12)}) ? $transaksiTahun->{'Jabatan' . ((int)session('bulan') ?: 12)} : ($transaksi->Jabatan12 ?? '')),
-      'Aktif' => $transaksi->Aktif ?? 0,
+      'Aktif' => $transaksiTahun ? ($transaksiTahun->Aktif ?? 0) : ($transaksi->Aktif ?? 0),
       'Kode_PT' => $transaksi->Kode_PT ?? '',
       'PTS' => $transaksi->PTS ?? '',
       'Jenis' => $transaksi->Jenis ?? '',
@@ -1431,7 +1442,7 @@ class MonitoringPembayaranController extends Controller
 
     $nidn = trim((string) $request->input('nidn'));
     $selectedYear = trim((string) $request->input('tahun_versi'));
-    $jenisTunjangan = trim((string) $request->input('jenis_tunjangan', 'semua'));
+    $jenisTunjangan = trim((string) $request->input('jenis_tunjangan', 'sptjm'));
 
     $transaksi = DB::table('s_transaksi_2')
       ->where(function ($q) use ($nidn) {
@@ -1497,12 +1508,7 @@ class MonitoringPembayaranController extends Controller
       $pajakTkgb = (float) ($transaksi?->{'nilaiPajakTKGB' . $m} ?? 0);
       $bersihTpd = (float) ($transaksi?->{'bersihTPD' . $m} ?? 0);
       $bersihTkgb = (float) ($transaksi?->{'bersihTKGB' . $m} ?? 0);
-      
-      if ($jenisTunjangan === 'sptjm') {
-          $kotorTkgb = 0;
-          $pajakTkgb = 0;
-          $bersihTkgb = 0;
-      } elseif ($jenisTunjangan === 'tukin') {
+      if ($jenisTunjangan === 'tukin') {
           $kotorTkgb = 0;
           $pajakTkgb = 0;
           $bersihTkgb = 0;
