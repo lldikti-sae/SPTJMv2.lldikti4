@@ -844,7 +844,7 @@ $months = [
     
                 // Totals
                 const t=data.totals||{};
-                const sumCols = `<td class="text-end">${fmt(t.kotorTpd||0)}</td>${showTkgbSptjm ? `<td class="text-end">${fmt(t.kotorTkgb||0)}</td>` : ''}<td class="text-end">${fmt(t.bersihTpd||0)}</td>`;
+                const sumCols = `<td class="text-end">${fmt(t.kotorTpd||0)}</td><td class="text-end">${fmt(t.bersihTpd||0)}</td>${hasTkgb ? `<td class="text-end tkgb-col">${fmt(t.kotorTkgb||0)}</td><td class="text-end tkgb-col">${fmt(t.bersihTkgb||0)}</td>` : ''}`;
                 tbody.innerHTML+=`<tr class="fw-bold table-light"><td colspan="4" class="text-center">Jumlah</td><td class="text-end">${fmt(t.gaji||0)}</td>${sumCols}<td colspan="${!data.isPns ? '4' : '3'}"></td></tr>`;
               } else {
                 for(let i=0;i<months.length;i++){
