@@ -281,7 +281,7 @@ Route::get('/admin/perubahan-data-dosen/{nidn}', [App\Http\Controllers\Perubahan
 // POST endpoints for perubahan-data-dosen tabs
 Route::post('/admin/perubahan-data-dosen/{nidn}/pengaktifan', [App\Http\Controllers\PerubahanDataDosenController::class, 'ubahDataDosen'])->name('admin.perubahan-data-dosen.pengaktifan');
 Route::post('/admin/perubahan-data-dosen/{nidn}/perubahan', [App\Http\Controllers\PerubahanDataDosenController::class, 'updateData'])->name('admin.perubahan-data-dosen.perubahan');
-Route::post('/admin/jadwal-pindah-pts', [App\Http\Controllers\JadwalPindahPtsController::class, 'simpan'])->name('admin.jadwal-pindah-pts.simpan');
+
 Route::get('/admin/hapus-data-dosen-tidak-aktif', [DataDosenController::class, 'viewDataDosenTidakAktif'])->name('admin.data-dosen.tidak-aktif');
 Route::post('/admin/hapus-data-dosen-tidak-aktif/data', [DataDosenController::class, 'datatableTidakAktif'])->name('admin.data-dosen.tidak-aktif.data'); //data table
 Route::delete('/admin/hapus-data-dosen-tidak-aktif/{id}', [DataDosenController::class, 'hapusDataDosenTidakAktif'])->name('admin.data-dosen.tidak-aktif.hapus');

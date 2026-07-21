@@ -384,34 +384,8 @@ document.addEventListener('DOMContentLoaded', function() {
         title: 'Perhatian!',
         text: "{{ session('warning') ?? 'Dosen ini tidak bisa dipindah PTS sekarang karena dalam proses usulan pencairan aktif.' }}",
         icon: 'warning',
-        showCancelButton: true,
         confirmButtonColor: '#3085d6',
-        cancelButtonColor: '#d33',
-        confirmButtonText: 'Jadwalkan',
-        cancelButtonText: 'Batal'
-    }).then((result) => {
-        if (result.isConfirmed) {
-            const jadwalUrl = "{{ route('admin.jadwal-pindah-pts.simpan') }}";
-            const postData = {
-                nidn: "{{ old('nidn') ?? old('nuptk') }}",
-                kode_pt_baru: "{{ session('kode_pt_baru') }}",
-                nama_pts_baru: "{{ session('nama_pts_baru') }}",
-                pemegang_wilayah_baru: "{{ session('pemegang_wilayah_baru') }}",
-                _token: "{{ csrf_token() }}"
-            };
-            const form = document.createElement('form');
-            form.method = 'POST';
-            form.action = jadwalUrl;
-            for (const key in postData) {
-                const hiddenField = document.createElement('input');
-                hiddenField.type = 'hidden';
-                hiddenField.name = key;
-                hiddenField.value = postData[key];
-                form.appendChild(hiddenField);
-            }
-            document.body.appendChild(form);
-            form.submit();
-        }
+        confirmButtonText: 'Tutup'
     });
     @endif
 

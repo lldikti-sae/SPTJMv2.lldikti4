@@ -200,14 +200,14 @@ document.addEventListener('DOMContentLoaded', function() {
         dom: '<"row"<"col-sm-12 col-md-6"l><"col-sm-12 col-md-6"f>><"table-responsive text-nowrap"t><"row"<"col-sm-12 col-md-5"i><"col-sm-12 col-md-7"p>>',
         order: [[0, 'desc']],
         columns: [
-            { data: 'id_usulan' },
-            { data: 'tahun' },
-            { data: 'kode_pts' },
-            { data: 'nama_pts', className: 'text-start' },
-            { data: 'bulan' },
-            { data: 'nama', className: 'text-start' },
-            { data: 'jabatan' },
-            { data: 'wilayah' },
+            { data: 'id_usulan', defaultContent: '-' },
+            { data: 'tahun', defaultContent: '-' },
+            { data: 'kode_pts', defaultContent: '-' },
+            { data: 'nama_pts', className: 'text-start', defaultContent: '-' },
+            { data: 'bulan', defaultContent: '-' },
+            { data: 'nama', className: 'text-start', defaultContent: '-' },
+            { data: 'jabatan', defaultContent: '-' },
+            { data: 'wilayah', defaultContent: '-' },
             { data: 'file', render: function(d, type, row){
                 if(!d) return '-';
                 var idStr = (row.id_usulan || '').toString().trim();
