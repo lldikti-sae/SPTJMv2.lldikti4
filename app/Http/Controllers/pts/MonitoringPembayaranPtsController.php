@@ -175,100 +175,12 @@ class MonitoringPembayaranPtsController extends Controller
       return redirect()->back()->with('error', 'Data tidak ditemukan untuk NIDN/NUPTK tersebut pada tahun yang dipilih atau bukan milik PTS Anda.');
     }
 
-    $monthNames = [
-      1 => 'Januari',
-      2 => 'Februari',
-      3 => 'Maret',
-      4 => 'April',
-      5 => 'Mei',
-      6 => 'Juni',
-      7 => 'Juli',
-      8 => 'Agustus',
-      9 => 'September',
-      10 => 'Oktober',
-      11 => 'November',
-      12 => 'Desember',
-    ];
+    $request->merge([
+      'nidn' => $identifier,
+      'tahun_versi' => $selectedYear,
+    ]);
 
-    $rows = [];
-    $totals = [
-      'gaji' => 0,
-      'kotorTpd' => 0,
-      'kotorTkgb' => 0,
-      'pajakTpd' => 0,
-      'pajakTkgb' => 0,
-      'bersihTpd' => 0,
-      'bersihTkgb' => 0,
-    ];
-
-    for ($m = 1; $m <= 12; $m++) {
-      $kodeUsulan = $transaksi?->{'KodeUsulan' . $m} ?? '-';
-      $gol = $transaksi?->{'Gol' . $m} ?? '-';
-      $tahun = $transaksi?->{'Tahun' . $m} ?? '-';
-
-      $gaji = (float) ($transaksi?->{'Gaji' . $m} ?? 0);
-      $kotorTpd = (float) ($transaksi?->{'TPD' . $m} ?? 0);
-      $kotorTkgb = (float) ($transaksi?->{'TKGB' . $m} ?? 0);
-      $pajakTpd = (float) ($transaksi?->{'nilaiPajakTPD' . $m} ?? 0);
-      $pajakTkgb = (float) ($transaksi?->{'nilaiPajakTKGB' . $m} ?? 0);
-      $bersihTpd = (float) ($transaksi?->{'bersihTPD' . $m} ?? 0);
-      $bersihTkgb = (float) ($transaksi?->{'bersihTKGB' . $m} ?? 0);
-
-      $totals['gaji'] += $gaji;
-      $totals['kotorTpd'] += $kotorTpd;
-      $totals['kotorTkgb'] += $kotorTkgb;
-      $totals['pajakTpd'] += $pajakTpd;
-      $totals['pajakTkgb'] += $pajakTkgb;
-      $totals['bersihTpd'] += $bersihTpd;
-      $totals['bersihTkgb'] += $bersihTkgb;
-
-      $rows[] = [
-        $selectedYear,
-        $monthNames[$m],
-        $kodeUsulan,
-        $gol . ' - ' . $tahun,
-        (int) round($gaji),
-        (int) round($kotorTpd),
-        (int) round($kotorTkgb),
-        (int) round($pajakTpd),
-        (int) round($pajakTkgb),
-        (int) round($bersihTpd),
-        (int) round($bersihTkgb),
-      ];
-    }
-
-    $selisihTotals = SelisihBayar::computeFromTransaksi($transaksi);
-
-    $rows[] = [
-      $selectedYear,
-      'Jumlah',
-      '-',
-      '-',
-      (int) round($totals['gaji']),
-      (int) round($totals['kotorTpd']),
-      (int) round($totals['kotorTkgb']),
-      (int) round($totals['pajakTpd']),
-      (int) round($totals['pajakTkgb']),
-      (int) round($totals['bersihTpd']),
-      (int) round($totals['bersihTkgb']),
-    ];
-
-    $rows[] = [
-      $selectedYear,
-      'Jumlah Selisih Bayar',
-      '-',
-      '-',
-      '-',
-      (int) round((float) ($selisihTotals['selisihTpd'] ?? 0)),
-      (int) round((float) ($selisihTotals['selisihTkgb'] ?? 0)),
-      (int) round((float) ($selisihTotals['selisihPajakTpd'] ?? 0)),
-      (int) round((float) ($selisihTotals['selisihPajakTkgb'] ?? 0)),
-      (int) round((float) ($selisihTotals['selisihBersihTpd'] ?? 0)),
-      (int) round((float) ($selisihTotals['selisihBersihTkgb'] ?? 0)),
-    ];
-
-    $fileName = 'monitoring-pembayaran_' . $identifier . '_' . $selectedYear . '.xlsx';
-    return Excel::download(new MonitoringPembayaranExport($rows), $fileName);
+    return app(AdminMonitoringPembayaranController::class)->exportExcel($request);
   }
 
   public function cetakSpt(Request $request)
