@@ -485,6 +485,7 @@ $months = [
             $taKotorTpdSemua = $jmKotorTpd + $kGrossRow - $lGrossRow;
             $taBersihTpdSemua = $jmBersihTpd + $kNetRow - $lNetRow;
         @endphp
+      <tfoot>
 
       @if (($jenisTunjangan ?? 'semua') == 'tukin')
         <tr class="fw-bold" style="background-color: #ffdcdc">
@@ -568,6 +569,7 @@ $months = [
           <td colspan="4"></td>
         </tr>
       @endif
+      </tfoot>
       </tbody>
     </table>
   </div>
@@ -901,8 +903,11 @@ $months = [
                 let sumCols = `<td class="text-end">${fmt(t.kotorTpd||0)}</td>${tkc(t.kotorTkgb||0)}<td class="text-end">${fmt(t.bersihTpd||0)}</td>${tkc(t.bersihTkgb||0)}`;
                 tbody.innerHTML+=`<tr class="fw-bold table-light"><td colspan="3" class="text-center">Jumlah</td><td class="text-end">${fmt(t.gaji||0)}</td>${sumCols}<td colspan="2"></td></tr>`;
             }
-            
-            const tTotals = data.totals || {};
+          }
+          
+          const tfoot=tbl?.querySelector('tfoot');
+          if(tfoot) {
+            tfoot.innerHTML='';
             const sumOri = data.summaryOriginal || {};
             const valKGrRow = sumOri.k_gross || 0;
             const valKNeRow = sumOri.k_net || 0;
@@ -910,21 +915,21 @@ $months = [
             const valLNeRow = sumOri.l_net || 0;
 
             if (currentJenis === 'tukin') {
-                tbody.innerHTML+=`<tr class="fw-bold" style="background-color:#ffdcdc"><td colspan="4" class="text-center">Pembayaran Kekurangan</td><td colspan="12"></td></tr>`;
-                tbody.innerHTML+=`<tr class="fw-bold" style="background-color:#dbeafe"><td colspan="4" class="text-center">Pengembalian Kelebihan</td><td colspan="12"></td></tr>`;
-                tbody.innerHTML+=`<tr class="fw-bold" style="background-color:#d1fae5"><td colspan="4" class="text-center">Total Akhir</td><td class="text-end">${fmt(totGaji)}</td><td></td><td class="text-end">${fmt(totDasar)}</td><td></td><td class="text-end">${fmt(totPrestasi)}</td><td class="text-end">${fmt(totBersihTpd)}</td><td></td><td class="text-end">${fmt(totPotongan)}</td><td class="text-end">${fmt(totNilaiBersih)}</td><td colspan="3"></td></tr>`;
+                tfoot.innerHTML+=`<tr class="fw-bold" style="background-color:#ffdcdc"><td colspan="4" class="text-center">Pembayaran Kekurangan</td><td colspan="12"></td></tr>`;
+                tfoot.innerHTML+=`<tr class="fw-bold" style="background-color:#dbeafe"><td colspan="4" class="text-center">Pengembalian Kelebihan</td><td colspan="12"></td></tr>`;
+                tfoot.innerHTML+=`<tr class="fw-bold" style="background-color:#d1fae5"><td colspan="4" class="text-center">Total Akhir</td><td class="text-end">${fmt(totGaji)}</td><td></td><td class="text-end">${fmt(totDasar)}</td><td></td><td class="text-end">${fmt(totPrestasi)}</td><td class="text-end">${fmt(totBersihTpd)}</td><td></td><td class="text-end">${fmt(totPotongan)}</td><td class="text-end">${fmt(totNilaiBersih)}</td><td colspan="3"></td></tr>`;
             } else if (currentJenis === 'sptjm') {
                 const taKotorTpd = (tTotals.kotorTpd||0) + valKGrRow - valLGrRow;
                 const taBersihTpd = (tTotals.bersihTpd||0) + valKNeRow - valLNeRow;
-                tbody.innerHTML+=`<tr class="fw-bold" style="background-color:#ffdcdc"><td colspan="4" class="text-center">Pembayaran Kekurangan</td><td></td><td class="text-end">${fmt(valKGrRow)}</td><td class="text-end">${fmt(valKNeRow)}</td>${hasTkgb?'<td class="text-end tkgb-col">0</td><td class="text-end tkgb-col">0</td>':''}<td colspan="${!data.isPns ? '4' : '3'}"></td></tr>`;
-                tbody.innerHTML+=`<tr class="fw-bold" style="background-color:#dbeafe"><td colspan="4" class="text-center">Pengembalian Kelebihan</td><td></td><td class="text-end">${fmt(valLGrRow)}</td><td class="text-end">${fmt(valLNeRow)}</td>${hasTkgb?'<td class="text-end tkgb-col">0</td><td class="text-end tkgb-col">0</td>':''}<td colspan="${!data.isPns ? '4' : '3'}"></td></tr>`;
-                tbody.innerHTML+=`<tr class="fw-bold" style="background-color:#d1fae5"><td colspan="4" class="text-center">Total Akhir</td><td class="text-end">${fmt(tTotals.gaji||0)}</td><td class="text-end">${fmt(taKotorTpd)}</td><td class="text-end">${fmt(taBersihTpd)}</td>${hasTkgb?`<td class="text-end tkgb-col">${fmt(tTotals.kotorTkgb||0)}</td><td class="text-end tkgb-col">${fmt(tTotals.bersihTkgb||0)}</td>`:''}<td colspan="${!data.isPns ? '4' : '3'}"></td></tr>`;
+                tfoot.innerHTML+=`<tr class="fw-bold" style="background-color:#ffdcdc"><td colspan="4" class="text-center">Pembayaran Kekurangan</td><td></td><td class="text-end">${fmt(valKGrRow)}</td><td class="text-end">${fmt(valKNeRow)}</td>${hasTkgb?'<td class="text-end tkgb-col">0</td><td class="text-end tkgb-col">0</td>':''}<td colspan="${!data.isPns ? '4' : '3'}"></td></tr>`;
+                tfoot.innerHTML+=`<tr class="fw-bold" style="background-color:#dbeafe"><td colspan="4" class="text-center">Pengembalian Kelebihan</td><td></td><td class="text-end">${fmt(valLGrRow)}</td><td class="text-end">${fmt(valLNeRow)}</td>${hasTkgb?'<td class="text-end tkgb-col">0</td><td class="text-end tkgb-col">0</td>':''}<td colspan="${!data.isPns ? '4' : '3'}"></td></tr>`;
+                tfoot.innerHTML+=`<tr class="fw-bold" style="background-color:#d1fae5"><td colspan="4" class="text-center">Total Akhir</td><td class="text-end">${fmt(tTotals.gaji||0)}</td><td class="text-end">${fmt(taKotorTpd)}</td><td class="text-end">${fmt(taBersihTpd)}</td>${hasTkgb?`<td class="text-end tkgb-col">${fmt(tTotals.kotorTkgb||0)}</td><td class="text-end tkgb-col">${fmt(tTotals.bersihTkgb||0)}</td>`:''}<td colspan="${!data.isPns ? '4' : '3'}"></td></tr>`;
             } else {
                 const taKotorTpd = (tTotals.kotorTpd||0) + (tTotals.kotorTkgb||0) + valKGrRow - valLGrRow;
                 const taBersihTpd = (tTotals.bersihTpd||0) + (tTotals.bersihTkgb||0) + valKNeRow - valLNeRow;
-                tbody.innerHTML+=`<tr class="fw-bold" style="background-color:#ffdcdc"><td colspan="3" class="text-center">Pembayaran Kekurangan</td><td></td><td class="text-end">${fmt(valKGrRow)}</td>${tkc(0)}<td class="text-end">${fmt(valKNeRow)}</td>${tkc(0)}<td colspan="4"></td></tr>`;
-                tbody.innerHTML+=`<tr class="fw-bold" style="background-color:#dbeafe"><td colspan="3" class="text-center">Pengembalian Kelebihan</td><td></td><td class="text-end">${fmt(valLGrRow)}</td>${tkc(0)}<td class="text-end">${fmt(valLNeRow)}</td>${tkc(0)}<td colspan="4"></td></tr>`;
-                tbody.innerHTML+=`<tr class="fw-bold" style="background-color:#d1fae5"><td colspan="3" class="text-center">Total Akhir</td><td class="text-end">${fmt(tTotals.gaji||0)}</td><td class="text-end">${fmt(taKotorTpd)}</td>${tkc(0)}<td class="text-end">${fmt(taBersihTpd)}</td>${tkc(0)}<td colspan="4"></td></tr>`;
+                tfoot.innerHTML+=`<tr class="fw-bold" style="background-color:#ffdcdc"><td colspan="3" class="text-center">Pembayaran Kekurangan</td><td></td><td class="text-end">${fmt(valKGrRow)}</td>${tkc(0)}<td class="text-end">${fmt(valKNeRow)}</td>${tkc(0)}<td colspan="4"></td></tr>`;
+                tfoot.innerHTML+=`<tr class="fw-bold" style="background-color:#dbeafe"><td colspan="3" class="text-center">Pengembalian Kelebihan</td><td></td><td class="text-end">${fmt(valLGrRow)}</td>${tkc(0)}<td class="text-end">${fmt(valLNeRow)}</td>${tkc(0)}<td colspan="4"></td></tr>`;
+                tfoot.innerHTML+=`<tr class="fw-bold" style="background-color:#d1fae5"><td colspan="3" class="text-center">Total Akhir</td><td class="text-end">${fmt(tTotals.gaji||0)}</td><td class="text-end">${fmt(taKotorTpd)}</td>${tkc(0)}<td class="text-end">${fmt(taBersihTpd)}</td>${tkc(0)}<td colspan="4"></td></tr>`;
             }
           }
 
