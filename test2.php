@@ -3,6 +3,5 @@ require __DIR__ . '/vendor/autoload.php';
 $app = require_once __DIR__ . '/bootstrap/app.php';
 $kernel = $app->make(Illuminate\Contracts\Http\Kernel::class);
 $kernel->bootstrap();
-
-$row = DB::table('s_tunjangan_kinerja')->orderBy('NO', 'desc')->first();
-print_r($row);
+$first = DB::table('r_proses_cair')->first();
+print_r($first);
