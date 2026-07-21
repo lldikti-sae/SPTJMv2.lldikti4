@@ -1,4 +1,4 @@
-﻿@extends(
+@extends(
     \Illuminate\Support\Facades\Auth::guard('pts')->check()
         ? 'layouts/contentNavbarLayoutPts'
         : ((auth()->check() && method_exists(auth()->user(), 'isPIC') && auth()->user()->isPIC())

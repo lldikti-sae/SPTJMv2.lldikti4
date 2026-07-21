@@ -27,7 +27,7 @@
             <th>Kode PTS</th>
             <th>Nama PTS</th>
             <th>Status</th>
-            <th>Eligible Span</th>
+            <th>Status Keaktifan</th>
             <th>Aksi</th>
           </tr>
         </thead>
@@ -59,7 +59,7 @@
             { data: 'kode_pt', name: 'kode_pt' },
             { data: 'pts', name: 'pts' },
             { data: 'aktif', name: 'aktif', orderable: false, searchable: false },
-            { data: 'eligible_span', name: 'eligible_span' },
+            { data: 'aktif', name: 'aktif' },
             { data: 'aksi', name: 'aksi', orderable: false, searchable: false }
           ],
           order: [],

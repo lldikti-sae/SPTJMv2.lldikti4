@@ -28,7 +28,7 @@ class PicController extends Controller
     $jumlahDosenPNSTidakAktif = DB::table('s_transaksi_2')
       ->where('pemegang_wilayah', $pemegangWilayah)
       ->where('jenis', 'PNS')
-      ->where('aktif', 0)
+      ->where(function($q) { $q->where('aktif', '!=', 1)->orWhereNull('aktif'); })
       ->where('Tahun_Versi', $year)
       ->count();
 
@@ -47,7 +47,7 @@ class PicController extends Controller
     $jumlahDosenNonPNSTidakAktif = DB::table('s_transaksi_2')
       ->where('jenis', 'NON PNS')
       ->where('Tahun_Versi', $year)
-      ->where('aktif', 0)
+      ->where(function($q) { $q->where('aktif', '!=', 1)->orWhereNull('aktif'); })
       ->where('pemegang_wilayah', $pemegangWilayah)
       ->count();
 

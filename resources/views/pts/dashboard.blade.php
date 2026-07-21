@@ -41,12 +41,10 @@ $baseQuery = DB::table('s_transaksi_2')->whereRaw('1 = 0'); // hasil kosong kala
 $jumlahDosen = (clone $baseQuery)->count();
 // Hitung semua kategori
 $jumlahPnsAktif = (clone $baseQuery)->where('jenis', 'PNS')->where('aktif', '1')->count();
-$jumlahPnsTidakAktif = (clone $baseQuery)->where('jenis', 'PNS')->where('aktif',
-'0')->count();
+$jumlahPnsTidakAktif = (clone $baseQuery)->where('jenis', 'PNS')->where(function($q) { $q->where('aktif', '!=', '1')->orWhereNull('aktif'); })->count();
 $jumlahNonPnsAktif = (clone $baseQuery)->where('jenis', 'NON PNS')->where('aktif',
 '1')->count();
-$jumlahNonPnsTidakAktif = (clone $baseQuery)->where('jenis', 'NON PNS')->where('aktif',
-'0')->count();
+$jumlahNonPnsTidakAktif = (clone $baseQuery)->where('jenis', 'NON PNS')->where(function($q) { $q->where('aktif', '!=', '1')->orWhereNull('aktif'); })->count();
 @endphp
 
 

@@ -47,8 +47,8 @@ class DashboardController extends Controller
   {
     $tahun = session('tahun');
 
-    // Cache hasil perhitungan dashboard berdasarkan tahun versi
-    $dataDashboard = Cache::remember("admin_dashboard_{$tahun}", 300, function () use ($tahun) {
+    // Bypass cache to guarantee fresh data
+    $dataDashboard = function () use ($tahun) {
       // Hitung agregat utama dosen dengan query yang efisien
       $jumlahDosenPNSAktif = DB::table('s_transaksi_2')
         ->where('jenis', 'PNS')
@@ -58,7 +58,9 @@ class DashboardController extends Controller
 
       $jumlahDosenPNSNon = DB::table('s_transaksi_2')
         ->where('jenis', 'PNS')
-        ->where('aktif', '0')
+        ->where(function($q) {
+            $q->where('aktif', '!=', '1')->orWhereNull('aktif');
+        })
         ->where('tahun_versi', $tahun)
         ->count();
 
@@ -70,7 +72,9 @@ class DashboardController extends Controller
 
       $jumlahDosenNonPNSNon = DB::table('s_transaksi_2')
         ->where('jenis', 'NON PNS')
-        ->where('aktif', '0')
+        ->where(function($q) {
+            $q->where('aktif', '!=', '1')->orWhereNull('aktif');
+        })
         ->where('tahun_versi', $tahun)
         ->count();
 
@@ -158,9 +162,9 @@ class DashboardController extends Controller
         'totalDosen',
         'ptsCount'
       );
-    });
+    };
 
-    return view('admin.dashboard', $dataDashboard);
+    return view('admin.dashboard', $dataDashboard());
   }
 
   /**

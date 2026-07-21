@@ -89,7 +89,7 @@ class LihatDataDosenController extends Controller
           $isActive = false;
           if (isset($row->Aktif) || isset($row->aktif)) {
             $val = $row->Aktif ?? $row->aktif;
-            $isActive = ($val === 1 || $val === '1' || strcasecmp((string) $val, 'YA') === 0 || strcasecmp((string) $val, 'Y') === 0);
+            $isActive = ($val == 1 || $val === '1');
           }
           if ($isActive) {
             $statusBtn = '<a href="' . $urlPengaktifan . '" class="sptjm-icon-btn sptjm-btn-reset" title="Pengaktifan"><i class="bx bx-check"></i></a>';
