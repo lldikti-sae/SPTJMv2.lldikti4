@@ -265,7 +265,6 @@ $months = [
     });
 
     $isSemua = ($jenisTunjangan ?? 'semua') === 'semua';
-<<<<<<< HEAD
     $isSptjm = ($jenisTunjangan ?? 'semua') === 'sptjm';
     
     if ($isSemua) {
@@ -273,8 +272,6 @@ $months = [
     }
     
     $showTkgbSptjm = $isSptjm && $isGuruBesar;
-=======
->>>>>>> 6b5b2b7dc91a8993194111cdcf2047c66d114147
     $totalGaji = array_sum($gajiBulanan);
     $totalKotorTpd = array_sum($kotorTpd);
     $totalKotorTkgb = array_sum($kotorTkgb);
@@ -746,14 +743,11 @@ $months = [
 
           const sumTkgb=[...(data.kotorTkgb||[]),...(data.pajakTkgb||[]),...(data.bersihTkgb||[])].reduce((a,b)=>a+Number(b),0);
           let hasTkgb=sumTkgb!=0;
-<<<<<<< HEAD
           let isGuruBesar = (data.jabatanBulanan || []).some(j => j && j.toLowerCase().includes('guru besar'));
           let showTkgbSptjm = currentJenis === 'sptjm' && isGuruBesar;
           if (currentJenis === 'semua') {
               hasTkgb = true;
           }
-=======
->>>>>>> 6b5b2b7dc91a8993194111cdcf2047c66d114147
           const tbl=document.getElementById('mp-table');
           if(tbl) tbl.dataset.hasTkgb=hasTkgb?'1':'0';
 
