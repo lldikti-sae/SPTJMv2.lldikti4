@@ -213,14 +213,28 @@ class MonitoringPembayaranController extends Controller
         $jenisTunjangan = 'sptjm';
     }
 
-    // Override header properties from a_dosen (master) to ensure it shows the latest PTS
-    $masterDosen = DB::table('a_dosen')->where(function ($q) use ($nidn) {
-        $q->where('nidn', $nidn)->orWhere('nuptk', $nidn);
-    })->first();
-    if ($masterDosen) {
-        $transaksi->Nama = $masterDosen->nama_dosen ?? $transaksi->Nama;
-        $transaksi->Kode_PT = $masterDosen->kode_pts ?? $transaksi->Kode_PT;
-        $transaksi->PTS = $masterDosen->nama_pts ?? $transaksi->PTS;
+    // Override header properties using the latest data from s_transaksi_2 (current active year or latest)
+    $currentYear = session('tahun') ?? date('Y');
+    $latestDataDosen = DB::table('s_transaksi_2')
+        ->where(function ($q) use ($nidn) {
+            $q->where('nidn', $nidn)->orWhere('NUPTK', $nidn);
+        })
+        ->where('tahun_versi', $currentYear)
+        ->first();
+
+    if (!$latestDataDosen) {
+        $latestDataDosen = DB::table('s_transaksi_2')
+            ->where(function ($q) use ($nidn) {
+                $q->where('nidn', $nidn)->orWhere('NUPTK', $nidn);
+            })
+            ->orderBy('tahun_versi', 'desc')
+            ->first();
+    }
+
+    if ($latestDataDosen) {
+        $transaksi->Nama = $latestDataDosen->Nama ?? $transaksi->Nama;
+        $transaksi->Kode_PT = $latestDataDosen->Kode_PT ?? $transaksi->Kode_PT;
+        $transaksi->PTS = $latestDataDosen->PTS ?? $transaksi->PTS;
     }
 
     // Default tahun yang ditampilkan: tahun awal (agar saat klik Cari langsung baca tahun awal)
@@ -857,14 +871,28 @@ class MonitoringPembayaranController extends Controller
         $jenisTunjangan = 'sptjm';
     }
 
-    // Override header properties from a_dosen (master) to ensure it shows the latest PTS
-    $masterDosen = DB::table('a_dosen')->where(function ($q) use ($nidn) {
-        $q->where('nidn', $nidn)->orWhere('nuptk', $nidn);
-    })->first();
-    if ($masterDosen) {
-        $transaksi->Nama = $masterDosen->nama_dosen ?? $transaksi->Nama;
-        $transaksi->Kode_PT = $masterDosen->kode_pts ?? $transaksi->Kode_PT;
-        $transaksi->PTS = $masterDosen->nama_pts ?? $transaksi->PTS;
+    // Override header properties using the latest data from s_transaksi_2 (current active year or latest)
+    $currentYear = session('tahun') ?? date('Y');
+    $latestDataDosen = DB::table('s_transaksi_2')
+        ->where(function ($q) use ($nidn) {
+            $q->where('nidn', $nidn)->orWhere('NUPTK', $nidn);
+        })
+        ->where('tahun_versi', $currentYear)
+        ->first();
+
+    if (!$latestDataDosen) {
+        $latestDataDosen = DB::table('s_transaksi_2')
+            ->where(function ($q) use ($nidn) {
+                $q->where('nidn', $nidn)->orWhere('NUPTK', $nidn);
+            })
+            ->orderBy('tahun_versi', 'desc')
+            ->first();
+    }
+
+    if ($latestDataDosen) {
+        $transaksi->Nama = $latestDataDosen->Nama ?? $transaksi->Nama;
+        $transaksi->Kode_PT = $latestDataDosen->Kode_PT ?? $transaksi->Kode_PT;
+        $transaksi->PTS = $latestDataDosen->PTS ?? $transaksi->PTS;
     }
 
     // default selectedYear to the latest transaction year if not provided

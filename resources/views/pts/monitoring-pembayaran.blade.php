@@ -144,7 +144,7 @@ $months = [
     <label class="col-sm-2 col-form-label py-1" style="font-size:13px;font-weight:600;">Status Keaktifan</label>
     <div class="col-sm-10">
       <div class="form-control d-flex align-items-center" style="background:#eceef1;font-size:14px;min-height:38px;">
-        <span id="hdr-status-jenis" style="font-weight:700;color:{{ $isPns ? '#0056b3' : '#dc3545' }};">{{ $isPns ? 'PNS' : 'Non PNS' }}</span>
+        <span id="hdr-status-jenis" style="font-weight:700;color:#0056b3;">{{ $isPns ? 'PNS' : 'Non PNS' }}</span>
         <span class="mx-1">-</span>
         <span id="hdr-status-aktif" style="font-weight:500;color:#4a5568;">{{ $transaksi->Aktif == 1 ? 'Aktif' : 'Tidak Aktif' }}</span>
       </div>
@@ -720,7 +720,7 @@ $months = [
           if(spanJenis && spanAktif) {
               const j=(h.Jenis||'').toUpperCase(), pns=j.indexOf('PNS')!==-1&&j.indexOf('NON')===-1;
               spanJenis.textContent = pns ? 'PNS' : 'Non PNS';
-              spanJenis.style.color = pns ? '#0056b3' : '#dc3545';
+              spanJenis.style.color = '#0056b3';
               spanAktif.textContent = h.Aktif==1 ? 'Aktif' : 'Tidak Aktif';
           }
           const el3=document.getElementById('hdr-pt'); if(el3) el3.value=(h.Kode_PT||'')+' - '+(h.PTS||'');

@@ -123,7 +123,6 @@ class DataDosenController extends Controller
       'jenis' => 'required|string',
       'sertifikat_dosen' => 'required|string',
       'tahun_lulus' => 'required',
-      'aktif' => 'required|in:0,1',
     ]);
 
     $nidn = trim((string) $request->input('nidn'));
@@ -142,50 +141,38 @@ class DataDosenController extends Controller
       return redirect()->route('admin.data-dosen')->with('error', 'Kode PTS tidak ditemukan.');
     }
 
+    $year = (int) session('tahun');
+
     try {
-      // Alur Tambah Dosen adalah 2 step:
-      // 1) Simpan draft dari modal Tambah (belum insert DB)
-      // 2) Redirect ke halaman ubah MK/Gol untuk mengisi Informasi Perubahan, baru insert saat submit.
-      $draft = [
-        'nidn' => $nidn,
-        'nik' => (string) $request->nik,
-        'nama' => (string) $request->nama,
-        'ttl' => (string) $request->ttl,
-        'tanggal_lahir' => (string) $request->tanggal_lahir,
-        'usia' => (string) $request->usia,
-        'kode_pt' => (string) $request->kode_pts,
-        'pts' => (string) ($pts->nama_pts ?? ''),
-        'jenis' => (string) $request->jenis,
-        'sertifikat_dosen' => (string) $request->sertifikat_dosen,
-        'tahun_lulus' => (string) $request->tahun_lulus,
-        'aktif' => (string) $request->aktif,
-        'created_at' => now()->toDateTimeString(),
+      $base = [
+        'Tahun_Versi' => $year,
+        'NIDN' => $nidn !== '' ? $nidn : null,
+        'NUPTK' => $nuptk !== '' ? $nuptk : null,
+        'NIK' => (string) $request->nik,
+        'Nama' => (string) $request->nama,
+        'Kode_PT' => (string) $request->kode_pts,
+        'PTS' => (string) ($pts->nama_pts ?? ''),
+        'Pemegang_Wilayah' => (string) ($pts->wilayah ?? ''),
+        'Sertifikat_Dosen' => (string) $request->sertifikat_dosen,
+        'Tahun_Lulus' => (string) $request->tahun_lulus,
+        'Jenis' => (string) $request->jenis,
+        'Usia' => (string) $request->usia,
+        'TTL' => (string) $request->ttl,
+        'Tanggal_Lahir' => $request->tanggal_lahir ? date('d-m-Y', strtotime($request->tanggal_lahir)) : '',
+        'Aktif' => '0',
       ];
-    
-      // include nuptk if provided
-      if ($nuptk !== '') {
-        $draft['nuptk'] = $nuptk;
+
+      for ($i = 1; $i <= 12; $i++) {
+          $base["KodeUsulan$i"] = 'Draf Baru';
+          $base["Gaji$i"] = 0;
       }
 
-      // Store draft keyed by the identifier used for redirect.
-      session()->put('draft_add_dosen.' . $identifier, $draft);
-      // Also ensure draft is accessible by both identifiers if provided
-      if ($nuptk !== '') {
-        session()->put('draft_add_dosen.' . $nuptk, $draft);
-      }
-      if ($nidn !== '') {
-        session()->put('draft_add_dosen.' . $nidn, $draft);
-      }
+      Transaksi::create($base);
 
-      // New flow: after completing the single-step modal, jump directly to perubahan-data-dosen
-      // and prefill fields from the draft (mode=new).
-      return redirect()->route('admin.perubahan-data-dosen.show', [
-        'nidn' => $identifier,
-        'mode' => 'new',
-      ]);
+      return redirect()->route('admin.data-dosen')->with('success', 'Data dosen berhasil ditambahkan.');
     } catch (\Throwable $e) {
       $alias = ErrorAlias::fromThrowable($e, 'ADM-DOSEN');
-      Log::error('DataDosenController: failed to create draft add dosen', [
+      Log::error('DataDosenController: failed to create dosen', [
         'alias' => $alias['code'],
         'nidn' => (string) ($request->nidn ?? ''),
         'nuptk' => (string) ($request->nuptk ?? ''),
