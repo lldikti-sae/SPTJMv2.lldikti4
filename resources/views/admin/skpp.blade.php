@@ -275,12 +275,12 @@ input[type=number] {
                             <h6 class="fw-bold mb-3">Data Dosen & Tahun</h6>
                             <div class="row g-3 mb-3">
                                 <div class="col-md-6">
-                                    <label class="form-label">NIDN</label>
-                                    <input type="text" class="form-control" id="prev_nidn" name="nidn" placeholder="Ketik NIDN...">
+                                    <label class="form-label">NIDN <span class="text-danger">*</span></label>
+                                    <input type="text" class="form-control" id="prev_nidn" name="nidn" placeholder="Ketik NIDN..." required>
                                 </div>
                                 <div class="col-md-6">
-                                    <label class="form-label">NUPTK</label>
-                                    <input type="text" class="form-control" id="prev_nuptk" name="nuptk" placeholder="Ketik NUPTK...">
+                                    <label class="form-label">NUPTK <span class="text-danger">*</span></label>
+                                    <input type="text" class="form-control" id="prev_nuptk" name="nuptk" placeholder="Ketik NUPTK..." required>
                                 </div>
                                 <div class="col-md-6">
                                     <label class="form-label">Nama Dosen <span class="text-danger">*</span></label>
@@ -979,8 +979,11 @@ document.addEventListener('DOMContentLoaded', function() {
         const nama = document.getElementById('prev_nama').value.trim();
         const tahun = document.getElementById('prev_tahun').value;
 
-        if (!nama) {
-            Swal.fire('Perhatian', 'Nama Dosen wajib diisi.', 'warning');
+        const nidnInput = document.getElementById('prev_nidn').value.trim();
+        const nuptkInput = document.getElementById('prev_nuptk').value.trim();
+
+        if (!nidnInput || !nuptkInput || !nama || !tahun) {
+            Swal.fire('Perhatian', 'NIDN, NUPTK, Nama Dosen, dan Tahun wajib diisi.', 'warning');
             return;
         }
 

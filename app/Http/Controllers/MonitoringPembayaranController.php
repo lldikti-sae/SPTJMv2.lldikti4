@@ -322,7 +322,11 @@ class MonitoringPembayaranController extends Controller
     for ($i = 1; $i <= 12; $i++) {
       $suffix = $i;
       $golonganBulanan[] = $transaksiTahun ? ($transaksiTahun->{'Gol' . $suffix} ?? '-') : '-';
-      $jabatanBulanan[] = $transaksiTahun ? ($transaksiTahun->{'Jabatan' . $suffix} ?? '-') : '-';
+      $jab = $transaksiTahun ? ($transaksiTahun->{'Jabatan' . $suffix} ?? null) : null;
+      if (empty($jab) || $jab === '-') {
+          $jab = $transaksiTahun ? ($transaksiTahun->Jabatan12 ?? ($transaksiTahun->Jabatan1 ?? '-')) : '-';
+      }
+      $jabatanBulanan[] = $jab;
       $tahunBulanan[] = $transaksiTahun ? ($transaksiTahun->{'Tahun' . $suffix} ?? '-') : '-';
       $gajiAsli = $transaksiTahun ? (float) ($transaksiTahun->{'Gaji' . $suffix} ?? 0) : 0;
       $kotorTpdVal = $transaksiTahun ? (float) ($transaksiTahun->{'TPD' . $suffix} ?? 0) : 0;
@@ -977,7 +981,11 @@ class MonitoringPembayaranController extends Controller
       $kcCol = $kodeCairMapping[$i];
       $kodeCairBulanan[] = $transaksiTahun ? ($transaksiTahun->{$kcCol} ?? null) : null;
       $golonganBulanan[] = $transaksiTahun ? ($transaksiTahun->{'Gol' . $s} ?? '-') : '-';
-      $jabatanBulanan[] = $transaksiTahun ? ($transaksiTahun->{'Jabatan' . $s} ?? '-') : '-';
+      $jabExp = $transaksiTahun ? ($transaksiTahun->{'Jabatan' . $s} ?? '-') : '-';
+      if (empty($jabExp) || $jabExp === '-') {
+          $jabExp = $transaksiTahun ? ($transaksiTahun->Jabatan12 ?? ($transaksiTahun->Jabatan1 ?? '-')) : '-';
+      }
+      $jabatanBulanan[] = $jabExp;
       $tahunBulanan[] = $transaksiTahun ? ($transaksiTahun->{'Tahun' . $s} ?? '-') : '-';
       $gajiAsli = $transaksiTahun ? (float) ($transaksiTahun->{'Gaji' . $s} ?? 0) : 0;
       $kotorTpdVal = $transaksiTahun ? (float) ($transaksiTahun->{'TPD' . $s} ?? 0) : 0;

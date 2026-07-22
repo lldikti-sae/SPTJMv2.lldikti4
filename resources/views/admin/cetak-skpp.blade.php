@@ -132,9 +132,15 @@
             <td width="72%">{{ $dosen->Nama ?? '-' }}</td>
         </tr>
         <tr>
-            <td>NUPTK/NIDN</td>
+            <td>NIDN/NUPTK</td>
             <td class="text-center">:</td>
-            <td>{{ $dosen->NUPTK ?? '-' }}/{{ $dosen->NIDN ?? '-' }}</td>
+            <td>
+                @if(($dosen->NIDN ?? '-') === ($dosen->NUPTK ?? '-'))
+                    {{ $dosen->NIDN ?? '-' }}
+                @else
+                    {{ $dosen->NIDN ?? '-' }} / {{ $dosen->NUPTK ?? '-' }}
+                @endif
+            </td>
         </tr>
         <tr>
             <td>Tanggal Lahir</td>

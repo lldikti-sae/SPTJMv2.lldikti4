@@ -541,7 +541,7 @@ $months = [
           @if($hasTkgb)<td class="text-end tkgb-col">0</td>@endif
           <td class="text-end">{{ number_format($kNetRow,0,',','.') }}</td>
           @if($hasTkgb)<td class="text-end tkgb-col">0</td>@endif
-          <td colspan="4"></td>
+          <td colspan="2"></td>
         </tr>
         <tr class="fw-bold" style="background-color: #dbeafe">
           <td colspan="3" class="text-center">Pengembalian Kelebihan</td>
@@ -550,7 +550,7 @@ $months = [
           @if($hasTkgb)<td class="text-end tkgb-col">0</td>@endif
           <td class="text-end">{{ number_format($lNetRow,0,',','.') }}</td>
           @if($hasTkgb)<td class="text-end tkgb-col">0</td>@endif
-          <td colspan="4"></td>
+          <td colspan="2"></td>
         </tr>
         <tr class="fw-bold" style="background-color: #d1fae5">
           <td colspan="3" class="text-center">Total Akhir</td>
@@ -559,7 +559,7 @@ $months = [
           @if($hasTkgb)<td class="text-end tkgb-col">0</td>@endif
           <td class="text-end">{{ number_format(($totalBersihTpd ?? 0) + ($totalBersihTkgb ?? 0) + $kNetRow - $lNetRow,0,',','.') }}</td>
           @if($hasTkgb)<td class="text-end tkgb-col">0</td>@endif
-          <td colspan="4"></td>
+          <td colspan="2"></td>
         </tr>
       @endif
       </tfoot>
@@ -762,11 +762,30 @@ $months = [
           }
 
           let totGaji=0, totDasar=0, totPrestasi=0, totBersihTpd=0, totPotongan=0, totNilaiBersih=0;
+          const tkc=(v)=>hasTkgb?`<td class="text-end tkgb-col">${fmt(v)}</td>`:'';
           const tbody=tbl?.querySelector('tbody'); 
           if(tbody) {
             tbody.innerHTML='';
             const months=data.months||[], sb=data.selisihBulanan||[], stb=data.statusBulanan||[];
-            const tkc=(v)=>hasTkgb?`<td class="text-end tkgb-col">${fmt(v)}</td>`:'';
+            
+            // Ensure all array properties exist to prevent 'Cannot read properties of undefined'
+            data.gajiBulanan = data.gajiBulanan || [];
+            data.tukinDasar = data.tukinDasar || [];
+            data.tukinPrestasi = data.tukinPrestasi || [];
+            data.tukinPotongan = data.tukinPotongan || [];
+            data.bersihTpd = data.bersihTpd || [];
+            data.jabatanBulanan = data.jabatanBulanan || [];
+            data.golonganBulanan = data.golonganBulanan || [];
+            data.tahunBulanan = data.tahunBulanan || [];
+            data.tglSp2d = data.tglSp2d || [];
+            data.noSp2d = data.noSp2d || [];
+            data.kotorTpd = data.kotorTpd || [];
+            data.kotorTkgb = data.kotorTkgb || [];
+            data.bersihTkgb = data.bersihTkgb || [];
+            data.pajakTpd = data.pajakTpd || [];
+            data.pajakTkgb = data.pajakTkgb || [];
+            data.kodeUsulanBulanan = data.kodeUsulanBulanan || [];
+
 
             if (currentJenis === 'tukin') {
                 for(let i=0;i<months.length;i++){
@@ -921,9 +940,9 @@ $months = [
                     tfoot.innerHTML+=`<tr class="fw-bold table-light"><td colspan="3" class="text-center">Jumlah</td><td class="text-end">${fmt(tTotals.gaji||0)}</td>${sumCols}<td colspan="2"></td></tr>`;
                     const taKotorTpd = (tTotals.kotorTpd||0) + (tTotals.kotorTkgb||0) + valKGrRow - valLGrRow;
                     const taBersihTpd = (tTotals.bersihTpd||0) + (tTotals.bersihTkgb||0) + valKNeRow - valLNeRow;
-                    tfoot.innerHTML+=`<tr class="fw-bold" style="background-color:#ffdcdc"><td colspan="3" class="text-center">Pembayaran Kekurangan</td><td></td><td class="text-end">${fmt(valKGrRow)}</td>${tkc(0)}<td class="text-end">${fmt(valKNeRow)}</td>${tkc(0)}<td colspan="4"></td></tr>`;
-                    tfoot.innerHTML+=`<tr class="fw-bold" style="background-color:#dbeafe"><td colspan="3" class="text-center">Pengembalian Kelebihan</td><td></td><td class="text-end">${fmt(valLGrRow)}</td>${tkc(0)}<td class="text-end">${fmt(valLNeRow)}</td>${tkc(0)}<td colspan="4"></td></tr>`;
-                    tfoot.innerHTML+=`<tr class="fw-bold" style="background-color:#d1fae5"><td colspan="3" class="text-center">Total Akhir</td><td class="text-end">${fmt(tTotals.gaji||0)}</td><td class="text-end">${fmt(taKotorTpd)}</td>${tkc(0)}<td class="text-end">${fmt(taBersihTpd)}</td>${tkc(0)}<td colspan="4"></td></tr>`;
+                    tfoot.innerHTML+=`<tr class="fw-bold" style="background-color:#ffdcdc"><td colspan="3" class="text-center">Pembayaran Kekurangan</td><td></td><td class="text-end">${fmt(valKGrRow)}</td>${tkc(0)}<td class="text-end">${fmt(valKNeRow)}</td>${tkc(0)}<td colspan="2"></td></tr>`;
+                    tfoot.innerHTML+=`<tr class="fw-bold" style="background-color:#dbeafe"><td colspan="3" class="text-center">Pengembalian Kelebihan</td><td></td><td class="text-end">${fmt(valLGrRow)}</td>${tkc(0)}<td class="text-end">${fmt(valLNeRow)}</td>${tkc(0)}<td colspan="2"></td></tr>`;
+                    tfoot.innerHTML+=`<tr class="fw-bold" style="background-color:#d1fae5"><td colspan="3" class="text-center">Total Akhir</td><td class="text-end">${fmt(tTotals.gaji||0)}</td><td class="text-end">${fmt(taKotorTpd)}</td>${tkc(0)}<td class="text-end">${fmt(taBersihTpd)}</td>${tkc(0)}<td colspan="2"></td></tr>`;
                 }
             }
           }
