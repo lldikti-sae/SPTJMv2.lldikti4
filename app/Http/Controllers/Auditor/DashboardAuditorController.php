@@ -54,19 +54,16 @@ class DashboardAuditorController extends Controller
     $ptsAktif = Pts::query()->where('aktif', '1')->count();
     $ptsTidakAktif = Pts::query()->where('aktif', '0')->count();
 
-    $aktifValues = ['1', 1, 'YA', 'Ya', 'ya', 'Y', 'y'];
-    $nonAktifValues = ['0', 0, 'TIDAK', 'Tidak', 'tidak', 'N', 'n'];
-
     // Total active / inactive overall
-    $dosenAktif = (clone $baseQuery)->whereIn('Aktif', $aktifValues)->count();
+    $dosenAktif = (clone $baseQuery)->where('Aktif', '1')->count();
     $dosenTidakAktif = max(0, $totalDosen - $dosenAktif);
 
     // Breakdowns by Jenis (PNS / NON PNS)
-    $jumlahPnsAktif = (clone $baseQuery)->where('Jenis', 'PNS')->whereIn('Aktif', $aktifValues)->count();
-    $jumlahPnsTidakAktif = (clone $baseQuery)->where('Jenis', 'PNS')->whereNotIn('Aktif', $aktifValues)->count();
+    $jumlahPnsAktif = (clone $baseQuery)->where('Jenis', 'PNS')->where('Aktif', '1')->count();
+    $jumlahPnsTidakAktif = (clone $baseQuery)->where('Jenis', 'PNS')->where(function($q){ $q->where('Aktif', '!=', '1')->orWhereNull('Aktif'); })->count();
 
-    $jumlahNonPnsAktif = (clone $baseQuery)->where('Jenis', 'NON PNS')->whereIn('Aktif', $aktifValues)->count();
-    $jumlahNonPnsTidakAktif = (clone $baseQuery)->where('Jenis', 'NON PNS')->whereNotIn('Aktif', $aktifValues)->count();
+    $jumlahNonPnsAktif = (clone $baseQuery)->where('Jenis', 'NON PNS')->where('Aktif', '1')->count();
+    $jumlahNonPnsTidakAktif = (clone $baseQuery)->where('Jenis', 'NON PNS')->where(function($q){ $q->where('Aktif', '!=', '1')->orWhereNull('Aktif'); })->count();
 
     $eligibleValues = ['1', 1, 'YA', 'Ya', 'ya', 'Y', 'y', 'TRUE', 'true'];
     $dosenEligible = (clone $baseQuery)->whereIn('Eligible_span', $eligibleValues)->count();

@@ -17,14 +17,14 @@
     
     $realJumlahDosenPNSAktif = DB::table('s_transaksi_2')
         ->whereRaw('TRIM(UPPER(jenis)) = ?', ['PNS'])
-        ->whereIn('eligible_span', $aktifValues)
+        ->where('aktif', '1')
         ->where('tahun_versi', $tahun)
         ->count();
         
     $realJumlahDosenPNSNon = DB::table('s_transaksi_2')
         ->whereRaw('TRIM(UPPER(jenis)) = ?', ['PNS'])
-        ->where(function($q) use ($aktifValues) {
-            $q->whereNotIn('eligible_span', $aktifValues)->orWhereNull('eligible_span');
+        ->where(function($q) {
+            $q->where('aktif', '!=', '1')->orWhereNull('aktif');
         })
         ->where('tahun_versi', $tahun)
         ->count();
@@ -33,7 +33,7 @@
         ->where(function($q) {
             $q->whereRaw('TRIM(UPPER(jenis)) != ?', ['PNS'])->orWhereNull('jenis');
         })
-        ->whereIn('eligible_span', $aktifValues)
+        ->where('aktif', '1')
         ->where('tahun_versi', $tahun)
         ->count();
         
@@ -41,8 +41,8 @@
         ->where(function($q) {
             $q->whereRaw('TRIM(UPPER(jenis)) != ?', ['PNS'])->orWhereNull('jenis');
         })
-        ->where(function($q) use ($aktifValues) {
-            $q->whereNotIn('eligible_span', $aktifValues)->orWhereNull('eligible_span');
+        ->where(function($q) {
+            $q->where('aktif', '!=', '1')->orWhereNull('aktif');
         })
         ->where('tahun_versi', $tahun)
         ->count();

@@ -588,17 +588,15 @@ document.addEventListener('DOMContentLoaded', function() {
                 name: 'pts'
             },
             {
-                data: 'eligible_span',
-                name: 'eligible_span',
+                data: 'aktif',
+                name: 'aktif',
                 className: 'text-center',
                 render: function(data, type, row) {
-                    const val = (data || '').toString().toUpperCase();
-                    if (val === 'YA' || val === 'Y' || val === '1') {
-                        return '<div class="text-center"><span class="badge-ya">YA</span></div>';
-                    } else if (val === 'TIDAK' || val === 'TDK' || val === 'N' || val === '0') {
-                        return '<div class="text-center"><span class="badge-tidak">TIDAK</span></div>';
+                    if (data == 1 || data == '1') {
+                        return '<div class="text-center"><span class="badge bg-label-primary">Aktif</span></div>';
+                    } else {
+                        return '<div class="text-center"><span class="badge bg-label-danger">Tidak Aktif</span></div>';
                     }
-                    return '<div class="text-center">' + data + '</div>';
                 }
             },
             {
@@ -645,11 +643,11 @@ document.addEventListener('DOMContentLoaded', function() {
         const eligibleColIdx = 5; // index of 'eligible_span' column
 
         if (status === 'Aktif') {
-            // Standard search for 'YA' (will use LIKE '%YA%')
-            table.column(eligibleColIdx).search('YA').draw();
+            // Standard search for '1'
+            table.column(eligibleColIdx).search('1').draw();
         } else if (status === 'Tidak Aktif') {
-            // Standard search for 'TIDAK' (will use LIKE '%TIDAK%')
-            table.column(eligibleColIdx).search('TIDAK').draw();
+            // Standard search for '0'
+            table.column(eligibleColIdx).search('0').draw();
         } else {
             // Semua â€” clear column filter
             table.column(eligibleColIdx).search('').draw();
@@ -729,7 +727,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
                     let rows = '';
                     data.forEach(row => {
-                        const status = row.aktif == 1 || row.aktif === '1' || ['YA', 'Ya', 'ya', 'Y'].includes(row.aktif) ? 'Aktif' : 'Tidak Aktif';
+                        const status = row.aktif == 1 || row.aktif === '1' ? 'Aktif' : 'Tidak Aktif';
                         const nuptkDisplay = row.nuptk && String(row.nuptk).trim() !== '' ? row.nuptk : '-';
                         const nidnDisplay = row.nidn && String(row.nidn).trim() !== '' ? row.nidn : '-';
                         // Use NIDN as the identifier when present; otherwise fall back to NUPTK
@@ -744,7 +742,7 @@ document.addEventListener('DOMContentLoaded', function() {
                                 <td>${row.pts}</td>
                                 <td>${status}</td>
                                 <td class="text-center">
-                                    ${row.eligible_span ? (['YA', 'Y', '1'].includes(String(row.eligible_span).toUpperCase()) ? '<span class="badge-ya">YA</span>' : '<span class="badge-tidak">TIDAK</span>') : ''}
+                                    ${(row.aktif == 1 || row.aktif === '1') ? '<span class="badge bg-label-primary">Aktif</span>' : '<span class="badge bg-label-danger">Tidak Aktif</span>'}
                                 </td>
                             </tr>
                         `;

@@ -42,7 +42,7 @@ class DataDosenController extends Controller
         ])
         ->where('Tahun_Versi', $tahun)
         // Pastikan data aktif (Aktif='1' atau 'YA') tampil paling atas, lalu tidak aktif
-        ->orderByRaw("(CASE WHEN `Aktif` IN ('1','YA','Ya','ya','Y') THEN 1 ELSE 0 END) DESC")
+        ->orderByRaw("(CASE WHEN `Aktif` = '1' THEN 1 ELSE 0 END) DESC")
         ->orderBy('Nama');
 
       return DataTables::of($query)
@@ -52,11 +52,15 @@ class DataDosenController extends Controller
         ->editColumn('nuptk', function ($row) {
           return !empty($row->nuptk) ? $row->nuptk : '-';
         })
-        ->editColumn('aktif', function ($row) {
-          if ($row->aktif == 1) {
-            return '<span class="badge bg-label-primary">Aktif</span>';
+
+        ->filterColumn('aktif', function($query, $keyword) {
+          if ($keyword === '1') {
+            $query->where('Aktif', '1');
+          } else if ($keyword === '0') {
+            $query->where(function($q) {
+              $q->where('Aktif', '!=', '1')->orWhereNull('Aktif');
+            });
           }
-          return '<span class="badge bg-label-danger">Tidak Aktif</span>';
         })
         ->addColumn('aksi', function ($row) {
           // Determine identifier: prefer NIDN, fallback to NUPTK
@@ -75,7 +79,7 @@ class DataDosenController extends Controller
           $isActive = false;
           if (isset($row->aktif)) {
             $val = $row->aktif;
-            $isActive = ($val === 1 || $val === '1' || strcasecmp($val, 'YA') === 0 || strcasecmp($val, 'Y') === 0);
+            $isActive = ($val === 1 || $val === '1');
           }
 
           if ($isActive) {
@@ -1079,12 +1083,7 @@ class DataDosenController extends Controller
                             THEN 1
                             ELSE 0
                         END AS can_delete";
-      $aktifValues = ['1', 'YA', 'Ya', 'ya', 'Y'];
-      $query = Transaksi::where(function($q) use ($aktifValues) {
-            $q->where('Aktif', '0')
-              ->orWhereNotIn('Eligible_span', $aktifValues)
-              ->orWhereNull('Eligible_span');
-        })
+      $query = Transaksi::where('Aktif', '0')
         ->where('Tahun_Versi', $year)
         ->select(DB::raw('NIDN AS nidn'), DB::raw('NUPTK AS nuptk'), 'Nama', 'Kode_PT', 'PTS', 'Jenis', 'Keterangan', 'Eligible_span', DB::raw($cekKodeUsulan));
       // apply keterangan filter if provided (client sends 'all' for no-filter)
@@ -1101,8 +1100,7 @@ class DataDosenController extends Controller
           return $row->nuptk ?? '-';
         })
         ->editColumn('status', function ($row) {
-          $val = strtoupper($row->Eligible_span ?? '');
-          if (in_array($val, ['1', 'YA', 'Y'])) {
+          if ($row->aktif == '1' || $row->Aktif == '1') {
             return '<span class="badge bg-label-primary">Aktif</span>';
           }
           return '<span class="badge bg-label-danger">Tidak Aktif</span>';
@@ -1144,15 +1142,10 @@ class DataDosenController extends Controller
   public function hapusDataDosenTidakAktif($id)
   {
     $year = session('tahun');
-    $aktifValues = ['1', 'YA', 'Ya', 'ya', 'Y'];
     $dosen = Transaksi::where(function ($q) use ($id) {
       $q->where('NIDN', $id)->orWhere('NUPTK', $id);
     })
-      ->where(function($q) use ($aktifValues) {
-          $q->where('Aktif', '0')
-            ->orWhereNotIn('Eligible_span', $aktifValues)
-            ->orWhereNull('Eligible_span');
-      })
+      ->where('Aktif', '0')
       ->where('Tahun_Versi', $year)
       ->first();
 
@@ -1168,15 +1161,10 @@ class DataDosenController extends Controller
       }
     }
 
-    $aktifValues = ['1', 'YA', 'Ya', 'ya', 'Y'];
     Transaksi::where(function ($q) use ($id) {
       $q->where('NIDN', $id)->orWhere('NUPTK', $id);
     })
-      ->where(function($q) use ($aktifValues) {
-          $q->where('Aktif', '0')
-            ->orWhereNotIn('Eligible_span', $aktifValues)
-            ->orWhereNull('Eligible_span');
-      })
+      ->where('Aktif', '0')
       ->where('Tahun_Versi', $year)
       ->delete();
 
@@ -1204,3 +1192,4 @@ class DataDosenController extends Controller
       return false;
   }
 }
+

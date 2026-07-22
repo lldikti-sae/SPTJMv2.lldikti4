@@ -82,7 +82,7 @@ class LihatDataDosenPtsController extends Controller
           $isActive = false;
           if (isset($row->aktif)) {
             $val = $row->aktif;
-            $isActive = ($val === 1 || $val === '1' || strcasecmp($val, 'YA') === 0 || strcasecmp($val, 'Y') === 0);
+            $isActive = ($val === 1 || $val === '1');
           }
 
           if ($isActive) {

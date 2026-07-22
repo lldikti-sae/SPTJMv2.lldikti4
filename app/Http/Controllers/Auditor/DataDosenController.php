@@ -26,7 +26,7 @@ class DataDosenController extends Controller
           'Eligible_span as eligible_span',
         ])
         ->where('Tahun_Versi', $tahun)
-        ->orderByRaw("(CASE WHEN `Aktif` IN ('1','YA','Ya','ya','Y') THEN 1 ELSE 0 END) DESC")
+        ->orderByRaw("(CASE WHEN `Aktif` = '1' THEN 1 ELSE 0 END) DESC")
         ->orderBy('Nama');
 
       return DataTables::of($query)
@@ -38,7 +38,7 @@ class DataDosenController extends Controller
         })
         ->editColumn('aktif', function ($row) {
           $val = $row->aktif ?? null;
-          $isActive = ($val === 1 || $val === '1' || strcasecmp((string) $val, 'YA') === 0 || strcasecmp((string) $val, 'Y') === 0);
+          $isActive = ($val === 1 || $val === '1');
           if ($isActive) {
             return '<span class="badge bg-label-primary">Aktif</span>';
           }

@@ -1,10 +1,6 @@
-<?php
-require __DIR__ . '/vendor/autoload.php';
-$app = require_once __DIR__ . '/bootstrap/app.php';
-$kernel = $app->make(Illuminate\Contracts\Http\Kernel::class);
-$request = Illuminate\Http\Request::create('/admin/monitoring-pembayaran/data', 'POST', ['jenis_tunjangan' => 'sptjm', 'tahun' => '2023']);
-$kernel->handle($request);
-$controller = app()->make('App\Http\Controllers\MonitoringPembayaranController');
-$request->setRouteResolver(function() { return new Illuminate\Routing\Route('POST', '/admin/monitoring-pembayaran/data', ['uses' => 'App\Http\Controllers\MonitoringPembayaranController@data']); });
-$response = $controller->data($request);
-file_put_contents('response.json', $response->getContent());
+<?php require 'vendor/autoload.php'; $app = require_once 'bootstrap/app.php'; $app->make(Illuminate\Contracts\Console\Kernel::class)->bootstrap(); 
+echo "Total: " . DB::table('s_transaksi_2')->where('tahun_versi', 2024)->count() . "\n";
+echo "PNS Aktif: " . DB::table('s_transaksi_2')->where('tahun_versi', 2024)->where('jenis', 'PNS')->where('Aktif', '1')->count() . "\n";
+echo "PNS Tidak Aktif: " . DB::table('s_transaksi_2')->where('tahun_versi', 2024)->where('jenis', 'PNS')->where(function($q) { $q->where('Aktif', '!=', '1')->orWhereNull('Aktif'); })->count() . "\n";
+echo "NON PNS Aktif: " . DB::table('s_transaksi_2')->where('tahun_versi', 2024)->where('jenis', 'NON PNS')->where('Aktif', '1')->count() . "\n";
+echo "NON PNS Tidak Aktif: " . DB::table('s_transaksi_2')->where('tahun_versi', 2024)->where('jenis', 'NON PNS')->where(function($q) { $q->where('Aktif', '!=', '1')->orWhereNull('Aktif'); })->count() . "\n";
