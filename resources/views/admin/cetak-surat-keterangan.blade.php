@@ -109,9 +109,15 @@
                 <td>{{ $dosen->Nama ?? '-' }}</td>
             </tr>
             <tr>
-                <td class="fw-bold">NUPTK</td>
-                <td>:</td>
-                <td>{{ $dosen->NUPTK ?? '-' }}</td>
+                <td class="fw-bold">NIDN/NUPTK</td>
+                <td class="text-center">:</td>
+                <td>
+                    @if(($dosen->NIDN ?? '-') === ($dosen->NUPTK ?? '-'))
+                        {{ $dosen->NIDN ?? '-' }}
+                    @else
+                        {{ $dosen->NIDN ?? '-' }} / {{ $dosen->NUPTK ?? '-' }}
+                    @endif
+                </td>
             </tr>
             <tr>
                 <td class="fw-bold">Instansi</td>

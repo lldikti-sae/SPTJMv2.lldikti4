@@ -263,6 +263,18 @@ class MonitoringPembayaranController extends Controller
     if (!$transaksiTahun && !empty($selectedYear) && (string) ($transaksi->tahun_versi ?? '') === (string) $selectedYear) {
       $transaksiTahun = $transaksi;
     }
+
+    $isGuruBesar = DB::table('s_transaksi_2')
+        ->where(function($q) use ($nidn) {
+            $q->where('nidn', $nidn)->orWhere('NUPTK', $nidn);
+        })
+        ->where(function($q) {
+            for ($i=1; $i<=12; $i++) {
+                $q->orWhere('Jabatan'.$i, 'like', '%guru besar%')
+                  ->orWhere('Jabatan'.$i, 'like', '%prof%');
+            }
+        })
+        ->exists();
     
     // Gunakan status Aktif dari transaksi tahun yang dipilih agar header sesuai dengan tahun tersebut
     if ($transaksiTahun) {
@@ -324,7 +336,11 @@ class MonitoringPembayaranController extends Controller
     for ($i = 1; $i <= 12; $i++) {
       $suffix = $i;
       $golonganBulanan[] = $transaksiTahun ? ($transaksiTahun->{'Gol' . $suffix} ?? '-') : '-';
-      $jabatanBulanan[] = $transaksiTahun ? ($transaksiTahun->{'Jabatan' . $suffix} ?? '-') : '-';
+      $jab = $transaksiTahun ? ($transaksiTahun->{'Jabatan' . $suffix} ?? null) : null;
+      if (empty($jab) || $jab === '-') {
+          $jab = $transaksiTahun ? ($transaksiTahun->Jabatan12 ?? ($transaksiTahun->Jabatan1 ?? '-')) : '-';
+      }
+      $jabatanBulanan[] = $jab;
       $tahunBulanan[] = $transaksiTahun ? ($transaksiTahun->{'Tahun' . $suffix} ?? '-') : '-';
       $gajiAsli = $transaksiTahun ? (float) ($transaksiTahun->{'Gaji' . $suffix} ?? 0) : 0;
       $kotorTpdVal = $transaksiTahun ? (float) ($transaksiTahun->{'TPD' . $suffix} ?? 0) : 0;
@@ -810,6 +826,7 @@ class MonitoringPembayaranController extends Controller
         'summaryRekap',
         'summaryOriginal',
         'riwayatPembayaran',
+        'isGuruBesar'
       )
     );
   }
@@ -914,6 +931,18 @@ class MonitoringPembayaranController extends Controller
       $transaksiTahun = $transaksi;
     }
 
+    $isGuruBesar = DB::table('s_transaksi_2')
+        ->where(function($q) use ($nidn) {
+            $q->where('nidn', $nidn)->orWhere('NUPTK', $nidn);
+        })
+        ->where(function($q) {
+            for ($i=1; $i<=12; $i++) {
+                $q->orWhere('Jabatan'.$i, 'like', '%guru besar%')
+                  ->orWhere('Jabatan'.$i, 'like', '%prof%');
+            }
+        })
+        ->exists();
+
     $selisihTotals = SelisihBayar::computeFromTransaksi($transaksiTahun);
 
     // Ambil data pencairan SPTJM (TPD) dari r_proses_cair
@@ -980,7 +1009,11 @@ class MonitoringPembayaranController extends Controller
       $kcCol = $kodeCairMapping[$i];
       $kodeCairBulanan[] = $transaksiTahun ? ($transaksiTahun->{$kcCol} ?? null) : null;
       $golonganBulanan[] = $transaksiTahun ? ($transaksiTahun->{'Gol' . $s} ?? '-') : '-';
-      $jabatanBulanan[] = $transaksiTahun ? ($transaksiTahun->{'Jabatan' . $s} ?? '-') : '-';
+      $jabExp = $transaksiTahun ? ($transaksiTahun->{'Jabatan' . $s} ?? '-') : '-';
+      if (empty($jabExp) || $jabExp === '-') {
+          $jabExp = $transaksiTahun ? ($transaksiTahun->Jabatan12 ?? ($transaksiTahun->Jabatan1 ?? '-')) : '-';
+      }
+      $jabatanBulanan[] = $jabExp;
       $tahunBulanan[] = $transaksiTahun ? ($transaksiTahun->{'Tahun' . $s} ?? '-') : '-';
       $gajiAsli = $transaksiTahun ? (float) ($transaksiTahun->{'Gaji' . $s} ?? 0) : 0;
       $kotorTpdVal = $transaksiTahun ? (float) ($transaksiTahun->{'TPD' . $s} ?? 0) : 0;
@@ -1450,6 +1483,7 @@ class MonitoringPembayaranController extends Controller
       'summaryOriginal' => $summaryOriginal,
       'riwayatPembayaran' => $riwayatPembayaran,
       'isPns' => $isPns,
+      'isGuruBesar' => $isGuruBesar,
     ]);
   }
 

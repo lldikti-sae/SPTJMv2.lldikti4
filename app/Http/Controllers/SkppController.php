@@ -75,24 +75,8 @@ class SkppController extends Controller
         $bulanSession = (int) session('bulan') ?: 12;
         $bulanSession = max(1, min(12, $bulanSession));
 
-        $masa_kerja = "NULLIF(Tahun{$bulanSession}, '')";
-        $golongan   = "NULLIF(Gol{$bulanSession}, '')";
-        $jabatan    = "NULLIF(Jabatan{$bulanSession}, '')";
-
-        $getDosenQuery = function($withTahun = true) use ($bulanSession, $jabatan, $golongan, $tahun, $identifier) {
-            $q = DB::table('s_transaksi_2')
-                ->select(
-                    's_transaksi_2.NIDN',
-                    's_transaksi_2.NUPTK',
-                    's_transaksi_2.Nama',
-                    's_transaksi_2.Jenis',
-                    DB::raw("COALESCE(s_transaksi_2.Kode_PT_{$bulanSession}, s_transaksi_2.Kode_PT) AS Kode_PT"),
-                    DB::raw("COALESCE(s_transaksi_2.Nama_PT_{$bulanSession}, s_transaksi_2.PTS) AS PTS"),
-                    's_transaksi_2.Aktif',
-                    's_transaksi_2.Pemegang_Wilayah',
-                    DB::raw("$jabatan AS jabatan"),
-                    DB::raw("$golongan AS gol")
-                );
+        $getDosenQuery = function($withTahun = true) use ($tahun, $identifier) {
+            $q = DB::table('s_transaksi_2');
             if ($withTahun) {
                 $q->where('s_transaksi_2.Tahun_Versi', $tahun);
             }
@@ -106,11 +90,42 @@ class SkppController extends Controller
             return $q;
         };
 
-        $dosen = $getDosenQuery(true)->first();
+        $dosenRaw = $getDosenQuery(true)->first();
 
         // Fallback 1: Cari di tahun mana saja (transaksi terbaru)
-        if (!$dosen) {
-            $dosen = $getDosenQuery(false)->first();
+        if (!$dosenRaw) {
+            $dosenRaw = $getDosenQuery(false)->first();
+        }
+
+        $dosen = null;
+        if ($dosenRaw) {
+            $jab = $dosenRaw->{'Jabatan' . $bulanSession} ?? null;
+            if (empty($jab) || $jab === '-') {
+                $jab = $dosenRaw->Jabatan12 ?? ($dosenRaw->Jabatan1 ?? null);
+            }
+            if (empty($jab) || $jab === '-') {
+                $tkFallback = DB::table('s_tunjangan_kinerja')
+                    ->where(function($q) use($dosenRaw) {
+                        if (!empty($dosenRaw->NIDN)) $q->where('NIDN', $dosenRaw->NIDN);
+                        if (!empty($dosenRaw->NUPTK)) $q->orWhere('NUPTK', $dosenRaw->NUPTK);
+                    })
+                    ->where('Tahun', $dosenRaw->Tahun_Versi)
+                    ->first();
+                $jab = $tkFallback ? ($tkFallback->Jabatan ?? '-') : '-';
+            }
+
+            $dosen = (object)[
+                'NIDN' => $dosenRaw->NIDN,
+                'NUPTK' => $dosenRaw->NUPTK,
+                'Nama' => $dosenRaw->Nama,
+                'Jenis' => $dosenRaw->Jenis ?? null,
+                'Kode_PT' => $dosenRaw->{'Kode_PT_' . $bulanSession} ?? $dosenRaw->Kode_PT ?? null,
+                'PTS' => $dosenRaw->{'Nama_PT_' . $bulanSession} ?? $dosenRaw->PTS ?? null,
+                'Aktif' => $dosenRaw->Aktif ?? null,
+                'Pemegang_Wilayah' => $dosenRaw->Pemegang_Wilayah ?? null,
+                'jabatan' => $jab,
+                'gol' => $dosenRaw->{'Gol' . $bulanSession} ?? $dosenRaw->Gol12 ?? $dosenRaw->Gol1 ?? null,
+            ];
         }
 
         // Fallback 2: Cari di a_dosen jika dosen baru dan belum punya transaksi
@@ -416,8 +431,8 @@ class SkppController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'nidn' => 'nullable|string',
-            'nuptk' => 'nullable|string',
+            'nidn' => 'required|string',
+            'nuptk' => 'required|string',
             'nama' => 'required|string',
             'jabatan_status' => 'nullable|string',
             'kode_pt' => 'nullable|string',
@@ -573,8 +588,8 @@ class SkppController extends Controller
 
         // Validasi sama seperti store
         $validator = Validator::make($request->all(), [
-            'nidn' => 'nullable',
-            'nuptk' => 'nullable',
+            'nidn' => 'required',
+            'nuptk' => 'required',
             'kode_pt' => 'required',
             'jenis_surat' => 'required',
         ]);
