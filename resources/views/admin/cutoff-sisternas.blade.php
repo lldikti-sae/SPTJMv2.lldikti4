@@ -354,7 +354,7 @@ function updateCutoffFileName(input, targetId) {
                             </select>
                         </div>
                     </div>
-                    <div class="row g-4 align-items-stretch">
+                    <div class="row g-4 align-items-stretch mt-3 mb-3.5">
                         <!-- Period 1: Ganjil Tahun Lalu -->
                         <div class="col-md-4 col-sm-12 d-flex">
                             <div class="btn-select-period p-3.5 rounded-3 d-flex flex-column justify-content-between w-100 h-100 glowing-active-card" data-value="p_sister_ganjil_tl" style="cursor: pointer; transition: all 0.2s ease;">
