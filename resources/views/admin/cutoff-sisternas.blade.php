@@ -26,8 +26,7 @@
         background: #ffffff !important;
         transition: all 0.2s ease-in-out !important;
         cursor: pointer !important;
-        max-width: 360px !important;
-        margin: 0 auto !important;
+        width: 100% !important;
     }
     .btn-select-period.glowing-active-card {
         border: 2px solid #22c55e !important;
