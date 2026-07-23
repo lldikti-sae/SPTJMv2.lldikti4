@@ -29,86 +29,99 @@
         width: 100% !important;
     }
     .btn-select-period.glowing-active-card {
-        border: 2px solid #22c55e !important;
-        background-color: #f0fdf4 !important;
-        box-shadow: 0 0 16px rgba(34, 197, 94, 0.45), 0 0 32px rgba(34, 197, 94, 0.2) !important;
-        animation: neonPulse 2s infinite alternate !important;
+        border: 2.5px solid #22c55e !important;
+        background-color: #dcfce7 !important; /* soft green background */
+        box-shadow: 0 4px 12px rgba(34, 197, 94, 0.08) !important;
+        border-radius: 12px !important;
     }
     .btn-select-period:not(.glowing-active-card) {
-        border: 2px solid #e2e8f0 !important;
-        background-color: #ffffff !important;
+        border: 2px solid #cbd5e1 !important; /* darker visible grey border */
+        background-color: #f8fafc !important; /* soft grey background */
         box-shadow: none !important;
+        border-radius: 12px !important;
     }
-    @keyframes neonPulse {
-        0% {
-            box-shadow: 0 0 10px rgba(34, 197, 94, 0.35), 0 0 20px rgba(34, 197, 94, 0.15);
-        }
-        100% {
-            box-shadow: 0 0 20px rgba(34, 197, 94, 0.7), 0 0 40px rgba(34, 197, 94, 0.35);
-        }
-    }
-    .badge-aktif-pill {
-        background-color: #86efac !important;
-        color: #14532d !important;
-        font-weight: 800 !important;
-        font-size: 0.65rem !important;
-        padding: 3px 8px !important;
-        border-radius: 6px !important;
-        letter-spacing: 0.5px !important;
-    }
-    .btn-stat-memenuhi {
-        background: linear-gradient(to bottom, #72c624, #449c0d) !important;
-        border: 1px solid #3b8c06 !important;
-        color: #ffffff !important;
+    .btn-stat-flat-memenuhi {
         border-radius: 8px !important;
-        padding: 10px 14px !important;
-        font-weight: 600 !important;
-        transition: all 0.2s ease !important;
+        padding: 8px 12px !important;
+        font-size: 0.78rem !important;
+        font-weight: 700 !important;
+        transition: all 0.2s ease-in-out !important;
         display: flex !important;
         align-items: center !important;
-        justify-content: space-between !important;
+        justify-content: center !important;
+        gap: 5px !important;
         width: 100% !important;
         white-space: nowrap !important;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08) !important;
+        user-select: none !important;
+        cursor: pointer !important;
     }
-    .btn-stat-memenuhi:hover {
-        background: linear-gradient(to bottom, #7ddc29, #4bab0c) !important;
-        transform: translateY(-1px);
-        box-shadow: 0 3px 6px rgba(0, 0, 0, 0.12) !important;
-    }
-    .btn-stat-tm {
-        background: linear-gradient(to bottom, #f14624, #c92305) !important;
-        border: 1px solid #b31c02 !important;
-        color: #ffffff !important;
+    .btn-stat-flat-tm {
         border-radius: 8px !important;
-        padding: 10px 14px !important;
-        font-weight: 600 !important;
-        transition: all 0.2s ease !important;
+        padding: 8px 12px !important;
+        font-size: 0.78rem !important;
+        font-weight: 700 !important;
+        transition: all 0.2s ease-in-out !important;
         display: flex !important;
         align-items: center !important;
-        justify-content: space-between !important;
+        justify-content: center !important;
+        gap: 5px !important;
         width: 100% !important;
         white-space: nowrap !important;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08) !important;
+        user-select: none !important;
+        cursor: pointer !important;
     }
-    .btn-stat-tm:hover {
-        background: linear-gradient(to bottom, #f65839, #d92707) !important;
-        transform: translateY(-1px);
-        box-shadow: 0 3px 6px rgba(0, 0, 0, 0.12) !important;
+    /* Active Card Button Styles (Solid vibrant colors) */
+    .glowing-active-card .btn-stat-flat-memenuhi {
+        background-color: #15b858 !important;
+        color: #ffffff !important;
+        border: none !important;
+        box-shadow: 0 4px 6px rgba(21, 184, 88, 0.25) !important;
     }
-    .btn-stat-memenuhi .stat-number,
-    .btn-stat-tm .stat-number {
-        font-size: 0.95rem;
-        font-weight: 800;
-        letter-spacing: -0.2px;
+    .glowing-active-card .btn-stat-flat-tm {
+        background-color: #ef4444 !important;
+        color: #ffffff !important;
+        border: none !important;
+        box-shadow: 0 4px 6px rgba(239, 68, 68, 0.25) !important;
     }
-    .btn-stat-memenuhi .stat-label,
-    .btn-stat-tm .stat-label {
-        font-size: 0.82rem;
-        font-weight: 600;
-        opacity: 0.95;
-        text-transform: none;
-        letter-spacing: 0px;
+    /* Inactive Card Button Styles (Vibrant readable pastel tones) */
+    .btn-select-period:not(.glowing-active-card) .btn-stat-flat-memenuhi {
+        background-color: #bbf7d0 !important; /* more visible green background */
+        color: #107c41 !important; /* legible dark green text */
+        border: 1px solid rgba(21, 184, 88, 0.25) !important;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.03) !important;
+    }
+    .btn-select-period:not(.glowing-active-card) .btn-stat-flat-tm {
+        background-color: #ffcdd2 !important; /* more visible red background */
+        color: #b91c1c !important; /* legible dark red text */
+        border: 1px solid rgba(239, 68, 68, 0.2) !important;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.03) !important;
+    }
+    /* Tactile Hover States (Lift and shade depth shift) */
+    .glowing-active-card .btn-stat-flat-memenuhi:hover {
+        background-color: #129a4a !important; /* darker solid green hover */
+        transform: translateY(-1.5px) !important;
+        box-shadow: 0 6px 12px rgba(21, 184, 88, 0.35) !important;
+    }
+    .glowing-active-card .btn-stat-flat-tm:hover {
+        background-color: #db3b3b !important; /* darker solid red hover */
+        transform: translateY(-1.5px) !important;
+        box-shadow: 0 6px 12px rgba(239, 68, 68, 0.35) !important;
+    }
+    .btn-select-period:not(.glowing-active-card) .btn-stat-flat-memenuhi:hover {
+        background-color: #8ae4ab !important; /* hover state green */
+        transform: translateY(-1.5px) !important;
+        box-shadow: 0 4px 8px rgba(21, 184, 88, 0.2) !important;
+    }
+    .btn-select-period:not(.glowing-active-card) .btn-stat-flat-tm:hover {
+        background-color: #ffb3b3 !important; /* hover state red */
+        transform: translateY(-1.5px) !important;
+        box-shadow: 0 4px 8px rgba(239, 68, 68, 0.2) !important;
+    }
+    /* Active click states (Pressed in depth shift) */
+    .btn-stat-flat-memenuhi:active,
+    .btn-stat-flat-tm:active {
+        transform: translateY(0.5px) !important;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1) !important;
     }
     .sptjm-btn-text-action {
         display: inline-flex;
@@ -347,7 +360,11 @@ function updateCutoffFileName(input, targetId) {
                         <div class="d-flex align-items-center gap-2">
                             <span style="font-size: 0.78rem; font-weight: 600; color: #475569;">Tahun:</span>
                             <select name="tahun_filter" id="tahunFilterSelect" class="form-select form-select-sm" style="width: 100px; border-color: #cbd5e1; font-weight: 600; font-size: 0.78rem; border-radius: 6px; background-color: #f8fafc;">
-                                @for($y = (session('tahun') ?: date('Y')); $y >= (session('tahun') ?: date('Y')) - 3; $y--)
+                                @php
+                                    $currentYear = (int)date('Y');
+                                    $endYear = max($currentYear, (int)$tahunSession);
+                                @endphp
+                                @for($y = 2023; $y <= $endYear; $y++)
                                     <option value="{{ $y }}" {{ $tahunSession == $y ? 'selected' : '' }}>{{ $y }}</option>
                                 @endfor
                             </select>
@@ -356,40 +373,31 @@ function updateCutoffFileName(input, targetId) {
                     <div class="row g-4 align-items-stretch mt-3 mb-3.5">
                         <!-- Period 1: Ganjil Tahun Lalu -->
                         <div class="col-md-4 col-sm-12 d-flex">
-                            <div class="btn-select-period p-4.5 rounded-3 d-flex flex-column justify-content-between w-100 h-100 glowing-active-card" data-value="p_sister_ganjil_tl" style="cursor: pointer; transition: all 0.2s ease;">
+                            <div class="btn-select-period p-4 rounded-3 d-flex flex-column justify-content-between w-100 h-100 glowing-active-card" data-value="p_sister_ganjil_tl" style="cursor: pointer; transition: all 0.2s ease;">
                                 <div class="w-100">
                                     <div class="d-flex justify-content-between align-items-center mb-2.5">
-                                        <span class="period-title fw-bold" style="font-size: 0.95rem; color: #435971;">Ganjil Tahun Lalu</span>
+                                        <span class="period-title fw-bold" style="font-size: 0.95rem; color: #435971;">Ganjil tahun lalu</span>
                                     </div>
-                                    <div class="period-subtitle mb-4" style="font-size: 0.82rem; line-height: 1.35;">
+                                    <div class="period-subtitle mb-4" style="font-size: 0.80rem; line-height: 1.35;">
                                         <div>
-                                            <i class="bx bx-calendar-event me-1.5" style="color: #697a8d; font-size: 1.05rem; vertical-align: -1px;"></i>
-                                            <span style="color: #8592a3;">Pembayaran:</span> <span class="fw-semibold" style="color: #566a7f;">Maret - Agustus {{ $tahunSession }}</span>
+                                            <span style="color: #697a8d;">Pembayaran:</span> <span class="fw-semibold" style="color: #566a7f;">Maret - Agustus {{ $tahunSession }}</span>
                                         </div>
-                                        <div style="padding-left: 20px; mt-1">
-                                            <span style="color: #8592a3;">BKD:</span> <span class="fw-semibold" style="color: #566a7f;">Sept {{ $tahunLalu }} - Feb {{ $tahunSession }}</span>
+                                        <div style="margin-top: 2px;">
+                                            <span style="color: #697a8d;">BKD:</span> <span class="fw-semibold" style="color: #566a7f;">Sept {{ $tahunLalu }} - Feb {{ $tahunSession }}</span>
                                         </div>
                                     </div>
                                 </div>
                                 <div class="d-flex gap-2 align-items-center w-100 mt-auto">
                                     <div class="flex-fill">
-                                        <div class="btn-stat-memenuhi">
-                                            <div class="d-flex align-items-center gap-1.5 flex-grow-1">
-                                                <i class="bx bxs-check-circle" style="font-size: 1.2rem; color: #ffffff;"></i>
-                                                <span class="stat-number">{{ number_format($statGanjilTL['m'], 0, ',', '.') }}</span>
-                                                <span class="stat-label">Memenuhi</span>
-                                            </div>
-                                            <i class="bx bx-chevron-right" style="font-size: 1.05rem; color: #ffffff; opacity: 0.85;"></i>
+                                        <div class="btn-stat-flat-memenuhi">
+                                            <i class="bx bx-check" style="font-size: 1rem; font-weight: bold; vertical-align: middle;"></i>
+                                            <span>{{ number_format($statGanjilTL['m'], 0, ',', '.') }} memenuhi</span>
                                         </div>
                                     </div>
                                     <div class="flex-fill">
-                                        <div class="btn-stat-tm">
-                                            <div class="d-flex align-items-center gap-1.5 flex-grow-1">
-                                                <i class="bx bxs-x-circle" style="font-size: 1.2rem; color: #ffffff;"></i>
-                                                <span class="stat-number">{{ number_format($statGanjilTL['tm'], 0, ',', '.') }}</span>
-                                                <span class="stat-label">TM</span>
-                                            </div>
-                                            <i class="bx bx-chevron-right" style="font-size: 1.05rem; color: #ffffff; opacity: 0.85;"></i>
+                                        <div class="btn-stat-flat-tm">
+                                            <i class="bx bx-x" style="font-size: 1rem; font-weight: bold; vertical-align: middle;"></i>
+                                            <span>{{ number_format($statGanjilTL['tm'], 0, ',', '.') }} TM</span>
                                         </div>
                                     </div>
                                 </div>
@@ -398,40 +406,31 @@ function updateCutoffFileName(input, targetId) {
 
                         <!-- Period 2: Genap Berjalan -->
                         <div class="col-md-4 col-sm-12 d-flex">
-                            <div class="btn-select-period p-4.5 rounded-3 d-flex flex-column justify-content-between w-100 h-100" data-value="n_sister_genap_bj" style="cursor: pointer; transition: all 0.2s ease;">
+                            <div class="btn-select-period p-4 rounded-3 d-flex flex-column justify-content-between w-100 h-100" data-value="n_sister_genap_bj" style="cursor: pointer; transition: all 0.2s ease;">
                                 <div class="w-100">
                                     <div class="d-flex justify-content-between align-items-center mb-2.5">
-                                        <span class="period-title fw-bold" style="font-size: 0.95rem; color: #435971;">Genap Berjalan</span>
+                                        <span class="period-title fw-bold" style="font-size: 0.95rem; color: #435971;">Genap berjalan</span>
                                     </div>
-                                    <div class="period-subtitle mb-4" style="font-size: 0.82rem; line-height: 1.35;">
+                                    <div class="period-subtitle mb-4" style="font-size: 0.80rem; line-height: 1.35;">
                                         <div>
-                                            <i class="bx bx-calendar-event me-1.5" style="color: #697a8d; font-size: 1.05rem; vertical-align: -1px;"></i>
-                                            <span style="color: #8592a3;">Pembayaran:</span> <span class="fw-semibold" style="color: #566a7f;">Sept {{ $tahunSession }} - Feb {{ $tahunDepan }}</span>
+                                            <span style="color: #697a8d;">Pembayaran:</span> <span class="fw-semibold" style="color: #566a7f;">Sept {{ $tahunSession }} - Feb {{ $tahunDepan }}</span>
                                         </div>
-                                        <div style="padding-left: 20px; mt-1">
-                                            <span style="color: #8592a3;">BKD:</span> <span class="fw-semibold" style="color: #566a7f;">Maret - Agustus {{ $tahunSession }}</span>
+                                        <div style="margin-top: 2px;">
+                                            <span style="color: #697a8d;">BKD:</span> <span class="fw-semibold" style="color: #566a7f;">Maret - Agustus {{ $tahunSession }}</span>
                                         </div>
                                     </div>
                                 </div>
                                 <div class="d-flex gap-2 align-items-center w-100 mt-auto">
                                     <div class="flex-fill">
-                                        <div class="btn-stat-memenuhi">
-                                            <div class="d-flex align-items-center gap-1.5 flex-grow-1">
-                                                <i class="bx bxs-check-circle" style="font-size: 1.2rem; color: #ffffff;"></i>
-                                                <span class="stat-number">{{ number_format($statGenapBJ['m'], 0, ',', '.') }}</span>
-                                                <span class="stat-label">Memenuhi</span>
-                                            </div>
-                                            <i class="bx bx-chevron-right" style="font-size: 1.05rem; color: #ffffff; opacity: 0.85;"></i>
+                                        <div class="btn-stat-flat-memenuhi">
+                                            <i class="bx bx-check" style="font-size: 1rem; font-weight: bold; vertical-align: middle;"></i>
+                                            <span>{{ number_format($statGenapBJ['m'], 0, ',', '.') }} memenuhi</span>
                                         </div>
                                     </div>
                                     <div class="flex-fill">
-                                        <div class="btn-stat-tm">
-                                            <div class="d-flex align-items-center gap-1.5 flex-grow-1">
-                                                <i class="bx bxs-x-circle" style="font-size: 1.2rem; color: #ffffff;"></i>
-                                                <span class="stat-number">{{ number_format($statGenapBJ['tm'], 0, ',', '.') }}</span>
-                                                <span class="stat-label">TM</span>
-                                            </div>
-                                            <i class="bx bx-chevron-right" style="font-size: 1.05rem; color: #ffffff; opacity: 0.85;"></i>
+                                        <div class="btn-stat-flat-tm">
+                                            <i class="bx bx-x" style="font-size: 1rem; font-weight: bold; vertical-align: middle;"></i>
+                                            <span>{{ number_format($statGenapBJ['tm'], 0, ',', '.') }} TM</span>
                                         </div>
                                     </div>
                                 </div>
@@ -440,40 +439,31 @@ function updateCutoffFileName(input, targetId) {
 
                         <!-- Period 3: Genap Tahun Lalu -->
                         <div class="col-md-4 col-sm-12 d-flex">
-                            <div class="btn-select-period p-4.5 rounded-3 d-flex flex-column justify-content-between w-100 h-100" data-value="o_sister_genap_tl" style="cursor: pointer; transition: all 0.2s ease;">
+                            <div class="btn-select-period p-4 rounded-3 d-flex flex-column justify-content-between w-100 h-100" data-value="o_sister_genap_tl" style="cursor: pointer; transition: all 0.2s ease;">
                                 <div class="w-100">
                                     <div class="d-flex justify-content-between align-items-center mb-2.5">
-                                        <span class="period-title fw-bold" style="font-size: 0.95rem; color: #435971;">Genap Tahun Lalu</span>
+                                        <span class="period-title fw-bold" style="font-size: 0.95rem; color: #435971;">Genap tahun lalu</span>
                                     </div>
-                                    <div class="period-subtitle mb-4" style="font-size: 0.82rem; line-height: 1.35;">
+                                    <div class="period-subtitle mb-4" style="font-size: 0.80rem; line-height: 1.35;">
                                         <div>
-                                            <i class="bx bx-calendar-event me-1.5" style="color: #697a8d; font-size: 1.05rem; vertical-align: -1px;"></i>
-                                            <span style="color: #8592a3;">Pembayaran:</span> <span class="fw-semibold" style="color: #566a7f;">Sept {{ $tahunLalu }} - Feb {{ $tahunSession }}</span>
+                                            <span style="color: #697a8d;">Pembayaran:</span> <span class="fw-semibold" style="color: #566a7f;">Sept {{ $tahunLalu }} - Feb {{ $tahunSession }}</span>
                                         </div>
-                                        <div style="padding-left: 20px; mt-1">
-                                            <span style="color: #8592a3;">BKD:</span> <span class="fw-semibold" style="color: #566a7f;">Maret - Agustus {{ $tahunLalu }}</span>
+                                        <div style="margin-top: 2px;">
+                                            <span style="color: #697a8d;">BKD:</span> <span class="fw-semibold" style="color: #566a7f;">Maret - Agustus {{ $tahunLalu }}</span>
                                         </div>
                                     </div>
                                 </div>
                                 <div class="d-flex gap-2 align-items-center w-100 mt-auto">
                                     <div class="flex-fill">
-                                        <div class="btn-stat-memenuhi">
-                                            <div class="d-flex align-items-center gap-1.5 flex-grow-1">
-                                                <i class="bx bxs-check-circle" style="font-size: 1.2rem; color: #ffffff;"></i>
-                                                <span class="stat-number">{{ number_format($statGenapTL['m'], 0, ',', '.') }}</span>
-                                                <span class="stat-label">Memenuhi</span>
-                                            </div>
-                                            <i class="bx bx-chevron-right" style="font-size: 1.05rem; color: #ffffff; opacity: 0.85;"></i>
+                                        <div class="btn-stat-flat-memenuhi">
+                                            <i class="bx bx-check" style="font-size: 1rem; font-weight: bold; vertical-align: middle;"></i>
+                                            <span>{{ number_format($statGenapTL['m'], 0, ',', '.') }} memenuhi</span>
                                         </div>
                                     </div>
                                     <div class="flex-fill">
-                                        <div class="btn-stat-tm">
-                                            <div class="d-flex align-items-center gap-1.5 flex-grow-1">
-                                                <i class="bx bxs-x-circle" style="font-size: 1.2rem; color: #ffffff;"></i>
-                                                <span class="stat-number">{{ number_format($statGenapTL['tm'], 0, ',', '.') }}</span>
-                                                <span class="stat-label">TM</span>
-                                            </div>
-                                            <i class="bx bx-chevron-right" style="font-size: 1.05rem; color: #ffffff; opacity: 0.85;"></i>
+                                        <div class="btn-stat-flat-tm">
+                                            <i class="bx bx-x" style="font-size: 1rem; font-weight: bold; vertical-align: middle;"></i>
+                                            <span>{{ number_format($statGenapTL['tm'], 0, ',', '.') }} TM</span>
                                         </div>
                                     </div>
                                 </div>
