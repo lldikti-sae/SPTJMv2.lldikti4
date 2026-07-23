@@ -84,7 +84,7 @@ class LaporanKeuanganPtsExport implements FromGenerator, WithHeadings, WithTitle
       $selects[] = DB::raw("t.`No_sp2d_{$i}` as `no_sp2d_{$i}`");
       $selects[] = DB::raw("t.`Tgl_sp2d_{$i}` as `tgl_sp2d_{$i}`");
     }
-    $selects[] = DB::raw('COALESCE(t.Gaji1,t.Gaji2,t.Gaji3,t.Gaji4,t.Gaji5,t.Gaji6,t.Gaji7,t.Gaji8,t.Gaji9,t.Gaji10,t.Gaji11,t.Gaji12,0) as total_gaji');
+    $selects[] = DB::raw('(COALESCE(t.Gaji1,0)+COALESCE(t.Gaji2,0)+COALESCE(t.Gaji3,0)+COALESCE(t.Gaji4,0)+COALESCE(t.Gaji5,0)+COALESCE(t.Gaji6,0)+COALESCE(t.Gaji7,0)+COALESCE(t.Gaji8,0)+COALESCE(t.Gaji9,0)+COALESCE(t.Gaji10,0)+COALESCE(t.Gaji11,0)+COALESCE(t.Gaji12,0)) as total_gaji');
 
     $query = DB::table('s_transaksi_2 as t')
       ->select($selects)
@@ -126,7 +126,7 @@ class LaporanKeuanganPtsExport implements FromGenerator, WithHeadings, WithTitle
         $d->pts,
       ];
 
-      $totalGaji = ((float) ($d->total_gaji ?? 0)) * 12;
+      $totalGaji = (float) ($d->total_gaji ?? 0);
       $totalGajiMonthly = 0;
       $totalTPD = 0;
       $totalTKGB = 0;
@@ -141,8 +141,8 @@ class LaporanKeuanganPtsExport implements FromGenerator, WithHeadings, WithTitle
         $tpd = $this->parseMoney($d->{"tpd{$month}"} ?? 0);
         $tkgb = $this->parseMoney($d->{"tkgb{$month}"} ?? 0);
 
-        // Monthly Gaji is defined as TPD + TKGB (match admin view)
-        $gajiMonth = $tpd + $tkgb;
+        // Monthly Gaji: base salary from DB (Gaji1..12)
+        $gajiMonth = $this->parseMoney($d->{"gaji{$month}"} ?? 0);
 
         $row[] = $gajiMonth;
         $row[] = $kc;
@@ -158,17 +158,16 @@ class LaporanKeuanganPtsExport implements FromGenerator, WithHeadings, WithTitle
         $sumTPDPerMonth[$idx] += $tpd;
         $sumTKGBPerMonth[$idx] += $tkgb;
 
-        $noSp2d = trim((string) ($d->{"no_sp2d_{$month}"} ?? ''));
-        $tglSp2d = trim((string) ($d->{"tgl_sp2d_{$month}"} ?? ''));
-        if ($noSp2d !== '' && $tglSp2d !== '') {
-          $gaji = $this->parseMoney($d->{"gaji{$month}"} ?? 0);
-          $jabatan = $d->{"jabatan{$month}"} ?? ($d->jabatan12 ?? $d->jabatan ?? '');
-          $kenaTkgb = $this->isGuruBesarAtauProfesor($jabatan);
-          [$aktTpd, $aktTkgb] = $this->splitAktualKotorFromGaji($gaji, $kenaTkgb);
-
-          $selisihTPDPerDosen += ($tpd - $aktTpd);
-          $selisihTKGBPerDosen += ($tkgb - $aktTkgb);
+        $gaji = $this->parseMoney($d->{"gaji{$month}"} ?? 0);
+        if ($tpd == 0 && $tkgb == 0 && $gaji == 0) {
+          continue;
         }
+        $jabatan = $d->{"jabatan{$month}"} ?? ($d->jabatan12 ?? $d->jabatan ?? '');
+        $kenaTkgb = $this->isGuruBesarAtauProfesor($jabatan);
+        [$aktTpd, $aktTkgb] = $this->splitAktualKotorFromGaji($gaji, $kenaTkgb);
+
+        $selisihTPDPerDosen += ($tpd - $aktTpd);
+        $selisihTKGBPerDosen += ($tkgb - $aktTkgb);
       }
 
       // Footer grand total gaji matches monthly totals (sum of tpd+tkgb), not including base gaji

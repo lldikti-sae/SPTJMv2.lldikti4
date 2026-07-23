@@ -3,6 +3,12 @@
 @section('title', 'SPTJM Online')
 
 @section('content')
+<style>
+.dt-inner-wrapper {
+    min-width: 100%;
+    width: max-content;
+}
+</style>
   <div class="card" style="width: 100%; padding: 10px;">
     <div class="d-flex justify-content-between align-items-center">
       <!-- <h5 class="card-header text-start p-2 mb-0">Audit Laporan Keuangan (Read-only)</h5> -->
@@ -152,9 +158,8 @@
 
         function renderMonthGaji(monthIndex) {
           return function (data, type, row) {
-            var tpd = Number(row['tpd' + monthIndex] || 0);
-            var tkgb = Number(row['tkgb' + monthIndex] || 0);
-            return renderMoney(tpd + tkgb);
+            var gaji = Number(row['gaji' + monthIndex] || 0);
+            return renderMoney(gaji);
           };
         }
 
@@ -194,7 +199,7 @@
         columns.push({ data: 'total_tkgb', orderable: false, searchable: false, render: renderFieldNumber() });
 
         $('#myTable').DataTable({
-          dom: '<"table-responsive pb-3"<"d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3 px-3"lf><"text-nowrap"rt><"d-flex justify-content-between align-items-center flex-wrap gap-2 mt-3 px-3"ip>>',
+          dom: '<"table-responsive pb-3"<"dt-inner-wrapper"<"d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3 px-3"lf><"text-nowrap"rt><"d-flex justify-content-between align-items-center flex-wrap gap-2 mt-3 px-3"ip>>>',
           processing: true,
           serverSide: true,
           order: [],

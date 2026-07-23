@@ -64,7 +64,7 @@ class LaporanKeuanganPicExport implements FromGenerator, WithHeadings, WithTitle
       DB::raw('`t`.`Bank` AS bank'),
       DB::raw('`t`.`Kode_PT` AS kode_pt'),
       DB::raw('`t`.`PTS` AS pts'),
-      DB::raw('COALESCE(t.Gaji1,t.Gaji2,t.Gaji3,t.Gaji4,t.Gaji5,t.Gaji6,t.Gaji7,t.Gaji8,t.Gaji9,t.Gaji10,t.Gaji11,t.Gaji12,0) as total_gaji'),
+      DB::raw('(COALESCE(t.Gaji1,0)+COALESCE(t.Gaji2,0)+COALESCE(t.Gaji3,0)+COALESCE(t.Gaji4,0)+COALESCE(t.Gaji5,0)+COALESCE(t.Gaji6,0)+COALESCE(t.Gaji7,0)+COALESCE(t.Gaji8,0)+COALESCE(t.Gaji9,0)+COALESCE(t.Gaji10,0)+COALESCE(t.Gaji11,0)+COALESCE(t.Gaji12,0)) as total_gaji'),
     ];
 
     // add monthly columns: KodeUsulan1..12, TPD1..12, TKGB1..12, bersihTPD1..12, bersihTKGB1..12
@@ -134,7 +134,7 @@ class LaporanKeuanganPicExport implements FromGenerator, WithHeadings, WithTitle
         $d->pts,
       ];
 
-      $totalGaji = ((float) ($d->total_gaji ?? 0)) * 12; // base gaji (same as table)
+      $totalGaji = (float) ($d->total_gaji ?? 0);
       $totalTPD = 0.0;
       $totalTKGB = 0.0;
       $selisihTPD = 0.0;
@@ -145,8 +145,8 @@ class LaporanKeuanganPicExport implements FromGenerator, WithHeadings, WithTitle
         $tpd = $this->parseMoney($d->{"tpd{$i}"} ?? 0);
         $tkgb = $this->parseMoney($d->{"tkgb{$i}"} ?? 0);
 
-        // Match the Blade logic: monthly Gaji shown is TPD + TKGB
-        $monthlyGaji = $tpd + $tkgb;
+        // Monthly Gaji: base salary from DB (Gaji1..12)
+        $monthlyGaji = $this->parseMoney($d->{"gaji{$i}"} ?? 0);
 
         $row[] = $monthlyGaji;
         $row[] = $kode;
@@ -164,17 +164,16 @@ class LaporanKeuanganPicExport implements FromGenerator, WithHeadings, WithTitle
         $grandTotalTPD += $tpd;
         $grandTotalTKGB += $tkgb;
 
-        $noSp2d = trim((string) ($d->{"no_sp2d_{$i}"} ?? ''));
-        $tglSp2d = trim((string) ($d->{"tgl_sp2d_{$i}"} ?? ''));
-        if ($noSp2d !== '' && $tglSp2d !== '') {
-          $gaji = $this->parseMoney($d->{"gaji{$i}"} ?? 0);
-          $jabatan = $d->{"jabatan{$i}"} ?? ($d->jabatan12 ?? $d->jabatan ?? '');
-          $kenaTkgb = $this->isGuruBesarAtauProfesor($jabatan);
-          [$aktTpd, $aktTkgb] = $this->splitAktualKotorFromGaji($gaji, $kenaTkgb);
-
-          $selisihTPD += ($tpd - $aktTpd);
-          $selisihTKGB += ($tkgb - $aktTkgb);
+        $gaji = $this->parseMoney($d->{"gaji{$i}"} ?? 0);
+        if ($tpd == 0 && $tkgb == 0 && $gaji == 0) {
+          continue;
         }
+        $jabatan = $d->{"jabatan{$i}"} ?? ($d->jabatan12 ?? $d->jabatan ?? '');
+        $kenaTkgb = $this->isGuruBesarAtauProfesor($jabatan);
+        [$aktTpd, $aktTkgb] = $this->splitAktualKotorFromGaji($gaji, $kenaTkgb);
+
+        $selisihTPD += ($tpd - $aktTpd);
+        $selisihTKGB += ($tkgb - $aktTkgb);
       }
 
       $grandSelisihTPD += $selisihTPD;

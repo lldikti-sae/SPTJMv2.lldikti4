@@ -46,7 +46,7 @@ class LaporanKeuanganController extends Controller
       }
       $jabCol = 'Jabatan' . $bulanSession;
 
-      $coalesceGaji = 'COALESCE(t.Gaji1,t.Gaji2,t.Gaji3,t.Gaji4,t.Gaji5,t.Gaji6,t.Gaji7,t.Gaji8,t.Gaji9,t.Gaji10,t.Gaji11,t.Gaji12,0) as total_gaji';
+      $coalesceGaji = '(COALESCE(t.Gaji1,0)+COALESCE(t.Gaji2,0)+COALESCE(t.Gaji3,0)+COALESCE(t.Gaji4,0)+COALESCE(t.Gaji5,0)+COALESCE(t.Gaji6,0)+COALESCE(t.Gaji7,0)+COALESCE(t.Gaji8,0)+COALESCE(t.Gaji9,0)+COALESCE(t.Gaji10,0)+COALESCE(t.Gaji11,0)+COALESCE(t.Gaji12,0)) as total_gaji';
 
       $selects = [
         't.NIDN as nidn',
@@ -125,7 +125,7 @@ class LaporanKeuanganController extends Controller
           return ((string) ($row->aktif ?? '0') === '1' || $row->aktif === 1) ? 'Aktif' : 'Tidak Aktif';
         })
         ->addColumn('jumlah_gaji', function ($row) {
-          $totalGaji = ((float) ($row->total_gaji ?? 0)) * 12;
+          $totalGaji = (float) ($row->total_gaji ?? 0);
           $sum = 0.0;
           for ($i = 1; $i <= 12; $i++) {
             $tpd = (float) ($row->{"tpd{$i}"} ?? 0);
@@ -151,14 +151,11 @@ class LaporanKeuanganController extends Controller
         ->addColumn('selisih_tpd', function ($row) {
           $sum = 0.0;
           for ($i = 1; $i <= 12; $i++) {
-            $noSp2d = trim((string) ($row->{"no_sp2d_{$i}"} ?? ''));
-            $tglSp2d = trim((string) ($row->{"tgl_sp2d_{$i}"} ?? ''));
-            if ($noSp2d === '' || $tglSp2d === '') {
-              continue;
-            }
-
             $dbTpd = $this->parseMoney($row->{"tpd{$i}"} ?? 0);
             $gaji = $this->parseMoney($row->{"gaji{$i}"} ?? 0);
+            if ($dbTpd == 0 && $gaji == 0) {
+              continue;
+            }
             $jabatan = $row->{"jabatan{$i}"} ?? ($row->jabatan12 ?? $row->jabatan ?? '');
             $kenaTkgb = $this->isGuruBesarAtauProfesor($jabatan);
             [$aktTpd, $aktTkgb] = $this->splitAktualKotorFromGaji($gaji, $kenaTkgb);
@@ -170,14 +167,11 @@ class LaporanKeuanganController extends Controller
         ->addColumn('selisih_tkgb', function ($row) {
           $sum = 0.0;
           for ($i = 1; $i <= 12; $i++) {
-            $noSp2d = trim((string) ($row->{"no_sp2d_{$i}"} ?? ''));
-            $tglSp2d = trim((string) ($row->{"tgl_sp2d_{$i}"} ?? ''));
-            if ($noSp2d === '' || $tglSp2d === '') {
-              continue;
-            }
-
             $dbTkgb = $this->parseMoney($row->{"tkgb{$i}"} ?? 0);
             $gaji = $this->parseMoney($row->{"gaji{$i}"} ?? 0);
+            if ($dbTkgb == 0 && $gaji == 0) {
+              continue;
+            }
             $jabatan = $row->{"jabatan{$i}"} ?? ($row->jabatan12 ?? $row->jabatan ?? '');
             $kenaTkgb = $this->isGuruBesarAtauProfesor($jabatan);
             [$aktTpd, $aktTkgb] = $this->splitAktualKotorFromGaji($gaji, $kenaTkgb);
@@ -187,7 +181,7 @@ class LaporanKeuanganController extends Controller
           return $sum;
         })
         ->addColumn('total_gaji', function ($row) {
-          $totalGaji = ((float) ($row->total_gaji ?? 0)) * 12;
+          $totalGaji = (float) ($row->total_gaji ?? 0);
           $sum = 0.0;
           for ($i = 1; $i <= 12; $i++) {
             $tpd = (float) ($row->{"tpd{$i}"} ?? 0);
@@ -281,22 +275,21 @@ class LaporanKeuanganController extends Controller
       for ($i = 1; $i <= 12; $i++) {
         $tpd = $this->parseMoney($row->{"tpd{$i}"} ?? 0);
         $tkgb = $this->parseMoney($row->{"tkgb{$i}"} ?? 0);
-        $gaji = $tpd + $tkgb;
-        $totals['gajiPerMonth'][$i - 1] += $gaji;
+        $gajiDb = $this->parseMoney($row->{"gaji{$i}"} ?? 0);
+        $totals['gajiPerMonth'][$i - 1] += $gajiDb;
         $totals['tpdPerMonth'][$i - 1] += $tpd;
         $totals['tkgbPerMonth'][$i - 1] += $tkgb;
 
-        $noSp2d = trim((string) ($row->{"no_sp2d_{$i}"} ?? ''));
-        $tglSp2d = trim((string) ($row->{"tgl_sp2d_{$i}"} ?? ''));
-        if ($noSp2d !== '' && $tglSp2d !== '') {
-          $gajiDb = $this->parseMoney($row->{"gaji{$i}"} ?? 0);
-          $jabatan = $row->{"jabatan{$i}"} ?? ($row->jabatan12 ?? $row->jabatan ?? '');
-          $kenaTkgb = $this->isGuruBesarAtauProfesor($jabatan);
-          [$aktTpd, $aktTkgb] = $this->splitAktualKotorFromGaji($gajiDb, $kenaTkgb);
-
-          $totals['grandSelisihTpd'] += ($tpd - $aktTpd);
-          $totals['grandSelisihTkgb'] += ($tkgb - $aktTkgb);
+        $gajiDb = $this->parseMoney($row->{"gaji{$i}"} ?? 0);
+        if ($tpd == 0 && $tkgb == 0 && $gajiDb == 0) {
+          continue;
         }
+        $jabatan = $row->{"jabatan{$i}"} ?? ($row->jabatan12 ?? $row->jabatan ?? '');
+        $kenaTkgb = $this->isGuruBesarAtauProfesor($jabatan);
+        [$aktTpd, $aktTkgb] = $this->splitAktualKotorFromGaji($gajiDb, $kenaTkgb);
+
+        $totals['grandSelisihTpd'] += ($tpd - $aktTpd);
+        $totals['grandSelisihTkgb'] += ($tkgb - $aktTkgb);
       }
     }
 
