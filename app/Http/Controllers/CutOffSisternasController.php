@@ -37,6 +37,11 @@ class CutOffSisternasController extends Controller
         $tahun = $request->query('tahun', session('tahun') ?: date('Y'));
         $query = DB::table($table)->where('tahun', $tahun);
 
+        $bkdStatus = $request->input('bkd_status');
+        if ($bkdStatus === 'M' || $bkdStatus === 'TM') {
+            $query->where('kesimpulan_bkd', $bkdStatus);
+        }
+
         return DataTables::of($query)
           ->addIndexColumn()
           ->addColumn('aksi', function ($row) {

@@ -397,7 +397,7 @@ function updateCutoffFileName(input, targetId) {
                                     <div class="flex-fill">
                                         <div class="btn-stat-flat-tm">
                                             <i class="bx bx-x" style="font-size: 1rem; font-weight: bold; vertical-align: middle;"></i>
-                                            <span>{{ number_format($statGanjilTL['tm'], 0, ',', '.') }} TM</span>
+                                            <span>{{ number_format($statGanjilTL['tm'], 0, ',', '.') }} tidak memenuhi</span>
                                         </div>
                                     </div>
                                 </div>
@@ -430,7 +430,7 @@ function updateCutoffFileName(input, targetId) {
                                     <div class="flex-fill">
                                         <div class="btn-stat-flat-tm">
                                             <i class="bx bx-x" style="font-size: 1rem; font-weight: bold; vertical-align: middle;"></i>
-                                            <span>{{ number_format($statGenapBJ['tm'], 0, ',', '.') }} TM</span>
+                                            <span>{{ number_format($statGenapBJ['tm'], 0, ',', '.') }} tidak memenuhi</span>
                                         </div>
                                     </div>
                                 </div>
@@ -463,7 +463,7 @@ function updateCutoffFileName(input, targetId) {
                                     <div class="flex-fill">
                                         <div class="btn-stat-flat-tm">
                                             <i class="bx bx-x" style="font-size: 1rem; font-weight: bold; vertical-align: middle;"></i>
-                                            <span>{{ number_format($statGenapTL['tm'], 0, ',', '.') }} TM</span>
+                                            <span>{{ number_format($statGenapTL['tm'], 0, ',', '.') }} tidak memenuhi</span>
                                         </div>
                                     </div>
                                 </div>
@@ -807,6 +807,9 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     //datatable
+    let bkdStatusFilter = '';
+
+    //datatable
     const cutOffTable = $('#cutoffTable').DataTable({
         processing: true,
         serverSide: true,
@@ -815,6 +818,7 @@ document.addEventListener('DOMContentLoaded', function() {
             data: function(d) {
                 d.sisternas = $('#sisternasSelect').val();
                 d.tahun = '{{ $tahunSession }}';
+                d.bkd_status = bkdStatusFilter;
             },
             ajax: null
 
@@ -917,12 +921,72 @@ document.addEventListener('DOMContentLoaded', function() {
         cutOffTable.ajax.reload()
     });
 
-    // Klik pada Nav Pill Periode untuk memilih periode & me-load data dosen
-    $('.btn-select-period').on('click', function() {
+    // Klik pada tombol statistik Memenuhi di dalam card
+    $('.btn-select-period').on('click', '.btn-stat-flat-memenuhi', function(e) {
+        e.stopPropagation(); // Stop bubbling to card click
+        
+        const card = $(this).closest('.btn-select-period');
+        const selectedVal = card.data('value');
+        const periodTitle = card.find('.period-title').text().trim();
+        const bkdInfo = card.find('.period-subtitle').text().trim();
+
+        bkdStatusFilter = 'M';
+        $('#sisternasSelect').val(selectedVal); // set value
+        cutOffTable.ajax.reload();
+
+        // Update judul & deskripsi tabel bawah
+        $('#selectedPeriodTitle').html('<i class="bx bx-list-check text-primary me-2"></i>Daftar Dosen: ' + periodTitle + ' (Memenuhi)');
+        $('#selectedPeriodSubtitle').text(bkdInfo);
+
+        // Reset & toggle active state
+        $('.btn-select-period').removeClass('glowing-active-card active');
+        card.addClass('glowing-active-card active');
+
+        // Scroll smooth ke tabel daftar dosen
+        $('html, body').animate({
+            scrollTop: $("#cutoffDataContainer").offset().top - 80
+        }, 300);
+    });
+
+    // Klik pada tombol statistik Tidak Memenuhi di dalam card
+    $('.btn-select-period').on('click', '.btn-stat-flat-tm', function(e) {
+        e.stopPropagation(); // Stop bubbling to card click
+        
+        const card = $(this).closest('.btn-select-period');
+        const selectedVal = card.data('value');
+        const periodTitle = card.find('.period-title').text().trim();
+        const bkdInfo = card.find('.period-subtitle').text().trim();
+
+        bkdStatusFilter = 'TM';
+        $('#sisternasSelect').val(selectedVal); // set value
+        cutOffTable.ajax.reload();
+
+        // Update judul & deskripsi tabel bawah
+        $('#selectedPeriodTitle').html('<i class="bx bx-list-check text-primary me-2"></i>Daftar Dosen: ' + periodTitle + ' (Tidak Memenuhi)');
+        $('#selectedPeriodSubtitle').text(bkdInfo);
+
+        // Reset & toggle active state
+        $('.btn-select-period').removeClass('glowing-active-card active');
+        card.addClass('glowing-active-card active');
+
+        // Scroll smooth ke tabel daftar dosen
+        $('html, body').animate({
+            scrollTop: $("#cutoffDataContainer").offset().top - 80
+        }, 300);
+    });
+
+    // Klik pada Nav Pill Periode untuk memilih periode & me-load seluruh data dosen
+    $('.btn-select-period').on('click', function(e) {
+        // Prevent click if clicking inside buttons
+        if ($(e.target).closest('.btn-stat-flat-memenuhi, .btn-stat-flat-tm').length > 0) {
+            return;
+        }
+
         const selectedVal = $(this).data('value');
         const periodTitle = $(this).find('.period-title').text().trim();
         const bkdInfo = $(this).find('.period-subtitle').text().trim();
 
+        bkdStatusFilter = ''; // Reset filter
         $('#sisternasSelect').val(selectedVal).trigger('change');
 
         // Update judul & deskripsi tabel bawah
@@ -931,7 +995,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
         // Reset & toggle active state (Hanya 1 card yang menyala)
         $('.btn-select-period').removeClass('glowing-active-card active');
-
         $(this).addClass('glowing-active-card active');
 
         // Scroll smooth ke tabel daftar dosen
