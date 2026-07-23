@@ -60,7 +60,7 @@
             ->exists();
     @endphp
 
-    <ul class="menu-inner py-3">
+    <ul class="menu-inner pt-5 pb-3">
         @foreach ($menuData[0]->menu as $menu)
         {{-- adding active and open class if child is active --}}
 

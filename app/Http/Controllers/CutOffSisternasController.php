@@ -34,7 +34,7 @@ class CutOffSisternasController extends Controller
       $allowedTables = ['n_sister_genap_bj', 'o_sister_genap_tl', 'p_sister_ganjil_tl'];
 
       if (in_array($table, $allowedTables)) {
-        $tahun = session('tahun') ?: date('Y');
+        $tahun = $request->query('tahun', session('tahun') ?: date('Y'));
         $query = DB::table($table)->where('tahun', $tahun);
 
         return DataTables::of($query)
@@ -56,8 +56,23 @@ class CutOffSisternasController extends Controller
       ], 400);
     }
 
-    // kalau bukan request ajax, kembalikan view
-    return view('admin.cutoff-sisternas');
+    // hitung statistik riil untuk tabel laporan monitoring (berdasarkan tahun query / session / seluruh data)
+    $tahun = (string)($request->query('tahun', session('tahun') ?: date('Y')));
+
+    $getStat = function ($tableName) use ($tahun) {
+        return [
+            'total' => DB::table($tableName)->where('tahun', $tahun)->count(),
+            'm' => DB::table($tableName)->where('tahun', $tahun)->where('kesimpulan_bkd', 'M')->count(),
+            'tm' => DB::table($tableName)->where('tahun', $tahun)->where('kesimpulan_bkd', 'TM')->count(),
+        ];
+    };
+
+    $statGenapTL = $getStat('o_sister_genap_tl');
+    $statGanjilTL = $getStat('p_sister_ganjil_tl');
+    $statGenapBJ = $getStat('n_sister_genap_bj');
+
+    // kalau bukan request ajax, kembalikan view beserta data statistik
+    return view('admin.cutoff-sisternas', compact('statGenapTL', 'statGanjilTL', 'statGenapBJ'));
   }
 
 
@@ -219,7 +234,7 @@ class CutOffSisternasController extends Controller
       $batch = [];
       $inserted = 0;
       $chunkSize = 500;
-      $tahun = session('tahun') ?: date('Y');
+      $tahun = $request->input('tahun', session('tahun') ?: date('Y'));
 
       while (($row = fgetcsv($handle, 0, $delimiter)) !== false) {
         // map row to header

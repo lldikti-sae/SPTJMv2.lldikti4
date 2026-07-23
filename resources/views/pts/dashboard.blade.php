@@ -91,18 +91,60 @@ $jumlahNonPnsTidakAktif = (clone $baseQuery)->where('jenis', 'NON PNS')->where(f
 </div>
 
 
-<hr class="my-3">
+<style>
+    /* Styling Card Dashboard Operator PTS Ukuran Sedang & Nyaman (Medium Scale) */
+    .pts-dashboard-stat-card {
+        background: #ffffff !important;
+        border-radius: 14px !important;
+        border: 1px solid #e2e8f0 !important;
+        box-shadow: 0 3px 10px rgba(0, 0, 0, 0.04) !important;
+        padding: 1.35rem 1.5rem !important;
+        margin-bottom: 0px !important;
+        transition: all 0.2s ease-in-out;
+    }
+    .pts-dashboard-stat-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(26, 86, 219, 0.1) !important;
+        border-color: #cbd5e1 !important;
+    }
+    .pts-stat-icon-lg {
+        width: 72px !important;
+        height: 72px !important;
+        border-radius: 50% !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        font-size: 3.2rem !important;
+        flex-shrink: 0 !important;
+    }
+    .pts-stat-icon-lg i {
+        font-size: 3.2rem !important;
+    }
+    .pts-stat-val-lg {
+        font-size: 1.85rem !important;
+        font-weight: 750 !important;
+        line-height: 1.1;
+    }
+    .pts-stat-title-lg {
+        color: #475569 !important;
+        font-size: 0.82rem !important;
+        font-weight: 650 !important;
+        margin-bottom: 0.3rem !important;
+        text-transform: uppercase;
+        letter-spacing: 0.035em;
+    }
+</style>
 
-<div class="row g-2 mb-2">
+<div class="row g-4 my-2">
     <!-- Jumlah Seluruh Dosen -->
     <div class="col-12 col-md-6 col-lg-4">
-        <div class="sptjm-stat-card">
+        <div class="pts-dashboard-stat-card">
             <div class="d-flex justify-content-between align-items-center">
                 <div>
-                    <div class="sptjm-stat-title">Seluruh Dosen {{ session('tahun') }}</div>
-                    <div class="sptjm-stat-value val-primary">{{ number_format($jumlahDosen, 0, ',', '.') }}</div>
+                    <div class="pts-stat-title-lg">Seluruh Dosen {{ session('tahun') ?: date('Y') }}</div>
+                    <div class="pts-stat-val-lg val-primary">{{ number_format($jumlahDosen, 0, ',', '.') }}</div>
                 </div>
-                <div class="sptjm-stat-icon-wrapper icon-bg-primary">
+                <div class="pts-stat-icon-lg icon-bg-primary">
                     <i class="bx bx-group"></i>
                 </div>
             </div>
@@ -111,13 +153,13 @@ $jumlahNonPnsTidakAktif = (clone $baseQuery)->where('jenis', 'NON PNS')->where(f
 
     <!-- Dosen PNS Aktif -->
     <div class="col-12 col-md-6 col-lg-4">
-        <div class="sptjm-stat-card">
+        <div class="pts-dashboard-stat-card">
             <div class="d-flex justify-content-between align-items-center">
                 <div>
-                    <div class="sptjm-stat-title">Dosen PNS Aktif</div>
-                    <div class="sptjm-stat-value val-primary">{{ number_format($jumlahPnsAktif, 0, ',', '.') }}</div>
+                    <div class="pts-stat-title-lg">Dosen PNS Aktif</div>
+                    <div class="pts-stat-val-lg val-primary">{{ number_format($jumlahPnsAktif, 0, ',', '.') }}</div>
                 </div>
-                <div class="sptjm-stat-icon-wrapper icon-bg-primary">
+                <div class="pts-stat-icon-lg icon-bg-primary">
                     <i class="bx bx-user-check"></i>
                 </div>
             </div>
@@ -126,13 +168,13 @@ $jumlahNonPnsTidakAktif = (clone $baseQuery)->where('jenis', 'NON PNS')->where(f
 
     <!-- Dosen PNS Tidak Aktif -->
     <div class="col-12 col-md-6 col-lg-4">
-        <div class="sptjm-stat-card">
+        <div class="pts-dashboard-stat-card">
             <div class="d-flex justify-content-between align-items-center">
                 <div>
-                    <div class="sptjm-stat-title">Dosen PNS Tidak Aktif</div>
-                    <div class="sptjm-stat-value val-danger">{{ number_format($jumlahPnsTidakAktif, 0, ',', '.') }}</div>
+                    <div class="pts-stat-title-lg">Dosen PNS Tidak Aktif</div>
+                    <div class="pts-stat-val-lg val-danger">{{ number_format($jumlahPnsTidakAktif, 0, ',', '.') }}</div>
                 </div>
-                <div class="sptjm-stat-icon-wrapper icon-bg-danger">
+                <div class="pts-stat-icon-lg icon-bg-danger">
                     <i class="bx bx-user-x"></i>
                 </div>
             </div>
@@ -141,13 +183,13 @@ $jumlahNonPnsTidakAktif = (clone $baseQuery)->where('jenis', 'NON PNS')->where(f
 
     <!-- Dosen Non-PNS Aktif -->
     <div class="col-12 col-md-6 col-lg-4">
-        <div class="sptjm-stat-card">
+        <div class="pts-dashboard-stat-card">
             <div class="d-flex justify-content-between align-items-center">
                 <div>
-                    <div class="sptjm-stat-title">Dosen Non-PNS Aktif</div>
-                    <div class="sptjm-stat-value val-primary">{{ number_format($jumlahNonPnsAktif, 0, ',', '.') }}</div>
+                    <div class="pts-stat-title-lg">Dosen Non-PNS Aktif</div>
+                    <div class="pts-stat-val-lg val-primary">{{ number_format($jumlahNonPnsAktif, 0, ',', '.') }}</div>
                 </div>
-                <div class="sptjm-stat-icon-wrapper icon-bg-primary">
+                <div class="pts-stat-icon-lg icon-bg-primary">
                     <i class="bx bx-user-check"></i>
                 </div>
             </div>
@@ -156,20 +198,18 @@ $jumlahNonPnsTidakAktif = (clone $baseQuery)->where('jenis', 'NON PNS')->where(f
 
     <!-- Dosen Non-PNS Tidak Aktif -->
     <div class="col-12 col-md-6 col-lg-4">
-        <div class="sptjm-stat-card">
+        <div class="pts-dashboard-stat-card">
             <div class="d-flex justify-content-between align-items-center">
                 <div>
-                    <div class="sptjm-stat-title">Dosen Non-PNS Tidak Aktif</div>
-                    <div class="sptjm-stat-value val-danger">{{ number_format($jumlahNonPnsTidakAktif, 0, ',', '.') }}</div>
+                    <div class="pts-stat-title-lg">Dosen Non-PNS Tidak Aktif</div>
+                    <div class="pts-stat-val-lg val-danger">{{ number_format($jumlahNonPnsTidakAktif, 0, ',', '.') }}</div>
                 </div>
-                <div class="sptjm-stat-icon-wrapper icon-bg-danger">
+                <div class="pts-stat-icon-lg icon-bg-danger">
                     <i class="bx bx-user-x"></i>
                 </div>
             </div>
         </div>
     </div>
 </div>
-
-<hr class="my-4">
 
 @endsection

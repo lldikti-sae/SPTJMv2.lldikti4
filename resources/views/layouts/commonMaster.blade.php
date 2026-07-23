@@ -405,6 +405,12 @@
             color: #fff !important;
             border: none !important;
         }
+
+        /* ─── HIDE CKEDITOR SECURITY NOTIFICATION ─── */
+        /* CKEditor 4.22.1 shows a red security warning bar that bleeds into view */
+        .cke_notification_warning {
+            display: none !important;
+        }
     </style>
 
     <!-- Include Scripts for customizer, helper, analytics, config -->
