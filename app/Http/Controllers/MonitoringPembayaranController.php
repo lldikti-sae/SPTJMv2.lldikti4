@@ -213,14 +213,28 @@ class MonitoringPembayaranController extends Controller
         $jenisTunjangan = 'sptjm';
     }
 
-    // Override header properties from a_dosen (master) to ensure it shows the latest PTS
-    $masterDosen = DB::table('a_dosen')->where(function ($q) use ($nidn) {
-        $q->where('nidn', $nidn)->orWhere('nuptk', $nidn);
-    })->first();
-    if ($masterDosen) {
-        $transaksi->Nama = $masterDosen->nama_dosen ?? $transaksi->Nama;
-        $transaksi->Kode_PT = $masterDosen->kode_pts ?? $transaksi->Kode_PT;
-        $transaksi->PTS = $masterDosen->nama_pts ?? $transaksi->PTS;
+    // Override header properties using the latest data from s_transaksi_2 (current active year or latest)
+    $currentYear = session('tahun') ?? date('Y');
+    $latestDataDosen = DB::table('s_transaksi_2')
+        ->where(function ($q) use ($nidn) {
+            $q->where('nidn', $nidn)->orWhere('NUPTK', $nidn);
+        })
+        ->where('tahun_versi', $currentYear)
+        ->first();
+
+    if (!$latestDataDosen) {
+        $latestDataDosen = DB::table('s_transaksi_2')
+            ->where(function ($q) use ($nidn) {
+                $q->where('nidn', $nidn)->orWhere('NUPTK', $nidn);
+            })
+            ->orderBy('tahun_versi', 'desc')
+            ->first();
+    }
+
+    if ($latestDataDosen) {
+        $transaksi->Nama = $latestDataDosen->Nama ?? $transaksi->Nama;
+        $transaksi->Kode_PT = $latestDataDosen->Kode_PT ?? $transaksi->Kode_PT;
+        $transaksi->PTS = $latestDataDosen->PTS ?? $transaksi->PTS;
     }
 
     // Default tahun yang ditampilkan: tahun awal (agar saat klik Cari langsung baca tahun awal)
@@ -249,6 +263,18 @@ class MonitoringPembayaranController extends Controller
     if (!$transaksiTahun && !empty($selectedYear) && (string) ($transaksi->tahun_versi ?? '') === (string) $selectedYear) {
       $transaksiTahun = $transaksi;
     }
+
+    $isGuruBesar = DB::table('s_transaksi_2')
+        ->where(function($q) use ($nidn) {
+            $q->where('nidn', $nidn)->orWhere('NUPTK', $nidn);
+        })
+        ->where(function($q) {
+            for ($i=1; $i<=12; $i++) {
+                $q->orWhere('Jabatan'.$i, 'like', '%guru besar%')
+                  ->orWhere('Jabatan'.$i, 'like', '%prof%');
+            }
+        })
+        ->exists();
     
     // Gunakan status Aktif dari transaksi tahun yang dipilih agar header sesuai dengan tahun tersebut
     if ($transaksiTahun) {
@@ -310,7 +336,11 @@ class MonitoringPembayaranController extends Controller
     for ($i = 1; $i <= 12; $i++) {
       $suffix = $i;
       $golonganBulanan[] = $transaksiTahun ? ($transaksiTahun->{'Gol' . $suffix} ?? '-') : '-';
-      $jabatanBulanan[] = $transaksiTahun ? ($transaksiTahun->{'Jabatan' . $suffix} ?? '-') : '-';
+      $jab = $transaksiTahun ? ($transaksiTahun->{'Jabatan' . $suffix} ?? null) : null;
+      if (empty($jab) || $jab === '-') {
+          $jab = $transaksiTahun ? ($transaksiTahun->Jabatan12 ?? ($transaksiTahun->Jabatan1 ?? '-')) : '-';
+      }
+      $jabatanBulanan[] = $jab;
       $tahunBulanan[] = $transaksiTahun ? ($transaksiTahun->{'Tahun' . $suffix} ?? '-') : '-';
       $gajiAsli = $transaksiTahun ? (float) ($transaksiTahun->{'Gaji' . $suffix} ?? 0) : 0;
       $kotorTpdVal = $transaksiTahun ? (float) ($transaksiTahun->{'TPD' . $suffix} ?? 0) : 0;
@@ -796,6 +826,7 @@ class MonitoringPembayaranController extends Controller
         'summaryRekap',
         'summaryOriginal',
         'riwayatPembayaran',
+        'isGuruBesar'
       )
     );
   }
@@ -857,14 +888,28 @@ class MonitoringPembayaranController extends Controller
         $jenisTunjangan = 'sptjm';
     }
 
-    // Override header properties from a_dosen (master) to ensure it shows the latest PTS
-    $masterDosen = DB::table('a_dosen')->where(function ($q) use ($nidn) {
-        $q->where('nidn', $nidn)->orWhere('nuptk', $nidn);
-    })->first();
-    if ($masterDosen) {
-        $transaksi->Nama = $masterDosen->nama_dosen ?? $transaksi->Nama;
-        $transaksi->Kode_PT = $masterDosen->kode_pts ?? $transaksi->Kode_PT;
-        $transaksi->PTS = $masterDosen->nama_pts ?? $transaksi->PTS;
+    // Override header properties using the latest data from s_transaksi_2 (current active year or latest)
+    $currentYear = session('tahun') ?? date('Y');
+    $latestDataDosen = DB::table('s_transaksi_2')
+        ->where(function ($q) use ($nidn) {
+            $q->where('nidn', $nidn)->orWhere('NUPTK', $nidn);
+        })
+        ->where('tahun_versi', $currentYear)
+        ->first();
+
+    if (!$latestDataDosen) {
+        $latestDataDosen = DB::table('s_transaksi_2')
+            ->where(function ($q) use ($nidn) {
+                $q->where('nidn', $nidn)->orWhere('NUPTK', $nidn);
+            })
+            ->orderBy('tahun_versi', 'desc')
+            ->first();
+    }
+
+    if ($latestDataDosen) {
+        $transaksi->Nama = $latestDataDosen->Nama ?? $transaksi->Nama;
+        $transaksi->Kode_PT = $latestDataDosen->Kode_PT ?? $transaksi->Kode_PT;
+        $transaksi->PTS = $latestDataDosen->PTS ?? $transaksi->PTS;
     }
 
     // default selectedYear to the latest transaction year if not provided
@@ -885,6 +930,18 @@ class MonitoringPembayaranController extends Controller
     if (!$transaksiTahun && (string) ($transaksi->tahun_versi ?? '') === (string) $selectedYear) {
       $transaksiTahun = $transaksi;
     }
+
+    $isGuruBesar = DB::table('s_transaksi_2')
+        ->where(function($q) use ($nidn) {
+            $q->where('nidn', $nidn)->orWhere('NUPTK', $nidn);
+        })
+        ->where(function($q) {
+            for ($i=1; $i<=12; $i++) {
+                $q->orWhere('Jabatan'.$i, 'like', '%guru besar%')
+                  ->orWhere('Jabatan'.$i, 'like', '%prof%');
+            }
+        })
+        ->exists();
 
     $selisihTotals = SelisihBayar::computeFromTransaksi($transaksiTahun);
 
@@ -952,7 +1009,11 @@ class MonitoringPembayaranController extends Controller
       $kcCol = $kodeCairMapping[$i];
       $kodeCairBulanan[] = $transaksiTahun ? ($transaksiTahun->{$kcCol} ?? null) : null;
       $golonganBulanan[] = $transaksiTahun ? ($transaksiTahun->{'Gol' . $s} ?? '-') : '-';
-      $jabatanBulanan[] = $transaksiTahun ? ($transaksiTahun->{'Jabatan' . $s} ?? '-') : '-';
+      $jabExp = $transaksiTahun ? ($transaksiTahun->{'Jabatan' . $s} ?? '-') : '-';
+      if (empty($jabExp) || $jabExp === '-') {
+          $jabExp = $transaksiTahun ? ($transaksiTahun->Jabatan12 ?? ($transaksiTahun->Jabatan1 ?? '-')) : '-';
+      }
+      $jabatanBulanan[] = $jabExp;
       $tahunBulanan[] = $transaksiTahun ? ($transaksiTahun->{'Tahun' . $s} ?? '-') : '-';
       $gajiAsli = $transaksiTahun ? (float) ($transaksiTahun->{'Gaji' . $s} ?? 0) : 0;
       $kotorTpdVal = $transaksiTahun ? (float) ($transaksiTahun->{'TPD' . $s} ?? 0) : 0;
@@ -1422,6 +1483,7 @@ class MonitoringPembayaranController extends Controller
       'summaryOriginal' => $summaryOriginal,
       'riwayatPembayaran' => $riwayatPembayaran,
       'isPns' => $isPns,
+      'isGuruBesar' => $isGuruBesar,
     ]);
   }
 

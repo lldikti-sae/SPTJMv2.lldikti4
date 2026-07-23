@@ -217,7 +217,7 @@ hr { border-color: #e2e8f0; opacity: 1; }
                 <div class="row mb-3">
                     <div class="col-md-6">
                         <label class="form-label">NIK</label>
-                        <input type="text" class="form-control" value="{{ $__displayOrNA($dosen->NIK ?? ($dosen->nik ?? null)) }}" readonly style="background-color: #eceef1;">
+                        <input type="text" name="nik" class="form-control js-editable" value="{{ $__displayOrNA($dosen->NIK ?? ($dosen->nik ?? null)) }}" readonly style="background-color: #eceef1;" placeholder="Data Tidak Tersedia">
                     </div>
                     <div class="col-md-6"></div>
                 </div>
@@ -225,7 +225,7 @@ hr { border-color: #e2e8f0; opacity: 1; }
                         <div class="row mb-3">
                             <div class="col-md-6">
                                 <label class="form-label">Nama</label>
-                                <input type="text" name="nama" class="form-control js-editable js-always-readonly" value="{{ $dosen->Nama ?? '' }}" readonly style="background-color: #eceef1;" placeholder="Data Tidak Tersedia">
+                                <input type="text" name="nama" class="form-control js-editable " value="{{ $dosen->Nama ?? '' }}" readonly style="background-color: #eceef1;" placeholder="Data Tidak Tersedia">
                             </div>
                         <div class="col-md-6">
                             <label class="form-label">Jenis</label>
@@ -233,7 +233,7 @@ hr { border-color: #e2e8f0; opacity: 1; }
                             $__jenisCurrent = trim((string)($dosen->Jenis ?? ''));
                             $__jenisList = $jenisList ?? collect();
                         @endphp
-                        <select name="jenis" class="form-select js-editable-select js-always-readonly" disabled style="background-color: #eceef1;" required>
+                        <select name="jenis" class="form-select js-editable-select " disabled style="background-color: #eceef1;" required>
                             @if($__jenisCurrent !== '' && $__jenisCurrent !== '-')
                                 <option value="{{ $__jenisCurrent }}" selected>{{ $__jenisCurrent }}</option>
                             @else
@@ -252,11 +252,11 @@ hr { border-color: #e2e8f0; opacity: 1; }
                                 <div class="row mb-3">
                                     <div class="col-md-6">
                                         <label class="form-label">Sertifikat Dosen</label>
-                                        <input type="text" name="sertifikat_dosen" class="form-control js-editable js-always-readonly" value="{{ $dosen->Sertifikat_Dosen ?? '' }}" readonly style="background-color: #eceef1;" placeholder="Data Tidak Tersedia">
+                                        <input type="text" name="sertifikat_dosen" class="form-control js-editable " value="{{ $dosen->Sertifikat_Dosen ?? '' }}" readonly style="background-color: #eceef1;" placeholder="Data Tidak Tersedia">
                                     </div>
                                     <div class="col-md-6">
                                         <label class="form-label">Tahun Lulus</label>
-                                <input type="text" name="tahun_lulus" class="form-control js-editable js-always-readonly" value="{{ $dosen->Tahun_Lulus ?? '' }}" readonly style="background-color: #eceef1;" placeholder="Data Tidak Tersedia">
+                                <input type="text" name="tahun_lulus" class="form-control js-editable " value="{{ $dosen->Tahun_Lulus ?? '' }}" readonly style="background-color: #eceef1;" placeholder="Data Tidak Tersedia">
                                     </div>
                                 </div>
 
@@ -270,11 +270,11 @@ hr { border-color: #e2e8f0; opacity: 1; }
                                         ? 'Data Tidak Tersedia'
                                         : ($__tglLahir . ' - ' . $__ttl);
                                 @endphp
-                                <input type="text" name="ttl" class="form-control js-editable js-ttl js-always-readonly" value="{{ $__ttlDisplay }}" readonly style="background-color: #eceef1;" placeholder="Data Tidak Tersedia">
+                                <input type="text" name="ttl" class="form-control js-editable js-ttl " value="{{ $__ttlDisplay }}" readonly style="background-color: #eceef1;" placeholder="Data Tidak Tersedia">
                             </div>
                             <div class="col-md-6">
                                 <label class="form-label">Usia</label>
-                                <input type="text" name="usia" class="form-control js-editable js-usia js-always-readonly" value="{{ $__displayOrNA($dosen->Usia ?? null) }}" readonly style="background-color: #eceef1;">
+                                <input type="text" name="usia" class="form-control js-editable js-usia " value="{{ $__displayOrNA($dosen->Usia ?? null) }}" readonly style="background-color: #eceef1;">
                             </div>
                         </div>
 
@@ -293,7 +293,7 @@ hr { border-color: #e2e8f0; opacity: 1; }
                             });
                         @endphp
                         <input type="hidden" name="pts" value="{{ $dosen->PTS ?? '' }}" data-sync-pts>
-                        <select name="kode_pt" class="form-select js-editable-select js-always-readonly" disabled style="background-color: #eceef1;" required>
+                        <select name="kode_pt" class="form-select js-editable-select " disabled style="background-color: #eceef1;" required>
                             <option value="" {{ $__kodePtsCurrent === '' ? 'selected' : '' }}>Data Tidak Tersedia</option>
                             @if($__kodePtsCurrent !== '' && !$__kodePtsInList)
                                 <option value="{{ $__kodePtsCurrent }}" data-pts="{{ $__namaPtsCurrent }}" selected>{{ $__kodePtsCurrent }} - {{ $__namaPtsCurrent !== '' ? $__namaPtsCurrent : '-' }}</option>
@@ -322,7 +322,7 @@ hr { border-color: #e2e8f0; opacity: 1; }
                                 $__aktifVal = ((int)$__rawAktif) === 1 ? '1' : '0';
                             }
                         @endphp
-                        <select class="form-select js-editable-select js-always-readonly" disabled style="background-color: #eceef1;">
+                        <select class="form-select js-editable-select " disabled style="background-color: #eceef1;">
                             <option value="1" {{ $__aktifVal === '1' ? 'selected' : '' }}>AKTIF</option>
                             <option value="0" {{ $__aktifVal === '0' ? 'selected' : '' }}>TIDAK AKTIF</option>
                         </select>
@@ -448,11 +448,11 @@ hr { border-color: #e2e8f0; opacity: 1; }
                 <div class="row mb-3">
                     <div class="col-md-6">
                         <label class="form-label">Masa Kerja</label>
-                        <input type="number" name="tahun" class="form-control js-editable js-always-readonly" value="{{ is_numeric($dosen->masa_kerja ?? null) ? (int)$dosen->masa_kerja : '' }}" readonly style="background-color: #eceef1;" min="0" max="32" required>
+                        <input type="number" name="tahun" class="form-control js-editable " value="{{ is_numeric($dosen->masa_kerja ?? null) ? (int)$dosen->masa_kerja : '' }}" readonly style="background-color: #eceef1;" min="0" max="32" required>
                     </div>
                     <div class="col-md-6">
                         <label class="form-label">Gaji</label>
-                        <input type="number" name="gaji" class="form-control js-editable js-always-readonly" value="{{ is_numeric($dosen->gaji ?? null) ? (int)$dosen->gaji : '' }}" readonly style="background-color: #eceef1;" min="0" step="1" required>
+                        <input type="number" name="gaji" class="form-control js-editable " value="{{ is_numeric($dosen->gaji ?? null) ? (int)$dosen->gaji : '' }}" readonly style="background-color: #eceef1;" min="0" step="1" required>
                     </div>
                 </div>
 
@@ -511,7 +511,7 @@ hr { border-color: #e2e8f0; opacity: 1; }
                                 $__eligibleVal = $__eligibleRaw;
                             }
                         @endphp
-                        <select name="eligible_span" class="form-select js-editable-select {{ $isPts ? 'js-always-readonly' : '' }}" disabled style="background-color: #eceef1;" required>
+                        <select name="eligible_span" class="form-select js-editable-select {{ $isPts ? '' : '' }}" disabled style="background-color: #eceef1;" required>
                             <option value="" {{ $__eligibleVal === '' ? 'selected' : '' }}>Data Tidak Tersedia</option>
                             <option value="YA" {{ $__eligibleVal === 'YA' ? 'selected' : '' }}>YA</option>
                             <option value="TIDAK" {{ $__eligibleVal === 'TIDAK' ? 'selected' : '' }}>TIDAK</option>
@@ -526,7 +526,7 @@ hr { border-color: #e2e8f0; opacity: 1; }
                             $__pemegangCurrent = trim((string)($dosen->Pemegang_Wilayah ?? ''));
                             $__pics = $pics ?? collect();
                         @endphp
-                        <select name="pemegang_wilayah" class="form-select js-editable-select {{ $isPts ? 'js-always-readonly' : '' }}" disabled style="background-color: #eceef1;" required>
+                        <select name="pemegang_wilayah" class="form-select js-editable-select {{ $isPts ? '' : '' }}" disabled style="background-color: #eceef1;" required>
                             @if($__pemegangCurrent !== '' && $__pemegangCurrent !== '-')
                                 <option value="{{ $__pemegangCurrent }}" selected>{{ $__pemegangCurrent }}</option>
                             @else
@@ -584,7 +584,7 @@ hr { border-color: #e2e8f0; opacity: 1; }
                                 {{-- Hidden mirror so "Aktif" value is always submitted even when the select is disabled/read-only --}}
                                 <input type="hidden" name="Aktif" value="{{ $__aktifValInfo }}">
 
-                                <select name="Aktif" class="form-select js-editable-select js-always-readonly" disabled style="background-color: #eceef1;" required>
+                                <select name="Aktif" class="form-select js-editable-select " disabled style="background-color: #eceef1;" required>
                                     <option value="1" {{ $__aktifValInfo === '1' ? 'selected' : '' }}>AKTIF</option>
                                     <option value="0" {{ $__aktifValInfo === '0' ? 'selected' : '' }}>TIDAK AKTIF</option>
                                 </select>
@@ -647,7 +647,7 @@ hr { border-color: #e2e8f0; opacity: 1; }
                 <div class="row mb-3">
                     <div class="col-md-6">
                         <label class="form-label">NIK</label>
-                        <input type="text" class="form-control js-editable" value="{{ $__displayOrNA($dosen->NIK ?? ($dosen->nik ?? null)) }}" readonly style="background-color: #eceef1;">
+                        <input type="text" name="nik" class="form-control js-editable" value="{{ $__displayOrNA($dosen->NIK ?? ($dosen->nik ?? null)) }}" readonly style="background-color: #eceef1;" placeholder="Data Tidak Tersedia">
                     </div>
                     <div class="col-md-6"></div>
                 </div>
@@ -663,7 +663,7 @@ hr { border-color: #e2e8f0; opacity: 1; }
                             $__jenisCurrent = trim((string)($dosen->Jenis ?? ''));
                             $__jenisList = $jenisList ?? collect();
                         @endphp
-                        <select name="jenis" class="form-select js-editable-select {{ $isPts ? 'js-always-readonly' : '' }}" disabled style="background-color: #eceef1;" required>
+                        <select name="jenis" class="form-select js-editable-select {{ $isPts ? '' : '' }}" disabled style="background-color: #eceef1;" required>
                             @if($__jenisCurrent !== '' && $__jenisCurrent !== '-')
                                 <option value="{{ $__jenisCurrent }}" selected>{{ $__jenisCurrent }}</option>
                             @else
@@ -704,7 +704,7 @@ hr { border-color: #e2e8f0; opacity: 1; }
                     </div>
                     <div class="col-md-6">
                         <label class="form-label">Usia</label>
-                        <input type="text" name="usia" class="form-control js-editable js-usia js-always-readonly" value="{{ $__displayOrNA($dosen->Usia ?? null) }}" readonly style="background-color: #eceef1;">
+                        <input type="text" name="usia" class="form-control js-editable js-usia " value="{{ $__displayOrNA($dosen->Usia ?? null) }}" readonly style="background-color: #eceef1;">
                     </div>
                 </div>
 
@@ -752,7 +752,7 @@ hr { border-color: #e2e8f0; opacity: 1; }
                                 $__aktifVal = ((int)$__rawAktif) === 1 ? '1' : '0';
                             }
                         @endphp
-                        <select class="form-select js-editable-select js-always-readonly" disabled style="background-color: #eceef1;">
+                        <select class="form-select js-editable-select " disabled style="background-color: #eceef1;">
                             <option value="1" {{ $__aktifVal === '1' ? 'selected' : '' }}>AKTIF</option>
                             <option value="0" {{ $__aktifVal === '0' ? 'selected' : '' }}>TIDAK AKTIF</option>
                         </select>
@@ -878,11 +878,11 @@ hr { border-color: #e2e8f0; opacity: 1; }
                 <div class="row mb-3">
                     <div class="col-md-6">
                         <label class="form-label">Masa Kerja</label>
-                        <input type="number" name="tahun" class="form-control js-editable js-always-readonly" value="{{ is_numeric($dosen->masa_kerja ?? null) ? (int)$dosen->masa_kerja : '' }}" readonly style="background-color: #eceef1;" min="0" max="32" required>
+                        <input type="number" name="tahun" class="form-control js-editable " value="{{ is_numeric($dosen->masa_kerja ?? null) ? (int)$dosen->masa_kerja : '' }}" readonly style="background-color: #eceef1;" min="0" max="32" required>
                     </div>
                     <div class="col-md-6">
                         <label class="form-label">Gaji</label>
-                        <input type="number" name="gaji" class="form-control js-editable js-always-readonly" value="{{ is_numeric($dosen->gaji ?? null) ? (int)$dosen->gaji : '' }}" readonly style="background-color: #eceef1;" min="0" step="1" required>
+                        <input type="number" name="gaji" class="form-control js-editable " value="{{ is_numeric($dosen->gaji ?? null) ? (int)$dosen->gaji : '' }}" readonly style="background-color: #eceef1;" min="0" step="1" required>
                     </div>
                 </div>
 
@@ -941,7 +941,7 @@ hr { border-color: #e2e8f0; opacity: 1; }
                                 $__eligibleVal = $__eligibleRaw;
                             }
                         @endphp
-                        <select name="eligible_span" class="form-select js-editable-select {{ $isPts ? 'js-always-readonly' : '' }}" disabled style="background-color: #eceef1;" required>
+                        <select name="eligible_span" class="form-select js-editable-select {{ $isPts ? '' : '' }}" disabled style="background-color: #eceef1;" required>
                             <option value="" {{ $__eligibleVal === '' ? 'selected' : '' }}>Data Tidak Tersedia</option>
                             <option value="YA" {{ $__eligibleVal === 'YA' ? 'selected' : '' }}>YA</option>
                             <option value="TIDAK" {{ $__eligibleVal === 'TIDAK' ? 'selected' : '' }}>TIDAK</option>
@@ -956,7 +956,7 @@ hr { border-color: #e2e8f0; opacity: 1; }
                             $__pemegangCurrent = trim((string)($dosen->Pemegang_Wilayah ?? ''));
                             $__pics = $pics ?? collect();
                         @endphp
-                        <select name="pemegang_wilayah" class="form-select js-editable-select {{ $isPts ? 'js-always-readonly' : '' }}" disabled style="background-color: #eceef1;" required>
+                        <select name="pemegang_wilayah" class="form-select js-editable-select {{ $isPts ? '' : '' }}" disabled style="background-color: #eceef1;" required>
                             @if($__pemegangCurrent !== '' && $__pemegangCurrent !== '-')
                                 <option value="{{ $__pemegangCurrent }}" selected>{{ $__pemegangCurrent }}</option>
                             @else
@@ -1079,7 +1079,7 @@ hr { border-color: #e2e8f0; opacity: 1; }
     const setEditMode = (enabled) => {
         editableText.forEach((el) => {
             // keep always-readonly elements readonly regardless of edit mode
-            if (el.classList && el.classList.contains('js-always-readonly')) {
+            if (el.classList && el.classList.contains('')) {
                 el.setAttribute('readonly', 'readonly');
                 el.style.backgroundColor = '#eceef1';
                 return;
@@ -1095,7 +1095,7 @@ hr { border-color: #e2e8f0; opacity: 1; }
         });
 
         editableDate.forEach((el) => {
-            if (el.classList && el.classList.contains('js-always-readonly')) {
+            if (el.classList && el.classList.contains('')) {
                 el.setAttribute('disabled', 'disabled');
                 el.disabled = true;
                 el.style.backgroundColor = '#eceef1';
@@ -1114,7 +1114,7 @@ hr { border-color: #e2e8f0; opacity: 1; }
         });
 
         editableChecks.forEach((el) => {
-            if (el.classList && el.classList.contains('js-always-readonly')) {
+            if (el.classList && el.classList.contains('')) {
                 el.disabled = true;
             } else {
                 el.disabled = !enabled;
@@ -1122,7 +1122,7 @@ hr { border-color: #e2e8f0; opacity: 1; }
         });
 
         editableSelect.forEach((el) => {
-            if (el.classList && el.classList.contains('js-always-readonly')) {
+            if (el.classList && el.classList.contains('')) {
                 el.setAttribute('disabled', 'disabled');
                 el.disabled = true;
                 el.style.backgroundColor = '#eceef1';
@@ -1167,8 +1167,8 @@ hr { border-color: #e2e8f0; opacity: 1; }
         // Explicitly enable/disable Status selects (name=Aktif) across both tabs
         const statusSelects = Array.from(document.querySelectorAll('select[name="Aktif"]'));
         statusSelects.forEach((s) => {
-            // respect js-always-readonly: never enable these
-            if (s.classList && s.classList.contains('js-always-readonly')) {
+            // respect : never enable these
+            if (s.classList && s.classList.contains('')) {
                 s.setAttribute('disabled', 'disabled'); s.disabled = true; s.style.backgroundColor = '#eceef1';
                 return;
             }
@@ -1525,7 +1525,7 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     };
 
-    // mode=new helper: mirror ALL disabled fields (including js-always-readonly) so they still submit.
+    // mode=new helper: mirror ALL disabled fields (including ) so they still submit.
     const ensureDisabledFieldSubmission = (form) => {
         if (!form) return;
         try {

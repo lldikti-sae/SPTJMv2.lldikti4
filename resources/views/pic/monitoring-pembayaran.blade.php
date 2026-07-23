@@ -678,6 +678,25 @@ $months = [
           if(tbody) {
             tbody.innerHTML='';
             const months=data.months||[], sb=data.selisihBulanan||[], stb=data.statusBulanan||[];
+            
+            // Ensure all array properties exist to prevent 'Cannot read properties of undefined'
+            data.gajiBulanan = data.gajiBulanan || [];
+            data.tukinDasar = data.tukinDasar || [];
+            data.tukinPrestasi = data.tukinPrestasi || [];
+            data.tukinPotongan = data.tukinPotongan || [];
+            data.bersihTpd = data.bersihTpd || [];
+            data.jabatanBulanan = data.jabatanBulanan || [];
+            data.golonganBulanan = data.golonganBulanan || [];
+            data.tahunBulanan = data.tahunBulanan || [];
+            data.tglSp2d = data.tglSp2d || [];
+            data.noSp2d = data.noSp2d || [];
+            data.kotorTpd = data.kotorTpd || [];
+            data.kotorTkgb = data.kotorTkgb || [];
+            data.bersihTkgb = data.bersihTkgb || [];
+            data.pajakTpd = data.pajakTpd || [];
+            data.pajakTkgb = data.pajakTkgb || [];
+            data.kodeUsulanBulanan = data.kodeUsulanBulanan || [];
+            
             const tkc=(v)=>hasTkgb?`<td class="text-end tkgb-col">${fmt(v)}</td>`:'';
 
             if (currentJenis === 'tukin') {

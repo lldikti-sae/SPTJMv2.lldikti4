@@ -292,6 +292,9 @@ class ComplainAdminController extends Controller
         $update = [];
         $map = [
             'Nama' => 'nama',
+            'NIK' => 'nik',
+            'TTL' => 'ttl',
+            'Usia' => 'usia',
             'Kode_PT' => 'kode_pt',
             'Jenis' => 'jenis',
             'Sertifikat_Dosen' => 'sertifikat_dosen',

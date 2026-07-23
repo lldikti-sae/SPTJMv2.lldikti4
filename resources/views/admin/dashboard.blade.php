@@ -4,7 +4,24 @@
 
 @section('page-style')
 <style>
-    /* Specific styles for Dashboard page */
+    /* Specific styles for Dashboard page - smaller cards */
+    .sptjm-stat-card {
+        padding: 1rem 1.25rem !important;
+    }
+    .sptjm-stat-title {
+        font-size: 0.75rem !important;
+        margin-bottom: 0.15rem !important;
+    }
+    .sptjm-stat-value {
+        font-size: 1.35rem !important;
+    }
+    .sptjm-stat-icon-wrapper {
+        width: 42px !important;
+        height: 42px !important;
+    }
+    .sptjm-stat-icon-wrapper i {
+        font-size: 1.3rem !important;
+    }
 </style>
 @endsection
 

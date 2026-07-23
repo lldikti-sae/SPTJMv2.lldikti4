@@ -308,17 +308,10 @@
                         <label class="form-label">Pangkat</label>
                         <input type="text" class="form-control" name="pangkat" required placeholder="Masukkan Pangkat">
                     </div> -->
-                    <div class="mb-3">
-                        <label class="form-label">Status Aktif</label>
-                        <select class="form-select" name="aktif" required>
-                            <option value="1" {{ old('aktif', '1') == '1' ? 'selected' : '' }}>Aktif</option>
-                            <option value="0" {{ old('aktif') == '0' ? 'selected' : '' }}>Tidak Aktif</option>
-                        </select>
-                    </div>
                 </div>
 
                 <div class="modal-footer">
-                    <button type="submit" class="btn btn-primary" id="btnNext">Berikutnya</button>
+                    <button type="submit" class="btn btn-primary" id="btnNext">Simpan</button>
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
                 </div>
             </form>
