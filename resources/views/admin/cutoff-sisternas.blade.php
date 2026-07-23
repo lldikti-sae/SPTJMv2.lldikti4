@@ -26,7 +26,7 @@
         background: #ffffff !important;
         transition: all 0.2s ease-in-out !important;
         cursor: pointer !important;
-        max-width: 350px !important;
+        max-width: 320px !important;
         margin: 0 auto !important;
     }
     .btn-select-period.glowing-active-card {
@@ -62,7 +62,7 @@
         border: 1px solid #3b8c06 !important;
         color: #ffffff !important;
         border-radius: 6px !important;
-        padding: 4px 8px !important;
+        padding: 7px 10px !important;
         font-weight: 600 !important;
         transition: all 0.2s ease !important;
         display: flex !important;
@@ -82,7 +82,7 @@
         border: 1px solid #b31c02 !important;
         color: #ffffff !important;
         border-radius: 6px !important;
-        padding: 4px 8px !important;
+        padding: 7px 10px !important;
         font-weight: 600 !important;
         transition: all 0.2s ease !important;
         display: flex !important;
@@ -99,13 +99,13 @@
     }
     .btn-stat-memenuhi .stat-number,
     .btn-stat-tm .stat-number {
-        font-size: 0.8rem;
+        font-size: 0.85rem;
         font-weight: 800;
         letter-spacing: -0.2px;
     }
     .btn-stat-memenuhi .stat-label,
     .btn-stat-tm .stat-label {
-        font-size: 0.72rem;
+        font-size: 0.78rem;
         font-weight: 600;
         opacity: 0.95;
         text-transform: none;
@@ -340,13 +340,13 @@ function updateCutoffFileName(input, targetId) {
                     <div class="row g-2 align-items-stretch">
                         <!-- Period 1: Ganjil Tahun Lalu -->
                         <div class="col-md-4 col-sm-12 d-flex">
-                            <div class="btn-select-period p-2.5 rounded-3 d-flex flex-column justify-content-between w-100 h-100 glowing-active-card" data-value="p_sister_ganjil_tl" style="cursor: pointer; transition: all 0.2s ease;">
+                            <div class="btn-select-period p-3.5 rounded-3 d-flex flex-column justify-content-between w-100 h-100 glowing-active-card" data-value="p_sister_ganjil_tl" style="cursor: pointer; transition: all 0.2s ease;">
                                 <div class="w-100">
-                                    <div class="d-flex justify-content-between align-items-center mb-1">
+                                    <div class="d-flex justify-content-between align-items-center mb-2">
                                         <span class="period-title fw-bold" style="font-size: 0.82rem; color: #435971;">Ganjil Tahun Lalu</span>
                                         <span class="badge-aktif-pill">AKTIF</span>
                                     </div>
-                                    <div class="period-subtitle mb-2.5" style="font-size: 0.74rem; line-height: 1.35;">
+                                    <div class="period-subtitle mb-4" style="font-size: 0.74rem; line-height: 1.35;">
                                         <div>
                                             <i class="bx bx-calendar-event me-1" style="color: #697a8d; font-size: 0.95rem; vertical-align: -1px;"></i>
                                             <span style="color: #8592a3;">Pembayaran:</span> <span class="fw-semibold" style="color: #566a7f;">Maret - Agustus {{ $tahunSession }}</span>
@@ -356,7 +356,7 @@ function updateCutoffFileName(input, targetId) {
                                         </div>
                                     </div>
                                 </div>
-                                <div class="d-flex gap-1.5 align-items-center w-100 mt-auto">
+                                <div class="d-flex gap-2 align-items-center w-100 mt-auto">
                                     <div class="flex-fill">
                                         <div class="btn-stat-memenuhi">
                                             <div class="d-flex align-items-center gap-1 flex-grow-1">
@@ -383,13 +383,13 @@ function updateCutoffFileName(input, targetId) {
 
                         <!-- Period 2: Genap Berjalan -->
                         <div class="col-md-4 col-sm-12 d-flex">
-                            <div class="btn-select-period p-2.5 rounded-3 d-flex flex-column justify-content-between w-100 h-100" data-value="n_sister_genap_bj" style="cursor: pointer; transition: all 0.2s ease;">
+                            <div class="btn-select-period p-3.5 rounded-3 d-flex flex-column justify-content-between w-100 h-100" data-value="n_sister_genap_bj" style="cursor: pointer; transition: all 0.2s ease;">
                                 <div class="w-100">
-                                    <div class="d-flex justify-content-between align-items-center mb-1">
+                                    <div class="d-flex justify-content-between align-items-center mb-2">
                                         <span class="period-title fw-bold" style="font-size: 0.82rem; color: #435971;">Genap Berjalan</span>
                                         <span class="badge-aktif-pill d-none">AKTIF</span>
                                     </div>
-                                    <div class="period-subtitle mb-2.5" style="font-size: 0.74rem; line-height: 1.35;">
+                                    <div class="period-subtitle mb-4" style="font-size: 0.74rem; line-height: 1.35;">
                                         <div>
                                             <i class="bx bx-calendar-event me-1" style="color: #697a8d; font-size: 0.95rem; vertical-align: -1px;"></i>
                                             <span style="color: #8592a3;">Pembayaran:</span> <span class="fw-semibold" style="color: #566a7f;">Sept {{ $tahunSession }} - Feb {{ $tahunDepan }}</span>
@@ -399,7 +399,7 @@ function updateCutoffFileName(input, targetId) {
                                         </div>
                                     </div>
                                 </div>
-                                <div class="d-flex gap-1.5 align-items-center w-100 mt-auto">
+                                <div class="d-flex gap-2 align-items-center w-100 mt-auto">
                                     <div class="flex-fill">
                                         <div class="btn-stat-memenuhi">
                                             <div class="d-flex align-items-center gap-1 flex-grow-1">
@@ -426,13 +426,13 @@ function updateCutoffFileName(input, targetId) {
 
                         <!-- Period 3: Genap Tahun Lalu -->
                         <div class="col-md-4 col-sm-12 d-flex">
-                            <div class="btn-select-period p-2.5 rounded-3 d-flex flex-column justify-content-between w-100 h-100" data-value="o_sister_genap_tl" style="cursor: pointer; transition: all 0.2s ease;">
+                            <div class="btn-select-period p-3.5 rounded-3 d-flex flex-column justify-content-between w-100 h-100" data-value="o_sister_genap_tl" style="cursor: pointer; transition: all 0.2s ease;">
                                 <div class="w-100">
-                                    <div class="d-flex justify-content-between align-items-center mb-1">
+                                    <div class="d-flex justify-content-between align-items-center mb-2">
                                         <span class="period-title fw-bold" style="font-size: 0.82rem; color: #435971;">Genap Tahun Lalu</span>
                                         <span class="badge-aktif-pill d-none">AKTIF</span>
                                     </div>
-                                    <div class="period-subtitle mb-2.5" style="font-size: 0.74rem; line-height: 1.35;">
+                                    <div class="period-subtitle mb-4" style="font-size: 0.74rem; line-height: 1.35;">
                                         <div>
                                             <i class="bx bx-calendar-event me-1" style="color: #697a8d; font-size: 0.95rem; vertical-align: -1px;"></i>
                                             <span style="color: #8592a3;">Pembayaran:</span> <span class="fw-semibold" style="color: #566a7f;">Sept {{ $tahunLalu }} - Feb {{ $tahunSession }}</span>
@@ -442,7 +442,7 @@ function updateCutoffFileName(input, targetId) {
                                         </div>
                                     </div>
                                 </div>
-                                <div class="d-flex gap-1.5 align-items-center w-100 mt-auto">
+                                <div class="d-flex gap-2 align-items-center w-100 mt-auto">
                                     <div class="flex-fill">
                                         <div class="btn-stat-memenuhi">
                                             <div class="d-flex align-items-center gap-1 flex-grow-1">
