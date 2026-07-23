@@ -361,7 +361,6 @@ function updateCutoffFileName(input, targetId) {
                                 <div class="w-100">
                                     <div class="d-flex justify-content-between align-items-center mb-1.5">
                                         <span class="period-title fw-bold" style="font-size: 0.82rem; color: #435971;">Ganjil Tahun Lalu</span>
-                                        <span class="badge-aktif-pill">AKTIF</span>
                                     </div>
                                     <div class="d-flex align-items-center gap-2 mb-2.5 pb-1">
                                         <span style="font-size: 0.74rem; font-weight: 600; color: #8592a3;">Genap</span>
@@ -415,7 +414,6 @@ function updateCutoffFileName(input, targetId) {
                                 <div class="w-100">
                                     <div class="d-flex justify-content-between align-items-center mb-1.5">
                                         <span class="period-title fw-bold" style="font-size: 0.82rem; color: #435971;">Genap Berjalan</span>
-                                        <span class="badge-aktif-pill d-none">AKTIF</span>
                                     </div>
                                     <div class="d-flex align-items-center gap-2 mb-2.5 pb-1">
                                         <span style="font-size: 0.74rem; font-weight: 600; color: #8592a3;">Genap</span>
@@ -469,7 +467,6 @@ function updateCutoffFileName(input, targetId) {
                                 <div class="w-100">
                                     <div class="d-flex justify-content-between align-items-center mb-1.5">
                                         <span class="period-title fw-bold" style="font-size: 0.82rem; color: #435971;">Genap Tahun Lalu</span>
-                                        <span class="badge-aktif-pill d-none">AKTIF</span>
                                     </div>
                                     <div class="d-flex align-items-center gap-2 mb-2.5 pb-1">
                                         <span style="font-size: 0.74rem; font-weight: 600; color: #8592a3;">Genap</span>
@@ -978,10 +975,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
         // Reset & toggle active state (Hanya 1 card yang menyala)
         $('.btn-select-period').removeClass('glowing-active-card active');
-        $('.badge-aktif-pill').addClass('d-none');
 
         $(this).addClass('glowing-active-card active');
-        $(this).find('.badge-aktif-pill').removeClass('d-none');
 
         // Scroll smooth ke tabel daftar dosen
         $('html, body').animate({
