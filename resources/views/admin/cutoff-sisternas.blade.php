@@ -358,8 +358,8 @@ function updateCutoffFileName(input, targetId) {
                             <i class="bx bx-filter-alt text-primary me-1"></i> Pilih Periode Cut Off Sisternas
                         </h6>
                         <div class="d-flex align-items-center gap-2">
-                            <span style="font-size: 0.78rem; font-weight: 600; color: #475569;">Tahun:</span>
-                            <select name="tahun_filter" id="tahunFilterSelect" class="form-select form-select-sm" style="width: 100px; border-color: #cbd5e1; font-weight: 600; font-size: 0.78rem; border-radius: 6px; background-color: #f8fafc;">
+                            <span style="font-size: 0.88rem; font-weight: 700; color: #475569;">Tahun:</span>
+                            <select name="tahun_filter" id="tahunFilterSelect" class="form-select" style="width: 130px; border-color: #94a3b8; font-weight: 700; font-size: 0.88rem; border-radius: 8px; background-color: #f8fafc; padding: 6px 12px; cursor: pointer; box-shadow: 0 1px 2px rgba(0,0,0,0.05);">
                                 @php
                                     $currentYear = (int)date('Y');
                                     $endYear = max($currentYear, (int)$tahunSession);
