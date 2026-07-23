@@ -60,8 +60,8 @@
         background: linear-gradient(to bottom, #72c624, #449c0d) !important;
         border: 1px solid #3b8c06 !important;
         color: #ffffff !important;
-        border-radius: 6px !important;
-        padding: 7px 10px !important;
+        border-radius: 8px !important;
+        padding: 10px 14px !important;
         font-weight: 600 !important;
         transition: all 0.2s ease !important;
         display: flex !important;
@@ -80,8 +80,8 @@
         background: linear-gradient(to bottom, #f14624, #c92305) !important;
         border: 1px solid #b31c02 !important;
         color: #ffffff !important;
-        border-radius: 6px !important;
-        padding: 7px 10px !important;
+        border-radius: 8px !important;
+        padding: 10px 14px !important;
         font-weight: 600 !important;
         transition: all 0.2s ease !important;
         display: flex !important;
@@ -98,13 +98,13 @@
     }
     .btn-stat-memenuhi .stat-number,
     .btn-stat-tm .stat-number {
-        font-size: 0.85rem;
+        font-size: 0.95rem;
         font-weight: 800;
         letter-spacing: -0.2px;
     }
     .btn-stat-memenuhi .stat-label,
     .btn-stat-tm .stat-label {
-        font-size: 0.78rem;
+        font-size: 0.82rem;
         font-weight: 600;
         opacity: 0.95;
         text-transform: none;
@@ -356,17 +356,17 @@ function updateCutoffFileName(input, targetId) {
                     <div class="row g-4 align-items-stretch mt-3 mb-3.5">
                         <!-- Period 1: Ganjil Tahun Lalu -->
                         <div class="col-md-4 col-sm-12 d-flex">
-                            <div class="btn-select-period p-3.5 rounded-3 d-flex flex-column justify-content-between w-100 h-100 glowing-active-card" data-value="p_sister_ganjil_tl" style="cursor: pointer; transition: all 0.2s ease;">
+                            <div class="btn-select-period p-4.5 rounded-3 d-flex flex-column justify-content-between w-100 h-100 glowing-active-card" data-value="p_sister_ganjil_tl" style="cursor: pointer; transition: all 0.2s ease;">
                                 <div class="w-100">
-                                    <div class="d-flex justify-content-between align-items-center mb-2">
-                                        <span class="period-title fw-bold" style="font-size: 0.82rem; color: #435971;">Ganjil Tahun Lalu</span>
+                                    <div class="d-flex justify-content-between align-items-center mb-2.5">
+                                        <span class="period-title fw-bold" style="font-size: 0.95rem; color: #435971;">Ganjil Tahun Lalu</span>
                                     </div>
-                                    <div class="period-subtitle mb-3.5" style="font-size: 0.74rem; line-height: 1.35;">
+                                    <div class="period-subtitle mb-4" style="font-size: 0.82rem; line-height: 1.35;">
                                         <div>
-                                            <i class="bx bx-calendar-event me-1" style="color: #697a8d; font-size: 0.95rem; vertical-align: -1px;"></i>
+                                            <i class="bx bx-calendar-event me-1.5" style="color: #697a8d; font-size: 1.05rem; vertical-align: -1px;"></i>
                                             <span style="color: #8592a3;">Pembayaran:</span> <span class="fw-semibold" style="color: #566a7f;">Maret - Agustus {{ $tahunSession }}</span>
                                         </div>
-                                        <div style="padding-left: 17px;">
+                                        <div style="padding-left: 20px; mt-1">
                                             <span style="color: #8592a3;">BKD:</span> <span class="fw-semibold" style="color: #566a7f;">Sept {{ $tahunLalu }} - Feb {{ $tahunSession }}</span>
                                         </div>
                                     </div>
@@ -374,22 +374,22 @@ function updateCutoffFileName(input, targetId) {
                                 <div class="d-flex gap-2 align-items-center w-100 mt-auto">
                                     <div class="flex-fill">
                                         <div class="btn-stat-memenuhi">
-                                            <div class="d-flex align-items-center gap-1 flex-grow-1">
-                                                <i class="bx bxs-check-circle" style="font-size: 1.05rem; color: #ffffff;"></i>
+                                            <div class="d-flex align-items-center gap-1.5 flex-grow-1">
+                                                <i class="bx bxs-check-circle" style="font-size: 1.2rem; color: #ffffff;"></i>
                                                 <span class="stat-number">{{ number_format($statGanjilTL['m'], 0, ',', '.') }}</span>
                                                 <span class="stat-label">Memenuhi</span>
                                             </div>
-                                            <i class="bx bx-chevron-right" style="font-size: 0.95rem; color: #ffffff; opacity: 0.85;"></i>
+                                            <i class="bx bx-chevron-right" style="font-size: 1.05rem; color: #ffffff; opacity: 0.85;"></i>
                                         </div>
                                     </div>
                                     <div class="flex-fill">
                                         <div class="btn-stat-tm">
-                                            <div class="d-flex align-items-center gap-1 flex-grow-1">
-                                                <i class="bx bxs-x-circle" style="font-size: 1.05rem; color: #ffffff;"></i>
+                                            <div class="d-flex align-items-center gap-1.5 flex-grow-1">
+                                                <i class="bx bxs-x-circle" style="font-size: 1.2rem; color: #ffffff;"></i>
                                                 <span class="stat-number">{{ number_format($statGanjilTL['tm'], 0, ',', '.') }}</span>
                                                 <span class="stat-label">TM</span>
                                             </div>
-                                            <i class="bx bx-chevron-right" style="font-size: 0.95rem; color: #ffffff; opacity: 0.85;"></i>
+                                            <i class="bx bx-chevron-right" style="font-size: 1.05rem; color: #ffffff; opacity: 0.85;"></i>
                                         </div>
                                     </div>
                                 </div>
@@ -398,17 +398,17 @@ function updateCutoffFileName(input, targetId) {
 
                         <!-- Period 2: Genap Berjalan -->
                         <div class="col-md-4 col-sm-12 d-flex">
-                            <div class="btn-select-period p-3.5 rounded-3 d-flex flex-column justify-content-between w-100 h-100" data-value="n_sister_genap_bj" style="cursor: pointer; transition: all 0.2s ease;">
+                            <div class="btn-select-period p-4.5 rounded-3 d-flex flex-column justify-content-between w-100 h-100" data-value="n_sister_genap_bj" style="cursor: pointer; transition: all 0.2s ease;">
                                 <div class="w-100">
-                                    <div class="d-flex justify-content-between align-items-center mb-2">
-                                        <span class="period-title fw-bold" style="font-size: 0.82rem; color: #435971;">Genap Berjalan</span>
+                                    <div class="d-flex justify-content-between align-items-center mb-2.5">
+                                        <span class="period-title fw-bold" style="font-size: 0.95rem; color: #435971;">Genap Berjalan</span>
                                     </div>
-                                    <div class="period-subtitle mb-3.5" style="font-size: 0.74rem; line-height: 1.35;">
+                                    <div class="period-subtitle mb-4" style="font-size: 0.82rem; line-height: 1.35;">
                                         <div>
-                                            <i class="bx bx-calendar-event me-1" style="color: #697a8d; font-size: 0.95rem; vertical-align: -1px;"></i>
+                                            <i class="bx bx-calendar-event me-1.5" style="color: #697a8d; font-size: 1.05rem; vertical-align: -1px;"></i>
                                             <span style="color: #8592a3;">Pembayaran:</span> <span class="fw-semibold" style="color: #566a7f;">Sept {{ $tahunSession }} - Feb {{ $tahunDepan }}</span>
                                         </div>
-                                        <div style="padding-left: 17px;">
+                                        <div style="padding-left: 20px; mt-1">
                                             <span style="color: #8592a3;">BKD:</span> <span class="fw-semibold" style="color: #566a7f;">Maret - Agustus {{ $tahunSession }}</span>
                                         </div>
                                     </div>
@@ -416,22 +416,22 @@ function updateCutoffFileName(input, targetId) {
                                 <div class="d-flex gap-2 align-items-center w-100 mt-auto">
                                     <div class="flex-fill">
                                         <div class="btn-stat-memenuhi">
-                                            <div class="d-flex align-items-center gap-1 flex-grow-1">
-                                                <i class="bx bxs-check-circle" style="font-size: 1.05rem; color: #ffffff;"></i>
+                                            <div class="d-flex align-items-center gap-1.5 flex-grow-1">
+                                                <i class="bx bxs-check-circle" style="font-size: 1.2rem; color: #ffffff;"></i>
                                                 <span class="stat-number">{{ number_format($statGenapBJ['m'], 0, ',', '.') }}</span>
                                                 <span class="stat-label">Memenuhi</span>
                                             </div>
-                                            <i class="bx bx-chevron-right" style="font-size: 0.95rem; color: #ffffff; opacity: 0.85;"></i>
+                                            <i class="bx bx-chevron-right" style="font-size: 1.05rem; color: #ffffff; opacity: 0.85;"></i>
                                         </div>
                                     </div>
                                     <div class="flex-fill">
                                         <div class="btn-stat-tm">
-                                            <div class="d-flex align-items-center gap-1 flex-grow-1">
-                                                <i class="bx bxs-x-circle" style="font-size: 1.05rem; color: #ffffff;"></i>
+                                            <div class="d-flex align-items-center gap-1.5 flex-grow-1">
+                                                <i class="bx bxs-x-circle" style="font-size: 1.2rem; color: #ffffff;"></i>
                                                 <span class="stat-number">{{ number_format($statGenapBJ['tm'], 0, ',', '.') }}</span>
                                                 <span class="stat-label">TM</span>
                                             </div>
-                                            <i class="bx bx-chevron-right" style="font-size: 0.95rem; color: #ffffff; opacity: 0.85;"></i>
+                                            <i class="bx bx-chevron-right" style="font-size: 1.05rem; color: #ffffff; opacity: 0.85;"></i>
                                         </div>
                                     </div>
                                 </div>
@@ -440,17 +440,17 @@ function updateCutoffFileName(input, targetId) {
 
                         <!-- Period 3: Genap Tahun Lalu -->
                         <div class="col-md-4 col-sm-12 d-flex">
-                            <div class="btn-select-period p-3.5 rounded-3 d-flex flex-column justify-content-between w-100 h-100" data-value="o_sister_genap_tl" style="cursor: pointer; transition: all 0.2s ease;">
+                            <div class="btn-select-period p-4.5 rounded-3 d-flex flex-column justify-content-between w-100 h-100" data-value="o_sister_genap_tl" style="cursor: pointer; transition: all 0.2s ease;">
                                 <div class="w-100">
-                                    <div class="d-flex justify-content-between align-items-center mb-2">
-                                        <span class="period-title fw-bold" style="font-size: 0.82rem; color: #435971;">Genap Tahun Lalu</span>
+                                    <div class="d-flex justify-content-between align-items-center mb-2.5">
+                                        <span class="period-title fw-bold" style="font-size: 0.95rem; color: #435971;">Genap Tahun Lalu</span>
                                     </div>
-                                    <div class="period-subtitle mb-3.5" style="font-size: 0.74rem; line-height: 1.35;">
+                                    <div class="period-subtitle mb-4" style="font-size: 0.82rem; line-height: 1.35;">
                                         <div>
-                                            <i class="bx bx-calendar-event me-1" style="color: #697a8d; font-size: 0.95rem; vertical-align: -1px;"></i>
+                                            <i class="bx bx-calendar-event me-1.5" style="color: #697a8d; font-size: 1.05rem; vertical-align: -1px;"></i>
                                             <span style="color: #8592a3;">Pembayaran:</span> <span class="fw-semibold" style="color: #566a7f;">Sept {{ $tahunLalu }} - Feb {{ $tahunSession }}</span>
                                         </div>
-                                        <div style="padding-left: 17px;">
+                                        <div style="padding-left: 20px; mt-1">
                                             <span style="color: #8592a3;">BKD:</span> <span class="fw-semibold" style="color: #566a7f;">Maret - Agustus {{ $tahunLalu }}</span>
                                         </div>
                                     </div>
@@ -458,22 +458,22 @@ function updateCutoffFileName(input, targetId) {
                                 <div class="d-flex gap-2 align-items-center w-100 mt-auto">
                                     <div class="flex-fill">
                                         <div class="btn-stat-memenuhi">
-                                            <div class="d-flex align-items-center gap-1 flex-grow-1">
-                                                <i class="bx bxs-check-circle" style="font-size: 1.05rem; color: #ffffff;"></i>
+                                            <div class="d-flex align-items-center gap-1.5 flex-grow-1">
+                                                <i class="bx bxs-check-circle" style="font-size: 1.2rem; color: #ffffff;"></i>
                                                 <span class="stat-number">{{ number_format($statGenapTL['m'], 0, ',', '.') }}</span>
                                                 <span class="stat-label">Memenuhi</span>
                                             </div>
-                                            <i class="bx bx-chevron-right" style="font-size: 0.95rem; color: #ffffff; opacity: 0.85;"></i>
+                                            <i class="bx bx-chevron-right" style="font-size: 1.05rem; color: #ffffff; opacity: 0.85;"></i>
                                         </div>
                                     </div>
                                     <div class="flex-fill">
                                         <div class="btn-stat-tm">
-                                            <div class="d-flex align-items-center gap-1 flex-grow-1">
-                                                <i class="bx bxs-x-circle" style="font-size: 1.05rem; color: #ffffff;"></i>
+                                            <div class="d-flex align-items-center gap-1.5 flex-grow-1">
+                                                <i class="bx bxs-x-circle" style="font-size: 1.2rem; color: #ffffff;"></i>
                                                 <span class="stat-number">{{ number_format($statGenapTL['tm'], 0, ',', '.') }}</span>
                                                 <span class="stat-label">TM</span>
                                             </div>
-                                            <i class="bx bx-chevron-right" style="font-size: 0.95rem; color: #ffffff; opacity: 0.85;"></i>
+                                            <i class="bx bx-chevron-right" style="font-size: 1.05rem; color: #ffffff; opacity: 0.85;"></i>
                                         </div>
                                     </div>
                                 </div>
