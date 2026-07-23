@@ -142,43 +142,56 @@
         background-color: #c3f0d8 !important;
         color: #1e7e34 !important;
     }
-    .custom-toggle-track {
+    .custom-toggle-container {
         display: inline-flex !important;
         align-items: center !important;
-        background-color: #dcfce7 !important;
-        border: 1.5px solid #bbf7d0 !important;
-        border-radius: 30px !important;
+        background: #ffffff !important;
+        border: 1px solid #d9dee3 !important;
+        border-radius: 8px !important;
         padding: 3px !important;
+        gap: 3px !important;
         width: fit-content !important;
     }
-    .btn-toggle-pill {
+    .btn-toggle-option {
         font-size: 0.78rem !important;
         font-weight: 600 !important;
-        padding: 5px 14px !important;
-        border-radius: 25px !important;
-        cursor: pointer !important;
-        transition: all 0.2s ease-in-out !important;
-        border: 1px solid transparent !important;
+        padding: 5px 12px !important;
+        border-radius: 6px !important;
+        border: none !important;
         background: transparent !important;
-        color: #166534 !important;
+        color: #697a8d !important;
         outline: none !important;
         user-select: none !important;
         display: inline-flex !important;
         align-items: center !important;
-        gap: 4px !important;
+        gap: 5px !important;
+        cursor: pointer !important;
+        transition: all 0.2s ease-in-out !important;
         text-decoration: none !important;
     }
-    .btn-toggle-pill.active {
-        background-color: #ffffff !important;
-        border-color: #bbf7d0 !important;
-        color: #15803d !important;
-        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08) !important;
+    .btn-toggle-option i {
+        font-size: 0.95rem !important;
+        color: #8592a3 !important;
+        transition: all 0.2s ease-in-out !important;
+        vertical-align: -1px;
     }
-    .btn-toggle-pill:not(.active):hover {
-        color: #14532d !important;
-        opacity: 0.85 !important;
+    /* Hover state for inactive */
+    .btn-toggle-option:not(.active):hover {
+        background-color: #e8faf0 !important;
+        color: #22c55e !important;
     }
-    .btn-toggle-pill:active {
+    .btn-toggle-option:not(.active):hover i {
+        color: #22c55e !important;
+    }
+    /* Active state */
+    .btn-toggle-option.active {
+        background-color: #22c55e !important;
+        color: #ffffff !important;
+    }
+    .btn-toggle-option.active i {
+        color: #ffffff !important;
+    }
+    .btn-toggle-option:active {
         transform: scale(0.97) !important;
     }
 
@@ -278,9 +291,13 @@ function updateCutoffFileName(input, targetId) {
                                         <div class="d-flex flex-column gap-1.5">
                                             <div class="d-flex align-items-center gap-2.5">
                                                 <span class="fw-bold" style="color: #0f2b5c; font-size: 0.85rem;">Genap</span>
-                                                <div class="custom-toggle-track">
-                                                    <button type="button" class="btn-toggle-pill active" id="btn_toggle_genap_bj">Berjalan</button>
-                                                    <button type="button" class="btn-toggle-pill" id="btn_toggle_genap_tl">Tahun Lalu</button>
+                                                <div class="custom-toggle-container">
+                                                    <button type="button" class="btn-toggle-option active" id="btn_toggle_genap_bj">
+                                                        <i class="bx bx-calendar-event"></i> Berjalan
+                                                    </button>
+                                                    <button type="button" class="btn-toggle-option" id="btn_toggle_genap_tl">
+                                                        <i class="bx bx-calendar-event"></i> Tahun Lalu
+                                                    </button>
                                                 </div>
                                             </div>
                                             <div class="text-muted" id="genap_bkd_text" style="font-size: 0.78rem;">[Maret - Agustus {{ $tahunSession }}]</div>
@@ -342,11 +359,22 @@ function updateCutoffFileName(input, targetId) {
                         <div class="col-md-4 col-sm-12 d-flex">
                             <div class="btn-select-period p-3.5 rounded-3 d-flex flex-column justify-content-between w-100 h-100 glowing-active-card" data-value="p_sister_ganjil_tl" style="cursor: pointer; transition: all 0.2s ease;">
                                 <div class="w-100">
-                                    <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <div class="d-flex justify-content-between align-items-center mb-1.5">
                                         <span class="period-title fw-bold" style="font-size: 0.82rem; color: #435971;">Ganjil Tahun Lalu</span>
                                         <span class="badge-aktif-pill">AKTIF</span>
                                     </div>
-                                    <div class="period-subtitle mb-4" style="font-size: 0.74rem; line-height: 1.35;">
+                                    <div class="d-flex align-items-center gap-2 mb-2.5 pb-1">
+                                        <span style="font-size: 0.74rem; font-weight: 600; color: #8592a3;">Genap</span>
+                                        <div class="custom-toggle-container">
+                                            <button type="button" class="btn-toggle-option btn-card-toggle-nav" data-value="n_sister_genap_bj">
+                                                <i class="bx bx-calendar-event"></i> Berjalan
+                                            </button>
+                                            <button type="button" class="btn-toggle-option btn-card-toggle-nav" data-value="o_sister_genap_tl">
+                                                <i class="bx bx-calendar-event"></i> Tahun Lalu
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <div class="period-subtitle mb-3.5" style="font-size: 0.74rem; line-height: 1.35;">
                                         <div>
                                             <i class="bx bx-calendar-event me-1" style="color: #697a8d; font-size: 0.95rem; vertical-align: -1px;"></i>
                                             <span style="color: #8592a3;">Pembayaran:</span> <span class="fw-semibold" style="color: #566a7f;">Maret - Agustus {{ $tahunSession }}</span>
@@ -385,11 +413,22 @@ function updateCutoffFileName(input, targetId) {
                         <div class="col-md-4 col-sm-12 d-flex">
                             <div class="btn-select-period p-3.5 rounded-3 d-flex flex-column justify-content-between w-100 h-100" data-value="n_sister_genap_bj" style="cursor: pointer; transition: all 0.2s ease;">
                                 <div class="w-100">
-                                    <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <div class="d-flex justify-content-between align-items-center mb-1.5">
                                         <span class="period-title fw-bold" style="font-size: 0.82rem; color: #435971;">Genap Berjalan</span>
                                         <span class="badge-aktif-pill d-none">AKTIF</span>
                                     </div>
-                                    <div class="period-subtitle mb-4" style="font-size: 0.74rem; line-height: 1.35;">
+                                    <div class="d-flex align-items-center gap-2 mb-2.5 pb-1">
+                                        <span style="font-size: 0.74rem; font-weight: 600; color: #8592a3;">Genap</span>
+                                        <div class="custom-toggle-container">
+                                            <button type="button" class="btn-toggle-option active btn-card-toggle-nav" data-value="n_sister_genap_bj">
+                                                <i class="bx bx-calendar-event"></i> Berjalan
+                                            </button>
+                                            <button type="button" class="btn-toggle-option btn-card-toggle-nav" data-value="o_sister_genap_tl">
+                                                <i class="bx bx-calendar-event"></i> Tahun Lalu
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <div class="period-subtitle mb-3.5" style="font-size: 0.74rem; line-height: 1.35;">
                                         <div>
                                             <i class="bx bx-calendar-event me-1" style="color: #697a8d; font-size: 0.95rem; vertical-align: -1px;"></i>
                                             <span style="color: #8592a3;">Pembayaran:</span> <span class="fw-semibold" style="color: #566a7f;">Sept {{ $tahunSession }} - Feb {{ $tahunDepan }}</span>
@@ -428,11 +467,22 @@ function updateCutoffFileName(input, targetId) {
                         <div class="col-md-4 col-sm-12 d-flex">
                             <div class="btn-select-period p-3.5 rounded-3 d-flex flex-column justify-content-between w-100 h-100" data-value="o_sister_genap_tl" style="cursor: pointer; transition: all 0.2s ease;">
                                 <div class="w-100">
-                                    <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <div class="d-flex justify-content-between align-items-center mb-1.5">
                                         <span class="period-title fw-bold" style="font-size: 0.82rem; color: #435971;">Genap Tahun Lalu</span>
                                         <span class="badge-aktif-pill d-none">AKTIF</span>
                                     </div>
-                                    <div class="period-subtitle mb-4" style="font-size: 0.74rem; line-height: 1.35;">
+                                    <div class="d-flex align-items-center gap-2 mb-2.5 pb-1">
+                                        <span style="font-size: 0.74rem; font-weight: 600; color: #8592a3;">Genap</span>
+                                        <div class="custom-toggle-container">
+                                            <button type="button" class="btn-toggle-option btn-card-toggle-nav" data-value="n_sister_genap_bj">
+                                                <i class="bx bx-calendar-event"></i> Berjalan
+                                            </button>
+                                            <button type="button" class="btn-toggle-option active btn-card-toggle-nav" data-value="o_sister_genap_tl">
+                                                <i class="bx bx-calendar-event"></i> Tahun Lalu
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <div class="period-subtitle mb-3.5" style="font-size: 0.74rem; line-height: 1.35;">
                                         <div>
                                             <i class="bx bx-calendar-event me-1" style="color: #697a8d; font-size: 0.95rem; vertical-align: -1px;"></i>
                                             <span style="color: #8592a3;">Pembayaran:</span> <span class="fw-semibold" style="color: #566a7f;">Sept {{ $tahunLalu }} - Feb {{ $tahunSession }}</span>
@@ -937,6 +987,15 @@ document.addEventListener('DOMContentLoaded', function() {
         $('html, body').animate({
             scrollTop: $("#cutoffDataContainer").offset().top - 80
         }, 300);
+    });
+
+    // Klik pada toggle switch di dalam card untuk navigasi antar card
+    $('.btn-card-toggle-nav').on('click', function(e) {
+        e.stopPropagation(); // Mencegah terpicunya event klik pada card parent
+        const targetVal = $(this).data('value');
+        if (targetVal) {
+            $(`.btn-select-period[data-value="${targetVal}"]`).trigger('click');
+        }
     });
 
     // Auto-select card aktif saat pertama kali halaman dimuat
