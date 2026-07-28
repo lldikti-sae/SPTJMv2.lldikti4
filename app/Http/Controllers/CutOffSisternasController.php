@@ -44,6 +44,15 @@ class CutOffSisternasController extends Controller
 
         return DataTables::of($query)
           ->addIndexColumn()
+          ->addColumn('tahun_periode', function ($row) use ($table) {
+            $sem = (strpos($table, 'ganjil') !== false) ? '1' : '2';
+            $thn = (string)($row->tahun ?? session('tahun') ?? date('Y'));
+            $thn = str_replace('-', '/', $thn);
+            if (str_contains($thn, '/')) {
+              return $thn;
+            }
+            return $thn . '/' . $sem;
+          })
           ->addColumn('aksi', function ($row) {
             if (auth()->check() && auth()->user()->role === 'pic') {
                 return '<span class="text-muted">-</span>';
@@ -52,7 +61,7 @@ class CutOffSisternasController extends Controller
                                 <i class="bx bx-edit"></i>
                             </button>';
           })
-          ->rawColumns(['aksi'])
+          ->rawColumns(['aksi', 'tahun_periode'])
           ->make(true);
       }
 
@@ -76,8 +85,15 @@ class CutOffSisternasController extends Controller
     $statGanjilTL = $getStat('p_sister_ganjil_tl');
     $statGenapBJ = $getStat('n_sister_genap_bj');
 
+    // Ambil daftar tahun versi dinamis dari Pengaturan Versi Admin (ActiveYears + database s_transaksi_2)
+    $activeYears = \App\Helpers\ActiveYears::load();
+    $dbYears = DB::table('s_transaksi_2')->distinct()->pluck('Tahun_Versi')->map(fn($y) => (int)$y)->toArray();
+    $mergedYears = array_unique(array_merge([2023, (int)date('Y'), (int)session('tahun')], $activeYears, $dbYears));
+    sort($mergedYears);
+    $listTahun = array_values(array_filter($mergedYears, fn($y) => $y >= 2021));
+
     // kalau bukan request ajax, kembalikan view beserta data statistik
-    return view('admin.cutoff-sisternas', compact('statGenapTL', 'statGanjilTL', 'statGenapBJ'));
+    return view('admin.cutoff-sisternas', compact('statGenapTL', 'statGanjilTL', 'statGenapBJ', 'listTahun'));
   }
 
 
@@ -177,8 +193,34 @@ class CutOffSisternasController extends Controller
       'dokumen' => 'required',
       'table' => 'required|in:n_sister_genap_bj,o_sister_genap_tl,p_sister_ganjil_tl',
     ]);
-    $file = $request->file(key: 'dokumen');
+    $file = $request->file('dokumen');
     $table = $request->input('table');
+    $uploadType = $request->input('upload_type', 'new');
+
+    // Validasi Jika Tipe Upload Adalah UPDATE (Wajib memuat kata 'update')
+    if ($uploadType === 'update' && strpos($fileName, 'update') === false) {
+      return response()->json([
+        'success' => false,
+        'message' => 'Nama file (' . $file->getClientOriginalName() . ') tidak sesuai! Untuk menu Update Data, nama file CSV wajib memuat kata "update" (contoh: dosen_ganjil_update.csv).'
+      ], 422);
+    }
+
+    // Validasi Nama File Harus Sesuai Jenis Periode
+    if (strpos($table, 'ganjil') !== false) {
+      if (strpos($fileName, 'ganjil') === false) {
+        return response()->json([
+          'success' => false,
+          'message' => 'Nama file (' . $file->getClientOriginalName() . ') tidak sesuai! Untuk periode Ganjil, nama file CSV wajib memuat kata "ganjil" (contoh: dosen_ganjil_' . date('Y') . '.csv).'
+        ], 422);
+      }
+    } else if (strpos($table, 'genap') !== false) {
+      if (strpos($fileName, 'genap') === false) {
+        return response()->json([
+          'success' => false,
+          'message' => 'Nama file (' . $file->getClientOriginalName() . ') tidak sesuai! Untuk periode Genap, nama file CSV wajib memuat kata "genap" (contoh: dosen_genap_' . date('Y') . '.csv).'
+        ], 422);
+      }
+    }
     try {
       // Manual CSV parsing (mirip dengan migrasi) to avoid PhpSpreadsheet timeouts
       $path = $file->getRealPath();
@@ -335,6 +377,7 @@ class CutOffSisternasController extends Controller
   {
     $request->validate([
       'sisternas' => 'required|in:n_sister_genap_bj,o_sister_genap_tl,p_sister_ganjil_tl',
+      'tahun' => 'nullable|integer',
       'nidn' => 'required|string',
       'nuptk' => 'required|string',
       'no_sertifikat' => 'required|string',
@@ -351,7 +394,7 @@ class CutOffSisternasController extends Controller
     ]);
 
     $table = $request->input('sisternas');
-    $tahun = session('tahun') ?: date('Y');
+    $tahun = $request->input('tahun') ?: (session('tahun') ?: date('Y'));
 
     DB::table($table)->updateOrInsert(
       ['nidn' => $request->input('nidn'), 'tahun' => $tahun],

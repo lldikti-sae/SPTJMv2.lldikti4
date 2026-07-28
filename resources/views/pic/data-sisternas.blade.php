@@ -71,7 +71,7 @@
         <div class="pts-period-card card h-100 p-4 d-flex flex-column" style="min-height: 280px;">
             <div class="d-flex justify-content-between align-items-center mb-3">
                 <span class="badge bg-success px-3 py-2 fw-bold" style="font-size: 0.88rem;">PEMBAYARAN UTAMA</span>
-                <span class="fw-bold text-dark" style="font-size: 1.05rem;">{{ $tahunLalu }}-1 (Ganjil)</span>
+                <span class="fw-bold text-dark" style="font-size: 1.05rem;">{{ $tahunLalu }}/1 (Ganjil)</span>
             </div>
             <h4 class="fw-bold text-dark mb-2" style="font-size: 1.25rem; color: #065f46 !important;">
                 <i class="bx bx-calendar-check me-2 text-success" style="font-size: 1.4rem;"></i>Maret - Agustus {{ $tahunSession }}
@@ -93,7 +93,7 @@
         <div class="pts-period-card card h-100 p-4 d-flex flex-column" style="min-height: 280px;">
             <div class="d-flex justify-content-between align-items-center mb-3">
                 <span class="badge bg-primary px-3 py-2 fw-bold" style="font-size: 0.88rem;">PERIODE BERJALAN</span>
-                <span class="fw-bold text-dark" style="font-size: 1.05rem;">{{ $tahunLalu }}-2 (Genap)</span>
+                <span class="fw-bold text-dark" style="font-size: 1.05rem;">{{ $tahunLalu }}/2 (Genap)</span>
             </div>
             <h4 class="fw-bold text-dark mb-2" style="font-size: 1.25rem; color: #1e40af !important;">
                 <i class="bx bx-calendar-check me-2 text-primary" style="font-size: 1.4rem;"></i>Sept {{ $tahunSession }} - Feb {{ $tahunDepan }}
@@ -115,7 +115,7 @@
         <div class="pts-period-card card h-100 p-4 d-flex flex-column" style="min-height: 280px;">
             <div class="d-flex justify-content-between align-items-center mb-3">
                 <span class="badge bg-secondary px-3 py-2 fw-bold" style="font-size: 0.88rem;">TAHUN LALU</span>
-                <span class="fw-bold text-dark" style="font-size: 1.05rem;">{{ $tahunLalu - 1 }}-2 (Genap TL)</span>
+                <span class="fw-bold text-dark" style="font-size: 1.05rem;">{{ $tahunLalu - 1 }}/2 (Genap TL)</span>
             </div>
             <h4 class="fw-bold text-dark mb-2" style="font-size: 1.25rem; color: #334155 !important;">
                 <i class="bx bx-calendar-check me-2 text-secondary" style="font-size: 1.4rem;"></i>Sept {{ $tahunLalu }} - Feb {{ $tahunSession }}
