@@ -111,14 +111,14 @@
       "slug": "sisternas",
       "submenu": [
         {
-          "url": "admin/data-sisternas",
-          "name": "Data Sisternas",
-          "slug": "sisternas-data"
-        },
-        {
           "url": "admin/cutoff-sisternas",
           "name": "Cut Off Data Sisternas",
           "slug": "sisternas-data-cut"
+        },
+        {
+          "url": "admin/data-sisternas",
+          "name": "History Data Sisternas",
+          "slug": "sisternas-data"
         }
       ]
     },
