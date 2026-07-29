@@ -78,7 +78,7 @@
                         </table>
                     </div>
                     
-                    <div class="mt-3 d-flex justify-content-end">
+                    <div class="mt-2 w-100">
                         {{ $dosenRows->links('pagination::bootstrap-5') }}
                     </div>
                 </div>

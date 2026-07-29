@@ -143,23 +143,8 @@
                                     table {
                                         border-collapse: collapse;
                                     }
-
-                                    th,
-                                    td {
-                                        border: 1px solid rgb(193, 195, 197);
-                                        /* Garis tepi */
-                                        padding: 8px;
-                                        /* Ruang dalam sel */
-                                        text-align: center;
-                                        /* Rata tengah */
-                                    }
-
-                                    thead th {
-                                        background-color: white;
-                                        /* Ubah warna latar belakang header menjadi putih */
-                                    }
-                                </style>
-
+                                </script>
+                                @endpush
             </div>
         </div>
     </div>

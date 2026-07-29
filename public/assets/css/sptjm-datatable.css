@@ -511,3 +511,19 @@ table.dataTable td.dataTables_empty {
     font-style: italic !important;
     font-weight: 400 !important;
 }
+
+/* ── REMOVE UNDERLINE FROM NIDN AND TABLE CELLS ── */
+.text-link-nidn,
+a.text-link-nidn,
+table td.nidn-cell,
+table.dataTable td a.text-link-nidn {
+    text-decoration: none !important;
+    border-bottom: none !important;
+}
+.text-link-nidn:hover,
+a.text-link-nidn:hover,
+table td.nidn-cell:hover,
+table.dataTable td a.text-link-nidn:hover {
+    text-decoration: none !important;
+    border-bottom: none !important;
+}

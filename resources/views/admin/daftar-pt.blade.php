@@ -342,7 +342,7 @@ document.addEventListener('DOMContentLoaded', function () {
             paginate: { first: "Â«", last: "Â»", next: "â€º", previous: "â€¹" },
             zeroRecords: "Data tidak ditemukan",
             infoEmpty: "Tidak ada data tersedia",
-            info: "Menampilkan _START_ - _END_ dari _TOTAL_ entri",
+            info: "Menampilkan _START_–_END_ dari _TOTAL_ entri",
             infoFiltered: "(difilter dari _MAX_ total entri)"
         },
         dom: '<"table-responsive text-nowrap"t>rip'

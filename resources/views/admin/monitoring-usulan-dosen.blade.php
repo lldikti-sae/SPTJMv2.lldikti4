@@ -371,9 +371,16 @@
         </div>
 
         {{-- Pagination --}}
-        @if($dosenList->hasPages())
-        <div class="mt-3 d-flex justify-content-end">
-            {{ $dosenList->links('admin.custom-pagination') }}
+        @if($dosenList->total() > 0)
+        <div class="mt-3 d-flex justify-content-between align-items-center flex-wrap gap-2">
+            <div class="text-muted" style="font-size: 0.83rem; font-weight: 500;">
+                Menampilkan {{ $dosenList->firstItem() }}–{{ $dosenList->lastItem() }} dari {{ $dosenList->total() }} entri
+            </div>
+            @if($dosenList->hasPages())
+            <div>
+                {{ $dosenList->links('admin.custom-pagination') }}
+            </div>
+            @endif
         </div>
         @endif
 

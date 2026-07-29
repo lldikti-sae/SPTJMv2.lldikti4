@@ -229,7 +229,7 @@
         },
         zeroRecords: "Data tidak ditemukan",
         infoEmpty: "Tidak ada data tersedia",
-        info: "Menampilkan _START_ - _END_ dari _TOTAL_ entri",
+        info: "Menampilkan _START_–_END_ dari _TOTAL_ entri",
         search: "Filter Data:",
         searchPlaceholder: "Cari data...",
         lengthMenu: "Show _MENU_ entries"

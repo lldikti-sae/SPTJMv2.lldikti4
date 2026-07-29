@@ -104,6 +104,13 @@
                     @empty
                     <tr>
                         <td colspan="8" class="text-center text-muted">Tidak ada dosen aktif tanpa usulan.</td>
+                        <td style="display:none;"></td>
+                        <td style="display:none;"></td>
+                        <td style="display:none;"></td>
+                        <td style="display:none;"></td>
+                        <td style="display:none;"></td>
+                        <td style="display:none;"></td>
+                        <td style="display:none;"></td>
                     </tr>
                     @endforelse
                 </tbody>
@@ -135,9 +142,12 @@
 <script>
   $(document).ready(function() {
       if ($.fn.DataTable) {
+          $.fn.dataTable.ext.errMode = 'none';
+          @if(!empty($dosenList) && count($dosenList) > 0)
           $('#monitoringTable').DataTable({
               "order": [] // disable initial sort
           });
+          @endif
       }
   });
 

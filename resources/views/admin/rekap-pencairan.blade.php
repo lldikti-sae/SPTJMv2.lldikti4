@@ -225,6 +225,13 @@
                     </tbody>
                 </table>
             </div>
+            @if(isset($datas) && is_countable($datas) && count($datas) > 0)
+            <div class="mt-3 mb-2 px-1">
+                <div class="text-muted" style="font-size: 0.83rem; font-weight: 500;">
+                    Menampilkan 1–{{ count($datas) }} dari {{ count($datas) }} entri
+                </div>
+            </div>
+            @endif
         </div>
     </div>
 </div>

@@ -103,6 +103,13 @@
                     @empty
                     <tr>
                         <td colspan="8" class="text-center text-muted">Tidak ada dosen aktif tanpa usulan.</td>
+                        <td style="display:none;"></td>
+                        <td style="display:none;"></td>
+                        <td style="display:none;"></td>
+                        <td style="display:none;"></td>
+                        <td style="display:none;"></td>
+                        <td style="display:none;"></td>
+                        <td style="display:none;"></td>
                     </tr>
                     @endforelse
                 </tbody>
@@ -132,25 +139,28 @@
 {{-- JavaScript --}}
 <script>
   $(document).ready(function() {
-    var table = $('#monitoringTable').DataTable({
-      columnDefs: [
-        { orderable: false, targets: [6] }
-      ],
-      language: {
-        lengthMenu: "Show _MENU_ entries",
-        zeroRecords: "Tidak ada data yang cocok",
-        info: "Menampilkan _START_ sampai _END_ dari _TOTAL_ entri",
-        infoEmpty: "Menampilkan 0 sampai 0 dari 0 entri",
-        paginate: { previous: "Sebelumnya", next: "Berikutnya" }
-      }
-    });
+    if ($.fn.DataTable) {
+      $.fn.dataTable.ext.errMode = 'none';
+      @if(!empty($dosenList) && count($dosenList) > 0)
+      var table = $('#monitoringTable').DataTable({
+        columnDefs: [
+          { orderable: false, targets: [6] }
+        ],
+        language: {
+          lengthMenu: "Show _MENU_ entries",
+          zeroRecords: "Tidak ada data yang cocok",
+          info: "Menampilkan _START_–_END_ dari _TOTAL_ entri",
+          infoEmpty: "Menampilkan 0 sampai 0 dari 0 entri",
+          paginate: { previous: "Sebelumnya", next: "Berikutnya" }
+        }
+      });
 
-    // Hubungkan input pencarian kustom ke DataTables
-    $('#searchInput').on('keyup', function() {
-      table.search(this.value).draw();
-    });
-
-    // Jika ingin, fokus pencarian bawaan DataTables bisa disembunyikan via CSS
+      // Hubungkan input pencarian kustom ke DataTables
+      $('#searchInput').on('keyup', function() {
+        table.search(this.value).draw();
+      });
+      @endif
+    }
   });
 
   // Tampilkan Detail Modal (tetap menggunakan fungsi vanilla untuk bootstrap 5)

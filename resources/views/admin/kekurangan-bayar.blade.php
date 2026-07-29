@@ -343,7 +343,7 @@
                             </div>
                             
                             @if($kurangRows instanceof \Illuminate\Pagination\LengthAwarePaginator)
-                            <div class="mt-4 d-flex justify-content-end">
+                            <div class="mt-2 w-100">
                                 {{ $kurangRows->appends(request()->query())->links('pagination::bootstrap-5') }}
                             </div>
                             @endif
@@ -518,10 +518,10 @@
                             </div>
                             
                             @if($lebihRows instanceof \Illuminate\Pagination\LengthAwarePaginator)
-        <div class="mt-4 d-flex justify-content-end">
-            {{ $lebihRows->appends(request()->query())->links('pagination::bootstrap-5') }}
-        </div>
-    @endif
+                            <div class="mt-2 w-100">
+                                {{ $lebihRows->appends(request()->query())->links('pagination::bootstrap-5') }}
+                            </div>
+                            @endif
                 </div>
 
                 {{-- TAB 3: DATA SELESAI (LUNAS) --}}
@@ -712,10 +712,10 @@
                             </div>
                             
                             @if($selesaiRows instanceof \Illuminate\Pagination\LengthAwarePaginator)
-        <div class="mt-4 d-flex justify-content-end">
-            {{ $selesaiRows->appends(request()->query())->links('pagination::bootstrap-5') }}
-        </div>
-    @endif
+                            <div class="mt-2 w-100">
+                                {{ $selesaiRows->appends(request()->query())->links('pagination::bootstrap-5') }}
+                            </div>
+                            @endif
                 </div>
 
                 {{-- TAB 3: REKAP GABUNGAN --}}
@@ -830,6 +830,18 @@
                                     </tbody>
                                 </table>
                             </div>
+
+                            @if($allRekap instanceof \Illuminate\Pagination\LengthAwarePaginator)
+                            <div class="mt-2 w-100">
+                                {{ $allRekap->appends(request()->query())->links('pagination::bootstrap-5') }}
+                            </div>
+                            @elseif(!empty($allRekap) && is_countable($allRekap) && count($allRekap) > 0)
+                            <div class="mt-3 mb-2 w-100">
+                                <div class="text-muted" style="font-size: 0.83rem; font-weight: 500;">
+                                    Menampilkan 1–{{ count($allRekap) }} dari {{ count($allRekap) }} entri
+                                </div>
+                            </div>
+                            @endif
                 </div>
             </div> <!-- Close tab-content -->
         </div> <!-- Close main card-body -->

@@ -68,8 +68,8 @@
           language: {
             paginate: { first: 'Awal', last: 'Akhir', next: 'â†’', previous: 'â†' },
             zeroRecords: 'Data tidak ditemukan',
-            infoEmpty: 'Tidak ada data tersedia',
-            info: 'Menampilkan _START_ sampai _END_ dari _TOTAL_ data',
+            infoEmpty: 'Menampilkan 0 entri',
+            info: 'Menampilkan _START_–_END_ dari _TOTAL_ entri',
             lengthMenu: 'Show _MENU_ entries',
             search: 'Cari:'
           }

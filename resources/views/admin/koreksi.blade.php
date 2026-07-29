@@ -50,16 +50,16 @@
     </div>
   @endif
 
-  <form action="{{ route('admin.koreksi.cari') }}" method="POST" autocomplete="off">
+  <form id="formSearchKoreksi" action="{{ route('admin.koreksi.cari') }}" method="POST" autocomplete="off">
     @csrf
     <div class="row mb-3 mx-2 align-items-end">
       <div class="col-md-4">
         <label class="form-label"><b style="font-size: 12px;">NIDN / NUPTK</b></label>
-        <input type="text" class="form-control" name="nidn" value="{{ old('nidn', $nidn ?? '') }}" placeholder="Masukkan NIDN/NUPTK" required />
+        <input type="text" class="form-control" name="nidn" id="inputNidnSearch" value="{{ old('nidn', $nidn ?? '') }}" placeholder="Masukkan NIDN/NUPTK" required />
       </div>
       <div class="col-md-3">
         <label class="form-label"><b style="font-size: 12px;">Tahun</b></label>
-        <select class="form-select" name="tahun" required>
+        <select class="form-select" name="tahun" id="selectTahunSearch" required>
           @foreach ($years ?? [] as $y)
             <option value="{{ $y }}" {{ (string)($tahun ?? session('tahun')) === (string)$y ? 'selected' : '' }}>{{ $y }}</option>
           @endforeach
@@ -67,7 +67,7 @@
       </div>
       <div class="col-md-3">
         <label class="form-label"><b style="font-size: 12px;">Bulan</b></label>
-        <select class="form-select" name="bulan" required>
+        <select class="form-select" name="bulan" id="selectBulanSearch" required>
           @foreach ($months as $key => $label)
             <option value="{{ $key }}" {{ (string)($bulan ?? 1) === (string)$key ? 'selected' : '' }}>{{ $label }}</option>
           @endforeach
@@ -280,6 +280,24 @@
 @section('page-script')
 <script>
   document.addEventListener('DOMContentLoaded', function() {
+    const formSearch = document.getElementById('formSearchKoreksi');
+    const selectTahun = document.getElementById('selectTahunSearch');
+    const selectBulan = document.getElementById('selectBulanSearch');
+    const inputNidn = document.getElementById('inputNidnSearch');
+
+    function autoSubmitFilter() {
+      if (inputNidn && inputNidn.value.trim() !== '') {
+        if (formSearch) formSearch.submit();
+      }
+    }
+
+    if (selectTahun) {
+      selectTahun.addEventListener('change', autoSubmitFilter);
+    }
+    if (selectBulan) {
+      selectBulan.addEventListener('change', autoSubmitFilter);
+    }
+
     const saveButton = document.getElementById('saveButton');
     if (!saveButton) return;
 

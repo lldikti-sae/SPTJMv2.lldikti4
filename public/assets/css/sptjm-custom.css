@@ -743,3 +743,19 @@ ul.pagination .page-item.disabled:not(:first-child):not(:last-child) .page-link 
     border: 2px solid #e2e8f0 !important;
     flex-shrink: 0 !important;
 }
+
+/* ── REMOVE UNDERLINE FROM NIDN IN ALL TABLES ── */
+.text-link-nidn,
+a.text-link-nidn,
+table td.nidn-cell,
+table.dataTable td a.text-link-nidn {
+    text-decoration: none !important;
+    border-bottom: none !important;
+}
+.text-link-nidn:hover,
+a.text-link-nidn:hover,
+table td.nidn-cell:hover,
+table.dataTable td a.text-link-nidn:hover {
+    text-decoration: none !important;
+    border-bottom: none !important;
+}

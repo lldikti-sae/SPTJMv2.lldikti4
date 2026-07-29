@@ -1,4 +1,4 @@
-<!-- BEGIN: Vendor JS-->
+  <!-- BEGIN: Vendor JS-->
 <script src="{{ asset(mix('assets/vendor/libs/jquery/jquery.js')) }}"></script>
 <script src="{{ asset(mix('assets/vendor/libs/popper/popper.js')) }}"></script>
 <script src="{{ asset(mix('assets/vendor/js/bootstrap.js')) }}"></script>
@@ -11,6 +11,7 @@
 <!-- ——— SPTJM GLOBAL DATATABLE DEFAULTS ——— -->
 <script>
     if (typeof $ !== 'undefined' && $.fn && $.fn.dataTable) {
+        $.fn.dataTable.ext.errMode = 'none';
         $.extend(true, $.fn.dataTable.defaults, {
             /* DOM layout:
                l = length (Show Entries) — kiri
@@ -34,8 +35,9 @@
                     previous: '←'
                 },
                 zeroRecords: 'Data tidak ditemukan',
-                infoEmpty: 'Tidak ada data tersedia',
-                info: 'Menampilkan _START_–_END_ dari _TOTAL_ entri'
+                infoEmpty: 'Menampilkan 0 entri',
+                info: 'Menampilkan _START_–_END_ dari _TOTAL_ entri',
+                infoFiltered: '(disaring dari _MAX_ total entri)'
             }
         });
     }

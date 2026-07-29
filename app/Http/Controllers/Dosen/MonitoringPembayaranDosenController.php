@@ -261,39 +261,25 @@ class MonitoringPembayaranDosenController extends Controller
 
   private function getAvailableYears(): array
   {
-    // Primary source: storage/app/active_years.json
+    $yearColumn = $this->getTransaksiYearColumn();
     try {
-      if (Storage::disk('local')->exists('active_years.json')) {
-        $raw = Storage::disk('local')->get('active_years.json');
-        $decoded = json_decode($raw, true);
-        if (is_array($decoded)) {
-          $years = [];
-          foreach ($decoded as $y) {
-            $yInt = (int) $y;
-            if ($yInt > 0) {
-              $years[] = (string) $yInt;
-            }
-          }
-          $years = array_values(array_unique($years));
-          sort($years);
-          if (!empty($years)) {
-            return $years;
-          }
-        }
+      $years = DB::table('s_transaksi_2')
+        ->select($yearColumn)
+        ->whereIn($yearColumn, ['2023', '2024', '2025', '2026'])
+        ->distinct()
+        ->orderBy($yearColumn)
+        ->pluck($yearColumn)
+        ->map(fn($v) => (string) $v)
+        ->toArray();
+
+      if (!empty($years)) {
+        return $years;
       }
     } catch (\Throwable $e) {
-      // ignore and fall back
+      // ignore
     }
 
-    // Fallback: distinct years from DB
-    $yearColumn = $this->getTransaksiYearColumn();
-    return DB::table('s_transaksi_2')
-      ->select($yearColumn)
-      ->distinct()
-      ->orderBy($yearColumn)
-      ->pluck($yearColumn)
-      ->map(fn($v) => (string) $v)
-      ->toArray();
+    return ['2023', '2024', '2025', '2026'];
   }
 
   private function resolveDosenIdentifier($dosen): string

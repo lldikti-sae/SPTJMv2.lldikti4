@@ -39,11 +39,11 @@
 
 /* NIDN link style */
 .text-link-nidn {
-    color: #0b3d91;
+    color: #1b4fb8;
+    text-decoration: none !important;
     font-weight: 500;
-    text-decoration: none;
 }
-.text-link-nidn:hover { text-decoration: underline; }
+.text-link-nidn:hover { text-decoration: none !important; }
 
 /* â”€â”€ Aksi Circular Buttons â”€â”€ */
 .btn-aksi-circle {
@@ -558,10 +558,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 name: 'nidn',
                 searchable: true,
                 render: function(data, type, row) {
-                    if(data && data !== '-') {
-                        return '<a href="#" class="text-link-nidn">' + data + '</a>';
-                    }
-                    return data;
+                    return data ? data : '-';
                 }
             },
             {
@@ -617,7 +614,7 @@ document.addEventListener('DOMContentLoaded', function() {
             },
             zeroRecords: "Data tidak ditemukan",
             infoEmpty: "Tidak ada data tersedia",
-            info: "Menampilkan _START_ - _END_ dari _TOTAL_ entri",
+            info: "Menampilkan _START_–_END_ dari _TOTAL_ entri",
             search: "Filter Data:",
             searchPlaceholder: "Cari data...",
             lengthMenu: "Show _MENU_ entries"

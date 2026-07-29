@@ -316,7 +316,8 @@
           previous: "â†",
         },
         zeroRecords: "Data tidak ditemukan",
-        infoEmpty: "Tidak ada data tersedia",
+        infoEmpty: "Menampilkan 0 entri",
+        info: "Menampilkan _START_–_END_ dari _TOTAL_ entri",
         searchPlaceholder: "Cari data...",
         search: "Cari Data:"
       },

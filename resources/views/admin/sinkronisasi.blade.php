@@ -235,7 +235,7 @@
     </div>
     <div id="syncGajiStatus" class="text-muted mb-2" style="font-size: 12px;"></div>
     <div id="gajiMismatchStatus" class="text-muted mb-1" style="font-size: 12px;"></div>
-    <div id="gajiMismatchTableWrapper" class="table-responsive" style="font-size: 12px;">
+    <div id="gajiMismatchTableWrapper" class="table-responsive" style="font-size: 12px; display: none;">
       <table id="gajiMismatchTable" class="table table-sm table-bordered mb-0" style="width: 100%;">
         <thead>
           <tr>
@@ -271,7 +271,7 @@
       </button>
     </div>
     <div id="mismatchStatus" class="text-muted mb-1" style="font-size: 12px;"></div>
-    <div id="mismatchTableWrapper" class="table-responsive" style="font-size: 12px;">
+    <div id="mismatchTableWrapper" class="table-responsive" style="font-size: 12px; display: none;">
       <table id="mismatchTable" class="table table-sm table-bordered mb-0" style="width: 100%;">
         <thead>
           <tr>
@@ -666,6 +666,10 @@
       const identifier = (nidn || '').trim();
       if (!identifier || !gajiMismatchDetailWrapper) return;
 
+      if (gajiMismatchTableWrapper) {
+        gajiMismatchTableWrapper.style.display = 'none';
+      }
+
       showProgress('Memuat data gaji...', 'Mengambil rincian data gaji untuk semua bulan NIDN/NUPTK ' + identifier + '.');
 
       let html = `
@@ -764,6 +768,10 @@
     const loadPajakDetail = (nidn) => {
       const identifier = (nidn || '').trim();
       if (!identifier || !mismatchDetailWrapper) return;
+
+      if (mismatchTableWrapper) {
+        mismatchTableWrapper.style.display = 'none';
+      }
 
       showProgress('Memuat data pajak...', 'Mengambil rincian data pajak untuk semua bulan NIDN/NUPTK ' + identifier + '.');
 
@@ -1385,6 +1393,9 @@
     // Cek gaji tidak sesuai untuk semua bulan
     if (btnCheckGajiMismatch) {
       btnCheckGajiMismatch.addEventListener('click', function () {
+        if (gajiMismatchTableWrapper) {
+          gajiMismatchTableWrapper.style.display = 'block';
+        }
         showProgress('Sedang mengecek gaji...', 'Mohon tunggu, sistem sedang memeriksa gaji tidak sesuai untuk semua NIDN/NUPTK pada tahun versi aktif.');
         btnCheckGajiMismatch.disabled = true;
         if (gajiMismatchStatus) gajiMismatchStatus.textContent = 'Memproses pengecekan gaji...';
@@ -1539,6 +1550,9 @@
     // Cek pajak tidak sesuai untuk semua bulan
     if (btnCheckMismatch) {
       btnCheckMismatch.addEventListener('click', function () {
+        if (mismatchTableWrapper) {
+          mismatchTableWrapper.style.display = 'block';
+        }
         showProgress('Sedang mengecek pajak...', 'Mohon tunggu, sistem sedang memeriksa pajak tidak sesuai untuk semua NIDN/NUPTK pada tahun versi aktif.');
         btnCheckMismatch.disabled = true;
         btnSyncAllMonths.disabled = true;

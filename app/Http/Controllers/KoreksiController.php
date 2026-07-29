@@ -14,36 +14,28 @@ class KoreksiController extends Controller
 {
     public function index(Request $request)
     {
-        $years = DB::table('s_transaksi_2')
-            ->select('tahun_versi')
-            ->distinct()
-            ->orderBy('tahun_versi', 'desc')
-            ->pluck('tahun_versi')
-            ->toArray();
+        $years = ['2026', '2025', '2024', '2023'];
 
         $data = [
-            'nidn' => $request->old('nidn'),
-            'bulan' => $request->old('bulan', 1),
-            'tahun' => $request->old('tahun', session('tahun')),
+            'nidn' => $request->old('nidn', $request->query('nidn')),
+            'bulan' => (int)$request->old('bulan', $request->query('bulan', 1)),
+            'tahun' => $request->old('tahun', $request->query('tahun', session('tahun'))),
             'years' => $years,
             'result' => null,
             // Isi dropdown dari h_perubahan.status_perubahan
             'statusPerubahan' => Perubahan::query()->orderBy('status_perubahan')->pluck('status_perubahan')->all(),
         ];
 
-        // If nidn and bulan are provided via query (after redirect), perform lookup
-        $nidn = $request->query('nidn');
-        $bulan = $request->query('bulan');
-        $tahun = $request->query('tahun');
+        // If nidn and bulan are provided via query (after redirect or link), perform lookup
+        $nidn = $data['nidn'];
+        $bulan = $data['bulan'];
+        $tahun = $data['tahun'];
         if ($nidn && $bulan) {
             $lookup = $this->lookupData($nidn, (int)$bulan, $tahun);
             if ($lookup['ok']) {
                 $data['result'] = $lookup['data'];
-                $data['nidn'] = $nidn;
-                $data['bulan'] = (int)$bulan;
-                $data['tahun'] = $tahun ?: session('tahun');
             } else {
-                return back()->with('error', $lookup['message']);
+                session()->flash('error', $lookup['message']);
             }
         }
 
@@ -52,37 +44,33 @@ class KoreksiController extends Controller
 
     public function cari(Request $request)
     {
-        $request->validate([
-            'nidn' => 'required|string',
-            'bulan' => 'required|integer|min:1|max:12',
-            'tahun' => 'nullable|string',
-        ]);
+        $nidn = trim((string)$request->input('nidn', $request->query('nidn')));
+        $bulan = (int)$request->input('bulan', $request->query('bulan', 1));
+        $tahun = $request->input('tahun', $request->query('tahun')) ?: session('tahun');
 
-        $nidn = trim($request->input('nidn'));
-        $bulan = (int)$request->input('bulan');
-        $tahun = $request->input('tahun') ?: session('tahun');
+        $years = ['2026', '2025', '2024', '2023'];
 
-        $lookup = $this->lookupData($nidn, $bulan, $tahun);
-        if (!$lookup['ok']) {
-            return back()->withInput()->with('error', $lookup['message']);
+        if (!$nidn) {
+            return redirect()->route('admin.koreksi', ['tahun' => $tahun, 'bulan' => $bulan]);
         }
 
-        $years = DB::table('s_transaksi_2')
-            ->select('tahun_versi')
-            ->distinct()
-            ->orderBy('tahun_versi', 'desc')
-            ->pluck('tahun_versi')
-            ->toArray();
+        $lookup = $this->lookupData($nidn, $bulan, $tahun);
 
-        return view('admin.koreksi', [
+        $viewData = [
             'nidn' => $nidn,
             'bulan' => $bulan,
             'tahun' => $tahun,
             'years' => $years,
-            'result' => $lookup['data'],
+            'result' => $lookup['ok'] ? $lookup['data'] : null,
             // Isi dropdown dari h_perubahan.status_perubahan
             'statusPerubahan' => Perubahan::query()->orderBy('status_perubahan')->pluck('status_perubahan')->all(),
-        ]);
+        ];
+
+        if (!$lookup['ok']) {
+            session()->flash('error', $lookup['message']);
+        }
+
+        return view('admin.koreksi', $viewData);
     }
 
     public function verifikasi(Request $request)

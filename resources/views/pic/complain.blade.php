@@ -159,7 +159,7 @@
       language: {
         lengthMenu: "Show _MENU_ entries",
         zeroRecords: "Tidak ada data yang cocok",
-        info: "Menampilkan _START_ sampai _END_ dari _TOTAL_ entri",
+        info: "Menampilkan _START_–_END_ dari _TOTAL_ entri",
         infoEmpty: "Menampilkan 0 sampai 0 dari 0 entri",
         paginate: { previous: "Sebelumnya", next: "Berikutnya" }
       }

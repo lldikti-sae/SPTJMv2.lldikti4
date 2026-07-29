@@ -458,7 +458,7 @@ Route::post('/admin/sinkronisasi/sync-gaji-single', [SinkronisasiController::cla
 
 // Koreksi Data Admin
 Route::get('/admin/koreksi', [KoreksiController::class, 'index'])->name('admin.koreksi');
-Route::post('/admin/koreksi/cari', [KoreksiController::class, 'cari'])->name('admin.koreksi.cari');
+Route::match(['get', 'post'], '/admin/koreksi/cari', [KoreksiController::class, 'cari'])->name('admin.koreksi.cari');
 Route::post('/admin/koreksi/verifikasi', [KoreksiController::class, 'verifikasi'])->name('admin.koreksi.verifikasi');
 Route::post('/admin/password-verifakan', [PasswordVerificationController::class, 'verify'])->name('admin.password-verifakan');
 
