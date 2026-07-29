@@ -359,6 +359,7 @@ Route::put('/admin/cutoff-sisternas/update', [CutOffSisternasController::class, 
 Route::delete('/admin/cutoff-sisternas/clear/{table}', [CutOffSisternasController::class, 'clear'])->name('admin.cutoff-sisternas.clear');
 Route::post('/admin/cutoff-sisternas/create', [CutOffSisternasController::class, 'create'])->name('admin.cutoff-sisternas.create');
 Route::get('/admin/cutoff-sisternas/export', [CutOffSisternasController::class, 'export'])->name('admin.cutoff-sisternas.export');
+Route::get('/admin/cutoff-sisternas/template', [CutOffSisternasController::class, 'template'])->name('admin.cutoff-sisternas.template');
 
 // Route Proses Pembayaran Admin
 Route::prefix('/admin/pengaturan-usulan')->group(function () {

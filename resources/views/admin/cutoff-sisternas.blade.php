@@ -20,108 +20,161 @@
         border-radius: 12px !important;
         background: #ffffff !important;
     }
-    /* Card Style 100% Matching Reference Image Mockup (Unified Single Card) */
+    /* Card Style Semester Ganjil & Genap (Pure Color Fill - No Borders) */
     .btn-select-period {
-        border-radius: 10px !important;
+        border-radius: 12px !important;
         background: #ffffff !important;
-        transition: all 0.2s ease-in-out !important;
+        border: none !important;
+        transition: all 0.25s ease-in-out !important;
         cursor: pointer !important;
         width: 100% !important;
     }
+    
+    /* Semester Ganjil Active State (Pure Blue Background Fill) */
     .btn-select-period.glowing-active-card {
-        border: 2.5px solid #22c55e !important;
-        background-color: #dcfce7 !important; /* soft green background */
-        box-shadow: 0 4px 12px rgba(34, 197, 94, 0.08) !important;
+        border: none !important;
+        background-color: #dbeafe !important;
+        box-shadow: 0 6px 20px rgba(59, 130, 246, 0.22) !important;
         border-radius: 12px !important;
     }
+    .btn-select-period.glowing-active-card .period-title {
+        color: #1e3a8a !important;
+    }
+    .btn-select-period.glowing-active-card .period-title i {
+        color: #2563eb !important;
+    }
+    .btn-select-period.glowing-active-card .badge.bg-label-primary {
+        background-color: #2563eb !important;
+        color: #ffffff !important;
+    }
+
+    /* Semester Genap Active State (Pure Green Background Fill) */
+    #cardGenap.glowing-active-card {
+        border: none !important;
+        background-color: #dcfce7 !important;
+        box-shadow: 0 6px 20px rgba(22, 163, 74, 0.22) !important;
+        border-radius: 12px !important;
+    }
+    #cardGenap.glowing-active-card .period-title {
+        color: #14532d !important;
+    }
+    #cardGenap.glowing-active-card .period-title i {
+        color: #16a34a !important;
+    }
+
+    /* Inactive Card State (Plain White & Neutral Gray - No Borders) */
     .btn-select-period:not(.glowing-active-card) {
-        border: 2px solid #cbd5e1 !important; /* darker visible grey border */
-        background-color: #f8fafc !important; /* soft grey background */
-        box-shadow: none !important;
+        border: none !important;
+        background-color: #f8fafc !important;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04) !important;
         border-radius: 12px !important;
     }
+    .btn-select-period:not(.glowing-active-card):hover {
+        background-color: #f1f5f9 !important;
+        transform: translateY(-2px) !important;
+        box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08) !important;
+    }
+    .btn-select-period:not(.glowing-active-card) .period-title {
+        color: #64748b !important;
+    }
+    .btn-select-period:not(.glowing-active-card) .period-title i {
+        color: #94a3b8 !important;
+    }
+    .btn-select-period:not(.glowing-active-card) .badge {
+        background-color: #e2e8f0 !important;
+        color: #475569 !important;
+    }
+    
     .btn-stat-flat-memenuhi {
-        border-radius: 8px !important;
-        padding: 7px 6px !important;
-        font-size: 0.71rem !important;
+        border-radius: 6px !important;
+        padding: 6px 10px !important;
+        font-size: 0.74rem !important;
         font-weight: 700 !important;
-        transition: all 0.2s ease-in-out !important;
+        border: none !important;
+        transition: all 0.15s ease !important;
         display: flex !important;
         align-items: center !important;
         justify-content: center !important;
-        gap: 4px !important;
+        gap: 5px !important;
         width: 100% !important;
         white-space: nowrap !important;
         user-select: none !important;
         cursor: pointer !important;
     }
     .btn-stat-flat-tm {
-        border-radius: 8px !important;
-        padding: 7px 6px !important;
-        font-size: 0.71rem !important;
+        border-radius: 6px !important;
+        padding: 6px 10px !important;
+        font-size: 0.74rem !important;
         font-weight: 700 !important;
-        transition: all 0.2s ease-in-out !important;
+        border: none !important;
+        transition: all 0.15s ease !important;
         display: flex !important;
         align-items: center !important;
         justify-content: center !important;
-        gap: 4px !important;
+        gap: 5px !important;
         width: 100% !important;
         white-space: nowrap !important;
         user-select: none !important;
         cursor: pointer !important;
     }
-    /* Active Card Button Styles (Solid vibrant colors) */
+
+    /* Standard Active Card Stat Buttons */
     .glowing-active-card .btn-stat-flat-memenuhi {
-        background-color: #15b858 !important;
-        color: #ffffff !important;
+        background-color: #ffffff !important;
+        color: #15803d !important;
         border: none !important;
-        box-shadow: 0 4px 6px rgba(21, 184, 88, 0.25) !important;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05) !important;
     }
     .glowing-active-card .btn-stat-flat-tm {
-        background-color: #ef4444 !important;
+        background-color: #ffffff !important;
+        color: #b91c1c !important;
+        border: none !important;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05) !important;
+    }
+
+    /* Inactive Card Stat Buttons */
+    .btn-select-period:not(.glowing-active-card) .btn-stat-flat-memenuhi,
+    .btn-select-period:not(.glowing-active-card) .btn-stat-flat-tm {
+        background-color: #e2e8f0 !important;
+        color: #64748b !important;
+        border: none !important;
+    }
+    .btn-select-period:not(.glowing-active-card) .btn-stat-flat-memenuhi:hover,
+    .btn-select-period:not(.glowing-active-card) .btn-stat-flat-tm:hover {
+        background-color: #cbd5e1 !important;
+        color: #334155 !important;
+    }
+
+    /* Stat Filter Active States */
+    .btn-stat-flat-memenuhi.active-stat-filter {
+        background-color: #16a34a !important;
         color: #ffffff !important;
         border: none !important;
-        box-shadow: 0 4px 6px rgba(239, 68, 68, 0.25) !important;
+        opacity: 1 !important;
+        box-shadow: 0 2px 8px rgba(22, 163, 74, 0.35) !important;
     }
-    /* Inactive Card Button Styles (Vibrant readable pastel tones) */
-    .btn-select-period:not(.glowing-active-card) .btn-stat-flat-memenuhi {
-        background-color: #bbf7d0 !important; /* more visible green background */
-        color: #107c41 !important; /* legible dark green text */
-        border: 1px solid rgba(21, 184, 88, 0.25) !important;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.03) !important;
+    .btn-stat-flat-tm.active-stat-filter {
+        background-color: #dc2626 !important;
+        color: #ffffff !important;
+        border: none !important;
+        opacity: 1 !important;
+        box-shadow: 0 2px 8px rgba(220, 38, 38, 0.35) !important;
     }
-    .btn-select-period:not(.glowing-active-card) .btn-stat-flat-tm {
-        background-color: #ffcdd2 !important; /* more visible red background */
-        color: #b91c1c !important; /* legible dark red text */
-        border: 1px solid rgba(239, 68, 68, 0.2) !important;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.03) !important;
+    .btn-select-period.has-stat-filter .btn-stat-flat-memenuhi:not(.active-stat-filter),
+    .btn-select-period.has-stat-filter .btn-stat-flat-tm:not(.active-stat-filter) {
+        opacity: 0.7 !important;
     }
-    /* Tactile Hover States (Lift and shade depth shift) */
-    .glowing-active-card .btn-stat-flat-memenuhi:hover {
-        background-color: #129a4a !important; /* darker solid green hover */
-        transform: translateY(-1.5px) !important;
-        box-shadow: 0 6px 12px rgba(21, 184, 88, 0.35) !important;
+
+    /* Tactile Hover States */
+    .glowing-active-card .btn-stat-flat-memenuhi:not(.active-stat-filter):hover {
+        background-color: #dcfce7 !important;
     }
-    .glowing-active-card .btn-stat-flat-tm:hover {
-        background-color: #db3b3b !important; /* darker solid red hover */
-        transform: translateY(-1.5px) !important;
-        box-shadow: 0 6px 12px rgba(239, 68, 68, 0.35) !important;
+    .glowing-active-card .btn-stat-flat-tm:not(.active-stat-filter):hover {
+        background-color: #fee2e2 !important;
     }
-    .btn-select-period:not(.glowing-active-card) .btn-stat-flat-memenuhi:hover {
-        background-color: #8ae4ab !important; /* hover state green */
-        transform: translateY(-1.5px) !important;
-        box-shadow: 0 4px 8px rgba(21, 184, 88, 0.2) !important;
-    }
-    .btn-select-period:not(.glowing-active-card) .btn-stat-flat-tm:hover {
-        background-color: #ffb3b3 !important; /* hover state red */
-        transform: translateY(-1.5px) !important;
-        box-shadow: 0 4px 8px rgba(239, 68, 68, 0.2) !important;
-    }
-    /* Active click states (Pressed in depth shift) */
     .btn-stat-flat-memenuhi:active,
     .btn-stat-flat-tm:active {
-        transform: translateY(0.5px) !important;
-        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1) !important;
+        transform: translateY(0) !important;
     }
     .sptjm-btn-text-action {
         display: inline-flex;
@@ -709,20 +762,23 @@ function updateCutoffFileName(input, targetId) {
                         <input type="file" name="dokumen" required id="d1_new_file_input" style="display:none;" accept=".csv"
                                onchange="coPreviewFileD1(this)">
                         
-                        <div class="d-flex align-items-center justify-content-center px-4 py-3.5 rounded-3" onclick="document.getElementById('d1_new_file_input').click()" style="border: 1.5px dashed #cbd5e1; background: #f8fafc; cursor: pointer; transition: all 0.2s ease; border-radius: 10px !important; min-height: 58px;" onmouseover="this.style.borderColor='#2563eb'; this.style.background='#eff6ff';" onmouseout="this.style.borderColor='#cbd5e1'; this.style.background='#f8fafc';">
+                        <div class="position-relative d-flex align-items-center justify-content-center px-4 py-3.5 rounded-3" onclick="document.getElementById('d1_new_file_input').click()" style="border: 1.5px dashed #cbd5e1; background: #f8fafc; cursor: pointer; transition: all 0.2s ease; border-radius: 10px !important; min-height: 58px;" onmouseover="this.style.borderColor='#2563eb'; this.style.background='#eff6ff';" onmouseout="this.style.borderColor='#cbd5e1'; this.style.background='#f8fafc';">
                             <div class="d-flex align-items-center gap-2.5">
                                 <i class="bx bx-cloud-upload fs-4 text-primary"></i>
                                 <div>
                                     <span class="fw-bold text-primary" style="font-size:0.88rem;" id="d1_file_dropzone_text">Klik untuk unggah file CSV</span>
-                                    <span class="text-muted ms-1" style="font-size:0.82rem;">· maks. 10 MB</span>
+                                    <span class="text-muted ms-1" style="font-size:0.82rem;" id="d1_file_subtext">· maks. 10 MB</span>
                                 </div>
                             </div>
+                            <button type="button" id="d1_remove_file_btn" class="btn btn-sm d-none position-absolute" onclick="event.stopPropagation(); coResetFileD1();" title="Batal upload / Hapus file" style="right: 16px; width: 28px; height: 28px; border-radius: 50%; padding: 0; display: inline-flex; align-items: center; justify-content: center; background-color: #fee2e2; color: #dc2626; border: 1px solid #fecdd3; transition: all 0.2s ease;" onmouseover="this.style.backgroundColor='#ef4444'; this.style.color='#ffffff';" onmouseout="this.style.backgroundColor='#fee2e2'; this.style.color='#dc2626';">
+                                <i class="bx bx-x fs-4"></i>
+                            </button>
                         </div>
                     </div>
 
                     {{-- Action Row Footer --}}
                     <div class="d-flex justify-content-between align-items-center pt-3">
-                        <a href="{{ Storage::url('dokumen/contoh.csv') }}" target="_blank" class="text-primary text-decoration-none fw-semibold d-inline-flex align-items-center gap-1" style="font-size:0.84rem;">
+                        <a href="{{ route('admin.cutoff-sisternas.template') }}" class="text-primary text-decoration-none fw-semibold d-inline-flex align-items-center gap-1" style="font-size:0.84rem; background: transparent !important; border: none !important; padding: 0 !important; box-shadow: none !important;">
                             <i class="bx bx-download fs-5"></i> Unduh contoh CSV
                         </a>
                         <button type="button" class="btn btn-warning text-white fw-bold px-4 py-2.5 d-inline-flex align-items-center gap-2" style="border-radius:10px; background: #f59e0b; border: 1px solid #d97706; font-size:0.88rem; box-shadow: 0 3px 10px rgba(245,158,11,0.25); transition: all 0.2s ease;" onmouseover="this.style.background='#d97706'; this.style.transform='translateY(-1px)';" onmouseout="this.style.background='#f59e0b'; this.style.transform='translateY(0)';" onclick="coCheckDiffD1()">
@@ -870,13 +926,43 @@ function updateCutoffFileName(input, targetId) {
 
     // ── Single Card Preview & Diff Checker Logic ──
     function coPreviewFileD1(input) {
-        if (!input.files || !input.files[0]) return;
-        const file = input.files[0];
         const dropzoneText = document.getElementById('d1_file_dropzone_text');
+        const dropzoneSubtext = document.getElementById('d1_file_subtext');
+        const removeBtn = document.getElementById('d1_remove_file_btn');
+
+        if (!input.files || !input.files[0]) {
+            coResetFileD1();
+            return;
+        }
+
+        const file = input.files[0];
         if (dropzoneText) {
             dropzoneText.innerHTML = '<span class="text-success me-1"><i class="bx bx-check-circle"></i> ' + file.name + '</span>';
-            dropzoneText.nextElementSibling.textContent = '· (' + (file.size/1024).toFixed(1) + ' KB) siap diperiksa';
         }
+        if (dropzoneSubtext) {
+            dropzoneSubtext.textContent = '· (' + (file.size/1024).toFixed(1) + ' KB) siap diperiksa';
+        }
+        if (removeBtn) {
+            removeBtn.classList.remove('d-none');
+            removeBtn.classList.add('d-inline-flex');
+        }
+    }
+
+    function coResetFileD1() {
+        const fileInput = document.getElementById('d1_new_file_input');
+        const dropzoneText = document.getElementById('d1_file_dropzone_text');
+        const dropzoneSubtext = document.getElementById('d1_file_subtext');
+        const removeBtn = document.getElementById('d1_remove_file_btn');
+        const diffBox = document.getElementById('d1_diff_box');
+
+        if (fileInput) fileInput.value = '';
+        if (dropzoneText) dropzoneText.innerHTML = 'Klik untuk unggah file CSV';
+        if (dropzoneSubtext) dropzoneSubtext.textContent = '· maks. 10 MB';
+        if (removeBtn) {
+            removeBtn.classList.add('d-none');
+            removeBtn.classList.remove('d-inline-flex');
+        }
+        if (diffBox) diffBox.style.display = 'none';
     }
 
     function coCheckDiffD1() {
@@ -888,7 +974,7 @@ function updateCutoffFileName(input, targetId) {
                     icon: 'info',
                     title: 'Pilih File CSV',
                     text: 'Silakan pilih file CSV terlebih dahulu sebelum mengecek perubahan.',
-                    confirmButtonColor: '#2563eb'
+                    confirmButtonColor: '#f59e0b'
                 });
             } else {
                 alert('Silakan pilih file CSV terlebih dahulu sebelum mengecek perubahan.');
@@ -900,13 +986,61 @@ function updateCutoffFileName(input, targetId) {
         const reader = new FileReader();
         reader.onload = function(e) {
             const text = e.target.result;
-            const lines = text.split('\n').map(l => l.trim()).filter(l => l.length > 0);
+            // Split lines dengan dukungan Windows (CRLF \r\n), Mac (\r), dan Linux (\n)
+            const lines = text.split(/\r\n|\n|\r/).map(l => l.replace(/[\uFEFF\u200B]/g, '').trim()).filter(l => l.length > 0);
+            
+            if (lines.length === 0) {
+                if (diffBox) diffBox.style.display = 'none';
+                Swal.fire({
+                    icon: 'error',
+                    title: 'File CSV Kosong!',
+                    text: 'File CSV yang Anda pilih tidak berisi data.',
+                    confirmButtonColor: '#ef4444'
+                });
+                return;
+            }
+
+            // ── VALIDASI TEMPLATE HEADER CSV FLEXIBLE & STRICT ──
+            const headerLine = lines[0];
+            const delimiter = (headerLine.match(/;/g) || []).length > (headerLine.match(/,/g) || []).length ? ';' : ',';
+            const headers = headerLine.split(delimiter).map(h => {
+                return h.replace(/[\uFEFF\u200B\r\n\t]/g, '')
+                        .replace(/^["']|["']$/g, '')
+                        .trim()
+                        .toLowerCase()
+                        .replace(/\s+/g, '_');
+            });
+
+            // Fleksibel mengecek keberadaan kolom NIDN, NAMA, dan KESIMPULAN BKD
+            const hasNidn = headers.some(h => h.includes('nidn') || h.includes('nuptk'));
+            const hasNama = headers.some(h => h.includes('nama'));
+            const hasBkd  = headers.some(h => h.includes('bkd') || h.includes('kesimpulan'));
+
+            if (!hasNidn || !hasNama || !hasBkd) {
+                const missing = [];
+                if (!hasNidn) missing.push('nidn / nuptk');
+                if (!hasNama) missing.push('nama_dosen');
+                if (!hasBkd)  missing.push('kesimpulan_bkd');
+
+                if (diffBox) diffBox.style.display = 'none';
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Format Template CSV Tidak Sesuai!',
+                    html: `File <strong>${file.name}</strong> <u>tidak dapat diproses/diperiksa</u> karena format kolom header tidak sesuai dengan template CSV Sisternas.<br><br>` +
+                          `Kolom wajib yang tidak ditemukan: <code class="text-danger fw-bold">${missing.join(', ')}</code>.<br><br>` +
+                          `Format header yang terbaca di file Anda:<br><code style="font-size:0.75rem;">${headers.join(', ')}</code>`,
+                    confirmButtonText: 'Tutup & Perbaiki File',
+                    confirmButtonColor: '#ef4444'
+                });
+                return;
+            }
+
             const tbody = document.getElementById('d1_diff_tbody');
             if (tbody && lines.length > 1) {
                 let html = '';
                 const dataRows = lines.slice(1, 6);
                 dataRows.forEach((row, idx) => {
-                    const cols = row.split(/[,;]/).map(c => c.replace(/^"|"$/g, '').trim());
+                    const cols = row.split(delimiter).map(c => c.replace(/^["']|["']$/g, '').trim());
                     const nidn = cols[0] || '—';
                     const nama = cols[1] || '—';
                     
@@ -933,13 +1067,22 @@ function updateCutoffFileName(input, targetId) {
 
     document.addEventListener('DOMContentLoaded', function() {
 
-        // Intercept all upload form submissions for strict filename validation
+        // Intercept all upload form submissions via AJAX with SweetAlert Loading & Auto-Reload
         document.querySelectorAll('.uploadForm').forEach(form => {
             form.addEventListener('submit', function(e) {
+                e.preventDefault();
+
                 const fileInput = form.querySelector('input[type="file"]');
                 const tableInput = form.querySelector('input[name="table"]');
                 const typeInput = form.querySelector('input[name="upload_type"]');
-                if (!fileInput || !fileInput.files[0] || !tableInput) return;
+                if (!fileInput || !fileInput.files[0] || !tableInput) {
+                    if (typeof Swal !== 'undefined') {
+                        Swal.fire('Pilih File', 'Silakan pilih file CSV terlebih dahulu.', 'info');
+                    } else {
+                        alert('Silakan pilih file CSV terlebih dahulu.');
+                    }
+                    return false;
+                }
 
                 const file = fileInput.files[0];
                 const fileName = file.name.toLowerCase();
@@ -948,49 +1091,91 @@ function updateCutoffFileName(input, targetId) {
 
                 // Validasi kata "update" jika form update
                 if (isUpdate && !fileName.includes('update')) {
-                    e.preventDefault();
                     if (typeof Swal !== 'undefined') {
                         Swal.fire({
                             icon: 'error',
                             title: 'Nama File Update Tidak Sesuai!',
                             html: `File <strong>${file.name}</strong> tidak dapat diunggah untuk menu Update.<br><br>Nama file CSV <u>wajib memuat kata "update"</u> (contoh: <code>dosen_ganjil_update.csv</code>).`,
-                            confirmButtonColor: '#0f2b5c'
+                            confirmButtonColor: '#ef4444'
                         });
-                    } else {
-                        alert(`Nama file "${file.name}" tidak sesuai untuk menu Update Data!\nHarap gunakan nama file yang memuat kata "update" (contoh: dosen_ganjil_update.csv).`);
                     }
                     return false;
                 }
 
                 if (table.includes('ganjil') && !fileName.includes('ganjil')) {
-                    e.preventDefault();
                     if (typeof Swal !== 'undefined') {
                         Swal.fire({
                             icon: 'error',
                             title: 'Nama File Tidak Sesuai!',
-                            html: `File <strong>${file.name}</strong> tidak dapat diunggah untuk periode <strong>Ganjil TL</strong>.<br><br>Nama file CSV <u>wajib memuat kata "ganjil"</u> (contoh: <code>dosen_ganjil_${new Date().getFullYear()}.csv</code>).`,
-                            confirmButtonColor: '#0f2b5c'
+                            html: `File <strong>${file.name}</strong> tidak dapat diunggah untuk periode <strong>Ganjil</strong>.<br><br>Nama file CSV <u>wajib memuat kata "ganjil"</u> (contoh: <code>dosen_ganjil_${new Date().getFullYear()}.csv</code>).`,
+                            confirmButtonColor: '#ef4444'
                         });
-                    } else {
-                        alert(`Nama file "${file.name}" tidak sesuai dengan periode Ganjil TL!\nHarap gunakan nama file yang memuat kata "ganjil" (contoh: dosen_ganjil_${new Date().getFullYear()}.csv).`);
                     }
                     return false;
                 }
 
                 if (table.includes('genap') && !fileName.includes('genap')) {
-                    e.preventDefault();
                     if (typeof Swal !== 'undefined') {
                         Swal.fire({
                             icon: 'error',
                             title: 'Nama File Tidak Sesuai!',
                             html: `File <strong>${file.name}</strong> tidak dapat diunggah untuk periode <strong>Genap</strong>.<br><br>Nama file CSV <u>wajib memuat kata "genap"</u> (contoh: <code>dosen_genap_${new Date().getFullYear()}.csv</code>).`,
-                            confirmButtonColor: '#0f2b5c'
+                            confirmButtonColor: '#ef4444'
                         });
-                    } else {
-                        alert(`Nama file "${file.name}" tidak sesuai dengan periode Genap!\nHarap gunakan nama file yang memuat kata "genap" (contoh: dosen_genap_${new Date().getFullYear()}.csv).`);
                     }
                     return false;
                 }
+
+                // Tampilkan Loading Dialog
+                Swal.fire({
+                    title: 'Sedang Menyimpan Data Cut Off...',
+                    html: `
+                        <div class="d-flex flex-column align-items-center py-2">
+                            <div class="spinner-border text-primary mb-3" role="status"></div>
+                            <span class="text-muted small">Sistem sedang memproses & menyimpan data CSV ke database...</span>
+                        </div>
+                    `,
+                    showConfirmButton: false,
+                    allowOutsideClick: false,
+                    allowEscapeKey: false
+                });
+
+                const formData = new FormData(form);
+
+                $.ajax({
+                    url: form.action,
+                    type: 'POST',
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    success: function(res) {
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Berhasil Disimpan!',
+                            text: res.message || 'Data CSV berhasil disimpan ke database.',
+                            confirmButtonColor: '#2563eb'
+                        }).then(() => {
+                            if (typeof cutOffTable !== 'undefined') {
+                                cutOffTable.ajax.reload();
+                            }
+                            if (typeof coResetFileD1 === 'function') {
+                                coResetFileD1();
+                            }
+                        });
+                    },
+                    error: function(xhr) {
+                        let msg = 'Terjadi kesalahan saat mengunggah data CSV.';
+                        if (xhr.responseJSON && xhr.responseJSON.message) {
+                            msg = xhr.responseJSON.message;
+                        }
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Gagal Menyimpan Data!',
+                            html: msg,
+                            confirmButtonColor: '#ef4444'
+                        });
+                    }
+                });
             });
         });
     });
@@ -1277,13 +1462,13 @@ function updateCutoffFileName(input, targetId) {
                                 </div>
                                 <div class="d-flex gap-2 align-items-center w-100 mt-auto">
                                     <div class="flex-fill">
-                                        <div class="btn-stat-flat-memenuhi">
+                                        <div class="btn-stat-flat-memenuhi" title="Klik untuk menyaring data Memenuhi">
                                             <i class="bx bx-check" style="font-size: 0.88rem; font-weight: bold; flex-shrink: 0;"></i>
                                             <span>{{ number_format($statGanjilTL['m'], 0, ',', '.') }} memenuhi</span>
                                         </div>
                                     </div>
                                     <div class="flex-fill">
-                                        <div class="btn-stat-flat-tm">
+                                        <div class="btn-stat-flat-tm" title="Klik untuk menyaring data Tidak Memenuhi">
                                             <i class="bx bx-x" style="font-size: 0.88rem; font-weight: bold; flex-shrink: 0;"></i>
                                             <span>{{ number_format($statGanjilTL['tm'], 0, ',', '.') }} tidak memenuhi</span>
                                         </div>
@@ -1341,13 +1526,13 @@ function updateCutoffFileName(input, targetId) {
                                 <div class="genap-stat-view w-100 mt-auto {{ !$isGenapBerjalan ? 'd-none' : '' }}" id="genapBJStats">
                                     <div class="d-flex gap-2 align-items-center w-100">
                                         <div class="flex-fill">
-                                            <div class="btn-stat-flat-memenuhi">
+                                            <div class="btn-stat-flat-memenuhi" title="Klik untuk menyaring data Memenuhi">
                                                 <i class="bx bx-check" style="font-size: 0.95rem; font-weight: bold; flex-shrink: 0;"></i>
                                                 <span>{{ number_format($statGenapBJ['m'], 0, ',', '.') }} memenuhi</span>
                                             </div>
                                         </div>
                                         <div class="flex-fill">
-                                            <div class="btn-stat-flat-tm">
+                                            <div class="btn-stat-flat-tm" title="Klik untuk menyaring data Tidak Memenuhi">
                                                 <i class="bx bx-x" style="font-size: 0.95rem; font-weight: bold; flex-shrink: 0;"></i>
                                                 <span>{{ number_format($statGenapBJ['tm'], 0, ',', '.') }} tidak memenuhi</span>
                                             </div>
@@ -1359,13 +1544,13 @@ function updateCutoffFileName(input, targetId) {
                                 <div class="genap-stat-view w-100 mt-auto {{ $isGenapBerjalan ? 'd-none' : '' }}" id="genapTLStats">
                                     <div class="d-flex gap-2 align-items-center w-100">
                                         <div class="flex-fill">
-                                            <div class="btn-stat-flat-memenuhi">
+                                            <div class="btn-stat-flat-memenuhi" title="Klik untuk menyaring data Memenuhi">
                                                 <i class="bx bx-check" style="font-size: 0.95rem; font-weight: bold; flex-shrink: 0;"></i>
                                                 <span>{{ number_format($statGenapTL['m'], 0, ',', '.') }} memenuhi</span>
                                             </div>
                                         </div>
                                         <div class="flex-fill">
-                                            <div class="btn-stat-flat-tm">
+                                            <div class="btn-stat-flat-tm" title="Klik untuk menyaring data Tidak Memenuhi">
                                                 <i class="bx bx-x" style="font-size: 0.95rem; font-weight: bold; flex-shrink: 0;"></i>
                                                 <span>{{ number_format($statGenapTL['tm'], 0, ',', '.') }} tidak memenuhi</span>
                                             </div>
@@ -1862,21 +2047,25 @@ document.addEventListener('DOMContentLoaded', function() {
         e.stopPropagation(); // Stop bubbling to card click
         
         const card = $(this).closest('.btn-select-period');
+        
+        // Terapkan perubahan UI secara instan (0ms response)
+        $('.btn-select-period').removeClass('has-stat-filter glowing-active-card active');
+        $('.btn-stat-flat-memenuhi, .btn-stat-flat-tm').removeClass('active-stat-filter');
+        
+        card.addClass('has-stat-filter glowing-active-card active');
+        $(this).addClass('active-stat-filter');
+
         const selectedVal = card.data('value');
         const periodTitle = card.find('.period-title').text().trim();
-        const bkdInfo = card.find('.period-subtitle').text().trim();
-
-        bkdStatusFilter = 'M';
-        $('#sisternasSelect').val(selectedVal); // set value
-        cutOffTable.ajax.reload();
+        const bkdInfo = card.find('.period-subtitle:not(.d-none)').text().replace(/\s+/g, ' ').trim();
 
         // Update judul & deskripsi tabel bawah
         $('#selectedPeriodTitle').html('<i class="bx bx-list-check text-primary me-2"></i>Daftar Dosen: ' + periodTitle + ' (Memenuhi)');
         $('#selectedPeriodSubtitle').text(bkdInfo);
 
-        // Reset & toggle active state
-        $('.btn-select-period').removeClass('glowing-active-card active');
-        card.addClass('glowing-active-card active');
+        bkdStatusFilter = 'M';
+        $('#sisternasSelect').val(selectedVal); // set value
+        cutOffTable.ajax.reload();
 
         // Scroll smooth ke tabel daftar dosen
         $('html, body').animate({
@@ -1889,21 +2078,25 @@ document.addEventListener('DOMContentLoaded', function() {
         e.stopPropagation(); // Stop bubbling to card click
         
         const card = $(this).closest('.btn-select-period');
+        
+        // Terapkan perubahan UI secara instan (0ms response)
+        $('.btn-select-period').removeClass('has-stat-filter glowing-active-card active');
+        $('.btn-stat-flat-memenuhi, .btn-stat-flat-tm').removeClass('active-stat-filter');
+        
+        card.addClass('has-stat-filter glowing-active-card active');
+        $(this).addClass('active-stat-filter');
+
         const selectedVal = card.data('value');
         const periodTitle = card.find('.period-title').text().trim();
-        const bkdInfo = card.find('.period-subtitle').text().trim();
-
-        bkdStatusFilter = 'TM';
-        $('#sisternasSelect').val(selectedVal); // set value
-        cutOffTable.ajax.reload();
+        const bkdInfo = card.find('.period-subtitle:not(.d-none)').text().replace(/\s+/g, ' ').trim();
 
         // Update judul & deskripsi tabel bawah
         $('#selectedPeriodTitle').html('<i class="bx bx-list-check text-primary me-2"></i>Daftar Dosen: ' + periodTitle + ' (Tidak Memenuhi)');
         $('#selectedPeriodSubtitle').text(bkdInfo);
 
-        // Reset & toggle active state
-        $('.btn-select-period').removeClass('glowing-active-card active');
-        card.addClass('glowing-active-card active');
+        bkdStatusFilter = 'TM';
+        $('#sisternasSelect').val(selectedVal); // set value
+        cutOffTable.ajax.reload();
 
         // Scroll smooth ke tabel daftar dosen
         $('html, body').animate({
@@ -1928,42 +2121,25 @@ document.addEventListener('DOMContentLoaded', function() {
         card.attr('data-value', val);
         card.data('value', val);
 
-        bkdStatusFilter = '';
-        $('#sisternasSelect').val(val).trigger('change');
-
-        const periodSub = isBJ ? 'Genap Berjalan' : 'Genap Tahun Lalu';
-        $('#selectedPeriodTitle').html('<i class="bx bx-list-check text-primary me-2"></i>Daftar Dosen: Semester Genap (' + periodSub + ')');
-
-        $('.btn-select-period').removeClass('glowing-active-card active');
-        card.addClass('glowing-active-card active');
+        // Secara default langsung aktifkan filter "Memenuhi"
+        const memenuhiBtn = card.find('.genap-stat-view:not(.d-none) .btn-stat-flat-memenuhi');
+        if (memenuhiBtn.length > 0) {
+            memenuhiBtn.trigger('click');
+        }
     };
 
-    // Klik pada Nav Pill Periode untuk memilih periode & me-load seluruh data dosen
+    // Klik pada Nav Pill Periode untuk memilih periode & langsung aktif ke filter Memenuhi secara default
     $('.btn-select-period').on('click', function(e) {
         // Prevent click if clicking inside buttons
         if ($(e.target).closest('.btn-stat-flat-memenuhi, .btn-stat-flat-tm, .custom-toggle-container').length > 0) {
             return;
         }
 
-        const selectedVal = $(this).data('value');
-        const periodTitle = $(this).find('.period-title').text().trim();
-        const bkdInfo = $(this).find('.period-subtitle').text().trim();
-
-        bkdStatusFilter = ''; // Reset filter
-        $('#sisternasSelect').val(selectedVal).trigger('change');
-
-        // Update judul & deskripsi tabel bawah
-        $('#selectedPeriodTitle').html('<i class="bx bx-list-check text-primary me-2"></i>Daftar Dosen: ' + periodTitle);
-        $('#selectedPeriodSubtitle').text(bkdInfo);
-
-        // Reset & toggle active state (Hanya 1 card yang menyala)
-        $('.btn-select-period').removeClass('glowing-active-card active');
-        $(this).addClass('glowing-active-card active');
-
-        // Scroll smooth ke tabel daftar dosen
-        $('html, body').animate({
-            scrollTop: $("#cutoffDataContainer").offset().top - 80
-        }, 300);
+        // Cari tombol Memenuhi yang terlihat pada card ini lalu trigger click
+        const memenuhiBtn = $(this).find('.genap-stat-view:not(.d-none) .btn-stat-flat-memenuhi, .btn-stat-flat-memenuhi').filter(':visible').first();
+        if (memenuhiBtn.length > 0) {
+            memenuhiBtn.trigger('click');
+        }
     });
 
 

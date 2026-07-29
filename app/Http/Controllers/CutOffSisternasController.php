@@ -6,6 +6,7 @@ use App\Helpers\ErrorAlias;
 use App\Imports\DataSisterImport;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Log;
 use Maatwebsite\Excel\Facades\Excel;
@@ -35,7 +36,10 @@ class CutOffSisternasController extends Controller
 
       if (in_array($table, $allowedTables)) {
         $tahun = $request->query('tahun', session('tahun') ?: date('Y'));
-        $query = DB::table($table)->where('tahun', $tahun);
+        $query = DB::table($table);
+        if (Schema::hasColumn($table, 'tahun')) {
+            $query->where('tahun', $tahun);
+        }
 
         $bkdStatus = $request->input('bkd_status');
         if ($bkdStatus === 'M' || $bkdStatus === 'TM') {
@@ -74,10 +78,20 @@ class CutOffSisternasController extends Controller
     $tahun = (string)($request->query('tahun', session('tahun') ?: date('Y')));
 
     $getStat = function ($tableName) use ($tahun) {
+        $qTotal = DB::table($tableName);
+        $qM = DB::table($tableName);
+        $qTm = DB::table($tableName);
+
+        if (Schema::hasColumn($tableName, 'tahun')) {
+            $qTotal->where('tahun', $tahun);
+            $qM->where('tahun', $tahun);
+            $qTm->where('tahun', $tahun);
+        }
+
         return [
-            'total' => DB::table($tableName)->where('tahun', $tahun)->count(),
-            'm' => DB::table($tableName)->where('tahun', $tahun)->where('kesimpulan_bkd', 'M')->count(),
-            'tm' => DB::table($tableName)->where('tahun', $tahun)->where('kesimpulan_bkd', 'TM')->count(),
+            'total' => $qTotal->count(),
+            'm' => $qM->where('kesimpulan_bkd', 'M')->count(),
+            'tm' => $qTm->where('kesimpulan_bkd', 'TM')->count(),
         ];
     };
 
@@ -194,6 +208,7 @@ class CutOffSisternasController extends Controller
       'table' => 'required|in:n_sister_genap_bj,o_sister_genap_tl,p_sister_ganjil_tl',
     ]);
     $file = $request->file('dokumen');
+    $fileName = strtolower($file->getClientOriginalName());
     $table = $request->input('table');
     $uploadType = $request->input('upload_type', 'new');
 
@@ -235,37 +250,42 @@ class CutOffSisternasController extends Controller
         fclose($handle);
         return response()->json(['success' => false, 'message' => 'Header CSV tidak terbaca.'], 422);
       }
-      $firstLine = preg_replace('/^\xEF\xBB\xBF/', '', $firstLine);
+      $firstLine = preg_replace('/[\xEF\xBB\xBF\uFEFF\u200B]/', '', $firstLine);
       $delimiter = (substr_count($firstLine, ';') > substr_count($firstLine, ',')) ? ';' : ',';
       $header = str_getcsv($firstLine, $delimiter);
       $header = array_map(function ($h) {
-        $h = preg_replace('/^\xEF\xBB\xBF/', '', (string)$h);
-        return trim($h, " \t\n\r\0\x0B\"'");
+        $h = preg_replace('/[\xEF\xBB\xBF\uFEFF\u200B\r\n\t]/', '', (string)$h);
+        return strtolower(trim($h, " \t\n\r\0\x0B\"'"));
       }, $header);
 
       // Normalize header to lowercase underscore form
       $normalized = array_map(function ($h) {
-        return strtolower(str_replace(' ', '_', $h));
+        return str_replace(' ', '_', $h);
       }, $header);
 
-      $expected = [
-        'nidn','nuptk','no_sertifikat','nama_dosen','kode_pt','pt','prodi',
-        'kesimpulan_bkd','kewajiban_khusus','kesimpulan','kd','kp','potongan_periodik'
-      ];
+      // Kolom wajib utama
+      $requiredCore = ['nidn', 'nama_dosen', 'kesimpulan_bkd'];
+      $missingCore = [];
+      foreach ($requiredCore as $req) {
+          $found = false;
+          foreach ($normalized as $normCol) {
+              if (str_contains($normCol, $req) || ($req === 'nidn' && str_contains($normCol, 'nuptk'))) {
+                  $found = true;
+                  break;
+              }
+          }
+          if (!$found) {
+              $missingCore[] = $req;
+          }
+      }
 
-      $missing = array_values(array_diff($expected, $normalized));
-      $extra = array_values(array_diff($normalized, $expected));
-      if (!empty($missing) || !empty($extra) || count($expected) !== count($normalized)) {
+      if (!empty($missingCore)) {
         fclose($handle);
         return response()->json([
           'success' => false,
           'headerMismatch' => true,
-          'message' => 'Kolom CSV tidak sesuai dengan tabel.',
-          'expectedColumns' => $expected,
-          'missingColumns' => $missing,
-          'extraColumns' => $extra,
-          'expectedCount' => count($expected),
-          'foundCount' => count($normalized),
+          'message' => 'Kolom CSV wajib tidak ditemukan: ' . implode(', ', $missingCore),
+          'missingColumns' => $missingCore,
         ], 422);
       }
 
@@ -282,6 +302,7 @@ class CutOffSisternasController extends Controller
       $inserted = 0;
       $chunkSize = 500;
       $tahun = $request->input('tahun', session('tahun') ?: date('Y'));
+      $updateCols = ['nuptk', 'no_sertifikat', 'nama_dosen', 'kode_pt', 'pt', 'prodi', 'kesimpulan_bkd', 'kewajiban_khusus', 'kesimpulan', 'kd', 'kp', 'potongan_periodik'];
 
       while (($row = fgetcsv($handle, 0, $delimiter)) !== false) {
         // map row to header
@@ -290,55 +311,47 @@ class CutOffSisternasController extends Controller
           $mapped[$col] = isset($row[$i]) ? trim($row[$i]) : null;
         }
 
+        $nidnVal = $mapped['nidn'] ?? $mapped['nuptk'] ?? null;
+        if (empty($nidnVal)) {
+          continue; // skip rows without both NIDN & NUPTK
+        }
+
         $data = [
-          'nidn' => $mapped['nidn'] ?? null,
+          'nidn' => $nidnVal,
           'nuptk' => $mapped['nuptk'] ?? null,
           'no_sertifikat' => $mapped['no_sertifikat'] ?? null,
-          'nama_dosen' => $mapped['nama_dosen'] ?? null,
+          'nama_dosen' => $mapped['nama_dosen'] ?? $mapped['nama'] ?? null,
           'kode_pt' => $mapped['kode_pt'] ?? null,
           'pt' => $mapped['pt'] ?? null,
           'prodi' => $mapped['prodi'] ?? null,
-          'kesimpulan_bkd' => $mapped['kesimpulan_bkd'] ?? null,
+          'kesimpulan_bkd' => $mapped['kesimpulan_bkd'] ?? $mapped['kesimpulan'] ?? $mapped['bkd'] ?? null,
           'kewajiban_khusus' => $mapped['kewajiban_khusus'] ?? null,
           'kesimpulan' => $mapped['kesimpulan'] ?? null,
           'kd' => $parseDecimal($mapped['kd'] ?? null),
           'kp' => $parseDecimal($mapped['kp'] ?? null),
           'potongan_periodik' => $parseDecimal($mapped['potongan_periodik'] ?? null),
-          'tahun' => $tahun,
+          'tahun' => (string)$tahun,
         ];
-
-        // skip rows without nidn
-        if (empty($data['nidn'])) {
-          continue;
-        }
 
         $batch[] = $data;
 
         if (count($batch) >= $chunkSize) {
-          $res = DB::table($table)->insertOrIgnore($batch);
-          if (is_int($res)) {
-            $inserted += $res;
-          } else {
-            $inserted += count($batch);
-          }
+          DB::table($table)->upsert($batch, ['nidn', 'tahun'], $updateCols);
+          $inserted += count($batch);
           $batch = [];
         }
       }
 
       if (!empty($batch)) {
-        $res = DB::table($table)->insertOrIgnore($batch);
-        if (is_int($res)) {
-          $inserted += $res;
-        } else {
-          $inserted += count($batch);
-        }
+        DB::table($table)->upsert($batch, ['nidn', 'tahun'], $updateCols);
+        $inserted += count($batch);
       }
 
       fclose($handle);
 
       return response()->json([
         'success' => true,
-        'message' => 'Data Tersimpan!',
+        'message' => 'Data Berhasil Disimpan (' . number_format($inserted, 0, ',', '.') . ' baris)!',
         'imported' => $inserted,
       ]);
 
@@ -354,9 +367,42 @@ class CutOffSisternasController extends Controller
         'success' => false,
         'message' => 'Kesalahan saat mengupload data. (Kode: ' . $alias['code'] . ')',
         'code' => $alias['code'],
-        'detail' => 'Kode: ' . $alias['code'],
       ], 500);
     }
+  }
+
+  public function template()
+  {
+    $headers = [
+      'Content-Type' => 'text/csv; charset=UTF-8',
+      'Content-Disposition' => 'attachment; filename="template_cutoff_sisternas.csv"',
+    ];
+
+    $columns = [
+      'nidn', 'nuptk', 'no_sertifikat', 'nama_dosen', 'kode_pt', 'pt', 'prodi',
+      'kesimpulan_bkd', 'kewajiban_khusus', 'kesimpulan', 'kd', 'kp', 'potongan_periodik'
+    ];
+
+    $sampleRow1 = [
+      '0012058001', '1234567890123456', '19001001001', 'Dr. Budi Santoso, S.T., M.T.', '041001', 'Universitas Contoh', 'Teknik Informatika',
+      'M', 'Memenuhi', 'Memenuhi', '0', '0', '0'
+    ];
+
+    $sampleRow2 = [
+      '0015088202', '', '19001001002', 'Ahmad Ridwan, M.Kom.', '041001', 'Universitas Contoh', 'Sistem Informasi',
+      'TM', 'Tidak Memenuhi', 'Tidak Memenuhi', '0', '0', '0'
+    ];
+
+    $callback = function () use ($columns, $sampleRow1, $sampleRow2) {
+      $file = fopen('php://output', 'w');
+      fputs($file, "\xEF\xBB\xBF"); // UTF-8 BOM
+      fputcsv($file, $columns, ';');
+      fputcsv($file, $sampleRow1, ';');
+      fputcsv($file, $sampleRow2, ';');
+      fclose($file);
+    };
+
+    return response()->stream($callback, 200, $headers);
   }
 
   public function clear($table)
