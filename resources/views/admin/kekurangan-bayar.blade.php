@@ -171,7 +171,7 @@
                 </li>
                 <li class="nav-item" role="presentation">
                     <button class="nav-link" id="tab-rekap-btn" data-bs-toggle="tab" data-bs-target="#tab-rekap" type="button" role="tab" aria-selected="false">
-                        Rekap
+                        Rekap Kurang Bayar
                     </button>
                 </li>
             </ul>
@@ -180,43 +180,52 @@
                 
                 {{-- TAB 1: DATA KURANG BAYAR --}}
                 <div class="tab-pane fade show active" id="tab-data-kurang" role="tabpanel" tabindex="0">
-                    <div class="d-flex justify-content-between align-items-center mb-3">
-                            <h5 class="mb-0 fw-bold" style="color: #0b3d91;">Data Kurang Bayar</h5>
-                            <div class="d-flex align-items-center gap-2">
-                                <form action="" method="GET" class="m-0 d-flex gap-2">
-                                    @if(request('lebih_page')) <input type="hidden" name="lebih_page" value="{{ request('lebih_page') }}"> @endif
-                                    @if(request('search_lebih')) <input type="hidden" name="search_lebih" value="{{ request('search_lebih') }}"> @endif
-                                    @if(request('selesai_page')) <input type="hidden" name="selesai_page" value="{{ request('selesai_page') }}"> @endif
-                                    @if(request('search_selesai')) <input type="hidden" name="search_selesai" value="{{ request('search_selesai') }}"> @endif
-                                    <div class="d-flex align-items-center gap-2 me-2">
-                                        <span class="text-nowrap">Show</span>
-                                        <select name="per_page" class="form-select form-select-sm" onchange="this.form.submit()" style="width: auto;">
-                                            <option value="50" {{ request('per_page', 50) == 50 ? 'selected' : '' }}>50</option>
-                                            <option value="100" {{ request('per_page') == 100 ? 'selected' : '' }}>100</option>
-                                            <option value="200" {{ request('per_page') == 200 ? 'selected' : '' }}>200</option>
-                                            <option value="500" {{ request('per_page') == 500 ? 'selected' : '' }}>500</option>
-                                            <option value="1000" {{ request('per_page') == 1000 ? 'selected' : '' }}>1000</option>
-                                        </select>
-                                        <span class="text-nowrap">entries</span>
-                                    </div>
-                                    <input type="text" name="search_kurang" class="form-control form-control-sm" placeholder="Cari NIDN / Nama..." value="{{ request('search_kurang') }}">
-                                    <button type="submit" class="btn btn-sm btn-outline-primary"><i class="bx bx-search"></i></button>
-                                </form>
-                                <form action="{{ route('admin.kekurangan-bayar.destroy-kurang') }}" method="POST" id="formDestroyKurang" class="m-0">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit" class="btn btn-sm btn-danger">
-                                        <span class="tf-icons bx bx-trash"></span>&nbsp; Hapus Kurang Bayar
-                                    </button>
-                                </form>
+                    <div class="d-flex flex-wrap justify-content-between align-items-center mb-3 gap-3">
+                        <form action="" method="GET" class="m-0 d-flex flex-wrap align-items-center gap-3">
+                            @if(request('lebih_page')) <input type="hidden" name="lebih_page" value="{{ request('lebih_page') }}"> @endif
+                            @if(request('search_lebih')) <input type="hidden" name="search_lebih" value="{{ request('search_lebih') }}"> @endif
+                            @if(request('selesai_page')) <input type="hidden" name="selesai_page" value="{{ request('selesai_page') }}"> @endif
+                            @if(request('search_selesai')) <input type="hidden" name="search_selesai" value="{{ request('search_selesai') }}"> @endif
+                            
+                            <div class="d-flex align-items-center gap-2 small">
+                                <span class="text-nowrap">Show</span>
+                                <select name="per_page" class="form-select form-select-sm" onchange="this.form.submit()" style="width: auto;">
+                                    <option value="15" {{ request('per_page', 15) == 15 ? 'selected' : '' }}>15</option>
+                                    <option value="25" {{ request('per_page') == 25 ? 'selected' : '' }}>25</option>
+                                    <option value="50" {{ request('per_page') == 50 ? 'selected' : '' }}>50</option>
+                                    <option value="100" {{ request('per_page') == 100 ? 'selected' : '' }}>100</option>
+                                    <option value="250" {{ request('per_page') == 250 ? 'selected' : '' }}>250</option>
+                                    <option value="500" {{ request('per_page') == 500 ? 'selected' : '' }}>500</option>
+                                </select>
+                                <span class="text-nowrap">entries</span>
                             </div>
+                            
+                            <div class="d-flex align-items-center">
+                                <input type="text" name="search_kurang" class="form-control form-control-sm" placeholder="Cari NIDN / Nama..." value="{{ request('search_kurang') }}" style="max-width: 250px;">
+                                <button type="submit" class="btn btn-sm btn-outline-primary ms-1"><i class="bx bx-search"></i></button>
+                            </div>
+                        </form>
+
+                        <div class="d-flex flex-wrap align-items-center gap-2">
+                            <a href="{{ route('admin.kekurangan-bayar.export', ['type' => 'kurang', 'search_kurang' => request('search_kurang')]) }}" class="btn btn-sm btn-success" title="Export Data Kurang Bayar">
+                                <i class="bx bx-download"></i> Export Excel
+                            </a>
+                            <form action="{{ route('admin.kekurangan-bayar.destroy-kurang') }}" method="POST" id="formDestroyKurang" class="m-0">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" class="btn btn-sm btn-danger">
+                                    <span class="tf-icons bx bx-trash"></span>&nbsp; Hapus Kurang Bayar
+                                </button>
+                            </form>
                         </div>
+                    </div>
                             <div class="table-responsive text-nowrap">
                                 <table class="table table-bordered">
                                     <thead>
                                         <tr>
                                             <th rowspan="3" class="text-center align-middle">No</th>
-                                            <th rowspan="3" class="text-center align-middle">NIDN / NUPTK</th>
+                                            <th rowspan="3" class="text-center align-middle">NIDN</th>
+                                            <th rowspan="3" class="text-center align-middle">NUPTK</th>
                                             <th rowspan="3" class="text-center align-middle">Nama</th>
                                             <th rowspan="3" class="text-center align-middle">Jenis</th>
                                             <th rowspan="3" class="text-center align-middle">Jabatan</th>
@@ -267,7 +276,8 @@
                                         @endphp
                                         <tr>
                                             <td>{{ $loop->iteration }}</td>
-                                            <td>{{ !empty($row->NIDN) ? $row->NIDN : ($row->NUPTK ?? '-') }}</td>
+                                            <td>{{ !empty($row->NIDN) ? $row->NIDN : '-' }}</td>
+                                            <td>{{ !empty($row->NUPTK) ? $row->NUPTK : '-' }}</td>
                                             <td>{{ $row->Nama }}</td>
                                             <td>{{ $row->Jenis }}</td>
                                             <td>{{ $row->Jabatan12 }}</td>
@@ -335,7 +345,7 @@
                                         </tr>
                                         @empty
                                         <tr>
-                                            <td colspan="66" class="text-center">Tidak ada data kurang bayar ditemukan</td>
+                                            <td colspan="67" class="text-center">Tidak ada data kurang bayar ditemukan</td>
                                         </tr>
                                         @endforelse
                                     </tbody>
@@ -351,43 +361,52 @@
 
                 {{-- TAB 2: DATA LEBIH BAYAR --}}
                 <div class="tab-pane fade" id="tab-data-lebih" role="tabpanel" tabindex="0">
-                    <div class="d-flex justify-content-between align-items-center mb-3">
-                            <h5 class="mb-0 fw-bold" style="color: #0b3d91;">Data Lebih Bayar</h5>
-                            <div class="d-flex align-items-center gap-2">
-                                <form action="" method="GET" class="m-0 d-flex gap-2">
-                                    @if(request('kurang_page')) <input type="hidden" name="kurang_page" value="{{ request('kurang_page') }}"> @endif
-                                    @if(request('search_kurang')) <input type="hidden" name="search_kurang" value="{{ request('search_kurang') }}"> @endif
-                                    @if(request('selesai_page')) <input type="hidden" name="selesai_page" value="{{ request('selesai_page') }}"> @endif
-                                    @if(request('search_selesai')) <input type="hidden" name="search_selesai" value="{{ request('search_selesai') }}"> @endif
-                                    <div class="d-flex align-items-center gap-2 me-2">
-                                        <span class="text-nowrap">Show</span>
-                                        <select name="per_page" class="form-select form-select-sm" onchange="this.form.submit()" style="width: auto;">
-                                            <option value="50" {{ request('per_page', 50) == 50 ? 'selected' : '' }}>50</option>
-                                            <option value="100" {{ request('per_page') == 100 ? 'selected' : '' }}>100</option>
-                                            <option value="200" {{ request('per_page') == 200 ? 'selected' : '' }}>200</option>
-                                            <option value="500" {{ request('per_page') == 500 ? 'selected' : '' }}>500</option>
-                                            <option value="1000" {{ request('per_page') == 1000 ? 'selected' : '' }}>1000</option>
-                                        </select>
-                                        <span class="text-nowrap">entries</span>
-                                    </div>
-                                    <input type="text" name="search_lebih" class="form-control form-control-sm" placeholder="Cari NIDN / Nama..." value="{{ request('search_lebih') }}">
-                                    <button type="submit" class="btn btn-sm btn-outline-primary"><i class="bx bx-search"></i></button>
-                                </form>
-                                <form action="{{ route('admin.kekurangan-bayar.destroy-lebih') }}" method="POST" id="formDestroyLebih" class="m-0">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit" class="btn btn-sm btn-danger">
-                                        <span class="tf-icons bx bx-trash"></span>&nbsp; Hapus Lebih Bayar
-                                    </button>
-                                </form>
+                    <div class="d-flex flex-wrap justify-content-between align-items-center mb-3 gap-3">
+                        <form action="" method="GET" class="m-0 d-flex flex-wrap align-items-center gap-3">
+                            @if(request('kurang_page')) <input type="hidden" name="kurang_page" value="{{ request('kurang_page') }}"> @endif
+                            @if(request('search_kurang')) <input type="hidden" name="search_kurang" value="{{ request('search_kurang') }}"> @endif
+                            @if(request('selesai_page')) <input type="hidden" name="selesai_page" value="{{ request('selesai_page') }}"> @endif
+                            @if(request('search_selesai')) <input type="hidden" name="search_selesai" value="{{ request('search_selesai') }}"> @endif
+                            
+                            <div class="d-flex align-items-center gap-2 small">
+                                <span class="text-nowrap">Show</span>
+                                <select name="per_page" class="form-select form-select-sm" onchange="this.form.submit()" style="width: auto;">
+                                    <option value="15" {{ request('per_page', 15) == 15 ? 'selected' : '' }}>15</option>
+                                    <option value="25" {{ request('per_page') == 25 ? 'selected' : '' }}>25</option>
+                                    <option value="50" {{ request('per_page') == 50 ? 'selected' : '' }}>50</option>
+                                    <option value="100" {{ request('per_page') == 100 ? 'selected' : '' }}>100</option>
+                                    <option value="250" {{ request('per_page') == 250 ? 'selected' : '' }}>250</option>
+                                    <option value="500" {{ request('per_page') == 500 ? 'selected' : '' }}>500</option>
+                                </select>
+                                <span class="text-nowrap">entries</span>
                             </div>
+                            
+                            <div class="d-flex align-items-center">
+                                <input type="text" name="search_lebih" class="form-control form-control-sm" placeholder="Cari NIDN / Nama..." value="{{ request('search_lebih') }}" style="max-width: 250px;">
+                                <button type="submit" class="btn btn-sm btn-outline-primary ms-1"><i class="bx bx-search"></i></button>
+                            </div>
+                        </form>
+
+                        <div class="d-flex flex-wrap align-items-center gap-2">
+                            <a href="{{ route('admin.kekurangan-bayar.export', ['type' => 'lebih', 'search_lebih' => request('search_lebih')]) }}" class="btn btn-sm btn-success" title="Export Data Lebih Bayar">
+                                <i class="bx bx-download"></i> Export Excel
+                            </a>
+                            <form action="{{ route('admin.kekurangan-bayar.destroy-lebih') }}" method="POST" id="formDestroyLebih" class="m-0">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" class="btn btn-sm btn-danger">
+                                    <span class="tf-icons bx bx-trash"></span>&nbsp; Hapus Lebih Bayar
+                                </button>
+                            </form>
                         </div>
+                    </div>
                             <div class="table-responsive text-nowrap">
                                 <table class="table table-bordered">
                                     <thead>
                                         <tr>
                                             <th rowspan="3" class="text-center align-middle">No</th>
-                                            <th rowspan="3" class="text-center align-middle">NIDN / NUPTK</th>
+                                            <th rowspan="3" class="text-center align-middle">NIDN</th>
+                                            <th rowspan="3" class="text-center align-middle">NUPTK</th>
                                             <th rowspan="3" class="text-center align-middle">Nama</th>
                                             <th rowspan="3" class="text-center align-middle">Jenis</th>
                                             <th rowspan="3" class="text-center align-middle">Jabatan</th>
@@ -438,7 +457,8 @@
                                         @endphp
                                         <tr>
                                             <td>{{ $loop->iteration }}</td>
-                                            <td>{{ !empty($row->NIDN) ? $row->NIDN : ($row->NUPTK ?? '-') }}</td>
+                                            <td>{{ !empty($row->NIDN) ? $row->NIDN : '-' }}</td>
+                                            <td>{{ !empty($row->NUPTK) ? $row->NUPTK : '-' }}</td>
                                             <td>{{ $row->Nama }}</td>
                                             <td>{{ $row->Jenis }}</td>
                                             <td>{{ $row->Jabatan12 }}</td>
@@ -510,7 +530,7 @@
                                         </tr>
                                         @empty
                                         <tr>
-                                            <td colspan="66" class="text-center">Tidak ada data lebih bayar ditemukan</td>
+                                            <td colspan="67" class="text-center">Tidak ada data lebih bayar ditemukan</td>
                                         </tr>
                                         @endforelse
                                     </tbody>
@@ -526,44 +546,51 @@
 
                 {{-- TAB 3: DATA SELESAI (LUNAS) --}}
                 <div class="tab-pane fade" id="tab-data-selesai" role="tabpanel" tabindex="0">
-                    <div class="d-flex justify-content-between align-items-center mb-3">
-                            <h5 class="mb-0 fw-bold" style="color: #0b3d91;">Data Selesai</h5>
-                            <div class="d-flex align-items-center gap-2">
-                                <form action="" method="GET" class="m-0 d-flex gap-2">
-                                    @if(request('kurang_page')) <input type="hidden" name="kurang_page" value="{{ request('kurang_page') }}"> @endif
-                                    @if(request('search_kurang')) <input type="hidden" name="search_kurang" value="{{ request('search_kurang') }}"> @endif
-                                    @if(request('lebih_page')) <input type="hidden" name="lebih_page" value="{{ request('lebih_page') }}"> @endif
-                                    @if(request('search_lebih')) <input type="hidden" name="search_lebih" value="{{ request('search_lebih') }}"> @endif
-                                    <div class="d-flex align-items-center gap-2 me-2">
-                                        <span class="text-nowrap">Show</span>
-                                        <select name="per_page" class="form-select form-select-sm" onchange="this.form.submit()" style="width: auto;">
-                                            <option value="50" {{ request('per_page', 50) == 50 ? 'selected' : '' }}>50</option>
-                                            <option value="100" {{ request('per_page') == 100 ? 'selected' : '' }}>100</option>
-                                            <option value="200" {{ request('per_page') == 200 ? 'selected' : '' }}>200</option>
-                                            <option value="500" {{ request('per_page') == 500 ? 'selected' : '' }}>500</option>
-                                            <option value="1000" {{ request('per_page') == 1000 ? 'selected' : '' }}>1000</option>
-                                        </select>
-                                        <span class="text-nowrap">entries</span>
-                                    </div>
-                                </form>
-                                <form action="{{ route('admin.kekurangan-bayar.sync-all-lunas') }}" method="POST" class="m-0 me-2 d-inline-block">
-                                    @csrf
-                                    <button type="submit" class="btn btn-sm btn-success" title="Sinkronkan ulang nilai selisih kotor/pajak/bersih ke tabel transaksi untuk semua dosen di tab ini">
-                                        <i class="bx bx-sync"></i> Sinkronisasi ke Transaksi
-                                    </button>
-                                </form>
-                                <div class="d-flex align-items-center gap-2 me-2">
-                                    <input type="text" name="search_selesai" class="form-control form-control-sm" placeholder="Cari NIDN / Nama..." value="{{ request('search_selesai') }}">
-                                    <button type="submit" class="btn btn-sm btn-outline-primary"><i class="bx bx-search"></i></button>
-                                </div>
+                    <div class="d-flex flex-wrap justify-content-between align-items-center mb-3 gap-3">
+                        <form action="" method="GET" class="m-0 d-flex flex-wrap align-items-center gap-3">
+                            @if(request('kurang_page')) <input type="hidden" name="kurang_page" value="{{ request('kurang_page') }}"> @endif
+                            @if(request('search_kurang')) <input type="hidden" name="search_kurang" value="{{ request('search_kurang') }}"> @endif
+                            @if(request('lebih_page')) <input type="hidden" name="lebih_page" value="{{ request('lebih_page') }}"> @endif
+                            @if(request('search_lebih')) <input type="hidden" name="search_lebih" value="{{ request('search_lebih') }}"> @endif
+                            
+                            <div class="d-flex align-items-center gap-2 small">
+                                <span class="text-nowrap">Show</span>
+                                <select name="per_page" class="form-select form-select-sm" onchange="this.form.submit()" style="width: auto;">
+                                    <option value="15" {{ request('per_page', 15) == 15 ? 'selected' : '' }}>15</option>
+                                    <option value="25" {{ request('per_page') == 25 ? 'selected' : '' }}>25</option>
+                                    <option value="50" {{ request('per_page') == 50 ? 'selected' : '' }}>50</option>
+                                    <option value="100" {{ request('per_page') == 100 ? 'selected' : '' }}>100</option>
+                                    <option value="250" {{ request('per_page') == 250 ? 'selected' : '' }}>250</option>
+                                    <option value="500" {{ request('per_page') == 500 ? 'selected' : '' }}>500</option>
+                                </select>
+                                <span class="text-nowrap">entries</span>
                             </div>
+
+                            <div class="d-flex align-items-center">
+                                <input type="text" name="search_selesai" class="form-control form-control-sm" placeholder="Cari NIDN / Nama..." value="{{ request('search_selesai') }}" style="max-width: 250px;">
+                                <button type="submit" class="btn btn-sm btn-outline-primary ms-1"><i class="bx bx-search"></i></button>
+                            </div>
+                        </form>
+
+                        <div class="d-flex flex-wrap align-items-center gap-2">
+                            <a href="{{ route('admin.kekurangan-bayar.export', ['type' => 'selesai', 'search_selesai' => request('search_selesai')]) }}" class="btn btn-sm btn-success" title="Export Data Selesai">
+                                <i class="bx bx-download"></i> Export Excel
+                            </a>
+                            <form action="{{ route('admin.kekurangan-bayar.sync-all-lunas') }}" method="POST" class="m-0 d-inline-block">
+                                @csrf
+                                <button type="submit" class="btn btn-sm btn-success" title="Sinkronkan ulang nilai selisih kotor/pajak/bersih ke tabel transaksi untuk semua dosen di tab ini">
+                                    <i class="bx bx-sync"></i> Sinkronisasi ke Transaksi
+                                </button>
+                            </form>
                         </div>
+                    </div>
                             <div class="table-responsive text-nowrap">
                                 <table class="table table-bordered">
                                     <thead>
                                         <tr>
                                             <th rowspan="3" class="text-center align-middle">No</th>
-                                            <th rowspan="3" class="text-center align-middle">NIDN / NUPTK</th>
+                                            <th rowspan="3" class="text-center align-middle">NIDN</th>
+                                            <th rowspan="3" class="text-center align-middle">NUPTK</th>
                                             <th rowspan="3" class="text-center align-middle">Nama</th>
                                             <th rowspan="3" class="text-center align-middle">Status Selisih</th>
                                             <th rowspan="3" class="text-center align-middle">Jenis</th>
@@ -615,7 +642,8 @@
                                         @endphp
                                         <tr>
                                             <td>{{ $loop->iteration }}</td>
-                                            <td>{{ !empty($row->NIDN) ? $row->NIDN : ($row->NUPTK ?? '-') }}</td>
+                                            <td>{{ !empty($row->NIDN) ? $row->NIDN : '-' }}</td>
+                                            <td>{{ !empty($row->NUPTK) ? $row->NUPTK : '-' }}</td>
                                             <td>{{ $row->Nama }}</td>
                                             @php
                                                 $deltaBersih = (float)($row->delta_bersih ?? 0);
@@ -704,7 +732,7 @@
                                         </tr>
                                         @empty
                                         <tr>
-                                            <td colspan="67" class="text-center">Tidak ada data selesai (lunas) ditemukan</td>
+                                            <td colspan="68" class="text-center">Tidak ada data selesai (lunas) ditemukan</td>
                                         </tr>
                                         @endforelse
                                     </tbody>
@@ -721,7 +749,7 @@
                 {{-- TAB 3: REKAP GABUNGAN --}}
                 <div class="tab-pane fade" id="tab-rekap" role="tabpanel" tabindex="0">
                     <div class="d-flex justify-content-between align-items-center mb-3">
-                            <h5 class="mb-0 fw-bold" style="color: #0b3d91;">Rekap Kurang & Lebih Bayar</h5>
+                            <h5 class="mb-0 fw-bold" style="color: #0b3d91;">Rekap Kurang Bayar</h5>
                             <form action="{{ route('admin.kekurangan-bayar.destroy-semua-rekap') }}" method="POST" class="d-inline form-hapus-semua-rekap">
                                 @csrf
                                 @method('DELETE')
@@ -804,6 +832,8 @@
                                                         @else
                                                             <button type="button"
                                                                 class="sptjm-icon-btn sptjm-btn-edit btn-aksi-sp2d"
+                                                                data-bs-toggle="modal"
+                                                                data-bs-target="#modalSp2d"
                                                                 data-rekap-id="{{ $rekap->id }}"
                                                                 data-rekap-periode="{{ $rekap->periode }}"
                                                                 title="Input No SP2D">
@@ -824,7 +854,7 @@
                                         </tr>
                                         @empty
                                         <tr>
-                                            <td colspan="9" class="text-center">Belum ada data rekap yang diproses.</td>
+                                            <td colspan="10" class="text-center">Belum ada data rekap yang diproses.</td>
                                         </tr>
                                         @endforelse
                                     </tbody>
@@ -1257,8 +1287,6 @@
                 document.getElementById('sp2dWarningText').innerHTML = `Data ${labelText} hanya bisa diinput <b>satu kali</b>. Pastikan nomor dan tanggal sudah benar.`;
                 document.getElementById('btnSubmitSp2d').innerHTML = `<span class="tf-icons bx bx-send"></span>&nbsp; Proses ${labelText}`;
                 document.getElementById('btnSubmitSp2d').dataset.labelText = labelText;
-
-                if (sp2dModal) sp2dModal.show();
             });
         });
 
@@ -1315,6 +1343,19 @@
                 // Disable button
                 btnSubmitSp2d.disabled = true;
                 btnSubmitSp2d.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span> Memproses...';
+
+                if (alertApi && typeof alertApi.loading === 'function') {
+                    alertApi.loading('Sedang Memproses...', 'Mohon tunggu sebentar.');
+                } else if (window.Swal) {
+                    window.Swal.fire({
+                        title: 'Sedang Memproses...',
+                        html: 'Mohon tunggu sebentar.',
+                        allowOutsideClick: false,
+                        didOpen: () => {
+                            window.Swal.showLoading();
+                        }
+                    });
+                }
 
                 try {
                     const token = document.querySelector('meta[name="csrf-token"]')?.content
@@ -1558,6 +1599,19 @@
                 btnSubmitSp2dIndividu.disabled = true;
                 btnSubmitSp2dIndividu.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span> Memproses...';
 
+                if (alertApi && typeof alertApi.loading === 'function') {
+                    alertApi.loading('Sedang Memproses...', 'Mohon tunggu sebentar.');
+                } else if (window.Swal) {
+                    window.Swal.fire({
+                        title: 'Sedang Memproses...',
+                        html: 'Mohon tunggu sebentar.',
+                        allowOutsideClick: false,
+                        didOpen: () => {
+                            window.Swal.showLoading();
+                        }
+                    });
+                }
+
                 try {
                     const token = document.querySelector('meta[name="csrf-token"]')?.content
                                || document.querySelector('input[name="_token"]')?.value;
@@ -1681,6 +1735,19 @@
 
                 btnSubmitNtpnIndividu.disabled = true;
                 btnSubmitNtpnIndividu.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span> Memproses...';
+
+                if (alertApi && typeof alertApi.loading === 'function') {
+                    alertApi.loading('Sedang Memproses...', 'Mohon tunggu sebentar.');
+                } else if (window.Swal) {
+                    window.Swal.fire({
+                        title: 'Sedang Memproses...',
+                        html: 'Mohon tunggu sebentar.',
+                        allowOutsideClick: false,
+                        didOpen: () => {
+                            window.Swal.showLoading();
+                        }
+                    });
+                }
 
                 try {
                     const token = document.querySelector('meta[name="csrf-token"]')?.content

@@ -14,13 +14,12 @@ class KoreksiController extends Controller
 {
     public function index(Request $request)
     {
-        $years = ['2026', '2025', '2024', '2023'];
+        $tahun = session('tahun');
 
         $data = [
             'nidn' => $request->old('nidn', $request->query('nidn')),
             'bulan' => (int)$request->old('bulan', $request->query('bulan', 1)),
-            'tahun' => $request->old('tahun', $request->query('tahun', session('tahun'))),
-            'years' => $years,
+            'tahun' => $tahun,
             'result' => null,
             // Isi dropdown dari h_perubahan.status_perubahan
             'statusPerubahan' => Perubahan::query()->orderBy('status_perubahan')->pluck('status_perubahan')->all(),
@@ -29,7 +28,6 @@ class KoreksiController extends Controller
         // If nidn and bulan are provided via query (after redirect or link), perform lookup
         $nidn = $data['nidn'];
         $bulan = $data['bulan'];
-        $tahun = $data['tahun'];
         if ($nidn && $bulan) {
             $lookup = $this->lookupData($nidn, (int)$bulan, $tahun);
             if ($lookup['ok']) {
@@ -46,12 +44,10 @@ class KoreksiController extends Controller
     {
         $nidn = trim((string)$request->input('nidn', $request->query('nidn')));
         $bulan = (int)$request->input('bulan', $request->query('bulan', 1));
-        $tahun = $request->input('tahun', $request->query('tahun')) ?: session('tahun');
-
-        $years = ['2026', '2025', '2024', '2023'];
+        $tahun = session('tahun');
 
         if (!$nidn) {
-            return redirect()->route('admin.koreksi', ['tahun' => $tahun, 'bulan' => $bulan]);
+            return redirect()->route('admin.koreksi', ['bulan' => $bulan]);
         }
 
         $lookup = $this->lookupData($nidn, $bulan, $tahun);
@@ -60,7 +56,6 @@ class KoreksiController extends Controller
             'nidn' => $nidn,
             'bulan' => $bulan,
             'tahun' => $tahun,
-            'years' => $years,
             'result' => $lookup['ok'] ? $lookup['data'] : null,
             // Isi dropdown dari h_perubahan.status_perubahan
             'statusPerubahan' => Perubahan::query()->orderBy('status_perubahan')->pluck('status_perubahan')->all(),

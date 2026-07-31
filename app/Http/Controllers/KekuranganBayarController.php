@@ -10,6 +10,8 @@ use Illuminate\Support\Facades\Storage;
 
 class KekuranganBayarController extends Controller
 {
+  use KekuranganBayarExportTrait;
+
   private function parseMoney($value): float
   {
     if ($value === null) return 0.0;
@@ -506,7 +508,8 @@ class KekuranganBayarController extends Controller
           return [$fullyPaidNidns, $paidKotorByNidnMonth];
       }
 
-      $k2_sub = clone $this->getPivotSubquery($versi);
+      $filters = $targetNidn ? [$targetNidn] : $nidnsWithPayments;
+      $k2_sub = clone $this->getPivotSubquery($versi, $filters);
       $rowsQuery = DB::table('s_transaksi_2 as k')
           ->joinSub($k2_sub, 'k2', function ($join) {
               $join->on(DB::raw("COALESCE(NULLIF(k.NIDN, ''), k.NUPTK)"), '=', 'k2.nidn');
@@ -799,7 +802,7 @@ class KekuranganBayarController extends Controller
     return $grandTotal;
   }
 
-  private function getPivotSubquery($versi)
+  private function getPivotSubquery($versi, $nidn_filters = [])
   {
       $selectRaw = "nidn, tahun, SUM(CASE WHEN jenis_pembayaran NOT LIKE 'PEMBAYARAN_%' THEN selisih ELSE 0 END) as bersih";
       for($i=1; $i<=12; $i++) {
@@ -811,10 +814,12 @@ class KekuranganBayarController extends Controller
       $selectRaw .= ", SUM(CASE WHEN jenis_pembayaran LIKE '%TKGB%' AND jenis_pembayaran NOT LIKE 'PEMBAYARAN%' THEN selisih * -1 ELSE 0 END) as jml_tkgb";
       $selectRaw .= ", SUM(CASE WHEN jenis_pembayaran LIKE 'PEMBAYARAN_%' THEN selisih ELSE 0 END) as total_pembayaran";
 
-      return DB::table('t_kekurangan')
-          ->where('tahun', $versi)
-          ->selectRaw($selectRaw)
-          ->groupBy('nidn', 'tahun');
+      $query = DB::table('t_kekurangan')->where('tahun', $versi);
+      if (!empty($nidn_filters)) {
+          $query->whereIn('nidn', $nidn_filters);
+      }
+      
+      return $query->selectRaw($selectRaw)->groupBy('nidn', 'tahun');
   }
 
   private function getNidnsInRekap($rekap, $versi, $isKurang)
@@ -926,6 +931,57 @@ class KekuranganBayarController extends Controller
         }
     }
 
+    $applySearchFilter = function ($queryBase, $searchTerm) {
+        $term = trim((string)$searchTerm);
+        if ($term === '') return;
+
+        $lowerTerm = strtolower($term);
+
+        $queryBase->where(function($q) use ($term, $lowerTerm) {
+            $q->where('k.NIDN', 'like', '%' . $term . '%')
+              ->orWhere('k.NUPTK', 'like', '%' . $term . '%')
+              ->orWhere('k.Nama', 'like', '%' . $term . '%')
+              ->orWhere('k.Jenis', 'like', '%' . $term . '%')
+              ->orWhere('k.Jabatan12', 'like', '%' . $term . '%')
+              ->orWhere('k.Bank', 'like', '%' . $term . '%');
+
+            if ($lowerTerm === 'aktif') {
+                $q->orWhere('k.Aktif', '=', '1');
+            } elseif ($lowerTerm === 'tidak aktif' || $lowerTerm === 'tidak') {
+                $q->orWhere(function($sub) {
+                    $sub->where('k.Aktif', '!=', '1')->orWhereNull('k.Aktif');
+                });
+            } elseif (strpos('aktif', $lowerTerm) !== false) {
+                $q->orWhere('k.Aktif', '=', '1');
+            }
+
+            for ($i = 1; $i <= 11; $i++) {
+                $q->orWhere('k.Jabatan' . $i, 'like', '%' . $term . '%');
+            }
+        });
+    };
+
+    // Collect NIDNs from rekaps that have been processed (SP2D filled)
+    $processedRekapNidnsKurang = [];
+    $processedRekapNidnsLebih = [];
+    $allRekapsForSp2d = DB::table('u_rekap_kekurangan')
+        ->whereRaw('RIGHT(periode, 4) = ?', [$versi])
+        ->whereNotNull('sp2d')
+        ->where('sp2d', '!=', '')
+        ->get();
+    foreach ($allRekapsForSp2d as $rek) {
+        $periode = strtolower(trim($rek->periode ?? ''));
+        $isKurangRek = (strpos($periode, 'kurang') !== false);
+        $nids = $this->getNidnsInRekap($rek, $versi, $isKurangRek);
+        if ($isKurangRek) {
+            $processedRekapNidnsKurang = array_merge($processedRekapNidnsKurang, $nids);
+        } else {
+            $processedRekapNidnsLebih = array_merge($processedRekapNidnsLebih, $nids);
+        }
+    }
+    $processedRekapNidnsKurang = array_unique($processedRekapNidnsKurang);
+    $processedRekapNidnsLebih = array_unique($processedRekapNidnsLebih);
+
     $searchKurang = request('search_kurang');
     $queryKurangBase = $buildBaseQuery($k2_sub_raw);
     
@@ -944,12 +1000,16 @@ class KekuranganBayarController extends Controller
               ->whereNotIn('k.NUPTK', $fullyPaidNidns);
         });
     }
-    if ($searchKurang) {
-        $queryKurangBase->where(function($q) use ($searchKurang) {
-            $q->where('k.NIDN', 'like', '%' . $searchKurang . '%')
-              ->orWhere('k.NUPTK', 'like', '%' . $searchKurang . '%')
-              ->orWhere('k.Nama', 'like', '%' . $searchKurang . '%');
+    
+    if (!empty($processedRekapNidnsKurang)) {
+        $queryKurangBase->where(function ($q) use ($processedRekapNidnsKurang) {
+            $q->whereNotIn('k.NIDN', $processedRekapNidnsKurang)
+              ->whereNotIn('k.NUPTK', $processedRekapNidnsKurang);
         });
+    }
+
+    if ($searchKurang) {
+        $applySearchFilter($queryKurangBase, $searchKurang);
     }
     $perPage = request()->input('per_page', 50);
     $queryKurang = $queryKurangBase->paginate($perPage, ['*'], 'kurang_page')->appends(request()->query());
@@ -972,30 +1032,34 @@ class KekuranganBayarController extends Controller
               ->whereNotIn('k.NUPTK', $fullyPaidNidns);
         });
     }
-    if ($searchLebih) {
-        $queryLebihBase->where(function($q) use ($searchLebih) {
-            $q->where('k.NIDN', 'like', '%' . $searchLebih . '%')
-              ->orWhere('k.NUPTK', 'like', '%' . $searchLebih . '%')
-              ->orWhere('k.Nama', 'like', '%' . $searchLebih . '%');
+
+    if (!empty($processedRekapNidnsLebih)) {
+        $queryLebihBase->where(function ($q) use ($processedRekapNidnsLebih) {
+            $q->whereNotIn('k.NIDN', $processedRekapNidnsLebih)
+              ->whereNotIn('k.NUPTK', $processedRekapNidnsLebih);
         });
+    }
+
+    if ($searchLebih) {
+        $applySearchFilter($queryLebihBase, $searchLebih);
     }
     $queryLebih = $queryLebihBase->paginate($perPage, ['*'], 'lebih_page')->appends(request()->query());
 
     $searchSelesai = request('search_selesai');
     $k2_sub_selesai = clone $k2_sub_raw;
-    if (!empty($fullyPaidNidns)) {
-        $k2_sub_selesai->whereIn('nidn', $fullyPaidNidns); // push filter inside pivot too!
+    
+    // Combine fully paid NIDNs with those that have been processed via Rekap SP2D
+    $selesaiNidns = array_unique(array_merge($fullyPaidNidns, $processedRekapNidnsKurang, $processedRekapNidnsLebih));
+    
+    if (!empty($selesaiNidns)) {
+        $k2_sub_selesai->whereIn('nidn', $selesaiNidns); // push filter inside pivot too!
     }
     $querySelesaiBase = $buildBaseQuery($k2_sub_selesai);
-    if (empty($fullyPaidNidns)) {
+    if (empty($selesaiNidns)) {
         $querySelesaiBase->whereRaw('1 = 0'); // Force empty if no fully paid
     }
     if ($searchSelesai) {
-        $querySelesaiBase->where(function($q) use ($searchSelesai) {
-            $q->where('k.NIDN', 'like', '%' . $searchSelesai . '%')
-              ->orWhere('k.NUPTK', 'like', '%' . $searchSelesai . '%')
-              ->orWhere('k.Nama', 'like', '%' . $searchSelesai . '%');
-        });
+        $applySearchFilter($querySelesaiBase, $searchSelesai);
     }
     $querySelesai = $querySelesaiBase->paginate($perPage, ['*'], 'selesai_page')->appends(request()->query());
 
@@ -1201,26 +1265,7 @@ class KekuranganBayarController extends Controller
       } catch (\Throwable $e) { /* silent */ }
     }
 
-    // Collect NIDNs from rekaps that have been processed (SP2D filled)
-    $processedRekapNidnsKurang = [];
-    $processedRekapNidnsLebih = [];
-    $allRekapsForSp2d = DB::table('u_rekap_kekurangan')
-        ->whereRaw('RIGHT(periode, 4) = ?', [$versi])
-        ->whereNotNull('sp2d')
-        ->where('sp2d', '!=', '')
-        ->get();
-    foreach ($allRekapsForSp2d as $rek) {
-        $periode = strtolower(trim($rek->periode ?? ''));
-        $isKurangRek = (strpos($periode, 'kurang') !== false);
-        $nids = $this->getNidnsInRekap($rek, $versi, $isKurangRek);
-        if ($isKurangRek) {
-            $processedRekapNidnsKurang = array_merge($processedRekapNidnsKurang, $nids);
-        } else {
-            $processedRekapNidnsLebih = array_merge($processedRekapNidnsLebih, $nids);
-        }
-    }
-    $processedRekapNidnsKurang = array_unique($processedRekapNidnsKurang);
-    $processedRekapNidnsLebih = array_unique($processedRekapNidnsLebih);
+    // Note: NIDNs from processed rekaps (SP2D filled) are already collected above and filtered out.
 
     return view('admin.kekurangan-bayar', [
       'versi' => $versi,
@@ -2005,6 +2050,535 @@ class KekuranganBayarController extends Controller
     }
   }
 
+  private function ensureRekapSchema()
+  {
+    $table = \Illuminate\Support\Facades\Schema::hasTable('u_rekap_kekurangan') ? 'u_rekap_kekurangan' : 'rekap_kekurangan';
+    $colsToAdd = [];
+    if (!\Illuminate\Support\Facades\Schema::hasColumn($table, 'status')) $colsToAdd[] = 'status';
+    if (!\Illuminate\Support\Facades\Schema::hasColumn($table, 'processed_count')) $colsToAdd[] = 'processed_count';
+    if (!\Illuminate\Support\Facades\Schema::hasColumn($table, 'total_count')) $colsToAdd[] = 'total_count';
+    if (!empty($colsToAdd)) {
+        try {
+            \Illuminate\Support\Facades\Schema::table($table, function (\Illuminate\Database\Schema\Blueprint $t) use ($colsToAdd) {
+                if (in_array('status', $colsToAdd)) $t->string('status', 20)->default('pending');
+                if (in_array('processed_count', $colsToAdd)) $t->integer('processed_count')->default(0);
+                if (in_array('total_count', $colsToAdd)) $t->integer('total_count')->default(0);
+            });
+        } catch (\Throwable $e) {}
+    }
+  }
+
+  public function prosesAksiSp2dInit(Request $request)
+  {
+    $this->ensureRekapSchema();
+
+    $request->validate([
+      'rekap_id' => 'nullable|integer',
+      'nidn' => 'nullable|string',
+      'jenis_sp2d' => 'nullable|string|in:kurang,lebih',
+      'no_sp2d' => 'required|string|max:100',
+      'tanggal_sp2d' => 'required|date',
+      'uraian_pembayaran' => 'nullable|string|max:255',
+      'bulan' => 'nullable|integer|min:1|max:12',
+      'nominal_bayar' => 'nullable|numeric|min:0',
+      'trx_type' => 'nullable|string',
+    ]);
+
+    $rekapId = $request->input('rekap_id') ? (int) $request->input('rekap_id') : null;
+    $nidnInput = trim((string) $request->input('nidn'));
+    $jenisSp2d = $request->input('jenis_sp2d');
+    $noSp2d = trim((string) $request->input('no_sp2d'));
+    $tanggalSp2d = $request->input('tanggal_sp2d');
+    $inputUraian = trim((string) $request->input('uraian_pembayaran'));
+    $inputBulan = $request->input('bulan');
+    $inputNominal = $request->input('nominal_bayar');
+    $trxType = trim((string) $request->input('trx_type'));
+    $versi = session('tahun');
+
+    if (!$versi) {
+      return response()->json(['success' => false, 'message' => 'Tahun versi belum dipilih pada sesi.'], 422);
+    }
+
+    $isKurang = false;
+    $isLebih = false;
+    $rekap = null;
+
+    if ($rekapId) {
+        $rekap = DB::table('u_rekap_kekurangan')->where('id', $rekapId)->first();
+        if (!$rekap) {
+          return response()->json(['success' => false, 'message' => 'Data rekap tidak ditemukan.'], 404);
+        }
+
+        $periode = strtolower(trim($rekap->periode ?? ''));
+        $isKurang = (strpos($periode, 'kurang') !== false);
+        $isLebih  = (strpos($periode, 'lebih') !== false);
+
+        if (!$isKurang && !$isLebih) {
+          return response()->json(['success' => false, 'message' => 'Tidak dapat menentukan jenis rekap (kurang/lebih).'], 422);
+        }
+    } else {
+        if (!$nidnInput || !$jenisSp2d) {
+            return response()->json(['success' => false, 'message' => 'NIDN dan jenis harus diisi jika bukan dari rekap.'], 422);
+        }
+        if ($jenisSp2d === 'kurang') $isKurang = true;
+        if ($jenisSp2d === 'lebih') $isLebih = true;
+    }
+
+    // OPTIMIZED PATH: Fetch base NIDNs directly from t_kekurangan without GROUP BY
+    $jenisPrefix = $isKurang ? 'K_%' : 'L_%';
+    $baseNidns = DB::table('t_kekurangan')
+        ->where('tahun', $versi)
+        ->where('jenis_pembayaran', 'like', $jenisPrefix)
+        ->pluck('nidn')
+        ->filter()
+        ->unique()
+        ->toArray();
+
+    if (empty($baseNidns)) {
+        return response()->json(['success' => false, 'message' => 'Tidak ada data dosen yang perlu diproses.'], 422);
+    }
+
+    $dosenQuery = DB::table('s_transaksi_2 as k')
+        ->where('k.Tahun_Versi', $versi)
+        ->where(function($q) use ($baseNidns) {
+            $q->whereIn('k.NIDN', $baseNidns)
+              ->orWhereIn('k.NUPTK', $baseNidns);
+        });
+
+    if ($rekapId && $rekap) {
+        $cTipe = trim($rekap->tipe ?? 'Semua');
+        $cBank = trim($rekap->bank ?? 'Semua');
+        $cJenis = trim($rekap->jenis ?? 'Semua');
+
+        // Note: Tipe filtering relies on t_kekurangan types
+        if ($cTipe !== 'Semua') {
+            $tipePrefix = ($cTipe === 'TPD') ? ($isKurang ? 'K_TPD%' : 'L_TPD%') : ($isKurang ? 'K_TKGB%' : 'L_TKGB%');
+            $tipeNidns = DB::table('t_kekurangan')
+                ->where('tahun', $versi)
+                ->where('jenis_pembayaran', 'like', $tipePrefix)
+                ->pluck('nidn')->toArray();
+            $dosenQuery->where(function($q) use ($tipeNidns) {
+                $q->whereIn('k.NIDN', $tipeNidns)->orWhereIn('k.NUPTK', $tipeNidns);
+            });
+        }
+        if ($cJenis !== 'Semua') {
+            if (strtoupper($cJenis) === 'PNS') {
+                $dosenQuery->where(function ($q) {
+                    $q->whereRaw("UPPER(k.Jenis) LIKE '%PNS%'")
+                      ->whereRaw("UPPER(k.Jenis) NOT LIKE '%NON%'");
+                });
+            } elseif (strtoupper($cJenis) === 'NON PNS') {
+                $dosenQuery->whereRaw("UPPER(k.Jenis) LIKE '%NON%'");
+            } else {
+                $dosenQuery->whereRaw("TRIM(k.Jenis) = ?", [trim($cJenis)]);
+            }
+        }
+        if ($cBank !== 'Semua') { 
+            $dosenQuery->whereRaw('TRIM(k.Bank) = ?', [trim($cBank)]); 
+        }
+        if (!empty($rekap->exclude_nidns)) {
+            $excludeNidns = explode(',', $rekap->exclude_nidns);
+            $excludeNidns = array_map('trim', $excludeNidns);
+            $dosenQuery->whereNotIn('k.NIDN', $excludeNidns);
+        }
+    }
+
+    if (!$rekapId && $nidnInput) {
+        $dosenQuery->where(function($q) use ($nidnInput) {
+            $q->where('k.NIDN', $nidnInput)->orWhere('k.NUPTK', $nidnInput);
+        });
+    }
+
+    $allNidns = $dosenQuery->pluck('k.NIDN')->unique()->filter()->values()->toArray();
+
+    list($fullyPaidNidns, ) = $this->evaluateFullyPaidNidns($versi);
+    if (!empty($fullyPaidNidns)) {
+        $allNidns = array_values(array_diff($allNidns, $fullyPaidNidns));
+    }
+
+    if (empty($allNidns)) {
+        return response()->json(['success' => false, 'message' => 'Tidak ada data dosen yang perlu diproses.'], 422);
+    }
+
+    $chunkSize = 50;
+    $chunks = array_chunk($allNidns, $chunkSize);
+    $totalCount = count($allNidns);
+
+    if ($rekapId) {
+        DB::table('u_rekap_kekurangan')->where('id', $rekapId)->update([
+            'status' => 'processing',
+            'total_count' => $totalCount,
+            'processed_count' => 0,
+            'updated_at' => now(),
+        ]);
+    }
+
+    return response()->json([
+        'success' => true,
+        'total' => $totalCount,
+        'chunkSize' => $chunkSize,
+        'totalChunks' => count($chunks),
+        'chunks' => $chunks,
+        'rekap_id' => $rekapId,
+        'no_sp2d' => $noSp2d,
+        'tanggal_sp2d' => $tanggalSp2d,
+        'uraian_pembayaran' => $inputUraian,
+        'nidn' => $nidnInput,
+        'jenis_sp2d' => $jenisSp2d,
+        'trx_type' => $trxType,
+        'bulan' => $inputBulan,
+        'nominal_bayar' => $inputNominal,
+        'periode_label' => $rekap ? ($rekap->periode ?? '') : 'Individu',
+    ]);
+  }
+
+  public function prosesAksiSp2dBatch(Request $request)
+  {
+    $request->validate([
+      'rekap_id' => 'nullable|integer',
+      'nidns' => 'required|array',
+      'chunk_index' => 'required|integer',
+      'total_chunks' => 'required|integer',
+      'no_sp2d' => 'required|string|max:100',
+      'tanggal_sp2d' => 'required|date',
+      'uraian_pembayaran' => 'nullable|string|max:255',
+      'jenis_sp2d' => 'nullable|string',
+      'trx_type' => 'nullable|string',
+      'bulan' => 'nullable|integer',
+      'nominal_bayar' => 'nullable|numeric',
+    ]);
+
+    $rekapId = $request->input('rekap_id') ? (int) $request->input('rekap_id') : null;
+    $nidnsChunk = $request->input('nidns', []);
+    $chunkIndex = (int) $request->input('chunk_index');
+    $totalChunks = (int) $request->input('total_chunks');
+    $noSp2d = trim((string) $request->input('no_sp2d'));
+    $tanggalSp2d = $request->input('tanggal_sp2d');
+    $inputUraian = trim((string) $request->input('uraian_pembayaran'));
+    $jenisSp2d = $request->input('jenis_sp2d');
+    $inputBulan = $request->input('bulan');
+    $inputNominal = $request->input('nominal_bayar');
+    $trxType = trim((string) $request->input('trx_type'));
+    $versi = session('tahun');
+
+    if (!$versi) {
+      return response()->json(['success' => false, 'message' => 'Sesi tahun telah berakhir.'], 422);
+    }
+
+    $isKurang = false;
+    $rekap = null;
+    if ($rekapId) {
+        $rekap = DB::table('u_rekap_kekurangan')->where('id', $rekapId)->first();
+        if ($rekap) {
+            $periode = strtolower(trim($rekap->periode ?? ''));
+            $isKurang = (strpos($periode, 'kurang') !== false);
+        }
+    } else {
+        if ($jenisSp2d === 'kurang') $isKurang = true;
+    }
+
+    try {
+      $tarifMap = $this->loadTarifPajakMap();
+    } catch (\Throwable $e) {
+      return response()->json(['success' => false, 'message' => 'Gagal memuat tarif pajak.'], 500);
+    }
+
+    DB::beginTransaction();
+    try {
+      $k2_sub = clone $this->getPivotSubquery($versi);
+      $dosenRows = DB::table('s_transaksi_2 as k')
+        ->joinSub($k2_sub, 'ku', function ($join) {
+          $join->on(DB::raw("COALESCE(NULLIF(k.NIDN, ''), k.NUPTK)"), '=', 'ku.nidn');
+        })
+        ->where('k.Tahun_Versi', $versi)
+        ->whereIn('ku.nidn', $nidnsChunk)
+        ->select(
+            'ku.nidn', 'k.Jenis as Jenis', 'k.Jabatan12 as Jabatan12',
+            'ku.k_tpd1', 'ku.k_tpd2', 'ku.k_tpd3', 'ku.k_tpd4', 'ku.k_tpd5', 'ku.k_tpd6',
+            'ku.k_tpd7', 'ku.k_tpd8', 'ku.k_tpd9', 'ku.k_tpd10', 'ku.k_tpd11', 'ku.k_tpd12',
+            'ku.k_tkgb1', 'ku.k_tkgb2', 'ku.k_tkgb3', 'ku.k_tkgb4', 'ku.k_tkgb5', 'ku.k_tkgb6',
+            'ku.k_tkgb7', 'ku.k_tkgb8', 'ku.k_tkgb9', 'ku.k_tkgb10', 'ku.k_tkgb11', 'ku.k_tkgb12',
+            'k.Gol1', 'k.Gol2', 'k.Gol3', 'k.Gol4', 'k.Gol5', 'k.Gol6',
+            'k.Gol7', 'k.Gol8', 'k.Gol9', 'k.Gol10', 'k.Gol11', 'k.Gol12',
+            'k.Jabatan1', 'k.Jabatan2', 'k.Jabatan3', 'k.Jabatan4', 'k.Jabatan5', 'k.Jabatan6',
+            'k.Jabatan7', 'k.Jabatan8', 'k.Jabatan9', 'k.Jabatan10', 'k.Jabatan11', 'k.Jabatan12 as Jabatan12Monthly',
+            'k.No_sp2d_1', 'k.No_sp2d_2', 'k.No_sp2d_3', 'k.No_sp2d_4', 'k.No_sp2d_5', 'k.No_sp2d_6',
+            'k.No_sp2d_7', 'k.No_sp2d_8', 'k.No_sp2d_9', 'k.No_sp2d_10', 'k.No_sp2d_11', 'k.No_sp2d_12',
+            'k.Tgl_sp2d_1', 'k.Tgl_sp2d_2', 'k.Tgl_sp2d_3', 'k.Tgl_sp2d_4', 'k.Tgl_sp2d_5', 'k.Tgl_sp2d_6',
+            'k.Tgl_sp2d_7', 'k.Tgl_sp2d_8', 'k.Tgl_sp2d_9', 'k.Tgl_sp2d_10', 'k.Tgl_sp2d_11', 'k.Tgl_sp2d_12',
+            'k.Gaji1', 'k.Gaji2', 'k.Gaji3', 'k.Gaji4', 'k.Gaji5', 'k.Gaji6', 'k.Gaji7', 'k.Gaji8', 'k.Gaji9', 'k.Gaji10', 'k.Gaji11', 'k.Gaji12',
+            'k.TPD1', 'k.TPD2', 'k.TPD3', 'k.TPD4', 'k.TPD5', 'k.TPD6', 'k.TPD7', 'k.TPD8', 'k.TPD9', 'k.TPD10', 'k.TPD11', 'k.TPD12',
+            'k.TKGB1', 'k.TKGB2', 'k.TKGB3', 'k.TKGB4', 'k.TKGB5', 'k.TKGB6', 'k.TKGB7', 'k.TKGB8', 'k.TKGB9', 'k.TKGB10', 'k.TKGB11', 'k.TKGB12',
+            'k.bersihTPD1', 'k.bersihTPD2', 'k.bersihTPD3', 'k.bersihTPD4', 'k.bersihTPD5', 'k.bersihTPD6', 'k.bersihTPD7', 'k.bersihTPD8', 'k.bersihTPD9', 'k.bersihTPD10', 'k.bersihTPD11', 'k.bersihTPD12',
+            'k.bersihTKGB1', 'k.bersihTKGB2', 'k.bersihTKGB3', 'k.bersihTKGB4', 'k.bersihTKGB5', 'k.bersihTKGB6', 'k.bersihTKGB7', 'k.bersihTKGB8', 'k.bersihTKGB9', 'k.bersihTKGB10', 'k.bersihTKGB11', 'k.bersihTKGB12'
+        )
+        ->get();
+
+      $insertBatch = [];
+      $processedNidns = [];
+
+      foreach ($dosenRows as $dosen) {
+        $nidn = trim($dosen->nidn ?? '');
+        if ($nidn === '') continue;
+
+        $processedNidns[] = $nidn;
+        $jenisRow = trim($dosen->Jenis ?? '');
+        $jenisKey = $jenisRow;
+
+        $monthsToProcess = [];
+        if ($inputBulan) {
+            $monthsToProcess[] = (int)$inputBulan;
+        }
+        if ($inputNominal !== null) {
+            for ($m = 1; $m <= 12; $m++) {
+                if ($inputBulan && $m == (int)$inputBulan) continue;
+                $monthsToProcess[] = $m;
+            }
+        } else {
+            if (!$inputBulan) {
+                for ($m = 1; $m <= 12; $m++) $monthsToProcess[] = $m;
+            }
+        }
+
+        $remainingBudgetNet = $inputNominal !== null ? (float) $inputNominal : INF;
+
+        $paidKotorByBulan = [];
+        $existingPayments = DB::table('t_kekurangan')
+            ->where('tahun', $versi)
+            ->where(function($q) use ($nidn) {
+                $q->where('nidn', $nidn)->orWhere('nuptk', $nidn);
+            })
+            ->where('jenis_pembayaran', 'like', 'PEMBAYARAN_%')
+            ->get();
+        foreach ($existingPayments as $pay) {
+            $parts = explode('_', $pay->jenis_pembayaran);
+            $m = isset($parts[1]) ? (int)$parts[1] : 0;
+            if ($m > 0) {
+                if (!isset($paidKotorByBulan[$m])) $paidKotorByBulan[$m] = 0;
+                $paidKotorByBulan[$m] += abs((float)$pay->selisih);
+            }
+        }
+
+        foreach ($monthsToProcess as $i) {
+          if ($remainingBudgetNet <= 0.01) break;
+
+          $selisihTpd = (float) ($dosen->{'k_tpd' . $i} ?? 0);
+          $selisihTkgb = (float) ($dosen->{'k_tkgb' . $i} ?? 0);
+          $selisihTotal = $selisihTpd + $selisihTkgb;
+
+          if (abs($selisihTotal) < 0.01) continue;
+
+          if ($isKurang && $selisihTotal < -0.01) continue;
+          if (!$isKurang && $selisihTotal > 0.01) continue;
+
+          $noSp2dBulan = trim((string) ($dosen->{'No_sp2d_' . $i} ?? ''));
+          $tglSp2dBulan = trim((string) ($dosen->{'Tgl_sp2d_' . $i} ?? ''));
+          if ($noSp2dBulan === '' || $tglSp2dBulan === '') continue;
+
+          $gol = trim((string) ($dosen->{'Gol' . $i} ?? ''));
+          $jabatan = (string) ($dosen->{'Jabatan' . $i} ?? ($dosen->Jabatan12Monthly ?? $dosen->Jabatan12 ?? ''));
+          $kenaTKGB = $this->isGuruBesarAtauProfesor($jabatan);
+          $tarif = (float) (($tarifMap[$jenisKey][$gol] ?? 0) ?: 0);
+
+          $nominalKotorAsli = abs($selisihTotal);
+          $pajakTpd = abs($selisihTpd) * $tarif;
+          $pajakTkgb = $kenaTKGB ? (abs($selisihTkgb) * $tarif) : 0.0;
+          $totalPajakAsli = $pajakTpd + $pajakTkgb;
+          $totalBersihAsli = $nominalKotorAsli - $totalPajakAsli;
+
+          $paidKotor = $paidKotorByBulan[$i] ?? 0;
+          $paidBersih = $paidKotor * (1 - $tarif);
+          $remainingDebtBersih = $totalBersihAsli - $paidBersih;
+
+          if ($remainingDebtBersih <= 0.01) continue;
+
+          $paymentBersih = min($remainingDebtBersih, $remainingBudgetNet);
+          if ($tarif < 1 && $tarif >= 0) {
+              $paymentKotor = $paymentBersih / (1 - $tarif);
+          } else {
+              $paymentKotor = $paymentBersih;
+          }
+
+          if ($inputUraian !== '') {
+              $uraian = $inputUraian;
+          } else {
+              if ($isKurang) {
+                  $uraian = 'Kekurangan Pembayaran';
+              } else {
+                  if (strtolower($trxType) === 'pengembalian') {
+                      $uraian = 'Pengembalian Kelebihan';
+                  } else {
+                      $uraian = 'Pemotongan Kelebihan';
+                  }
+              }
+          }
+
+          $insertBatch[] = [
+            'rekap_id' => $rekapId,
+            'nidn' => $nidn,
+            'tahun' => (string) $versi,
+            'selisih' => $isKurang ? round($paymentKotor, 2) : -round($paymentKotor, 2),
+            'jenis_pembayaran' => 'PEMBAYARAN_' . $i,
+            'kode_bayar_k' => $noSp2d ?: $noSp2dBulan,
+            'tgl_bayar_k' => $tanggalSp2d ?: $tglSp2dBulan,
+            'keterangan' => $uraian,
+            'created_at' => now()->toDateTimeString(),
+            'updated_at' => now()->toDateTimeString(),
+          ];
+
+          if ($inputNominal !== null) {
+              $remainingBudgetNet -= $paymentBersih;
+          }
+        }
+      }
+
+      if (!empty($insertBatch)) {
+        DB::table('t_kekurangan')->insert($insertBatch);
+      }
+
+      $processedNidns = array_unique($processedNidns);
+      foreach ($processedNidns as $pnidn) {
+          $this->syncLunasToTransaksi($pnidn, $versi);
+      }
+
+      if ($rekapId) {
+          DB::table('u_rekap_kekurangan')->where('id', $rekapId)->increment('processed_count', count($nidnsChunk));
+          
+          if ($chunkIndex >= $totalChunks - 1) {
+              DB::table('u_rekap_kekurangan')->where('id', $rekapId)->update([
+                  'sp2d' => $noSp2d,
+                  'tgl_sp2d' => $tanggalSp2d,
+                  'status' => 'success',
+                  'updated_at' => now(),
+              ]);
+              
+              DB::table('t_kekurangan')->where('rekap_id', $rekapId)->update([
+                  'kode_bayar_k' => $noSp2d,
+                  'tgl_bayar_k' => $tanggalSp2d,
+                  'updated_at' => now(),
+              ]);
+          }
+      }
+
+      DB::commit();
+
+      return response()->json([
+          'success' => true,
+          'chunkIndex' => $chunkIndex,
+          'totalChunks' => $totalChunks,
+          'processedInChunk' => count($nidnsChunk),
+          'isCompleted' => ($chunkIndex >= $totalChunks - 1),
+      ]);
+    } catch (\Throwable $e) {
+      DB::rollBack();
+      if ($rekapId) {
+          DB::table('u_rekap_kekurangan')->where('id', $rekapId)->update(['status' => 'failed']);
+      }
+      Log::error('prosesAksiSp2dBatch failed', [
+        'rekap_id' => $rekapId,
+        'chunkIndex' => $chunkIndex,
+        'message' => $e->getMessage(),
+      ]);
+      return response()->json(['success' => false, 'message' => 'Gagal memproses batch SP2D: ' . $e->getMessage()], 500);
+    }
+  }
+
+  public function prosesAksiSp2dRetry(Request $request)
+  {
+    $rekapId = (int) $request->input('rekap_id');
+    $versi = session('tahun');
+
+    if (!$rekapId || !$versi) {
+        return response()->json(['success' => false, 'message' => 'ID Rekap atau Sesi Tahun tidak valid.'], 422);
+    }
+
+    $rekap = DB::table('u_rekap_kekurangan')->where('id', $rekapId)->first();
+    if (!$rekap) {
+        return response()->json(['success' => false, 'message' => 'Data rekap tidak ditemukan.'], 404);
+    }
+
+    $periode = strtolower(trim($rekap->periode ?? ''));
+    $isKurang = (strpos($periode, 'kurang') !== false);
+
+    $bersihCondition = $isKurang ? '(ku.bersih + 0) < 0' : '(ku.bersih + 0) > 0';
+    $k2_sub = clone $this->getPivotSubquery($versi);
+    
+    $dosenQuery = DB::table('s_transaksi_2 as k')
+      ->joinSub($k2_sub, 'ku', function ($join) {
+        $join->on(DB::raw("COALESCE(NULLIF(k.NIDN, ''), k.NUPTK)"), '=', 'ku.nidn');
+      })
+      ->where('k.Tahun_Versi', $versi)
+      ->whereRaw($bersihCondition);
+
+    list($fullyPaidNidns, ) = $this->evaluateFullyPaidNidns($versi);
+    if (!empty($fullyPaidNidns)) {
+        $dosenQuery->where(function ($q) use ($fullyPaidNidns) {
+            $q->whereNotIn('k.NIDN', $fullyPaidNidns)
+              ->whereNotIn('k.NUPTK', $fullyPaidNidns);
+        });
+    }
+
+    $cTipe = trim($rekap->tipe ?? 'Semua');
+    $cBank = trim($rekap->bank ?? 'Semua');
+    $cJenis = trim($rekap->jenis ?? 'Semua');
+
+    if ($cTipe !== 'Semua') {
+        if ($cTipe === 'TPD') { $dosenQuery->whereRaw('(ku.jml_tpd + 0) <> 0'); } 
+        elseif ($cTipe === 'TKGB') { $dosenQuery->whereRaw('(ku.jml_tkgb + 0) <> 0'); }
+    }
+    if ($cJenis !== 'Semua') {
+        if (strtoupper($cJenis) === 'PNS') {
+            $dosenQuery->where(function ($q) {
+                $q->whereRaw("UPPER(k.Jenis) LIKE '%PNS%'")
+                  ->whereRaw("UPPER(k.Jenis) NOT LIKE '%NON%'");
+            });
+        } elseif (strtoupper($cJenis) === 'NON PNS') {
+            $dosenQuery->whereRaw("UPPER(k.Jenis) LIKE '%NON%'");
+        } else {
+            $dosenQuery->whereRaw("TRIM(k.Jenis) = ?", [trim($cJenis)]);
+        }
+    }
+    if ($cBank !== 'Semua') { 
+        $dosenQuery->whereRaw('TRIM(k.Bank) = ?', [trim($cBank)]); 
+    }
+    if (!empty($rekap->exclude_nidns)) {
+        $excludeNidns = explode(',', $rekap->exclude_nidns);
+        $excludeNidns = array_map('trim', $excludeNidns);
+        $dosenQuery->whereNotIn('k.NIDN', $excludeNidns);
+    }
+
+    $alreadyPaidNidns = DB::table('t_kekurangan')
+        ->where('tahun', $versi)
+        ->where('jenis_pembayaran', 'like', 'PEMBAYARAN_%')
+        ->pluck('nidn')
+        ->toArray();
+
+    if (!empty($alreadyPaidNidns)) {
+        $dosenQuery->whereNotIn('ku.nidn', $alreadyPaidNidns);
+    }
+
+    $remainingNidns = $dosenQuery->pluck('ku.nidn')->unique()->values()->toArray();
+
+    if (empty($remainingNidns)) {
+        DB::table('u_rekap_kekurangan')->where('id', $rekapId)->update(['status' => 'success']);
+        return response()->json(['success' => true, 'completed' => true, 'message' => 'Semua data sudah berhasil diproses.']);
+    }
+
+    $chunkSize = 50;
+    $chunks = array_chunk($remainingNidns, $chunkSize);
+
+    return response()->json([
+        'success' => true,
+        'totalRemaining' => count($remainingNidns),
+        'chunkSize' => $chunkSize,
+        'totalChunks' => count($chunks),
+        'chunks' => $chunks,
+        'rekap_id' => $rekapId,
+        'no_sp2d' => $rekap->sp2d,
+        'tanggal_sp2d' => $rekap->tgl_sp2d,
+    ]);
+  }
+
   public function destroyTahun(Request $request)
   {
     $versi = session('tahun');
@@ -2095,11 +2669,7 @@ class KekuranganBayarController extends Controller
       // Get NIDNs in this rekap
       $nidns = $this->getNidnsInRekap($rekap, $versi, $isKurang);
       
-      // Protect fully paid NIDNs and those with payments
-      list($fullyPaidNidns, ) = $this->evaluateFullyPaidNidns($versi);
-      $nidnsWithPayments = $this->getNidnsWithPayments($versi);
-      $protectedForDelete = array_unique(array_merge($fullyPaidNidns, $nidnsWithPayments));
-      $nidnsToDelete = array_diff($nidns, $protectedForDelete);
+      $nidnsToDelete = $nidns;
 
       DB::beginTransaction();
       try {
@@ -2107,10 +2677,11 @@ class KekuranganBayarController extends Controller
           if (!empty($nidnsToDelete)) {
               if ($isKurang) {
                   DB::table('t_kekurangan')->where('tahun', $versi)->where('jenis_pembayaran', 'like', 'K_%')->whereIn('nidn', $nidnsToDelete)->delete();
+                  DB::table('t_kekurangan')->where('tahun', $versi)->where('jenis_pembayaran', 'like', 'PEMBAYARAN_%')->where('selisih', '>', 0)->whereIn('nidn', $nidnsToDelete)->delete();
               } else {
                   DB::table('t_kekurangan')->where('tahun', $versi)->where('jenis_pembayaran', 'like', 'L_%')->whereIn('nidn', $nidnsToDelete)->delete();
+                  DB::table('t_kekurangan')->where('tahun', $versi)->where('jenis_pembayaran', 'like', 'PEMBAYARAN_%')->where('selisih', '<', 0)->whereIn('nidn', $nidnsToDelete)->delete();
               }
-              // Sengaja TIDAK menghapus baris PEMBAYARAN% agar riwayat cicilan manual tersimpan aman di database
           }
           
           // Delete file
@@ -2149,20 +2720,17 @@ class KekuranganBayarController extends Controller
               // Get NIDNs in this rekap
               $nidns = $this->getNidnsInRekap($rekap, $versi, $isKurang);
               
-              // Protect fully paid NIDNs and those with payments
-              list($fullyPaidNidns, ) = $this->evaluateFullyPaidNidns($versi);
-              $nidnsWithPayments = $this->getNidnsWithPayments($versi);
-              $protectedForDelete = array_unique(array_merge($fullyPaidNidns, $nidnsWithPayments));
-              $nidnsToDelete = array_diff($nidns, $protectedForDelete);
+              $nidnsToDelete = $nidns;
 
               // Delete underlying data for these NIDNs (original selisih + PEMBAYARAN rows)
               if (!empty($nidnsToDelete)) {
                   if ($isKurang) {
                       DB::table('t_kekurangan')->where('tahun', $versi)->where('jenis_pembayaran', 'like', 'K_%')->whereIn('nidn', $nidnsToDelete)->delete();
+                      DB::table('t_kekurangan')->where('tahun', $versi)->where('jenis_pembayaran', 'like', 'PEMBAYARAN_%')->where('selisih', '>', 0)->whereIn('nidn', $nidnsToDelete)->delete();
                   } else {
                       DB::table('t_kekurangan')->where('tahun', $versi)->where('jenis_pembayaran', 'like', 'L_%')->whereIn('nidn', $nidnsToDelete)->delete();
+                      DB::table('t_kekurangan')->where('tahun', $versi)->where('jenis_pembayaran', 'like', 'PEMBAYARAN_%')->where('selisih', '<', 0)->whereIn('nidn', $nidnsToDelete)->delete();
                   }
-                  // Sengaja TIDAK menghapus baris PEMBAYARAN% agar riwayat cicilan manual tersimpan aman di database
               }
               
               // Delete file
@@ -2257,13 +2825,7 @@ class KekuranganBayarController extends Controller
           ->where('k.Tahun_Versi', $versi)
           ->whereRaw($bersihCondition);
 
-      list($fullyPaidNidns, ) = $this->evaluateFullyPaidNidns($versi);
-      if (!empty($fullyPaidNidns)) {
-          $base->where(function ($q) use ($fullyPaidNidns) {
-              $q->whereNotIn('k.NIDN', $fullyPaidNidns)
-                ->whereNotIn('k.NUPTK', $fullyPaidNidns);
-          });
-      }
+
 
       if ($cTipe !== 'Semua') {
           if ($cTipe === 'TPD') { $base->whereRaw('(ku.jml_tpd + 0) <> 0'); } 

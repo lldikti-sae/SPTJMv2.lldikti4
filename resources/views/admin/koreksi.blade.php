@@ -53,19 +53,11 @@
   <form id="formSearchKoreksi" action="{{ route('admin.koreksi.cari') }}" method="POST" autocomplete="off">
     @csrf
     <div class="row mb-3 mx-2 align-items-end">
-      <div class="col-md-4">
+      <div class="col-md-6">
         <label class="form-label"><b style="font-size: 12px;">NIDN / NUPTK</b></label>
         <input type="text" class="form-control" name="nidn" id="inputNidnSearch" value="{{ old('nidn', $nidn ?? '') }}" placeholder="Masukkan NIDN/NUPTK" required />
       </div>
-      <div class="col-md-3">
-        <label class="form-label"><b style="font-size: 12px;">Tahun</b></label>
-        <select class="form-select" name="tahun" id="selectTahunSearch" required>
-          @foreach ($years ?? [] as $y)
-            <option value="{{ $y }}" {{ (string)($tahun ?? session('tahun')) === (string)$y ? 'selected' : '' }}>{{ $y }}</option>
-          @endforeach
-        </select>
-      </div>
-      <div class="col-md-3">
+      <div class="col-md-4">
         <label class="form-label"><b style="font-size: 12px;">Bulan</b></label>
         <select class="form-select" name="bulan" id="selectBulanSearch" required>
           @foreach ($months as $key => $label)
@@ -281,7 +273,6 @@
 <script>
   document.addEventListener('DOMContentLoaded', function() {
     const formSearch = document.getElementById('formSearchKoreksi');
-    const selectTahun = document.getElementById('selectTahunSearch');
     const selectBulan = document.getElementById('selectBulanSearch');
     const inputNidn = document.getElementById('inputNidnSearch');
 
@@ -291,9 +282,6 @@
       }
     }
 
-    if (selectTahun) {
-      selectTahun.addEventListener('change', autoSubmitFilter);
-    }
     if (selectBulan) {
       selectBulan.addEventListener('change', autoSubmitFilter);
     }

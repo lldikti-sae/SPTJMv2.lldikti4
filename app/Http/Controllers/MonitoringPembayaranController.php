@@ -689,29 +689,58 @@ class MonitoringPembayaranController extends Controller
     try {
       $riwayatRowsRaw = [];
 
-      // 1. Ambil dari t_kekurangan (pembayaran aktif)
-      $activeRows = DB::table('t_kekurangan')
-          ->where('tahun', $selectedYear)
+      // 1. Ambil dari t_kekurangan (pembayaran & rincian selisih) beserta u_rekap_kekurangan untuk SP2D terbaru
+      $activeRows = DB::table('t_kekurangan as tk')
+          ->leftJoin('u_rekap_kekurangan as rk', 'tk.rekap_id', '=', 'rk.id')
+          ->where('tk.tahun', $selectedYear)
           ->where(function ($q) use ($nidn) {
-              $q->where('nidn', $nidn)->orWhere('nuptk', $nidn);
+              $q->where('tk.nidn', $nidn)->orWhere('tk.nuptk', $nidn);
           })
-          ->where('jenis_pembayaran', 'like', 'PEMBAYARAN_%')
+          ->select('tk.*', 'rk.sp2d as rekap_sp2d', 'rk.tgl_sp2d as rekap_tgl_sp2d')
           ->get();
+
+      $rowsByMonth = [];
+      $monthNamesMap = [1 => 'Januari', 2 => 'Februari', 3 => 'Maret', 4 => 'April', 5 => 'Mei', 6 => 'Juni', 7 => 'Juli', 8 => 'Agustus', 9 => 'September', 10 => 'Oktober', 11 => 'November', 12 => 'Desember'];
+
       foreach ($activeRows as $r) {
-          $riwayatRowsRaw[] = [
-              'nidn' => $r->nidn,
-              'tahun' => $r->tahun,
-              'nominal' => (float) $r->selisih,
-              'jenis_pembayaran' => $r->jenis_pembayaran,
-              'nomor' => $r->kode_bayar_k,
-              'tanggal' => $r->tgl_bayar_k,
-              'uraian_pembayaran' => $r->keterangan,
-              'created_at' => $r->created_at ?? null,
-              'updated_at' => $r->updated_at ?? null,
-          ];
+          $jp = (string) $r->jenis_pembayaran;
+          $m = 0;
+          if (preg_match('/(\d+)/', $jp, $matches)) {
+              $m = (int) $matches[1];
+          }
+          if ($m < 1 || $m > 12) continue;
+
+          $isPayment = (strpos($jp, 'PEMBAYARAN_') === 0);
+
+          if ($isPayment || !isset($rowsByMonth[$m])) {
+              $nom = abs((float) $r->selisih);
+              $isKur = (strpos($jp, 'K_') === 0 || strpos(strtolower($jp), 'kurang') !== false || (float)$r->selisih < 0);
+              
+              $keterangan = !empty($r->keterangan) ? $r->keterangan : (
+                  $isKur ? ('Pembayaran Kekurangan ' . ($monthNamesMap[$m] ?? '')) : ('Pengembalian Kelebihan ' . ($monthNamesMap[$m] ?? ''))
+              );
+
+              $sp2dTerbaru = !empty($r->kode_bayar_k) ? $r->kode_bayar_k : (!empty($r->rekap_sp2d) ? $r->rekap_sp2d : '-');
+              $tglSp2dTerbaru = !empty($r->tgl_bayar_k) ? $r->tgl_bayar_k : (!empty($r->rekap_tgl_sp2d) ? $r->rekap_tgl_sp2d : null);
+
+              $rowsByMonth[$m] = [
+                  'nidn' => $r->nidn,
+                  'tahun' => $r->tahun,
+                  'nominal' => $isKur ? $nom : -$nom,
+                  'jenis_pembayaran' => $jp,
+                  'nomor' => $sp2dTerbaru,
+                  'tanggal' => $tglSp2dTerbaru,
+                  'uraian_pembayaran' => $keterangan,
+                  'bulan' => $m,
+                  'created_at' => $r->created_at ?? null,
+                  'updated_at' => $r->updated_at ?? null,
+              ];
+          }
       }
 
-      // 2. Ambil dari s_transaksi_2 (arsip/backup) dihapus karena kolom Riwayat_Pembayaran sudah dihapus.
+      foreach ($rowsByMonth as $m => $r) {
+          $riwayatRowsRaw[] = $r;
+      }
 
       $riwayatRows = collect($riwayatRowsRaw)->map(function($r) {
           return (object) $r;
@@ -719,15 +748,10 @@ class MonitoringPembayaranController extends Controller
         
       // Map to add 'bulan' property for backward compatibility with the view
       $riwayatPembayaran = $riwayatRows->map(function ($item) use ($globalTarif) {
-          $parts = explode('_', $item->jenis_pembayaran);
-          $item->bulan = isset($parts[1]) ? (int) $parts[1] : 0;
-          
-          // Calculate pajak and bersih based on globalTarif
           $nominalAsli = (float) $item->nominal;
           $item->pajak = abs($nominalAsli) * $globalTarif;
           $item->bersih = abs($nominalAsli) - $item->pajak;
           
-          // Adjust signs if it was a negative nominal (Kelebihan)
           if ($nominalAsli < 0) {
               $item->pajak = -$item->pajak;
               $item->bersih = -$item->bersih;
@@ -1179,15 +1203,7 @@ class MonitoringPembayaranController extends Controller
       $origSp2dTgl = trim((string) ($tglSp2d[$i] ?? ''));
       $origHasSp2d = ($origSp2dNo !== '' && $origSp2dNo !== '-' && $origSp2dTgl !== '' && $origSp2dTgl !== '-');
 
-      // Override SP2D No & Tgl untuk DISPLAY only (setelah computing original selisih)
-      if (isset($resolvedMonths[$bulanNum])) {
-        if (!empty($resolvedMonths[$bulanNum]['nomor'])) {
-          $noSp2d[$i] = $resolvedMonths[$bulanNum]['nomor'];
-        }
-        if (!empty($resolvedMonths[$bulanNum]['tanggal'])) {
-          $tglSp2d[$i] = $resolvedMonths[$bulanNum]['tanggal'];
-        }
-      }
+      // (Removed SP2D override logic to ensure upper table always displays original LAMA SP2D)
 
       // Recalculate hasSp2d after override for status display
       $sp2dNo = trim((string) ($noSp2d[$i] ?? ''));
@@ -1374,27 +1390,61 @@ class MonitoringPembayaranController extends Controller
     try {
       $riwayatRowsRaw = [];
 
-      // 1. Ambil dari t_kekurangan (pembayaran aktif)
-      $activeRows = DB::table('t_kekurangan')
-          ->where('tahun', $versi)
+      // 1. Ambil dari t_kekurangan (pembayaran & rincian selisih) beserta u_rekap_kekurangan untuk SP2D terbaru
+      $activeRows = DB::table('t_kekurangan as tk')
+          ->leftJoin('u_rekap_kekurangan as rk', 'tk.rekap_id', '=', 'rk.id')
+          ->where('tk.tahun', $versi)
           ->where(function ($q) use ($nidn) {
-              $q->where('nidn', $nidn)->orWhere('nuptk', $nidn);
+              $q->where('tk.nidn', $nidn)->orWhere('tk.nuptk', $nidn);
           })
-          ->where('jenis_pembayaran', 'like', 'PEMBAYARAN_%')
+          ->select('tk.*', 'rk.sp2d as rekap_sp2d', 'rk.tgl_sp2d as rekap_tgl_sp2d')
           ->get();
+
+      $rowsByMonth = [];
+      $monthNamesMap = [1 => 'Januari', 2 => 'Februari', 3 => 'Maret', 4 => 'April', 5 => 'Mei', 6 => 'Juni', 7 => 'Juli', 8 => 'Agustus', 9 => 'September', 10 => 'Oktober', 11 => 'November', 12 => 'Desember'];
+
       foreach ($activeRows as $r) {
-          $riwayatRowsRaw[] = [
-              'nidn' => $r->nidn,
-              'tahun' => $r->tahun,
-              'nominal' => (float) $r->selisih,
-              'selisih' => (float) $r->selisih,
-              'jenis_pembayaran' => $r->jenis_pembayaran,
-              'kode_bayar_k' => $r->kode_bayar_k,
-              'tgl_bayar_k' => $r->tgl_bayar_k,
-              'keterangan' => $r->keterangan,
-              'created_at' => $r->created_at ?? null,
-              'updated_at' => $r->updated_at ?? null,
-          ];
+          $jp = (string) $r->jenis_pembayaran;
+          $m = 0;
+          if (preg_match('/(\d+)/', $jp, $matches)) {
+              $m = (int) $matches[1];
+          }
+          if ($m < 1 || $m > 12) continue;
+
+          $isPayment = (strpos($jp, 'PEMBAYARAN_') === 0);
+
+          if ($isPayment || !isset($rowsByMonth[$m])) {
+              $nom = abs((float) $r->selisih);
+              $isKur = (strpos($jp, 'K_') === 0 || strpos(strtolower($jp), 'kurang') !== false || (float)$r->selisih < 0);
+              
+              $keterangan = !empty($r->keterangan) ? $r->keterangan : (
+                  $isKur ? ('Pembayaran Kekurangan ' . ($monthNamesMap[$m] ?? '')) : ('Pengembalian Kelebihan ' . ($monthNamesMap[$m] ?? ''))
+              );
+
+              $sp2dTerbaru = !empty($r->kode_bayar_k) ? $r->kode_bayar_k : (!empty($r->rekap_sp2d) ? $r->rekap_sp2d : '-');
+              $tglSp2dTerbaru = !empty($r->tgl_bayar_k) ? $r->tgl_bayar_k : (!empty($r->rekap_tgl_sp2d) ? $r->rekap_tgl_sp2d : null);
+
+              $rowsByMonth[$m] = [
+                  'nidn' => $r->nidn,
+                  'tahun' => $r->tahun,
+                  'nominal' => $isKur ? $nom : -$nom,
+                  'selisih' => $isKur ? $nom : -$nom,
+                  'jenis_pembayaran' => $jp,
+                  'kode_bayar_k' => $sp2dTerbaru,
+                  'tgl_bayar_k' => $tglSp2dTerbaru,
+                  'keterangan' => $keterangan,
+                  'uraian_pembayaran' => $keterangan,
+                  'nomor' => $sp2dTerbaru,
+                  'tanggal' => $tglSp2dTerbaru,
+                  'bulan' => $m,
+                  'created_at' => $r->created_at ?? null,
+                  'updated_at' => $r->updated_at ?? null,
+              ];
+          }
+      }
+
+      foreach ($rowsByMonth as $m => $r) {
+          $riwayatRowsRaw[] = $r;
       }
 
       $riwayatRows = collect($riwayatRowsRaw)->map(function($r) {
@@ -1402,9 +1452,6 @@ class MonitoringPembayaranController extends Controller
       });
         
       $riwayatPembayaran = $riwayatRows->map(function ($item) use ($globalTarif) {
-          $parts = explode('_', $item->jenis_pembayaran);
-          $item->bulan = isset($parts[1]) ? (int) $parts[1] : 0;
-          
           $nominalAsli = (float) $item->selisih;
           $item->nominal = $nominalAsli;
           $item->pajak = abs($nominalAsli) * $globalTarif;
@@ -1414,11 +1461,6 @@ class MonitoringPembayaranController extends Controller
               $item->pajak = -$item->pajak;
               $item->bersih = -$item->bersih;
           }
-          
-          // Uraian pembayaran should strictly match keterangan in database as requested by the user
-          $item->uraian_pembayaran = $item->keterangan;
-          $item->nomor = $item->kode_bayar_k;
-          $item->tanggal = $item->tgl_bayar_k;
           
           return $item;
       })->sortBy('bulan')->values();

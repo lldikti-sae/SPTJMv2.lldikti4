@@ -393,6 +393,7 @@ Route::post('/admin/rekap-usulan-eligible/proses', [RekapUsulanEligibleControlle
 Route::get('/admin/kekurangan-bayar', [KekuranganBayarController::class, 'index'])->name('admin.kekurangan-bayar');
 Route::post('/admin/kekurangan-bayar/cek', [KekuranganBayarController::class, 'cek'])->name('admin.kekurangan-bayar.cek');
 Route::post('/admin/kekurangan-bayar/proses', [KekuranganBayarController::class, 'proses'])->name('admin.kekurangan-bayar.proses');
+Route::get('/admin/kekurangan-bayar/export', [KekuranganBayarController::class, 'export'])->name('admin.kekurangan-bayar.export');
 Route::get('/admin/kekurangan-bayar/rekap', [KekuranganBayarController::class, 'rekap'])->name('admin.kekurangan-bayar.rekap');
 Route::get('/admin/kekurangan-bayar/rekap/{id}/detail', [KekuranganBayarController::class, 'detailRekap'])->name('admin.kekurangan-bayar.detail-rekap');
 Route::post('/admin/kekurangan-bayar/rekap/{id}/exclude', [KekuranganBayarController::class, 'excludeFromRekap'])->name('admin.kekurangan-bayar.exclude-rekap');
@@ -402,6 +403,9 @@ Route::delete('/admin/kekurangan-bayar', [KekuranganBayarController::class, 'des
 Route::delete('/admin/kekurangan-bayar/kurang', [KekuranganBayarController::class, 'destroyKurang'])->name('admin.kekurangan-bayar.destroy-kurang');
 Route::delete('/admin/kekurangan-bayar/lebih', [KekuranganBayarController::class, 'destroyLebih'])->name('admin.kekurangan-bayar.destroy-lebih');
 Route::post('/admin/kekurangan-bayar/aksi-sp2d', [KekuranganBayarController::class, 'prosesAksiSp2d'])->name('admin.kekurangan-bayar.aksi-sp2d');
+Route::post('/admin/kekurangan-bayar/aksi-sp2d-init', [KekuranganBayarController::class, 'prosesAksiSp2dInit'])->name('admin.kekurangan-bayar.aksi-sp2d-init');
+Route::post('/admin/kekurangan-bayar/aksi-sp2d-batch', [KekuranganBayarController::class, 'prosesAksiSp2dBatch'])->name('admin.kekurangan-bayar.aksi-sp2d-batch');
+Route::post('/admin/kekurangan-bayar/aksi-sp2d-retry', [KekuranganBayarController::class, 'prosesAksiSp2dRetry'])->name('admin.kekurangan-bayar.aksi-sp2d-retry');
 Route::post('/admin/kekurangan-bayar/get-riwayat', [KekuranganBayarController::class, 'getRiwayat'])->name('admin.kekurangan-bayar.get-riwayat');
 Route::post('/admin/kekurangan-bayar/update-riwayat', [KekuranganBayarController::class, 'updateRiwayat'])->name('admin.kekurangan-bayar.update-riwayat');
 Route::post('/admin/kekurangan-bayar/sync-all-lunas', [KekuranganBayarController::class, 'syncAllLunas'])->name('admin.kekurangan-bayar.sync-all-lunas');

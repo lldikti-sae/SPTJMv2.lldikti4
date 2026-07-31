@@ -36,6 +36,7 @@
                                 <tr>
                                     <th class="text-center">No</th>
                                     <th>NIDN</th>
+                                    <th>NUPTK</th>
                                     <th>Nama</th>
                                     <th class="text-center">Jenis</th>
                                     <th class="text-center">Bank</th>
@@ -47,7 +48,8 @@
                                 @forelse($dosenRows as $idx => $dosen)
                                     <tr>
                                         <td class="text-center">{{ $dosenRows->firstItem() + $idx }}</td>
-                                        <td>{{ $dosen->NIDN }}</td>
+                                        <td>{{ !empty($dosen->NIDN) ? $dosen->NIDN : '-' }}</td>
+                                        <td>{{ !empty($dosen->NUPTK) ? $dosen->NUPTK : '-' }}</td>
                                         <td>{{ $dosen->Nama }}</td>
                                         <td class="text-center">{{ $dosen->Jenis }}</td>
                                         <td class="text-center">{{ $dosen->Bank }}</td>
@@ -71,7 +73,7 @@
                                     </tr>
                                 @empty
                                     <tr>
-                                        <td colspan="7" class="text-center text-muted">Tidak ada data dosen yang sesuai kriteria pencarian atau semua sudah dikeluarkan.</td>
+                                        <td colspan="8" class="text-center text-muted">Tidak ada data dosen yang sesuai kriteria pencarian atau semua sudah dikeluarkan.</td>
                                     </tr>
                                 @endforelse
                             </tbody>
