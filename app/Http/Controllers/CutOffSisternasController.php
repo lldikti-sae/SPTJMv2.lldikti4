@@ -304,6 +304,16 @@ class CutOffSisternasController extends Controller
       $tahun = $request->input('tahun', session('tahun') ?: date('Y'));
       $updateCols = ['nuptk', 'no_sertifikat', 'nama_dosen', 'kode_pt', 'pt', 'prodi', 'kesimpulan_bkd', 'kewajiban_khusus', 'kesimpulan', 'kd', 'kp', 'potongan_periodik'];
 
+      // Ambil NIDN/NUPTK yang dicentang di kolom Aksi untuk dihapus
+      $rawDeleteNidns = $request->input('delete_nidn', []);
+      if (!is_array($rawDeleteNidns)) {
+        $rawDeleteNidns = [];
+      }
+      $deleteNidns = array_values(array_filter(array_map('trim', $rawDeleteNidns), function($v) {
+        return $v !== '' && $v !== '—' && $v !== '-';
+      }));
+      $deleteSet = array_flip($deleteNidns);
+
       while (($row = fgetcsv($handle, 0, $delimiter)) !== false) {
         // map row to header
         $mapped = [];
@@ -312,13 +322,20 @@ class CutOffSisternasController extends Controller
         }
 
         $nidnVal = $mapped['nidn'] ?? $mapped['nuptk'] ?? null;
+        $nuptkVal = $mapped['nuptk'] ?? null;
         if (empty($nidnVal)) {
           continue; // skip rows without both NIDN & NUPTK
         }
 
+        // JIKA NIDN / NUPTK ini dicentang di kolom Aksi (untuk dihapus):
+        // JANGAN dimasukkan ke batch upsert agar tidak menimpa/memperbarui data!
+        if (isset($deleteSet[$nidnVal]) || ($nuptkVal !== null && isset($deleteSet[$nuptkVal]))) {
+          continue;
+        }
+
         $data = [
           'nidn' => $nidnVal,
-          'nuptk' => $mapped['nuptk'] ?? null,
+          'nuptk' => $nuptkVal,
           'no_sertifikat' => $mapped['no_sertifikat'] ?? null,
           'nama_dosen' => $mapped['nama_dosen'] ?? $mapped['nama'] ?? null,
           'kode_pt' => $mapped['kode_pt'] ?? null,
@@ -349,16 +366,18 @@ class CutOffSisternasController extends Controller
 
       fclose($handle);
 
-      // Hapus data dosen yang dicentang di kolom Aksi (TM → M, sudah memenuhi BKD)
-      $deleteNidns = $request->input('delete_nidn', []);
+      // Hapus data dosen yang dicentang di kolom Aksi dari tabel Cut Off
       $deleted = 0;
-      if (!empty($deleteNidns) && is_array($deleteNidns)) {
+      if (!empty($deleteNidns)) {
         $deleted = DB::table($table)
           ->where('tahun', (string)$tahun)
-          ->whereIn('nidn', $deleteNidns)
+          ->where(function ($q) use ($deleteNidns) {
+            $q->whereIn('nidn', $deleteNidns)
+              ->orWhereIn('nuptk', $deleteNidns);
+          })
           ->delete();
 
-        Log::info('CutOffSisternas: Deleted checked NIDNs after upload', [
+        Log::info('CutOffSisternas: Deleted checked NIDNs from Cut Off table', [
           'table' => $table,
           'tahun' => $tahun,
           'count' => $deleted,
