@@ -2235,11 +2235,13 @@ document.addEventListener('DOMContentLoaded', function() {
             cancelButtonText: 'Batal'
         }).then((result) => {
             if (result.isConfirmed) {
+                const activeYear = $('#tahunFilterSelect').val() || '{{ $tahunSession }}';
                 $.ajax({
                     url: `{{ url('/admin/cutoff-sisternas/clear') }}/${table}`,
                     type: 'DELETE',
                     data: {
-                        _token: '{{ csrf_token() }}'
+                        _token: '{{ csrf_token() }}',
+                        tahun: activeYear
                     },
                     success: function(res) {
                         Swal.fire('Berhasil!', res.message, 'success');
@@ -2335,7 +2337,8 @@ document.addEventListener('DOMContentLoaded', function() {
             Swal.fire('Pilih Data', 'Silakan pilih data sisternas terlebih dahulu.', 'info');
             return;
         }
-        const url = `{{ route('admin.cutoff-sisternas.export') }}?table=${selected}`;
+        const activeYear = $('#tahunFilterSelect').val() || '{{ $tahunSession }}';
+        const url = `{{ route('admin.cutoff-sisternas.export') }}?table=${selected}&tahun=${activeYear}`;
         window.open(url, '_blank');
     });
 

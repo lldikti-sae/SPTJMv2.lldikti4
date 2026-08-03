@@ -144,7 +144,7 @@ class CutOffSisternasController extends Controller
 
     $nidn = $norm($request->input('nidn'));
     $nuptk = $norm($request->input('nuptk'));
-    $tahun = session('tahun') ?: date('Y');
+    $tahun = (string)($request->input('tahun') ?: ($request->query('tahun') ?: (session('tahun') ?: date('Y'))));
 
     $updatePayload = [
       'nuptk' => $norm($request->input('nuptk')),
@@ -469,7 +469,7 @@ class CutOffSisternasController extends Controller
     return response()->stream($callback, 200, $headers);
   }
 
-  public function clear($table)
+  public function clear($table, Request $request)
   {
     $allowedTables = ['n_sister_genap_bj', 'o_sister_genap_tl', 'p_sister_ganjil_tl'];
 
@@ -477,7 +477,7 @@ class CutOffSisternasController extends Controller
       return response()->json(['success' => false, 'message' => 'Tabel tidak valid.']);
     }
 
-    $tahun = session('tahun') ?: date('Y');
+    $tahun = (string)($request->input('tahun') ?: ($request->query('tahun') ?: (session('tahun') ?: date('Y'))));
     DB::table($table)->where('tahun', $tahun)->delete();
 
     return response()->json(['success' => true, 'message' => 'Data berhasil dihapus!']);
@@ -504,7 +504,7 @@ class CutOffSisternasController extends Controller
     ]);
 
     $table = $request->input('sisternas');
-    $tahun = $request->input('tahun') ?: (session('tahun') ?: date('Y'));
+    $tahun = (string)($request->input('tahun') ?: (session('tahun') ?: date('Y')));
 
     DB::table($table)->updateOrInsert(
       ['nidn' => $request->input('nidn'), 'tahun' => $tahun],
@@ -541,7 +541,7 @@ class CutOffSisternasController extends Controller
       return redirect()->back()->with('error', 'Tabel tidak valid untuk export.');
     }
 
-    $tahun = session('tahun') ?: date('Y');
+    $tahun = (string)($request->query('tahun') ?: ($request->input('tahun') ?: (session('tahun') ?: date('Y'))));
     $filename = "cutoff_{$table}_{$tahun}_backup_" . date('Ymd_His') . ".ods";
 
     return Excel::download(new CutoffSisternasExport($table, $tahun), $filename, \Maatwebsite\Excel\Excel::ODS);
