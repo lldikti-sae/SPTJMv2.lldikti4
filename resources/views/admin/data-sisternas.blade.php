@@ -368,7 +368,6 @@
                 <tr>
                     <td>
                         <div class="hs-periode-label">{{ $periodeLabel }}</div>
-                        <div class="hs-periode-sub">{{ $item->bulan }}, {{ $jenisPeriode }}</div>
                     </td>
                     <td>
                         <span class="hs-cutoff-date">{{ $item->tanggal }}</span>

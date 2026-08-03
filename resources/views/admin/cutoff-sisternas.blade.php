@@ -788,39 +788,26 @@ function updateCutoffFileName(input, targetId) {
 
                     {{-- Diff Table Box (Tampil saat tombol 'Cek Perubahan Data' diklik) --}}
                     <div id="d1_diff_box" style="display: none;" class="mt-3 pt-3 border-top">
-                        <div class="d-flex justify-content-between align-items-center mb-2">
-                            <span class="fw-bold text-dark" style="font-size:0.85rem;">Pratinjau Perubahan Terdeteksi:</span>
-                            <span class="text-danger font-weight-bold small"><i class="bx bx-info-circle me-1"></i> Perbandingan data otomatis</span>
+                        <div class="d-flex justify-content-between align-items-center mb-2.5">
+                            <span class="fw-bold text-dark" style="font-size:0.88rem;"><i class="bx bx-list-check text-primary me-1"></i> Pratinjau Perubahan Data:</span>
+                            <span class="badge bg-label-info text-dark" style="font-size:0.73rem; font-weight:600;"><i class="bx bx-info-circle me-1"></i> Centang kolom Aksi (kanan) jika data ingin dihapus</span>
                         </div>
 
-                        <div class="d2-diff-table-container mb-2">
-                            <table class="d2-diff-table">
-                                <thead>
+                        <div class="table-responsive rounded-3 border mb-3" style="box-shadow: 0 1px 4px rgba(0,0,0,0.04); border-color: #e2e8f0 !important;">
+                            <table class="table table-hover align-middle mb-0" style="font-size: 0.84rem;">
+                                <thead style="background-color: #f8fafc; border-bottom: 1.5px solid #e2e8f0;">
                                     <tr>
-                                        <th>NIDN</th>
-                                        <th>Nama dosen</th>
-                                        <th>Kesimpulan BKD lama</th>
-                                        <th>Kesimpulan BKD baru</th>
+                                        <th style="padding: 11px 16px; font-weight: 700; color: #475569; text-transform: uppercase; font-size: 0.72rem; letter-spacing: 0.05em;">NIDN</th>
+                                        <th style="padding: 11px 16px; font-weight: 700; color: #475569; text-transform: uppercase; font-size: 0.72rem; letter-spacing: 0.05em;">NUPTK</th>
+                                        <th style="padding: 11px 16px; font-weight: 700; color: #475569; text-transform: uppercase; font-size: 0.72rem; letter-spacing: 0.05em;">Nama Dosen</th>
+                                        <th style="padding: 11px 16px; font-weight: 700; color: #475569; text-transform: uppercase; font-size: 0.72rem; letter-spacing: 0.05em; text-align: center;">Kesimpulan BKD Lama</th>
+                                        <th style="padding: 11px 16px; font-weight: 700; color: #475569; text-transform: uppercase; font-size: 0.72rem; letter-spacing: 0.05em; text-align: center;">Kesimpulan BKD Baru</th>
+                                        <th style="padding: 11px 16px; font-weight: 700; color: #475569; text-transform: uppercase; font-size: 0.72rem; letter-spacing: 0.05em; text-align: center; width: 130px;">Aksi</th>
                                     </tr>
                                 </thead>
-                                <tbody>
-                                    <tr class="d2-row-green">
-                                        <td>0012345603</td><td>Budi Santoso</td><td>—</td><td>M <span class="badge bg-success ms-1" style="font-size:0.68rem;">baru</span></td>
-                                    </tr>
-                                    <tr class="d2-row-yellow">
-                                        <td>0012345601</td><td>Ahmad Ridwan</td><td>TM</td><td><strong>M</strong></td>
-                                    </tr>
-                                    <tr class="d2-row-red">
-                                        <td>0012345599</td><td>Rina Wulandari</td><td>M <span class="badge bg-danger ms-1" style="font-size:0.68rem;">dihapus</span></td><td>—</td>
-                                    </tr>
+                                <tbody id="d1_diff_tbody">
                                 </tbody>
                             </table>
-                        </div>
-
-                        <div class="d-flex align-items-center gap-3 mb-3" style="font-size:0.76rem; color:#64748b;">
-                            <span><span style="color:#16a34a; font-weight:bold;">●</span> Ditambah</span>
-                            <span><span style="color:#d97706; font-weight:bold;">●</span> Diubah</span>
-                            <span><span style="color:#dc2626; font-weight:bold;">●</span> Dihapus</span>
                         </div>
 
                         <button type="submit" class="btn btn-primary w-100 py-2.5 fw-bold" style="background-color:#2563eb; border-color:#2563eb; border-radius:10px; font-size:0.92rem;">
@@ -1000,20 +987,43 @@ function updateCutoffFileName(input, targetId) {
                 return;
             }
 
+            // Helper parser baris CSV dengan dukungan tanda kutip
+            function parseCSVLine(line, del) {
+                const fields = [];
+                let field = '';
+                let inQuotes = false;
+                for (let i = 0; i < line.length; i++) {
+                    const c = line[i];
+                    if (c === '"' || c === "'") {
+                        if (inQuotes && i + 1 < line.length && line[i + 1] === c) {
+                            field += c;
+                            i++;
+                        } else {
+                            inQuotes = !inQuotes;
+                        }
+                    } else if (c === del && !inQuotes) {
+                        fields.push(field.replace(/^["']|["']$/g, '').trim());
+                        field = '';
+                    } else {
+                        field += c;
+                    }
+                }
+                fields.push(field.replace(/^["']|["']$/g, '').trim());
+                return fields;
+            }
+
             // ── VALIDASI TEMPLATE HEADER CSV FLEXIBLE & STRICT ──
             const headerLine = lines[0];
             const delimiter = (headerLine.match(/;/g) || []).length > (headerLine.match(/,/g) || []).length ? ';' : ',';
-            const headers = headerLine.split(delimiter).map(h => {
+            const headers = parseCSVLine(headerLine, delimiter).map(h => {
                 return h.replace(/[\uFEFF\u200B\r\n\t]/g, '')
-                        .replace(/^["']|["']$/g, '')
-                        .trim()
                         .toLowerCase()
                         .replace(/\s+/g, '_');
             });
 
-            // Fleksibel mengecek keberadaan kolom NIDN, NAMA, dan KESIMPULAN BKD
+            // Mengecek keberadaan kolom NIDN / NUPTK, NAMA DOSEN, dan KESIMPULAN BKD (Wajib)
             const hasNidn = headers.some(h => h.includes('nidn') || h.includes('nuptk'));
-            const hasNama = headers.some(h => h.includes('nama'));
+            const hasNama = headers.some(h => h.includes('nama') || h.includes('dosen') || h.includes('sdm') || h.includes('pegawai'));
             const hasBkd  = headers.some(h => h.includes('bkd') || h.includes('kesimpulan'));
 
             if (!hasNidn || !hasNama || !hasBkd) {
@@ -1035,24 +1045,48 @@ function updateCutoffFileName(input, targetId) {
                 return;
             }
 
+            // Cari indeks kolom secara dinamis berdasarkan header CSV
+            const nidnIdx  = headers.findIndex(h => h.includes('nidn'));
+            const nuptkIdx = headers.findIndex(h => h.includes('nuptk') || h.includes('n_u_p_t_k') || h.includes('nik'));
+            const namaIdx  = headers.findIndex(h => h.includes('nama') || h.includes('dosen') || h.includes('sdm') || h.includes('pegawai'));
+            const bkdIdx   = headers.findIndex(h => h.includes('bkd') || h.includes('kesimpulan'));
+
+            const idxNidn  = nidnIdx !== -1 ? nidnIdx : (nuptkIdx !== -1 ? nuptkIdx : 0);
+            const idxNuptk = nuptkIdx !== -1 ? nuptkIdx : nidnIdx;
+            const idxNama  = namaIdx !== -1 ? namaIdx : (headers.length > 3 ? 3 : 2);
+            const idxBkd   = bkdIdx !== -1 ? bkdIdx : (headers.length - 1);
+
             const tbody = document.getElementById('d1_diff_tbody');
             if (tbody && lines.length > 1) {
                 let html = '';
-                const dataRows = lines.slice(1, 6);
+                const dataRows = lines.slice(1, 10);
                 dataRows.forEach((row, idx) => {
-                    const cols = row.split(delimiter).map(c => c.replace(/^["']|["']$/g, '').trim());
-                    const nidn = cols[0] || '—';
-                    const nama = cols[1] || '—';
-                    
-                    const rowClass = (idx % 3 === 0) ? 'd2-row-green' : ((idx % 3 === 1) ? 'd2-row-yellow' : 'd2-row-red');
-                    const labelLama = (idx % 3 === 0) ? '—' : ((idx % 3 === 1) ? 'TM' : 'M <span class="badge bg-danger ms-1" style="font-size:0.68rem;">dihapus</span>');
-                    const labelBaru = (idx % 3 === 0) ? 'M <span class="badge bg-success ms-1" style="font-size:0.68rem;">baru</span>' : ((idx % 3 === 1) ? '<strong>M</strong>' : '—');
+                    const cols = parseCSVLine(row, delimiter);
 
-                    html += `<tr class="${rowClass}">
-                        <td><code>${nidn}</code></td>
-                        <td>${nama}</td>
-                        <td>${labelLama}</td>
-                        <td>${labelBaru}</td>
+                    const nidnVal  = (idxNidn !== -1 && cols[idxNidn] && cols[idxNidn].trim() !== '' && cols[idxNidn].trim() !== '-') ? cols[idxNidn].trim() : '';
+                    const nuptkVal = (idxNuptk !== -1 && cols[idxNuptk] && cols[idxNuptk].trim() !== '' && cols[idxNuptk].trim() !== '-') ? cols[idxNuptk].trim() : '';
+                    const namaVal  = (idxNama !== -1 && cols[idxNama] && cols[idxNama].trim() !== '' && cols[idxNama].trim() !== '-') ? cols[idxNama].trim() : '';
+
+                    const nidn  = nidnVal !== '' ? nidnVal : (nuptkVal !== '' ? nuptkVal : '—');
+                    const nuptk = nuptkVal !== '' ? nuptkVal : (nidnVal !== '' ? nidnVal : '—');
+                    const nama  = namaVal !== '' ? namaVal : '—';
+                    const bkdVal = (idxBkd !== -1 && cols[idxBkd]) ? cols[idxBkd].toUpperCase() : '';
+
+                    if (nidn === '—' && nuptk === '—' && nama === '—') return;
+
+                    const labelLama = (idx % 2 === 0) ? 'TM' : 'M';
+                    const labelBaru = bkdVal ? ((bkdVal.includes('MEMENUHI') && !bkdVal.includes('TIDAK')) || bkdVal === 'M' ? 'M' : 'TM') : 'M';
+                    const isChecked = (labelLama === 'TM' && labelBaru === 'M');
+
+                    html += `<tr style="border-bottom: 1px solid #f1f5f9;">
+                        <td style="padding: 12px 16px;"><code class="fw-bold text-dark" style="font-size:0.83rem;">${nidn}</code></td>
+                        <td style="padding: 12px 16px;"><code class="text-secondary" style="font-size:0.83rem;">${nuptk}</code></td>
+                        <td style="padding: 12px 16px; font-weight: 600; color: #1e293b;">${nama}</td>
+                        <td style="padding: 12px 16px; text-align: center; font-weight: 600; color: #64748b;">${labelLama}</td>
+                        <td style="padding: 12px 16px; text-align: center; font-weight: 600; color: #0f172a;">${labelBaru}</td>
+                        <td style="padding: 12px 16px; text-align: center;">
+                            <input type="checkbox" name="delete_nidn[]" value="${nidn}" class="form-check-input" ${isChecked ? 'checked' : ''} style="width: 19px; height: 19px; cursor: pointer;" title="Centang untuk menghapus data ini">
+                        </td>
                     </tr>`;
                 });
                 tbody.innerHTML = html;
@@ -1447,16 +1481,12 @@ function updateCutoffFileName(input, targetId) {
                                 <div class="w-100">
                                     <div class="d-flex justify-content-between align-items-center mb-2">
                                         <span class="period-title fw-bold" style="font-size: 0.88rem; color: #435971;">
-                                            <i class="bx bx-calendar text-primary me-1"></i> Semester Ganjil
+                                            <i class="bx bx-calendar text-primary me-1"></i> {{ $tahunSession }}/1
                                         </span>
-                                        <span class="badge bg-label-primary text-dark" style="font-size: 0.68rem; font-weight:700;">Tahun Lalu</span>
                                     </div>
                                     <div class="period-subtitle mb-2" style="font-size: 0.71rem; line-height: 1.35;">
                                         <div>
-                                            <span style="color: #697a8d;">Pembayaran:</span> <span class="fw-semibold" style="color: #566a7f;">Maret - Agustus {{ $tahunSession }}</span>
-                                        </div>
-                                        <div style="margin-top: 1px;">
-                                            <span style="color: #697a8d;">BKD:</span> <span class="fw-semibold" style="color: #566a7f;">Sept {{ $tahunLalu }} - Feb {{ $tahunSession }}</span>
+                                            <span style="color: #697a8d;">Pembayaran:</span> <span class="fw-semibold" style="color: #566a7f;">Maret - Agustus</span>
                                         </div>
                                     </div>
                                 </div>
@@ -1477,83 +1507,39 @@ function updateCutoffFileName(input, targetId) {
                             </div>
                         </div>
 
-                        <!-- Card 2: Semester Genap (50% / col-md-6) dengan Toggle Berjalan / Tahun Lalu -->
+                        <!-- Card 2: Semester Genap (50% / col-md-6) -->
                         <div class="col-md-6 col-sm-12 d-flex">
                             @php
-                                // Jika tahun yang dipilih < tahun sekarang → default ke Tahun Lalu
                                 $isGenapBerjalan = ((int)$tahunSession >= (int)date('Y'));
-                                $genapDefaultVal  = $isGenapBerjalan ? 'n_sister_genap_bj' : 'o_sister_genap_tl';
+                                $genapDefaultVal = $isGenapBerjalan ? 'n_sister_genap_bj' : 'o_sister_genap_tl';
+                                $statGenap       = $isGenapBerjalan ? $statGenapBJ : $statGenapTL;
                             @endphp
                             <div class="btn-select-period p-3 rounded-3 d-flex flex-column justify-content-between w-100 h-100" id="cardGenap" data-value="{{ $genapDefaultVal }}" style="cursor: pointer; transition: all 0.2s ease;">
                                 <div class="w-100">
                                     <div class="d-flex justify-content-between align-items-center mb-2">
                                         <span class="period-title fw-bold" style="font-size: 0.88rem; color: #435971;">
-                                            <i class="bx bx-calendar text-success me-1"></i> Semester Genap
+                                            <i class="bx bx-calendar text-success me-1"></i> {{ $tahunSession }}/2
                                         </span>
-                                        <!-- Toggle Pill Inside Genap Card -->
-                                        <div class="custom-toggle-container" onclick="event.stopPropagation();">
-                                            <button type="button" class="btn-toggle-option {{ $isGenapBerjalan ? 'active' : '' }}" id="btnCardGenapBJ" onclick="switchCardGenap('bj')">
-                                                <i class="bx bx-calendar-event"></i> Berjalan
-                                            </button>
-                                            <button type="button" class="btn-toggle-option {{ !$isGenapBerjalan ? 'active' : '' }}" id="btnCardGenapTL" onclick="switchCardGenap('tl')">
-                                                <i class="bx bx-history"></i> Tahun Lalu
-                                            </button>
-                                        </div>
                                     </div>
 
-                                    <!-- Genap Berjalan Info -->
-                                    <div class="period-subtitle mb-2 genap-info-view {{ !$isGenapBerjalan ? 'd-none' : '' }}" id="genapBJInfo" style="font-size: 0.71rem; line-height: 1.35;">
+                                    <div class="period-subtitle mb-2" style="font-size: 0.71rem; line-height: 1.35;">
                                         <div>
-                                            <span style="color: #697a8d;">Pembayaran:</span> <span class="fw-semibold" style="color: #566a7f;">Sept {{ $tahunSession }} - Feb {{ $tahunDepan }}</span>
-                                        </div>
-                                        <div style="margin-top: 1px;">
-                                            <span style="color: #697a8d;">BKD:</span> <span class="fw-semibold" style="color: #566a7f;">Maret - Agustus {{ $tahunSession }}</span>
-                                        </div>
-                                    </div>
-
-                                    <!-- Genap Tahun Lalu Info (Hidden by default jika berjalan) -->
-                                    <div class="period-subtitle mb-2 genap-info-view {{ $isGenapBerjalan ? 'd-none' : '' }}" id="genapTLInfo" style="font-size: 0.71rem; line-height: 1.35;">
-                                        <div>
-                                            <span style="color: #697a8d;">Pembayaran:</span> <span class="fw-semibold" style="color: #566a7f;">Sept {{ $tahunLalu }} - Feb {{ $tahunSession }}</span>
-                                        </div>
-                                        <div style="margin-top: 1px;">
-                                            <span style="color: #697a8d;">BKD:</span> <span class="fw-semibold" style="color: #566a7f;">Maret - Agustus {{ $tahunLalu }}</span>
+                                            <span style="color: #697a8d;">Pembayaran:</span> <span class="fw-semibold" style="color: #566a7f;">September - Februari</span>
                                         </div>
                                     </div>
                                 </div>
 
-                                <!-- Stat Buttons Genap Berjalan -->
-                                <div class="genap-stat-view w-100 mt-auto {{ !$isGenapBerjalan ? 'd-none' : '' }}" id="genapBJStats">
-                                    <div class="d-flex gap-2 align-items-center w-100">
-                                        <div class="flex-fill">
-                                            <div class="btn-stat-flat-memenuhi" title="Klik untuk menyaring data Memenuhi">
-                                                <i class="bx bx-check" style="font-size: 0.95rem; font-weight: bold; flex-shrink: 0;"></i>
-                                                <span>{{ number_format($statGenapBJ['m'], 0, ',', '.') }} memenuhi</span>
-                                            </div>
-                                        </div>
-                                        <div class="flex-fill">
-                                            <div class="btn-stat-flat-tm" title="Klik untuk menyaring data Tidak Memenuhi">
-                                                <i class="bx bx-x" style="font-size: 0.95rem; font-weight: bold; flex-shrink: 0;"></i>
-                                                <span>{{ number_format($statGenapBJ['tm'], 0, ',', '.') }} tidak memenuhi</span>
-                                            </div>
+                                <div class="d-flex gap-2 align-items-center w-100 mt-auto">
+                                    <div class="flex-fill">
+                                        <div class="btn-stat-flat-memenuhi" title="Klik untuk menyaring data Memenuhi">
+                                            <i class="bx bx-check" style="font-size: 0.88rem; font-weight: bold; flex-shrink: 0;"></i>
+                                            <span>{{ number_format($statGenap['m'], 0, ',', '.') }} memenuhi</span>
                                         </div>
                                     </div>
-                                </div>
-
-                                <!-- Stat Buttons Genap Tahun Lalu (Hidden jika berjalan) -->
-                                <div class="genap-stat-view w-100 mt-auto {{ $isGenapBerjalan ? 'd-none' : '' }}" id="genapTLStats">
-                                    <div class="d-flex gap-2 align-items-center w-100">
-                                        <div class="flex-fill">
-                                            <div class="btn-stat-flat-memenuhi" title="Klik untuk menyaring data Memenuhi">
-                                                <i class="bx bx-check" style="font-size: 0.95rem; font-weight: bold; flex-shrink: 0;"></i>
-                                                <span>{{ number_format($statGenapTL['m'], 0, ',', '.') }} memenuhi</span>
-                                            </div>
-                                        </div>
-                                        <div class="flex-fill">
-                                            <div class="btn-stat-flat-tm" title="Klik untuk menyaring data Tidak Memenuhi">
-                                                <i class="bx bx-x" style="font-size: 0.95rem; font-weight: bold; flex-shrink: 0;"></i>
-                                                <span>{{ number_format($statGenapTL['tm'], 0, ',', '.') }} tidak memenuhi</span>
-                                            </div>
+                                    <div class="flex-fill">
+                                        <div class="btn-stat-flat-tm" title="Klik untuk menyaring data Tidak Memenuhi">
+                                            <i class="bx bx-x" style="font-size: 0.88rem; font-weight: bold; flex-shrink: 0;"></i>
+                                            <span>{{ number_format($statGenap['tm'], 0, ',', '.') }} tidak memenuhi</span>
                                         </div>
                                     </div>
                                 </div>
@@ -1565,15 +1551,14 @@ function updateCutoffFileName(input, targetId) {
                 <hr class="mt-2 mb-3.5" style="border-top: 1.5px solid #cbd5e1 !important;">
                 <div class="d-flex justify-content-between align-items-center mb-3">
                     <div>
-                        <h5 class="fw-bold text-dark mb-1" id="selectedPeriodTitle">Rincian Data Cut Off Dosen</h5>
-                        <p class="text-muted mb-0" style="font-size: 0.82rem;" id="selectedPeriodSubtitle">Pilih salah satu periode pada tabel di atas untuk me-load data dosen</p>
+                        <h5 class="fw-bold text-dark mb-0" id="selectedPeriodTitle">Rincian Data Cut Off Dosen</h5>
                     </div>
                     <!-- Hidden select untuk tetap menjaga fungsi JavaScript DataTables -->
                     <select name="sisternas" id="sisternasSelect" class="form-select d-none">
                         <option value="">Pilih Data...</option>
-                        <option value="o_sister_genap_tl" {{ request('sisternas') == 'o_sister_genap_tl' ? 'selected' : '' }}>Genap Tahun Lalu</option>
-                        <option value="p_sister_ganjil_tl" {{ request('sisternas') == 'p_sister_ganjil_tl' ? 'selected' : '' }}>Ganjil Tahun Lalu</option>
-                        <option value="n_sister_genap_bj" {{ request('sisternas') == 'n_sister_genap_bj' ? 'selected' : '' }}>Genap Berjalan</option>
+                        <option value="o_sister_genap_tl" {{ request('sisternas') == 'o_sister_genap_tl' ? 'selected' : '' }}>Semester 2 (Genap)</option>
+                        <option value="p_sister_ganjil_tl" {{ request('sisternas') == 'p_sister_ganjil_tl' ? 'selected' : '' }}>Semester 1 (Ganjil)</option>
+                        <option value="n_sister_genap_bj" {{ request('sisternas') == 'n_sister_genap_bj' ? 'selected' : '' }}>Semester 2 (Genap)</option>
                     </select>
 
                     <div class="d-flex align-items-center gap-2">
@@ -1736,17 +1721,17 @@ function updateCutoffFileName(input, targetId) {
                 <form id="createForm">
                     <input type="hidden" name="sisternas" id="create_sisternas">
                     <div class="mb-3">
-                        <label class="form-label">Data Sisternas Terpilih</label>
-                        <input type="text" id="create_sisternas_label" class="form-control" value="" disabled>
-                    </div>
-                    <div class="mb-3">
-                        <label for="create_tahun" class="form-label font-weight-bold">Tahun Pencairan / Periode</label>
+                        <label for="create_tahun" class="form-label font-weight-bold">Tahun Pelaporan</label>
                         <select class="form-select" id="create_tahun" name="tahun" required>
                             @php $curY = (int)date('Y'); @endphp
                             @for($y = 2023; $y <= $curY; $y++)
                                 <option value="{{ $y }}" {{ $tahunSession == $y ? 'selected' : '' }}>{{ $y }}</option>
                             @endfor
                         </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label font-weight-bold">Semester Pelaporan</label>
+                        <input type="text" id="create_sisternas_label" class="form-control" value="" disabled>
                     </div>
                     <div class="mb-3">
                         <label for="create_nidn" class="form-label">NIDN</label>
@@ -2163,8 +2148,8 @@ document.addEventListener('DOMContentLoaded', function() {
         $('#createForm')[0].reset();
         // Set label tampilan dan hidden value setelah reset
         $('#create_sisternas').val(selected);
-        const labelText = $('#sisternasSelect option:selected').text().trim();
-        $('#create_sisternas_label').val(labelText).attr('value', labelText).attr('placeholder', labelText);
+        const semesterLabel = (selected === 'p_sister_ganjil_tl') ? 'Semester 1 (Ganjil)' : 'Semester 2 (Genap)';
+        $('#create_sisternas_label').val(semesterLabel).attr('value', semesterLabel).attr('placeholder', semesterLabel);
         
         // Set default tahun periode sesuai filter aktif
         const activeYear = $('#tahunFilterSelect').val() || '{{ $tahunSession }}';
@@ -2176,9 +2161,9 @@ document.addEventListener('DOMContentLoaded', function() {
     // Jaga-jaga: saat modal akan ditampilkan, sinkronkan lagi label & hidden
     $('#createModal').on('show.bs.modal', function () {
         const selected = $('#sisternasSelect').val();
-        const labelText = $('#sisternasSelect option:selected').text().trim();
+        const semesterLabel = (selected === 'p_sister_ganjil_tl') ? 'Semester 1 (Ganjil)' : 'Semester 2 (Genap)';
         $('#create_sisternas').val(selected);
-        $('#create_sisternas_label').val(labelText).attr('value', labelText).attr('placeholder', labelText);
+        $('#create_sisternas_label').val(semesterLabel).attr('value', semesterLabel).attr('placeholder', semesterLabel);
         const activeYear = $('#tahunFilterSelect').val() || '{{ $tahunSession }}';
         $('#create_tahun').val(activeYear);
     });

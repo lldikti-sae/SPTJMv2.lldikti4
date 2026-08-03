@@ -349,10 +349,55 @@ class CutOffSisternasController extends Controller
 
       fclose($handle);
 
+      // Hapus data dosen yang dicentang di kolom Aksi (TM → M, sudah memenuhi BKD)
+      $deleteNidns = $request->input('delete_nidn', []);
+      $deleted = 0;
+      if (!empty($deleteNidns) && is_array($deleteNidns)) {
+        $deleted = DB::table($table)
+          ->where('tahun', (string)$tahun)
+          ->whereIn('nidn', $deleteNidns)
+          ->delete();
+
+        Log::info('CutOffSisternas: Deleted checked NIDNs after upload', [
+          'table' => $table,
+          'tahun' => $tahun,
+          'count' => $deleted,
+          'nidns' => $deleteNidns,
+        ]);
+      }
+
+      // Simpan riwayat ke History Data Sisternas (k_data_sister) secara otomatis
+      try {
+        $tanggalFormat = date('dmY');
+        $originalName = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
+        $slugName = \Illuminate\Support\Str::slug($originalName, '_');
+        $finalFileName = $tanggalFormat . '_' . $slugName . '.' . $file->getClientOriginalExtension();
+
+        \Illuminate\Support\Facades\Storage::disk('public')->putFileAs('File_Data_Sisternas2', $file, $finalFileName);
+
+        $isGanjil = str_contains($table, 'ganjil');
+        \App\Models\Sisternas::create([
+          'tahun'   => (string)$tahun,
+          'periode' => $isGanjil ? 'Ganjil' : 'Genap',
+          'bulan'   => $isGanjil ? 'Maret - Agustus' : 'September - Februari',
+          'dokumen' => $finalFileName,
+          'tanggal' => date('Y-m-d'),
+        ]);
+      } catch (\Throwable $histErr) {
+        \Illuminate\Support\Facades\Log::warning('Gagal menyimpan riwayat ke History Data Sisternas: ' . $histErr->getMessage());
+      }
+
+      $msg = 'Data Berhasil Disimpan (' . number_format($inserted, 0, ',', '.') . ' baris)';
+      if ($deleted > 0) {
+        $msg .= ' dan ' . $deleted . ' data dosen (TM→M) dihapus dari tabel cut off';
+      }
+      $msg .= '.';
+
       return response()->json([
         'success' => true,
-        'message' => 'Data Berhasil Disimpan (' . number_format($inserted, 0, ',', '.') . ' baris)!',
+        'message' => $msg,
         'imported' => $inserted,
+        'deleted' => $deleted,
       ]);
 
     } catch (\Throwable $e) {
