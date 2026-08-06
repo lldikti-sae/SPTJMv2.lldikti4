@@ -93,7 +93,7 @@ class NonaktifkanDosenPtsController extends Controller
     $rows = [];
     foreach ($data as $row) {
       $isActive = ($row->aktif === '1' || $row->aktif === 1 || $row->aktif === '1');
-      $statusLabel = $isActive ? '<span class="badge bg-label-primary">Aktif</span>' : '<span class="badge bg-label-danger">Tidak Aktif</span>';
+      $statusLabel = $isActive ? '<span class="badge bg-label-success border border-success">Aktif</span>' : '<span class="badge bg-label-danger">Tidak Aktif</span>';
 
       // Determine action: if active -> show 'Nonaktifkan', else show 'Aktifkan'
       $actionType = $isActive ? 'deactivate' : 'activate';

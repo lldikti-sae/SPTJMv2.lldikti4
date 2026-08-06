@@ -211,7 +211,7 @@ class KekuranganBayarController extends Controller
         . '<td class="num">' . $no . '</td>'
         . '<td>' . $escape($r->NIDN ?? $r->nidn ?? '') . '</td>'
         . '<td>' . $escape($r->Nama ?? $r->nama ?? '') . '</td>'
-        . '<td>' . $escape($jenisRow) . '</td>'
+        . '<td><span class="badge badge-jenis">' . $escape($jenisRow) . '</span></td>'
         . '<td>' . $escape($jabatan12) . '</td>'
         . '<td>' . $escape($status) . '</td>'
         . '<td>' . $escape($r->Nama_Pegawai ?? '') . '</td>'

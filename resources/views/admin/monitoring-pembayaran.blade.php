@@ -735,7 +735,9 @@ $months = [
           if(spanJenis && spanAktif) {
               const j=(h.Jenis||'').toUpperCase(), pns=j.indexOf('PNS')!==-1&&j.indexOf('NON')===-1;
               spanJenis.textContent = pns ? 'PNS' : 'NON PNS';
-              spanJenis.style.color = '#0056b3';
+              spanJenis.className = 'badge badge-jenis';
+                    spanJenis.style.color = '';
+                    spanJenis.style.backgroundColor = '';
               spanAktif.textContent = h.Aktif==1 ? 'Aktif' : 'Tidak Aktif';
           }
           const el3=document.getElementById('hdr-pt'); if(el3) el3.value=(h.Kode_PT||'')+' - '+(h.PTS||'');

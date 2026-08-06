@@ -323,9 +323,9 @@
           data: 'aktif', name: 'aktif',
           render: function(data) {
             if (data == 1 || data == '1') {
-              return '<span class="badge-aktif">Aktif</span>';
+              return '<span class="badge bg-label-success border border-success">Aktif</span>';
             }
-            return '<span class="badge-nonaktif">Tidak Aktif</span>';
+            return '<span class="badge bg-label-danger">Tidak Aktif</span>';
           }
         },
         { data: 'wilayah', name: 'wilayah' },

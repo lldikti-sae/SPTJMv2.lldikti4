@@ -35,7 +35,7 @@ class DaftarPtController extends Controller
 ";
         })
         ->editColumn('aktif', function ($row) {
-          return $row->aktif == 1 ? '<span class="badge-aktif">Aktif</span>' : '<span class="badge-nonaktif">Tidak Aktif</span>';
+          return $row->aktif == 1 ? '<span class="badge bg-label-success border border-success">Aktif</span>' : '<span class="badge bg-label-danger">Tidak Aktif</span>';
         })
         ->rawColumns(['aksi', 'aktif'])
         ->make(true);

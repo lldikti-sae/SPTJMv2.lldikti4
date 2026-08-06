@@ -179,7 +179,7 @@
                                         <td>{{ $no++ }}</td>
                                         <td>{{ $group['jmlh_dosen'] }}</td>
                                         <td>{{ $group['bank'] }}</td>
-                                        <td>{{ $group['status_pegawai'] }}</td>
+                                        <td><span class="badge bg-label-primary">{{ $group['status_pegawai'] }}</span></td>
                                         <td>{{ $group['tunjangan'] }}</td>
                                         <td>{{ number_format($group['total_kotor_semua'], 0, ',', '.') }}</td>
                                         <td>{{ number_format($group['total_pajak_semua'], 0, ',', '.') }}</td>

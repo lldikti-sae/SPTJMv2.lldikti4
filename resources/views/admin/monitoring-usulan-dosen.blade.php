@@ -345,7 +345,7 @@
                         <td class="text-start">{{ $data->NIDN }}</td>
                         <td class="text-start">{{ $data->NUPTK ?: '-' }}</td>
                         <td class="text-start" style="white-space: normal; max-width: 220px;">{{ $data->Nama }}</td>
-                        <td class="text-center"><span class="badge-jenis">{{ $data->Jenis }}</span></td>
+                        <td class="text-center"><span class="badge badge-jenis">{{ $data->Jenis }}</span></td>
                         <td class="text-center">{{ $data->Kode_PT }}</td>
                         <td class="text-start" style="white-space: normal; max-width: 220px;">{{ $data->PTS }}</td>
                         <td class="text-center">
@@ -444,5 +444,6 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 </script>
 @endsection
+
 
 

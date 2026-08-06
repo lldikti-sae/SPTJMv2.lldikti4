@@ -759,3 +759,15 @@ table.dataTable td a.text-link-nidn:hover {
     text-decoration: none !important;
     border-bottom: none !important;
 }
+
+ / *   B a d g e   J e n i s   ( P N S   /   N O N   P N S )   * / 
+ . b a d g e - j e n i s   { 
+         b a c k g r o u n d - c o l o r :   # e 0 f 2 f e   ! i m p o r t a n t ; 
+         c o l o r :   # 0 3 6 9 a 1   ! i m p o r t a n t ; 
+         b o r d e r :   1 p x   s o l i d   # b a e 6 f d   ! i m p o r t a n t ; 
+         f o n t - w e i g h t :   7 0 0 ; 
+         p a d d i n g :   6 p x   1 4 p x ; 
+         b o r d e r - r a d i u s :   6 p x ; 
+ } 
+  
+ 

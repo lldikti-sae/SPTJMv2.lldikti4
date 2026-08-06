@@ -320,8 +320,9 @@
         /* ─── STATUS BADGE GLOBAL STANDARDIZATION ─── */
         /* Aktif = Biru */
         .badge.bg-label-primary,
-        .badge-aktif,
-        .vdd-badge-aktif {
+        .badge-jenis,
+        .badge-pns,
+        .badge-nonpns {
             background-color: rgba(26, 86, 219, 0.1) !important;
             color: #1a56db !important;
             font-weight: 600 !important;
@@ -334,6 +335,7 @@
         /* Tidak Aktif / Non / Merah */
         .badge.bg-label-danger,
         .badge-nonaktif,
+        .badge-tidak-aktif,
         .badge-tidak,
         .vdd-badge-nonaktif,
         .vdd-badge-tidak {
@@ -347,7 +349,9 @@
             display: inline-block !important;
         }
         /* Sukses = Hijau */
-        .badge.bg-label-success {
+        .badge.bg-label-success,
+        .badge-aktif,
+        .vdd-badge-aktif {
             background-color: rgba(5, 150, 105, 0.1) !important;
             color: #059669 !important;
             font-weight: 600 !important;
@@ -433,6 +437,51 @@
 
     <!-- Stylesheets consolidated into sptjm-custom.css -->
 
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        if (window.jQuery) {
+            window.jQuery(document).on('draw.dt', function (e, settings) {
+                var api = new window.jQuery.fn.dataTable.Api(settings);
+                api.cells().every(function () {
+                    var cell = this.node();
+                    if (cell) {
+                        var $cell = window.jQuery(cell);
+                        // If cell has no child elements, it's just raw text
+                        if ($cell.children().length === 0) {
+                            var text = $cell.text().trim();
+                            var upper = text.toUpperCase();
+                            if (upper === 'PNS' || upper === 'NON PNS' || upper === 'NON-PNS') {
+                                $cell.html('<span class="badge bg-label-primary">' + text + '</span>');
+                                $cell.attr('style', function(i, s) { return (s || '') + ' text-align: center !important;'; });
+                            } else if (upper === 'AKTIF') {
+                                $cell.html('<span class="badge bg-label-success border border-success">Aktif</span>');
+                            } else if (upper === 'TIDAK AKTIF') {
+                                $cell.html('<span class="badge bg-label-danger">Tidak Aktif</span>');
+                            }
+                        } else if ($cell.children('.badge').length > 0) {
+                            // If it already has a badge, ensure it has the correct colors based on text
+                            var badge = $cell.find('.badge');
+                            var text = badge.text().trim();
+                            var upper = text.toUpperCase();
+                            
+                            if (upper === 'PNS' || upper === 'NON PNS' || upper === 'NON-PNS') {
+                                badge.removeClass('bg-label-danger bg-label-success bg-label-warning bg-label-info border border-success badge-aktif badge-nonaktif');
+                                badge.addClass('bg-label-primary');
+                                $cell.attr('style', function(i, s) { return (s || '') + ' text-align: center !important;'; });
+                            } else if (upper === 'AKTIF') {
+                                badge.removeClass('bg-label-primary bg-label-danger bg-label-warning bg-label-info badge-nonaktif');
+                                badge.addClass('bg-label-success border border-success');
+                            } else if (upper === 'TIDAK AKTIF') {
+                                badge.removeClass('bg-label-primary bg-label-success bg-label-warning bg-label-info border border-success badge-aktif');
+                                badge.addClass('bg-label-danger');
+                            }
+                        }
+                    }
+                });
+            });
+        }
+    });
+    </script>
 </body>
 
 </html>

@@ -61,7 +61,7 @@
                         <td>{{ $item->kesimpulan_bkd ?? '-' }}</td>
                         <td>
                             @if ($item->aktif == '1')
-                            <span class="badge bg-label-primary">Aktif</span>
+                            <span class="badge bg-label-success border border-success">Aktif</span>
                             @else
                             <span class="badge bg-label-danger">Tidak Aktif</span>
                             @endif
@@ -97,7 +97,7 @@
                         <td>{{ $item->kesimpulan_bkd ?? '-' }}</td>
                         <td>
                             @if ($item->aktif == '1')
-                            <span class="badge bg-label-primary">Aktif</span>
+                            <span class="badge bg-label-success border border-success">Aktif</span>
                             @else
                             <span class="badge bg-label-danger">Tidak Aktif</span>
                             @endif

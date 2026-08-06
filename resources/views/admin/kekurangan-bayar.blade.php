@@ -270,7 +270,7 @@
                                     <tbody>
                                         @forelse($kurangRows as $row)
                                         @php
-                                        $status = $row->Aktif == 1 ? 'Aktif' : 'Tidak Aktif';
+                                        $status = $row->Aktif == 1 ? '<span class="badge bg-label-success border border-success">Aktif</span>' : '<span class="badge bg-label-danger">Tidak Aktif</span>';
                                         $kesimpulan = ((float) ($row->bersih_akt ?? 0)) - ((float) ($row->bersih ?? 0));
                                         $clsKesimpulan = $kesimpulan == 0.0 ? '' : ($kesimpulan < 0 ? 'table-danger' : 'table-success');
                                         @endphp
@@ -279,9 +279,9 @@
                                             <td>{{ !empty($row->NIDN) ? $row->NIDN : '-' }}</td>
                                             <td>{{ !empty($row->NUPTK) ? $row->NUPTK : '-' }}</td>
                                             <td>{{ $row->Nama }}</td>
-                                            <td>{{ $row->Jenis }}</td>
+                                            <td><span class="badge bg-label-primary">{{ $row->Jenis ?: '-' }}</span></td>
                                             <td>{{ $row->Jabatan12 }}</td>
-                                            <td>{{ $status }}</td>
+                                            <td>{!! $status !!}</td>
                                             <td>{{ $row->Bank ?? '-' }}</td>
                                                 @for ($i = 1; $i <= 12; $i++)
                                                 @php
@@ -451,7 +451,7 @@
                                     <tbody>
                                         @forelse($lebihRows as $row)
                                         @php
-                                        $status = $row->Aktif == 1 ? 'Aktif' : 'Tidak Aktif';
+                                        $status = $row->Aktif == 1 ? '<span class="badge bg-label-success border border-success">Aktif</span>' : '<span class="badge bg-label-danger">Tidak Aktif</span>';
                                         $kesimpulan = ((float) ($row->bersih_akt ?? 0)) - ((float) ($row->bersih ?? 0));
                                         $clsKesimpulan = $kesimpulan == 0.0 ? '' : ($kesimpulan > 0 ? 'table-success' : 'table-danger');
                                         @endphp
@@ -460,9 +460,9 @@
                                             <td>{{ !empty($row->NIDN) ? $row->NIDN : '-' }}</td>
                                             <td>{{ !empty($row->NUPTK) ? $row->NUPTK : '-' }}</td>
                                             <td>{{ $row->Nama }}</td>
-                                            <td>{{ $row->Jenis }}</td>
+                                            <td><span class="badge bg-label-primary">{{ $row->Jenis ?: '-' }}</span></td>
                                             <td>{{ $row->Jabatan12 }}</td>
-                                            <td>{{ $status }}</td>
+                                            <td>{!! $status !!}</td>
                                             <td>{{ $row->Bank ?? '-' }}</td>
                                                 @for ($i = 1; $i <= 12; $i++)
                                                 @php
@@ -636,7 +636,7 @@
                                     <tbody>
                                         @forelse($selesaiRows as $row)
                                         @php
-                                        $status = $row->Aktif == 1 ? 'Aktif' : 'Tidak Aktif';
+                                        $status = $row->Aktif == 1 ? '<span class="badge bg-label-success border border-success">Aktif</span>' : '<span class="badge bg-label-danger">Tidak Aktif</span>';
                                         $kesimpulan = ((float) ($row->bersih ?? 0)) - ((float) ($row->bersih_akt ?? 0));
                                         $clsKesimpulan = $kesimpulan == 0.0 ? '' : ($kesimpulan > 0 ? 'table-success' : 'table-danger');
                                         @endphp
@@ -662,9 +662,9 @@
                                                 }
                                             @endphp
                                             <td class="text-center">{!! $badgeStatus !!}</td>
-                                            <td>{{ $row->Jenis }}</td>
+                                            <td><span class="badge bg-label-primary">{{ $row->Jenis ?: '-' }}</span></td>
                                             <td>{{ $row->Jabatan12 }}</td>
-                                            <td>{{ $status }}</td>
+                                            <td>{!! $status !!}</td>
                                             <td>{{ $row->Bank ?? '-' }}</td>
                                                 @for ($i = 1; $i <= 12; $i++)
                                                 @php

@@ -197,7 +197,7 @@ class DashboardAuditorController extends Controller
 
     return DataTables::of(collect($filteredDosenPensiun))
       ->addColumn('status', function ($row) {
-        return '<span class="badge bg-label-primary">Aktif</span>';
+        return '<span class="badge bg-label-success border border-success">Aktif</span>';
       })
       ->addColumn('aksi', function ($row) {
         $nidn = $row['nidn'] ?? null;

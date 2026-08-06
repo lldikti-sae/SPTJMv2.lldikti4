@@ -659,18 +659,37 @@
     // --- SPTJM GLOBAL UI STANDARDIZATION ---
     function applySptjmGlobalStyles() {
         // 1. Badge Status / Jenis Coloring
-        $('span.badge, span.badge-jenis, button.badge-bulan').each(function() {
+        $('span.badge, span.badge-jenis, button.badge-bulan, span#hdr-status-jenis, span#hdr-status-aktif').each(function() {
             var text = $(this).text().trim().toLowerCase();
-            // Aktif = Biru
-            if (text === 'aktif' || text === 'ya' || text === 'eligible') {
+            
+            // STATUS PEGAWAI: PNS / NON PNS = Biru
+            if (text === 'pns' || text === 'non pns' || text === 'non-pns') {
                 $(this).css({
                     'background-color': '#e0e7ff',
                     'color': '#1a56db',
-                    'border': '1px solid rgba(26,86,219,0.2)'
+                    'border': '1px solid rgba(26,86,219,0.2)',
+                    'min-width': '90px',
+                    'display': 'inline-flex',
+                    'align-items': 'center',
+                    'justify-content': 'center',
+                    'text-align': 'center'
+                }).removeClass('bg-label-danger bg-label-warning bg-label-secondary bg-label-success');
+
+                // Align center inside table cells
+                if ($(this).parent().is('td')) {
+                    $(this).parent().attr('style', function(i, s) { return (s || '') + ' text-align: center !important;'; });
+                }
+            }
+            // STATUS KEAKTIFAN: Aktif = Hijau
+            else if (text === 'aktif' || text === 'ya' || text === 'eligible') {
+                $(this).css({
+                    'background-color': '#dcfce7',
+                    'color': '#16a34a',
+                    'border': '1px solid rgba(22,163,74,0.2)'
                 }).removeClass('bg-label-danger bg-label-warning bg-label-secondary bg-label-primary');
             } 
-            // Tidak Aktif / Merah
-            else if (text.includes('tidak') || text.includes('non') || text === 'tolak' || text.includes('gagal') || text.includes('belum')) {
+            // STATUS KEAKTIFAN: Tidak Aktif / Merah
+            else if (text.includes('tidak') || text === 'tolak' || text.includes('gagal') || text.includes('belum')) {
                 $(this).css({
                     'background-color': '#fee2e2',
                     'color': '#dc2626',
@@ -695,6 +714,58 @@
                 if ($(this).hasClass('btn') || $(this).attr('type') === 'button' || $(this).attr('class') && $(this).attr('class').includes('sptjm-')) {
                     $(this).removeClass('btn-primary btn-success btn-sptjm-primary btn-sptjm-success btn-outline-primary bg-primary bg-success');
                     $(this).addClass('btn-sptjm-sinkron');
+                }
+            }
+        });
+
+        // 4. Badge Bank Standardization
+        $('td').each(function() {
+            var $el = $(this);
+            if ($el.children().length > 0) return; // Ignore if it has children, only format raw text
+            var text = $el.text().trim().toUpperCase();
+            var bg = null;
+            if (text === 'BTN') bg = '#ef4444'; // Merah
+            else if (text === 'BNI') bg = '#f97316'; // Oranye
+            else if (text === 'MANDIRI') bg = '#f59e0b'; // Kuning
+            else if (text === 'BSI') bg = '#10b981'; // Hijau
+            else if (text === 'BRI') bg = '#1a56db'; // Biru
+            else if (text === 'BJB') bg = '#64748b'; // Abu-abu
+            
+            if (bg) {
+                $el.html('<span class="badge-bank" style="display:inline-flex; align-items:center; justify-content:center; text-align:center; min-width:75px; background:'+bg+'; color:#fff !important; border-radius:6px; padding:3px 8px; font-size:0.72rem; font-weight:700;">' + text + '</span>');
+                $el.attr('style', function(i, s) { return (s || '') + ' text-align: center !important;'; }); // Align center inside table cell
+            }
+        });
+        
+        $('span.badge-bank').each(function() {
+            var $el = $(this);
+            var text = $el.text().trim().toUpperCase();
+            var bg = null;
+            if (text === 'BTN') bg = '#ef4444'; // Merah
+            else if (text === 'BNI') bg = '#f97316'; // Oranye
+            else if (text === 'MANDIRI') bg = '#f59e0b'; // Kuning
+            else if (text === 'BSI') bg = '#10b981'; // Hijau
+            else if (text === 'BRI') bg = '#1a56db'; // Biru
+            else if (text === 'BJB') bg = '#64748b'; // Abu-abu
+            
+            if (bg) {
+                $el.css({
+                    'background-color': bg,
+                    'color': '#fff',
+                    'border-radius': '6px',
+                    'padding': '3px 8px',
+                    'font-size': '0.72rem',
+                    'font-weight': '700',
+                    'display': 'inline-flex',
+                    'min-width': '75px',
+                    'align-items': 'center',
+                    'justify-content': 'center',
+                    'text-align': 'center'
+                });
+                
+                // Align center inside table cells
+                if ($el.parent().is('td')) {
+                    $el.parent().attr('style', function(i, s) { return (s || '') + ' text-align: center !important;'; });
                 }
             }
         });

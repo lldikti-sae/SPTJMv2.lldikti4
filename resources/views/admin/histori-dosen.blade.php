@@ -100,9 +100,9 @@
               render: function(data, type, row) {
                   let strData = data ? data.toString() : '';
                   if (strData.includes('Tidak Aktif') || strData.includes('TIDAK AKTIF') || strData === '0') {
-                      return '<span class="badge-tidak-aktif">TIDAK AKTIF</span>';
+                      return '<span class="badge bg-label-danger">TIDAK AKTIF</span>';
                   } else if (strData.includes('Aktif') || strData.includes('AKTIF') || strData === '1' || strData.includes('bg-label-primary')) {
-                      return '<span class="badge-aktif">AKTIF</span>';
+                      return '<span class="badge bg-label-success border border-success">AKTIF</span>';
                   }
                   return data;
               }

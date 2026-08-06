@@ -225,7 +225,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     // Figma design uses active pill
                     // Strip HTML if present to prevent nesting
                     var text = (data || 'AKTIF').toString().replace(/<[^>]*>/g, '');
-                    return '<span class="sptjm-badge-active">' + text + '</span>';
+                    return '<span class="badge bg-label-success border border-success">' + text + '</span>';
                 }
             },
             { 

@@ -162,14 +162,14 @@
                                         </button>
 
                                         @if ($isChecked)
-                                            <button type="button" class="toggle-ceklist sptjm-icon-btn sptjm-btn-reset" title="Non-Ceklis"
+                                            <button type="button" class="toggle-ceklist sptjm-icon-btn sptjm-btn-delete" title="Nonaktifkan"
                                                 data-action="noncek" data-id="{{ $data->id }}" data-jenis="{{ $data->jenis_usulan }}">
-                                                <i class="bx bx-check"></i>
+                                                <i class="bx bx-block"></i>
                                             </button>
                                         @else
-                                            <button type="button" class="toggle-ceklist sptjm-icon-btn sptjm-btn-delete" title="Ceklis"
+                                            <button type="button" class="toggle-ceklist sptjm-icon-btn sptjm-btn-reset" title="Aktifkan Kembali"
                                                 data-action="cek" data-id="{{ $data->id }}" data-jenis="{{ $data->jenis_usulan }}">
-                                                <i class="bx bx-block"></i>
+                                                <i class="bx bx-check"></i>
                                             </button>
                                         @endif
                                     </td>
@@ -486,33 +486,33 @@ document.addEventListener('click', async function(e) {
         }
 
         if (res.ok) {
-            // Ensure only one checked per jenis: when checking, mark clicked as active (green) and others as non-active (red)
+            // Ensure only one checked per jenis: when checking, mark clicked as active (red block) and others as non-active (green check)
             if (action === 'cek') {
                 const related = document.querySelectorAll(`.toggle-ceklist[data-jenis="${jenis}"]`);
                 related.forEach(el => {
                     if (el === btn) {
-                        // this becomes active (green)
-                        el.classList.remove('sptjm-btn-delete');
-                        el.classList.add('sptjm-btn-reset');
-                        el.dataset.action = 'noncek';
-                        el.title = 'Non-Ceklis';
-                        el.innerHTML = '<i class="bx bx-check"></i>';
-                    } else {
-                        // others become non-active (red)
+                        // this becomes ACTIVE (red block)
                         el.classList.remove('sptjm-btn-reset');
                         el.classList.add('sptjm-btn-delete');
-                        el.dataset.action = 'cek';
-                        el.title = 'Ceklis';
+                        el.dataset.action = 'noncek';
+                        el.title = 'Nonaktifkan';
                         el.innerHTML = '<i class="bx bx-block"></i>';
+                    } else {
+                        // others become INACTIVE (green check)
+                        el.classList.remove('sptjm-btn-delete');
+                        el.classList.add('sptjm-btn-reset');
+                        el.dataset.action = 'cek';
+                        el.title = 'Aktifkan Kembali';
+                        el.innerHTML = '<i class="bx bx-check"></i>';
                     }
                 });
             } else {
-                // clicking noncek => set this button back to non-active (red)
-                btn.classList.remove('sptjm-btn-reset');
-                btn.classList.add('sptjm-btn-delete');
+                // clicking noncek => set this button back to INACTIVE (green check)
+                btn.classList.remove('sptjm-btn-delete');
+                btn.classList.add('sptjm-btn-reset');
                 btn.dataset.action = 'cek';
-                btn.title = 'Ceklis';
-                btn.innerHTML = '<i class="bx bx-block"></i>';
+                btn.title = 'Aktifkan Kembali';
+                btn.innerHTML = '<i class="bx bx-check"></i>';
             }
         } else {
             console.error('Request failed', res.status);

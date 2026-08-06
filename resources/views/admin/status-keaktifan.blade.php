@@ -71,7 +71,7 @@
                         <td>
                             @php
                                 $aktifLower = strtolower(trim($keaktifan->aktif));
-                                $badgeClass = $aktifLower === 'aktif' ? 'bg-label-primary' : ($aktifLower === 'tidak aktif' ? 'bg-label-danger' : 'bg-label-success');
+                                $badgeClass = $aktifLower === 'aktif' ? 'bg-label-success border border-success' : ($aktifLower === 'tidak aktif' ? 'bg-label-danger' : 'bg-label-primary');
                             @endphp
                             <span class="badge rounded-pill {{ $badgeClass }}">{{ $keaktifan->aktif }}</span>
                         </td>

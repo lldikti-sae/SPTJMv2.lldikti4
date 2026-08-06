@@ -40,7 +40,7 @@
                             <div class="form-check form-switch mb-0">
                                 <input class="form-check-input toggle-status" type="checkbox" data-id="{{ $pejabat->id }}" {{ $pejabat->is_aktif ? 'checked' : '' }} style="cursor: pointer;">
                             </div>
-                            <span class="badge rounded-pill {{ $pejabat->is_aktif ? 'bg-label-primary' : 'bg-label-danger' }} status-badge-{{ $pejabat->id }}">
+                            <span class="badge rounded-pill {{ $pejabat->is_aktif ? 'bg-label-success border border-success' : 'bg-label-danger' }} status-badge-{{ $pejabat->id }}">
                                 {{ $pejabat->is_aktif ? 'Aktif' : 'Tidak Aktif' }}
                             </span>
                         </div>
@@ -236,9 +236,9 @@
                 if (response.success) {
                     var badge = $('.status-badge-' + id);
                     if (response.is_aktif) {
-                        badge.removeClass('bg-label-danger').addClass('bg-label-primary').text('Aktif');
+                        badge.removeClass('bg-label-danger').addClass('bg-label-success').addClass('border').addClass('border-success').text('Aktif');
                     } else {
-                        badge.removeClass('bg-label-primary').addClass('bg-label-danger').text('Tidak Aktif');
+                        badge.removeClass('bg-label-success').removeClass('border').removeClass('border-success').addClass('bg-label-danger').text('Tidak Aktif');
                     }
                     
                     Swal.fire({

@@ -53,7 +53,7 @@ class HistoriDosenController extends Controller
       ->editColumn('aktif', function ($row) {
         $isAktif = (string)($row->aktif ?? '') === '1';
         return $isAktif
-          ? '<span class="badge bg-label-primary">Aktif</span>'
+          ? '<span class="badge bg-label-success border border-success">Aktif</span>'
           : '<span class="badge bg-label-danger">Tidak Aktif</span>';
       })
       ->editColumn('tgl_dokumen_ubah', function ($row) {

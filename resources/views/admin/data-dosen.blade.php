@@ -583,7 +583,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 className: 'text-center',
                 render: function(data, type, row) {
                     if (data == 1 || data == '1') {
-                        return '<div class="text-center"><span class="badge bg-label-primary">Aktif</span></div>';
+                        return '<div class="text-center"><span class="badge bg-label-success border border-success">Aktif</span></div>';
                     } else {
                         return '<div class="text-center"><span class="badge bg-label-danger">Tidak Aktif</span></div>';
                     }
@@ -732,7 +732,7 @@ document.addEventListener('DOMContentLoaded', function() {
                                 <td>${row.pts}</td>
                                 <td>${status}</td>
                                 <td class="text-center">
-                                    ${(row.aktif == 1 || row.aktif === '1') ? '<span class="badge bg-label-primary">Aktif</span>' : '<span class="badge bg-label-danger">Tidak Aktif</span>'}
+                                    ${(row.aktif == 1 || row.aktif === '1') ? '<span class="badge bg-label-success border border-success">Aktif</span>' : '<span class="badge bg-label-danger">Tidak Aktif</span>'}
                                 </td>
                             </tr>
                         `;

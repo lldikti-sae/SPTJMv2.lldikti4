@@ -94,7 +94,7 @@ class CekDataDosenPtsController extends Controller
         ->addIndexColumn()
         ->editColumn('aktif', function ($row) {
           if ($row->Aktif == 1) {
-            return '<span class="badge bg-label-primary">Aktif</span>';
+            return '<span class="badge bg-label-success border border-success">Aktif</span>';
           }
           return '<span class="badge bg-label-danger">Tidak Aktif</span>';
         })

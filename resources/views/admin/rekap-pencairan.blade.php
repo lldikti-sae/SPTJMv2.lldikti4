@@ -124,11 +124,12 @@
                         @php
                             // Badge warna bank
                             $bankColors = [
-                                'BRI'     => ['bg' => '#1a56db', 'text' => '#fff'],
-                                'MANDIRI' => ['bg' => '#f59e0b', 'text' => '#fff'],
-                                'BNI'     => ['bg' => '#ef4444', 'text' => '#fff'],
-                                'BTN'     => ['bg' => '#f97316', 'text' => '#fff'],
-                                'BSI'     => ['bg' => '#10b981', 'text' => '#fff'],
+                                'BTN'     => ['bg' => '#ef4444', 'text' => '#fff'], // Merah
+                                'BNI'     => ['bg' => '#f97316', 'text' => '#fff'], // Oranye
+                                'MANDIRI' => ['bg' => '#f59e0b', 'text' => '#fff'], // Kuning
+                                'BSI'     => ['bg' => '#10b981', 'text' => '#fff'], // Hijau
+                                'BRI'     => ['bg' => '#1a56db', 'text' => '#fff'], // Biru
+                                'BJB'     => ['bg' => '#64748b', 'text' => '#fff'], // Abu-abu
                             ];
                             $bankUp = strtoupper(trim($item->bank ?? ''));
                             $bankBg  = $bankColors[$bankUp]['bg']  ?? '#64748b';

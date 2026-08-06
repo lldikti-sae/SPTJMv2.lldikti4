@@ -128,7 +128,7 @@
 								<td class="text-center">{{ $d->pp ?? '-' }}</td>
 								<td class="text-center">
 									@if(($d->aktif ?? 0) == 1)
-										<span class="badge bg-label-primary">Aktif</span>
+										<span class="badge bg-label-success border border-success">Aktif</span>
 									@else
 										<span class="badge bg-label-danger">Tidak Aktif</span>
 									@endif

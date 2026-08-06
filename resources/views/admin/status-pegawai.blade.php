@@ -69,7 +69,7 @@
                     @foreach ($g_pegawai as $pegawai)
                     <tr>
                         <td><span class="fw-semibold text-primary">{{ $pegawai->kode }}</span></td>
-                        <td><span class="fw-bold text-dark">{{ $pegawai->jenis }}</span></td>
+                        <td><span class="badge badge-jenis">{{ $pegawai->jenis }}</span></td>
                         <td>
                             <button class="sptjm-icon-btn sptjm-btn-edit edit-pegawai" data-id="{{ $pegawai->kode }}"
                               data-kode="{{ $pegawai->kode }}" data-jenis="{{ $pegawai->jenis }}"

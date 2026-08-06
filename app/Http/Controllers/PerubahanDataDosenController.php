@@ -427,7 +427,7 @@ class PerubahanDataDosenController extends Controller
         })
         ->editColumn('aktif', function ($row) {
           if ($row->aktif == 1) {
-            return '<span class="badge bg-label-primary">Aktif</span>';
+            return '<span class="badge bg-label-success border border-success">Aktif</span>';
           }
           return '<span class="badge bg-label-danger">Tidak Aktif</span>';
         })
@@ -2233,7 +2233,7 @@ class PerubahanDataDosenController extends Controller
         })
         ->editColumn('status', function ($row) {
           if (isset($row->Aktifq) && $row->Aktif == 1) {
-            return '<span class="badge bg-label-primary">Aktif</span>';
+            return '<span class="badge bg-label-success border border-success">Aktif</span>';
           }
           return '<span class="badge bg-label-danger">Tidak Aktif</span>';
         })

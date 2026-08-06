@@ -46,6 +46,10 @@ class DataDosenController extends Controller
         ->orderBy('Nama');
 
       return DataTables::of($query)
+        ->editColumn('jenis', function ($row) {
+          $j = trim($row->jenis ?? ($row->Jenis ?? ''));
+          return '<span class="badge bg-label-primary">' . ($j ?: '-') . '</span>';
+        })
         ->editColumn('nidn', function ($row) {
           return !empty($row->nidn) ? $row->nidn : '-';
         })
@@ -97,7 +101,7 @@ class DataDosenController extends Controller
 
           return '<div class="d-flex justify-content-center gap-1">' . $viewBtn . $statusBtn . $editBtn . '</div>';
         })
-        ->rawColumns(['aksi', 'aktif'])
+        ->rawColumns(['aksi', 'aktif', 'jenis'])
         ->make(true);
     }
 
@@ -1080,6 +1084,10 @@ class DataDosenController extends Controller
       }
 
       return DataTables::of($query)
+        ->editColumn('jenis', function ($row) {
+          $j = trim($row->jenis ?? ($row->Jenis ?? ''));
+          return '<span class="badge bg-label-primary">' . ($j ?: '-') . '</span>';
+        })
         ->editColumn('nidn', function ($row) {
           return !empty($row->nidn) ? Str::mask($row->nidn, '*', 0, 0) : '-';
         })
@@ -1088,7 +1096,7 @@ class DataDosenController extends Controller
         })
         ->editColumn('status', function ($row) {
           if ($row->aktif == '1' || $row->Aktif == '1') {
-            return '<span class="badge bg-label-primary">Aktif</span>';
+            return '<span class="badge bg-label-success border border-success">Aktif</span>';
           }
           return '<span class="badge bg-label-danger">Tidak Aktif</span>';
         })

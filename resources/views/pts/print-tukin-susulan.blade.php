@@ -131,7 +131,7 @@
           <td style="text-align:center">{{ $row->kd ?? '-' }}</td>
           <td style="text-align:center">{{ $row->kp ?? '-' }}</td>
           <td style="text-align:center">{{ $row->pp ?? '-' }}</td>
-          <td style="text-align:center">{!! ($row->aktif ?? 0) == 1 ? '<span class="badge bg-label-primary">Aktif</span>' : '<span class="badge bg-label-danger">Tidak Aktif</span>' !!}</td>
+          <td style="text-align:center">{!! ($row->aktif ?? 0) == 1 ? '<span class="badge bg-label-success border border-success">Aktif</span>' : '<span class="badge bg-label-danger">Tidak Aktif</span>' !!}</td>
           <td style="text-align:center"><strong>{{ $row->keterangan ?? '-' }}</strong></td>
         </tr>
       @empty

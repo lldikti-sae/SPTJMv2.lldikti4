@@ -40,7 +40,7 @@ class DataDosenController extends Controller
           $val = $row->aktif ?? null;
           $isActive = ($val === 1 || $val === '1');
           if ($isActive) {
-            return '<span class="badge bg-label-primary">Aktif</span>';
+            return '<span class="badge bg-label-success border border-success">Aktif</span>';
           }
           return '<span class="badge bg-label-danger">Tidak Aktif</span>';
         })

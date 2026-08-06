@@ -74,7 +74,7 @@
                     @foreach ($d_pajak as $index => $pajak)
                     <tr>
                         <td><span class="fw-semibold text-primary">{{ $index + 1 }}</span></td>
-                        <td><span class="fw-bold text-dark">{{ $pajak->status }}</span></td>
+                        <td><span class="badge badge-jenis">{{ $pajak->status }}</span></td>
                         <td><span class="fw-bold text-dark">{{ $pajak->akumulasi }}</span></td>
                         <td><span class="fw-semibold text-primary">{{ number_format($pajak->tarif_pajak, 2) }}%</span></td>
                         <td>
