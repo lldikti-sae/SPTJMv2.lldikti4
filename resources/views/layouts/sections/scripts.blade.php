@@ -718,57 +718,6 @@
             }
         });
 
-        // 4. Badge Bank Standardization
-        $('td').each(function() {
-            var $el = $(this);
-            if ($el.children().length > 0) return; // Ignore if it has children, only format raw text
-            var text = $el.text().trim().toUpperCase();
-            var bg = null;
-            if (text === 'BTN') bg = '#ef4444'; // Merah
-            else if (text === 'BNI') bg = '#f97316'; // Oranye
-            else if (text === 'MANDIRI') bg = '#f59e0b'; // Kuning
-            else if (text === 'BSI') bg = '#10b981'; // Hijau
-            else if (text === 'BRI') bg = '#1a56db'; // Biru
-            else if (text === 'BJB') bg = '#64748b'; // Abu-abu
-            
-            if (bg) {
-                $el.html('<span class="badge-bank" style="display:inline-flex; align-items:center; justify-content:center; text-align:center; min-width:75px; background:'+bg+'; color:#fff !important; border-radius:6px; padding:3px 8px; font-size:0.72rem; font-weight:700;">' + text + '</span>');
-                $el.attr('style', function(i, s) { return (s || '') + ' text-align: center !important;'; }); // Align center inside table cell
-            }
-        });
-        
-        $('span.badge-bank').each(function() {
-            var $el = $(this);
-            var text = $el.text().trim().toUpperCase();
-            var bg = null;
-            if (text === 'BTN') bg = '#ef4444'; // Merah
-            else if (text === 'BNI') bg = '#f97316'; // Oranye
-            else if (text === 'MANDIRI') bg = '#f59e0b'; // Kuning
-            else if (text === 'BSI') bg = '#10b981'; // Hijau
-            else if (text === 'BRI') bg = '#1a56db'; // Biru
-            else if (text === 'BJB') bg = '#64748b'; // Abu-abu
-            
-            if (bg) {
-                $el.css({
-                    'background-color': bg,
-                    'color': '#fff',
-                    'border-radius': '6px',
-                    'padding': '3px 8px',
-                    'font-size': '0.72rem',
-                    'font-weight': '700',
-                    'display': 'inline-flex',
-                    'min-width': '75px',
-                    'align-items': 'center',
-                    'justify-content': 'center',
-                    'text-align': 'center'
-                });
-                
-                // Align center inside table cells
-                if ($el.parent().is('td')) {
-                    $el.parent().attr('style', function(i, s) { return (s || '') + ' text-align: center !important;'; });
-                }
-            }
-        });
     }
     
     if (typeof $ !== 'undefined') {

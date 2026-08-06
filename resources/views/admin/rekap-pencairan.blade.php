@@ -150,9 +150,7 @@
                                 <span class="badge" style="display:inline-flex; align-items:center; justify-content:center; text-align:center; background:{{ $spBg }} !important; color:{{ $spText }} !important; border-radius:20px !important; padding:3px 12px !important; font-size:0.72rem !important; font-weight:700 !important; line-height:1.2 !important; min-width: 90px; white-space: nowrap !important;">{{ strtoupper($item->status_pegawai) }}</span>
                             </td>
                             <td style="color:#374151; font-weight:600;">{{ $item->jenis }}</td>
-                            <td>
-                                <span class="badge-bank" style="display:inline-block; background:{{ $bankBg }}; color:{{ $bankTxt }} !important; border-radius:6px; padding:3px 8px; font-size:0.72rem; font-weight:700;">{{ strtoupper($item->bank) }}</span>
-                            </td>
+                            <td>{{ strtoupper($item->bank) }}</td>
                             <td class="text-center fw-semibold" style="color:#0f2b5c;">{{ number_format($item->jumlah_kotor, 0, ',', '.') }}</td>
                             <td class="text-center fw-semibold" style="color:#ef4444;">{{ number_format($item->jumlah_pajak, 0, ',', '.') }}</td>
                             <td class="text-center fw-bold" style="color:#10b981;">{{ number_format($item->jumlah_bersih, 0, ',', '.') }}</td>
