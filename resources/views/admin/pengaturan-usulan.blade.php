@@ -36,7 +36,13 @@
                             <div class="col-lg-3 col-md-6">
                                 <label class="form-label fw-bold text-dark text-uppercase" style="font-size: 0.72rem; letter-spacing: 0.05em;" for="tahun">Tahun</label>
                                 <select id="tahun" class="form-select" name="tahun" required style="border-color: #cbd5e1;">
-                                    <option value="{{ date('Y') }}" selected>{{ date('Y') }}</option>
+                                    <option value="" disabled>-- PILIH TAHUN --</option>
+                                    @php
+                                        $yearsToDisplay = (isset($listTahun) && count($listTahun) > 0) ? $listTahun : range(2023, (int)date('Y'));
+                                    @endphp
+                                    @foreach($yearsToDisplay as $y)
+                                        <option value="{{ $y }}" {{ (date('Y') == $y) ? 'selected' : '' }}>{{ $y }}</option>
+                                    @endforeach
                                 </select>
                             </div>
 

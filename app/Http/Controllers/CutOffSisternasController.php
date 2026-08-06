@@ -46,6 +46,28 @@ class CutOffSisternasController extends Controller
             $query->where('kesimpulan_bkd', $bkdStatus);
         }
 
+        $getStat = function ($tableName) use ($tahun) {
+            $qTotal = DB::table($tableName);
+            $qM = DB::table($tableName);
+            $qTm = DB::table($tableName);
+
+            if (Schema::hasColumn($tableName, 'tahun')) {
+                $qTotal->where('tahun', $tahun);
+                $qM->where('tahun', $tahun);
+                $qTm->where('tahun', $tahun);
+            }
+
+            return [
+                'total' => $qTotal->count(),
+                'm' => $qM->where('kesimpulan_bkd', 'M')->count(),
+                'tm' => $qTm->where('kesimpulan_bkd', 'TM')->count(),
+            ];
+        };
+
+        $statGenapTL = $getStat('o_sister_genap_tl');
+        $statGanjilTL = $getStat('p_sister_ganjil_tl');
+        $statGenapBJ = $getStat('n_sister_genap_bj');
+
         return DataTables::of($query)
           ->addIndexColumn()
           ->addColumn('tahun_periode', function ($row) use ($table) {
@@ -65,6 +87,12 @@ class CutOffSisternasController extends Controller
                                 <i class="bx bx-edit"></i>
                             </button>';
           })
+          ->with([
+            'stat_ganjil_tl' => $statGanjilTL,
+            'stat_genap_bj'  => $statGenapBJ,
+            'stat_genap_tl'  => $statGenapTL,
+            'tahun_query'    => $tahun
+          ])
           ->rawColumns(['aksi', 'tahun_periode'])
           ->make(true);
       }

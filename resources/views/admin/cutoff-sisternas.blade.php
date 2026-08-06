@@ -1,14 +1,341 @@
 @extends('layouts/contentNavbarLayout')
 
-@section('title', 'SPTJM Online')
+@section('title', 'Set Periode Sisternas - SPTJM Online')
 
 @section('content')
 @php
     $tahunSession = request('tahun') ?: (session('tahun') ?: date('Y'));
     $tahunLalu = $tahunSession - 1;
     $tahunDepan = $tahunSession + 1;
+    $tahunListD3 = (isset($listTahun) && count($listTahun) > 0) ? $listTahun : range(2023, (int)date('Y'));
 @endphp
 <style>
+    /* ===== DESAIN 3: Terpisah (Tahun | Periode | Bulan) ===== */
+    .sp-card {
+        background: #ffffff;
+        border: 1px solid #e2e8f0;
+        border-radius: 12px;
+        padding: 20px 24px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        margin-bottom: 24px;
+    }
+    .sp-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 20px;
+        padding-bottom: 12px;
+        border-bottom: 1.5px solid #f1f5f9;
+        flex-wrap: wrap;
+        gap: 12px;
+    }
+    .sp-title {
+        font-size: 1.1rem;
+        font-weight: 700;
+        color: #0f172a;
+        margin: 0;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+    .sp-d3-grid {
+        display: grid;
+        grid-template-columns: 1fr 1.35fr;
+        gap: 16px;
+    }
+    @media (max-width: 992px) {
+        .sp-d3-grid { grid-template-columns: 1fr; }
+    }
+    .sp-d3-block {
+        background: #f8fafc;
+        border: 1.5px solid #e2e8f0;
+        border-radius: 10px;
+        padding: 16px;
+        display: flex;
+        flex-direction: column;
+    }
+    .sp-d3-block-header {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 12px;
+        padding-bottom: 8px;
+        border-bottom: 1px solid #e2e8f0;
+    }
+    .sp-d3-step-num {
+        width: 22px;
+        height: 22px;
+        border-radius: 50%;
+        background: #0f172a;
+        color: #ffffff;
+        font-size: 0.75rem;
+        font-weight: 800;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+    }
+    .sp-d3-block-title {
+        font-size: 0.85rem;
+        font-weight: 700;
+        color: #0f172a;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+    }
+    .sp-d3-year-list {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+    }
+    .sp-d3-year-item {
+        padding: 9px 14px;
+        border-radius: 7px;
+        border: 1px solid #cbd5e1;
+        background: #ffffff;
+        font-size: 0.86rem;
+        font-weight: 700;
+        color: #334155;
+        cursor: pointer;
+        transition: all 0.15s ease;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+    .sp-d3-year-item:hover {
+        border-color: #3b82f6;
+        color: #2563eb;
+        background: #eff6ff;
+    }
+    .sp-d3-year-item.active {
+        background: #0f172a;
+        border-color: #0f172a;
+        color: #ffffff;
+    }
+    .sp-d3-periode-list {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        max-height: 280px;
+        overflow-y: auto;
+    }
+    .sp-d3-periode-item input[type="radio"] { display: none; }
+    .sp-d3-periode-item label {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 8px 12px;
+        border-radius: 7px;
+        border: 1px solid #cbd5e1;
+        background: #ffffff;
+        font-size: 0.82rem;
+        font-weight: 600;
+        color: #334155;
+        cursor: pointer;
+        transition: all 0.15s ease;
+    }
+    .sp-d3-periode-item input[type="radio"]:checked + label {
+        background: #1d4ed8;
+        border-color: #1d4ed8;
+        color: #ffffff;
+    }
+    .sp-d3-month-list {
+        display: grid;
+        grid-auto-flow: column;
+        grid-template-rows: repeat(6, auto);
+        grid-template-columns: 1fr 1fr;
+        gap: 6px;
+        max-height: 280px;
+        overflow-y: auto;
+    }
+    .sp-d3-month-item input[type="checkbox"] { display: none; }
+    .sp-d3-month-item label {
+        display: flex;
+        align-items: center;
+        gap: 7px;
+        padding: 7px 10px;
+        border-radius: 6px;
+        border: 1px solid #cbd5e1;
+        background: #ffffff;
+        font-size: 0.8rem;
+        font-weight: 500;
+        color: #334155;
+        cursor: pointer;
+        transition: all 0.15s ease;
+        user-select: none;
+    }
+    .sp-d3-month-item label::before {
+        content: '';
+        width: 14px;
+        height: 14px;
+        border-radius: 3px;
+        border: 1.5px solid #94a3b8;
+        background: #fff;
+        flex-shrink: 0;
+    }
+    .sp-d3-month-item input[type="checkbox"]:checked + label {
+        background: #eff6ff;
+        border-color: #3b82f6;
+        color: #1d4ed8;
+        font-weight: 700;
+    }
+    .sp-d3-month-item input[type="checkbox"]:checked + label::before {
+        background: #2563eb;
+        border-color: #2563eb;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='9' height='9' viewBox='0 0 24 24' fill='none' stroke='%23ffffff' stroke-width='3.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='20 6 9 17 4 12'%3E%3C/polyline%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: center;
+        background-size: 9px;
+    }
+    .sp-d3-mapping-card {
+        background: #ffffff;
+        border: 1.5px solid #e2e8f0;
+        border-radius: 12px;
+        margin-top: 20px;
+        padding: 18px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
+    }
+    .sp-d3-mapping-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 14px;
+        padding-bottom: 10px;
+        border-bottom: 1.5px solid #f1f5f9;
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+    .sp-d3-mapping-title {
+        font-size: 0.9rem;
+        font-weight: 700;
+        color: #0f172a;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        text-transform: uppercase;
+        letter-spacing: 0.03em;
+    }
+    .sp-d3-table-wrap {
+        border-radius: 8px;
+        overflow: hidden;
+        border: 1.5px solid #e2e8f0;
+    }
+    .sp-d3-table {
+        width: 100%;
+        margin-bottom: 0;
+        border-collapse: collapse;
+    }
+    .sp-d3-table th {
+        font-size: 0.75rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        padding: 9px 12px;
+        text-align: center;
+        vertical-align: middle;
+    }
+    .sp-d3-table th.th-group-bayar {
+        background-color: #eff6ff !important;
+        color: #1e40af !important;
+        border-bottom: 1.5px solid #bfdbfe;
+        text-align: center !important;
+        vertical-align: middle !important;
+    }
+    .sp-d3-table th.th-group-pembuat {
+        background-color: #f0fdf4 !important;
+        color: #166534 !important;
+        border-bottom: 1.5px solid #bbf7d0;
+        text-align: center !important;
+        vertical-align: middle !important;
+    }
+    .sp-d3-table th.th-sub {
+        background-color: #f8fafc !important;
+        color: #475569 !important;
+        border-bottom: 1.5px solid #e2e8f0;
+    }
+    .sp-d3-table td {
+        padding: 6px 8px;
+        vertical-align: middle;
+        border-top: 1px solid #f1f5f9;
+        background: #ffffff;
+    }
+    .sp-d3-input {
+        border: 1.5px solid #cbd5e1;
+        border-radius: 6px;
+        padding: 6px 10px;
+        font-size: 0.82rem;
+        width: 100%;
+        text-align: center;
+        font-weight: 600;
+        color: #1e293b;
+        transition: all 0.15s ease;
+    }
+    .sp-d3-input:focus {
+        border-color: #3b82f6;
+        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+        outline: none;
+    }
+    .sp-preview {
+        display: none;
+        background: #f0fdf4;
+        border: 1px solid #bbf7d0;
+        border-radius: 9px;
+        padding: 10px 14px;
+        margin-top: 14px;
+        align-items: flex-start;
+        gap: 9px;
+    }
+    .sp-preview.show { display: flex; }
+    .sp-preview-icon { font-size: 1.1rem; color: #16a34a; flex-shrink: 0; margin-top: 2px; }
+    .sp-preview-label {
+        font-size: 0.70rem;
+        font-weight: 700;
+        color: #16a34a;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        margin-bottom: 2px;
+    }
+    .sp-preview-tahun { font-size: 0.86rem; font-weight: 700; color: #14532d; margin-bottom: 1px; }
+    .sp-preview-months { font-size: 0.80rem; color: #15803d; line-height: 1.4; }
+    .sp-footer {
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        gap: 8px;
+        padding-top: 14px;
+        margin-top: 14px;
+        border-top: 1.5px solid #f1f5f9;
+    }
+    .sp-btn-reset {
+        padding: 7px 16px;
+        border-radius: 8px;
+        border: 1px solid #cbd5e1;
+        background: #ffffff;
+        font-size: 0.82rem;
+        font-weight: 600;
+        color: #475569;
+        cursor: pointer;
+        transition: all 0.15s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+    }
+    .sp-btn-reset:hover { background: #f1f5f9; color: #0f172a; }
+    .sp-btn-save {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 7px 20px;
+        border-radius: 8px;
+        border: none;
+        background: #0f172a;
+        color: #ffffff;
+        font-size: 0.82rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.15s ease;
+        box-shadow: 0 2px 6px rgba(15, 23, 42, 0.15);
+    }
+    .sp-btn-save:hover { background: #1e293b; transform: translateY(-1px); }
     .card {
         border: 1px solid #e2e8f0 !important;
         box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05) !important;
@@ -705,117 +1032,234 @@ function updateCutoffFileName(input, targetId) {
         }
     </style>
 
-        {{-- Card Upload Cut Off Sisternas --}}
-        <div class="co-upload-card p-0 mb-4" style="overflow: hidden; border-radius: 12px; background: #ffffff; border: 1px solid #e2e8f0;">
-            {{-- Header --}}
-            <div class="p-3 px-4 d-flex justify-content-between align-items-center w-100" style="background: #ffffff; border-bottom: 1px solid #f1f5f9;">
-                <div>
-                    <h6 class="fw-bold text-dark mb-0" style="font-size:1.05rem;">Upload file cut off</h6>
-                    <p class="text-muted mb-0 mt-1" style="font-size:0.82rem;">Unggah data cut off berdasarkan tahun ajaran dan semester</p>
-                </div>
+
+        {{-- ======================================================== --}}
+        {{-- ===== PANEL SET PERIODE SISTERNAS (DESAIN 3 FIX) ===== --}}
+        {{-- ======================================================== --}}
+        <div class="sp-card mb-4">
+            <div class="sp-header">
+                <h5 class="sp-title">
+                    <i class="bx bx-cog text-primary" style="font-size: 1.25rem;"></i>
+                    Set Periode Sisternas
+                </h5>
             </div>
 
-            <div class="co-panel-body open px-4 pb-4 pt-3" id="panel-upload-d1">
-                <form action="{{ route('admin.cutoff-sisternas.upload') }}" method="POST" enctype="multipart/form-data" class="uploadForm">
-                    @csrf
-                    <input type="hidden" name="table" id="d1_new_table_val" value="n_sister_genap_bj">
+            <form action="{{ route('admin.cutoff-sisternas.upload') }}" method="POST" enctype="multipart/form-data" class="uploadForm" id="spFormD3">
+                @csrf
+                <input type="hidden" name="table" id="d1_new_table_val" value="n_sister_genap_bj">
 
-                    {{-- Section PERIODE --}}
-                    <div class="mb-3">
-                        <label class="form-label mb-2 fw-bold text-uppercase text-secondary" style="font-size:0.75rem; letter-spacing:0.5px;">
-                            PERIODE
-                        </label>
-                        <div class="row g-3">
-                            {{-- Field 1: Tahun (col-md-6) --}}
-                            <div class="col-md-6 col-sm-12">
-                                <label class="form-label mb-1 fw-semibold text-dark" style="font-size:0.83rem;">
-                                    Tahun
-                                </label>
-                                <select name="tahun" id="d1_new_tahun_val" class="form-select" style="border-radius:8px; height:42px;">
-                                    @php
-                                        $yearsToDisplay = (isset($listTahun) && count($listTahun) > 0) ? $listTahun : range(2023, max((int)date('Y'), (int)$tahunSession));
-                                    @endphp
-                                    @foreach($yearsToDisplay as $y)
-                                        <option value="{{ $y }}" {{ ($tahunSession == $y) ? 'selected' : '' }}>{{ $y }}</option>
+                <div class="sp-d3-grid">
+                    {{-- Step 1: Dropdown Pemilihan, Pilih Tahun & Periode Laporan --}}
+                    <div class="sp-d3-block">
+                        <div class="sp-d3-block-header">
+                            <span class="sp-d3-step-num">1</span>
+                            <span class="sp-d3-block-title">Pemilihan Usulan, Tahun & Periode</span>
+                        </div>
+                        <div class="row g-2 mb-2">
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold text-secondary mb-1" style="font-size:0.75rem;" for="spJenisUsulan">PEMILIHAN USULAN</label>
+                                <select id="spJenisUsulan" class="form-select" name="jenis_usulan" required style="border-radius:7px; font-size:0.85rem; font-weight:600; border-color: #cbd5e1;">
+                                    <option value="" disabled>-- PILIH --</option>
+                                    <option value="SPTJM" selected>SPTJM</option>
+                                    <option value="TUKIN">TUKIN</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold text-secondary mb-1" style="font-size:0.75rem;">PILIH TAHUN</label>
+                                <select name="tahun" id="d1_new_tahun_val" class="form-select" onchange="onD3TahunChange(this.value)" style="border-radius:7px; font-size:0.85rem; font-weight:700; border-color: #cbd5e1;">
+                                    @foreach($tahunListD3 as $y)
+                                        <option value="{{ $y }}" {{ ($tahunSession == $y) ? 'selected' : '' }}>Tahun {{ $y }}</option>
                                     @endforeach
                                 </select>
                             </div>
-
-                            {{-- Field 2: Semester (col-md-6) --}}
-                            <div class="col-md-6 col-sm-12">
-                                <label class="form-label mb-1 fw-semibold text-dark" style="font-size:0.83rem;">
-                                    Semester
-                                </label>
-                                <select class="form-select" id="d1_select_periode" onchange="coUpdateSemesterSimple(this, 'd1_new_table_val')" style="border-radius:8px; height:42px;">
-                                    <option value="p_sister_ganjil_tl">1 (Ganjil)</option>
-                                    <option value="n_sister_genap_bj" selected>2 (Genap)</option>
-                                </select>
-                            </div>
                         </div>
-                    </div>
 
-                    {{-- Section UPLOAD FILE CSV --}}
-                    <div class="mb-3">
-                        <label class="form-label mb-1.5 fw-bold text-uppercase text-secondary" style="font-size:0.75rem; letter-spacing:0.5px;">
-                            UPLOAD FILE CSV
-                        </label>
-                        <input type="file" name="dokumen" required id="d1_new_file_input" style="display:none;" accept=".csv"
-                               onchange="coPreviewFileD1(this)">
-                        
-                        <div class="position-relative d-flex align-items-center justify-content-center px-4 py-3.5 rounded-3" onclick="document.getElementById('d1_new_file_input').click()" style="border: 1.5px dashed #cbd5e1; background: #f8fafc; cursor: pointer; transition: all 0.2s ease; border-radius: 10px !important; min-height: 58px;" onmouseover="this.style.borderColor='#2563eb'; this.style.background='#eff6ff';" onmouseout="this.style.borderColor='#cbd5e1'; this.style.background='#f8fafc';">
-                            <div class="d-flex align-items-center gap-2.5">
-                                <i class="bx bx-cloud-upload fs-4 text-primary"></i>
-                                <div>
-                                    <span class="fw-bold text-primary" style="font-size:0.88rem;" id="d1_file_dropzone_text">Klik untuk unggah file CSV</span>
-                                    <span class="text-muted ms-1" style="font-size:0.82rem;" id="d1_file_subtext">· maks. 10 MB</span>
+                        <div class="mt-2">
+                            <label class="form-label fw-bold text-secondary mb-1" style="font-size:0.75rem;">PERIODE LAPORAN</label>
+                            <div class="d-flex flex-row gap-3 mt-1">
+                                <div class="sp-d3-month-item flex-grow-1">
+                                    <input type="checkbox" name="sp_periode_d3_cb[]" id="d3_periode_cb_1" value="p_sister_ganjil_tl" onchange="onD3PeriodeCheckboxChange(this)">
+                                    <label for="d3_periode_cb_1" style="font-weight: 600;">1 (Ganjil)</label>
+                                </div>
+                                <div class="sp-d3-month-item flex-grow-1">
+                                    <input type="checkbox" name="sp_periode_d3_cb[]" id="d3_periode_cb_2" value="n_sister_genap_bj" checked onchange="onD3PeriodeCheckboxChange(this)">
+                                    <label for="d3_periode_cb_2" style="font-weight: 600;">2 (Genap)</label>
                                 </div>
                             </div>
-                            <button type="button" id="d1_remove_file_btn" class="btn btn-sm d-none position-absolute" onclick="event.stopPropagation(); coResetFileD1();" title="Batal upload / Hapus file" style="right: 16px; width: 28px; height: 28px; border-radius: 50%; padding: 0; display: inline-flex; align-items: center; justify-content: center; background-color: #fee2e2; color: #dc2626; border: 1px solid #fecdd3; transition: all 0.2s ease;" onmouseover="this.style.backgroundColor='#ef4444'; this.style.color='#ffffff';" onmouseout="this.style.backgroundColor='#fee2e2'; this.style.color='#dc2626';">
-                                <i class="bx bx-x fs-4"></i>
-                            </button>
                         </div>
                     </div>
 
-                    {{-- Action Row Footer --}}
-                    <div class="d-flex justify-content-between align-items-center pt-3">
-                        <a href="{{ route('admin.cutoff-sisternas.template') }}" class="text-primary text-decoration-none fw-semibold d-inline-flex align-items-center gap-1" style="font-size:0.84rem; background: transparent !important; border: none !important; padding: 0 !important; box-shadow: none !important;">
+                    {{-- Step 2: Periode Pembayaran --}}
+                    <div class="sp-d3-block">
+                        <div class="sp-d3-block-header" style="justify-content: space-between;">
+                            <div style="display: flex; align-items: center; gap: 8px;">
+                                <span class="sp-d3-step-num">2</span>
+                                <span class="sp-d3-block-title">Periode Pembayaran</span>
+                            </div>
+                            <div style="display: flex; align-items: center; gap: 4px;">
+                                <input type="checkbox" id="d3SelectAllBulan" onchange="toggleD3SelectAll(this)" style="cursor: pointer; width: 12px; height: 12px; accent-color: #2563eb; margin: 0;">
+                                <label for="d3SelectAllBulan" style="font-size: 0.68rem; font-weight: 600; color: #64748b; cursor: pointer; user-select: none; margin: 0;">Pilih Semua</label>
+                            </div>
+                        </div>
+                        <div class="sp-d3-month-list">
+                            @php
+                                $bulanD3Map = [
+                                    'januari'=>'Januari','februari'=>'Februari','maret'=>'Maret',
+                                    'april'=>'April','mei'=>'Mei','juni'=>'Juni',
+                                    'juli'=>'Juli','agustus'=>'Agustus','september'=>'September',
+                                    'oktober'=>'Oktober','november'=>'November','desember'=>'Desember'
+                                ];
+                            @endphp
+                            @foreach($bulanD3Map as $bKey => $bName)
+                                <div class="sp-d3-month-item">
+                                    <input type="checkbox" name="sp_bulan_d3[]" id="d3_bulan_{{ $bKey }}" value="{{ $bKey }}" onchange="updatePreviewD3()">
+                                    <label for="d3_bulan_{{ $bKey }}">{{ $bName }}</label>
+                                </div>
+                            @endforeach
+                        </div>
+                    </div>
+                </div>
+
+                {{-- Upload CSV File Section (Step 3) --}}
+                <div class="sp-d3-mapping-card mt-3">
+                    <div class="sp-d3-mapping-header">
+                        <div class="sp-d3-mapping-title">
+                            <span class="sp-d3-step-num" style="background: #0f172a;">3</span>
+                            <span>Upload File Cut Off Sisternas (CSV)</span>
+                        </div>
+                        <a href="{{ route('admin.cutoff-sisternas.template') }}" class="text-primary text-decoration-none fw-semibold d-inline-flex align-items-center gap-1" style="font-size:0.82rem;">
                             <i class="bx bx-download fs-5"></i> Unduh contoh CSV
                         </a>
-                        <button type="button" class="btn btn-warning text-white fw-bold px-4 py-2.5 d-inline-flex align-items-center gap-2" style="border-radius:10px; background: #f59e0b; border: 1px solid #d97706; font-size:0.88rem; box-shadow: 0 3px 10px rgba(245,158,11,0.25); transition: all 0.2s ease;" onmouseover="this.style.background='#d97706'; this.style.transform='translateY(-1px)';" onmouseout="this.style.background='#f59e0b'; this.style.transform='translateY(0)';" onclick="coCheckDiffD1()">
-                            <i class="bx bx-refresh fs-5"></i> Cek Perubahan Data
-                        </button>
                     </div>
 
-                    {{-- Diff Table Box (Tampil saat tombol 'Cek Perubahan Data' diklik) --}}
-                    <div id="d1_diff_box" style="display: none;" class="mt-3 pt-3 border-top">
-                        <div class="d-flex justify-content-between align-items-center mb-2.5">
-                            <span class="fw-bold text-dark" style="font-size:0.88rem;"><i class="bx bx-list-check text-primary me-1"></i> Pratinjau Perubahan Data:</span>
-                            <span class="badge bg-label-info text-dark" style="font-size:0.73rem; font-weight:600;"><i class="bx bx-info-circle me-1"></i> Centang kolom Aksi (kanan) jika data ingin dihapus</span>
+                    <input type="file" name="dokumen" required id="d1_new_file_input" style="display:none;" accept=".csv" onchange="coPreviewFileD1(this)">
+                    <div class="position-relative d-flex align-items-center justify-content-center px-4 py-3.5 rounded-3" onclick="document.getElementById('d1_new_file_input').click()" style="border: 1.5px dashed #cbd5e1; background: #f8fafc; cursor: pointer; transition: all 0.2s ease; border-radius: 10px !important; min-height: 58px;" onmouseover="this.style.borderColor='#2563eb'; this.style.background='#eff6ff';" onmouseout="this.style.borderColor='#cbd5e1'; this.style.background='#f8fafc';">
+                        <div class="d-flex align-items-center gap-2.5">
+                            <i class="bx bx-cloud-upload fs-4 text-primary"></i>
+                            <div>
+                                <span class="fw-bold text-primary" style="font-size:0.88rem;" id="d1_file_dropzone_text">Klik untuk unggah file CSV</span>
+                                <span class="text-muted ms-1" style="font-size:0.82rem;" id="d1_file_subtext">· maks. 10 MB</span>
+                            </div>
                         </div>
-
-                        <div class="table-responsive rounded-3 border mb-3" style="box-shadow: 0 1px 4px rgba(0,0,0,0.04); border-color: #e2e8f0 !important;">
-                            <table class="table table-hover align-middle mb-0" style="font-size: 0.84rem;">
-                                <thead style="background-color: #f8fafc; border-bottom: 1.5px solid #e2e8f0;">
-                                    <tr>
-                                        <th style="padding: 11px 16px; font-weight: 700; color: #475569; text-transform: uppercase; font-size: 0.72rem; letter-spacing: 0.05em;">NIDN</th>
-                                        <th style="padding: 11px 16px; font-weight: 700; color: #475569; text-transform: uppercase; font-size: 0.72rem; letter-spacing: 0.05em;">NUPTK</th>
-                                        <th style="padding: 11px 16px; font-weight: 700; color: #475569; text-transform: uppercase; font-size: 0.72rem; letter-spacing: 0.05em;">Nama Dosen</th>
-                                        <th style="padding: 11px 16px; font-weight: 700; color: #475569; text-transform: uppercase; font-size: 0.72rem; letter-spacing: 0.05em; text-align: center;">Kesimpulan BKD Lama</th>
-                                        <th style="padding: 11px 16px; font-weight: 700; color: #475569; text-transform: uppercase; font-size: 0.72rem; letter-spacing: 0.05em; text-align: center;">Kesimpulan BKD Baru</th>
-                                        <th style="padding: 11px 16px; font-weight: 700; color: #475569; text-transform: uppercase; font-size: 0.72rem; letter-spacing: 0.05em; text-align: center; width: 130px;">Aksi</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="d1_diff_tbody">
-                                </tbody>
-                            </table>
-                        </div>
-
-                        <button type="submit" class="btn btn-primary w-100 py-2.5 fw-bold" style="background-color:#2563eb; border-color:#2563eb; border-radius:10px; font-size:0.92rem;">
-                            <i class="bx bx-check-circle me-1"></i> Konfirmasi &amp; Simpan Data Cut Off
+                        <button type="button" id="d1_remove_file_btn" class="btn btn-sm d-none position-absolute" onclick="event.stopPropagation(); coResetFileD1();" title="Batal upload / Hapus file" style="right: 16px; width: 28px; height: 28px; border-radius: 50%; padding: 0; display: inline-flex; align-items: center; justify-content: center; background-color: #fee2e2; color: #dc2626; border: 1px solid #fecdd3; transition: all 0.2s ease;">
+                            <i class="bx bx-x fs-4"></i>
                         </button>
                     </div>
-                </form>
-            </div>
+                </div>
+
+                {{-- Shared Preview Box --}}
+                <div class="sp-preview mt-3" id="spPreview">
+                    <i class="bx bx-check-circle sp-preview-icon"></i>
+                    <div>
+                        <div class="sp-preview-label">Periode yang akan di-set</div>
+                        <div class="sp-preview-tahun" id="spPreviewTahun"></div>
+                        <div class="sp-preview-months" id="spPreviewMonths"></div>
+                    </div>
+                </div>
+
+                {{-- Setting Pemetaan Periode Bayar & Pembayaran (Step 4 - Ditaruh Di Bawah Tombol Reset & Simpan) --}}
+                <div class="sp-d3-mapping-card mt-4">
+                    <div class="sp-d3-mapping-header">
+                        <div class="sp-d3-mapping-title">
+                            <span class="sp-d3-step-num" style="background: #2563eb;">4</span>
+                            <span>Setting Pemetaan Periode Bayar & Pembayaran</span>
+                        </div>
+                    </div>
+
+                    <div class="sp-d3-table-wrap table-responsive text-nowrap">
+                        <table class="table sp-d3-table" id="spD3MappingTable">
+                            <thead>
+                                <tr>
+                                    <th colspan="2" class="th-group-bayar text-center align-middle" style="text-align: center !important; vertical-align: middle !important;">PERIODE BAYAR</th>
+                                    <th colspan="3" class="th-group-pembuat text-center align-middle" style="text-align: center !important; vertical-align: middle !important;">PEMBAYARAN / LAPORAN</th>
+                                    <th rowspan="2" width="60px" class="text-center align-middle" style="background-color: #f8fafc; color: #475569; text-align: center !important; vertical-align: middle !important;">AKSI</th>
+                                </tr>
+                                <tr>
+                                    <th class="th-sub text-center" style="text-align: center;">Tahun</th>
+                                    <th class="th-sub text-center" style="text-align: center;">Bulan</th>
+                                    <th class="th-sub text-center" style="text-align: center;">Tahun</th>
+                                    <th class="th-sub text-center" style="text-align: center;">Bulan</th>
+                                    <th class="th-sub text-center" style="text-align: center;">Periode</th>
+                                </tr>
+                            </thead>
+                            <tbody id="spD3MappingTbody">
+                                <tr>
+                                    <td><input type="text" class="sp-d3-input" name="d3_periode_bayar_tahun[]" value="" placeholder="misal: 2024"></td>
+                                    <td><input type="text" class="sp-d3-input" name="d3_periode_bayar_bulan[]" value="" placeholder="misal: maret-agustus"></td>
+                                    <td><input type="text" class="sp-d3-input" name="d3_pembayaran_tahun[]" value="" placeholder="misal: 2024"></td>
+                                    <td><input type="text" class="sp-d3-input" name="d3_pembayaran_bulan[]" value="" placeholder="-"></td>
+                                    <td><input type="text" class="sp-d3-input" name="d3_pembayaran_periode[]" value="" placeholder="misal: 2024-1"></td>
+                                    <td class="text-center">
+                                        <button type="button" class="btn btn-sm btn-outline-info border-0 p-1" onclick="viewD3MappingRow(this)" title="View Detail Dashboard">
+                                            <i class="bx bx-show fs-5"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                {{-- Diff Table Box --}}
+                <div id="d1_diff_box" style="display: none;" class="mt-3 pt-3 border-top">
+                    <div class="d-flex justify-content-between align-items-center mb-2.5">
+                        <span class="fw-bold text-dark" style="font-size:0.88rem;"><i class="bx bx-list-check text-primary me-1"></i> Pratinjau Perubahan Data:</span>
+                        <span class="badge bg-label-info text-dark" style="font-size:0.73rem; font-weight:600;"><i class="bx bx-info-circle me-1"></i> Centang kolom Aksi (kanan) jika data ingin dihapus</span>
+                    </div>
+
+                    <div class="table-responsive rounded-3 border mb-3" style="box-shadow: 0 1px 4px rgba(0,0,0,0.04); border-color: #e2e8f0 !important;">
+                        <table class="table table-hover align-middle mb-0" style="font-size: 0.84rem;">
+                            <thead style="background-color: #f8fafc; border-bottom: 1.5px solid #e2e8f0;">
+                                <tr>
+                                    <th style="padding: 11px 16px; font-weight: 700; color: #475569; text-transform: uppercase; font-size: 0.72rem; letter-spacing: 0.05em;">NIDN</th>
+                                    <th style="padding: 11px 16px; font-weight: 700; color: #475569; text-transform: uppercase; font-size: 0.72rem; letter-spacing: 0.05em;">NUPTK</th>
+                                    <th style="padding: 11px 16px; font-weight: 700; color: #475569; text-transform: uppercase; font-size: 0.72rem; letter-spacing: 0.05em;">Nama Dosen</th>
+                                    <th style="padding: 11px 16px; font-weight: 700; color: #475569; text-transform: uppercase; font-size: 0.72rem; letter-spacing: 0.05em; text-align: center;">Kesimpulan BKD Lama</th>
+                                    <th style="padding: 11px 16px; font-weight: 700; color: #475569; text-transform: uppercase; font-size: 0.72rem; letter-spacing: 0.05em; text-align: center;">Kesimpulan BKD Baru</th>
+                                    <th style="padding: 11px 16px; font-weight: 700; color: #475569; text-transform: uppercase; font-size: 0.72rem; letter-spacing: 0.05em; text-align: center; width: 130px;">Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody id="d1_diff_tbody">
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary w-100 py-2.5 fw-bold" style="background-color:#2563eb; border-color:#2563eb; border-radius:10px; font-size:0.92rem;">
+                        <i class="bx bx-check-circle me-1"></i> Konfirmasi &amp; Simpan Data Cut Off
+                    </button>
+                </div>
+
+
+
+                {{-- Diff Table Box --}}
+                <div id="d1_diff_box" style="display: none;" class="mt-3 pt-3 border-top">
+                    <div class="d-flex justify-content-between align-items-center mb-2.5">
+                        <span class="fw-bold text-dark" style="font-size:0.88rem;"><i class="bx bx-list-check text-primary me-1"></i> Pratinjau Perubahan Data:</span>
+                        <span class="badge bg-label-info text-dark" style="font-size:0.73rem; font-weight:600;"><i class="bx bx-info-circle me-1"></i> Centang kolom Aksi (kanan) jika data ingin dihapus</span>
+                    </div>
+
+                    <div class="table-responsive rounded-3 border mb-3" style="box-shadow: 0 1px 4px rgba(0,0,0,0.04); border-color: #e2e8f0 !important;">
+                        <table class="table table-hover align-middle mb-0" style="font-size: 0.84rem;">
+                            <thead style="background-color: #f8fafc; border-bottom: 1.5px solid #e2e8f0;">
+                                <tr>
+                                    <th style="padding: 11px 16px; font-weight: 700; color: #475569; text-transform: uppercase; font-size: 0.72rem; letter-spacing: 0.05em;">NIDN</th>
+                                    <th style="padding: 11px 16px; font-weight: 700; color: #475569; text-transform: uppercase; font-size: 0.72rem; letter-spacing: 0.05em;">NUPTK</th>
+                                    <th style="padding: 11px 16px; font-weight: 700; color: #475569; text-transform: uppercase; font-size: 0.72rem; letter-spacing: 0.05em;">Nama Dosen</th>
+                                    <th style="padding: 11px 16px; font-weight: 700; color: #475569; text-transform: uppercase; font-size: 0.72rem; letter-spacing: 0.05em; text-align: center;">Kesimpulan BKD Lama</th>
+                                    <th style="padding: 11px 16px; font-weight: 700; color: #475569; text-transform: uppercase; font-size: 0.72rem; letter-spacing: 0.05em; text-align: center;">Kesimpulan BKD Baru</th>
+                                    <th style="padding: 11px 16px; font-weight: 700; color: #475569; text-transform: uppercase; font-size: 0.72rem; letter-spacing: 0.05em; text-align: center; width: 130px;">Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody id="d1_diff_tbody">
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary w-100 py-2.5 fw-bold" style="background-color:#2563eb; border-color:#2563eb; border-radius:10px; font-size:0.92rem;">
+                        <i class="bx bx-check-circle me-1"></i> Konfirmasi &amp; Simpan Data Cut Off
+                    </button>
+                </div>
+            </form>
         </div>
 
 
@@ -1457,133 +1901,143 @@ function updateCutoffFileName(input, targetId) {
     </script>
     @endif
 
-    <div class="card mb-4 card-cutoff" id="cutoffDataContainer" style="border-radius: 12px; background: #ffffff; border: 1px solid #e2e8f0;">
-        <div class="card-body pt-2.5 pb-4 px-4">
-            <!-- Section 2: Pilih Periode Cut Off Sisternas -->
-            <div>
-                    <div class="d-flex justify-content-start align-items-center mb-2">
-                        <div class="d-flex align-items-center gap-2.5">
-                            <span class="me-1" style="font-size: 0.85rem; font-weight: 700; color: #475569;"><i class="bx bx-filter-alt me-1 text-primary"></i> Tahun:</span>
-                            <select name="tahun_filter" id="tahunFilterSelect" class="form-select form-select-sm" style="width: 115px; border-color: #94a3b8; font-weight: 700; font-size: 0.85rem; border-radius: 6px; background-color: #f8fafc; padding: 4px 10px; cursor: pointer; box-shadow: 0 1px 2px rgba(0,0,0,0.05);">
-                                @php
-                                    $yearsToDisplay = (isset($listTahun) && count($listTahun) > 0) ? $listTahun : range(2023, max((int)date('Y'), (int)$tahunSession));
-                                @endphp
-                                @foreach($yearsToDisplay as $y)
-                                    <option value="{{ $y }}" {{ ($tahunSession == $y) ? 'selected' : '' }}>{{ $y }}</option>
-                                @endforeach
+<!-- Modal Dashboard Cut Off Sisternas -->
+<div class="modal fade" id="modalDashboardCutoff" tabindex="-1" aria-labelledby="modalDashboardCutoffLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content" style="border-radius: 16px; border: none; box-shadow: 0 10px 35px rgba(0,0,0,0.18);">
+            <div class="modal-header px-4 py-3" style="background: #f8fafc; border-bottom: 1.5px solid #e2e8f0; border-top-left-radius: 16px; border-top-right-radius: 16px;">
+                <div class="d-flex align-items-center gap-2">
+                    <i class="bx bx-tachometer text-primary fs-4"></i>
+                    <h5 class="modal-title fw-bold text-dark mb-0" id="modalDashboardCutoffLabel" style="font-size: 1.05rem;">
+                        Dashboard Data Cut Off Sisternas
+                    </h5>
+                </div>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-4" style="background: #ffffff;">
+                <div class="card card-cutoff border-0 shadow-none mb-0" id="cutoffDataContainer">
+                    <div class="card-body p-0">
+                        <!-- Section 2: Pilih Periode Cut Off Sisternas -->
+                        <div>
+                            <!-- Hidden Filter Tahun -->
+                            <div class="d-none">
+                                <select name="tahun_filter" id="tahunFilterSelect" class="form-select form-select-sm">
+                                    @php
+                                        $yearsToDisplay = (isset($listTahun) && count($listTahun) > 0) ? $listTahun : range(2023, max((int)date('Y'), (int)$tahunSession));
+                                    @endphp
+                                    @foreach($yearsToDisplay as $y)
+                                        <option value="{{ $y }}" {{ ($tahunSession == $y) ? 'selected' : '' }}>{{ $y }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            <div class="row g-4 align-items-stretch mt-1 mb-3.5">
+                                <!-- Card 1: Semester Ganjil (50% / col-md-6) -->
+                                <div class="col-md-6 col-sm-12 d-flex">
+                                    <div class="btn-select-period p-3 rounded-3 d-flex flex-column justify-content-between w-100 h-100 glowing-active-card" data-value="p_sister_ganjil_tl" style="cursor: pointer; transition: all 0.2s ease;">
+                                        <div class="w-100">
+                                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                                <span class="period-title fw-bold" style="font-size: 0.88rem; color: #435971;">
+                                                    <i class="bx bx-calendar text-primary me-1"></i> {{ $tahunSession }}/1
+                                                </span>
+                                            </div>
+                                            <div class="period-subtitle mb-2" style="font-size: 0.71rem; line-height: 1.35;">
+                                                <div>
+                                                    <span style="color: #697a8d;">Pembayaran:</span> <span class="fw-semibold" style="color: #566a7f;">Maret - Agustus</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="d-flex gap-2 align-items-center w-100 mt-auto">
+                                            <div class="flex-fill">
+                                                <div class="btn-stat-flat-memenuhi" title="Klik untuk menyaring data Memenuhi">
+                                                    <i class="bx bx-check" style="font-size: 0.88rem; font-weight: bold; flex-shrink: 0;"></i>
+                                                    <span>{{ number_format($statGanjilTL['m'], 0, ',', '.') }} memenuhi</span>
+                                                </div>
+                                            </div>
+                                            <div class="flex-fill">
+                                                <div class="btn-stat-flat-tm" title="Klik untuk menyaring data Tidak Memenuhi">
+                                                    <i class="bx bx-x" style="font-size: 0.88rem; font-weight: bold; flex-shrink: 0;"></i>
+                                                    <span>{{ number_format($statGanjilTL['tm'], 0, ',', '.') }} tidak memenuhi</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Card 2: Semester Genap (50% / col-md-6) -->
+                                <div class="col-md-6 col-sm-12 d-flex">
+                                    @php
+                                        $isGenapBerjalan = ((int)$tahunSession >= (int)date('Y'));
+                                        $genapDefaultVal = $isGenapBerjalan ? 'n_sister_genap_bj' : 'o_sister_genap_tl';
+                                        $statGenap       = $isGenapBerjalan ? $statGenapBJ : $statGenapTL;
+                                    @endphp
+                                    <div class="btn-select-period p-3 rounded-3 d-flex flex-column justify-content-between w-100 h-100" id="cardGenap" data-value="{{ $genapDefaultVal }}" style="cursor: pointer; transition: all 0.2s ease;">
+                                        <div class="w-100">
+                                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                                <span class="period-title fw-bold" style="font-size: 0.88rem; color: #435971;">
+                                                    <i class="bx bx-calendar text-primary me-1"></i> {{ $tahunSession }}/2
+                                                </span>
+                                            </div>
+                                            <div class="period-subtitle mb-2" style="font-size: 0.71rem; line-height: 1.35;">
+                                                <div>
+                                                    <span style="color: #697a8d;">Pembayaran:</span> <span class="fw-semibold" style="color: #566a7f;">September - Februari</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="d-flex gap-2 align-items-center w-100 mt-auto">
+                                            <div class="flex-fill">
+                                                <div class="btn-stat-flat-memenuhi" title="Klik untuk menyaring data Memenuhi">
+                                                    <i class="bx bx-check" style="font-size: 0.88rem; font-weight: bold; flex-shrink: 0;"></i>
+                                                    <span>{{ number_format($statGenap['m'], 0, ',', '.') }} memenuhi</span>
+                                                </div>
+                                            </div>
+                                            <div class="flex-fill">
+                                                <div class="btn-stat-flat-tm" title="Klik untuk menyaring data Tidak Memenuhi">
+                                                    <i class="bx bx-x" style="font-size: 0.88rem; font-weight: bold; flex-shrink: 0;"></i>
+                                                    <span>{{ number_format($statGenap['tm'], 0, ',', '.') }} tidak memenuhi</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Dropdown hidden untuk DataTables -->
+                        <div class="d-none">
+                            <select name="sisternas" id="sisternasSelect">
+                                <option value="p_sister_ganjil_tl" selected>p_sister_ganjil_tl</option>
+                                <option value="n_sister_genap_bj">n_sister_genap_bj</option>
+                                <option value="o_sister_genap_tl">o_sister_genap_tl</option>
                             </select>
                         </div>
-                    </div>
-                    <div class="row g-4 align-items-stretch mt-1 mb-3.5">
-                        <!-- Card 1: Semester Ganjil (50% / col-md-6) -->
-                        <div class="col-md-6 col-sm-12 d-flex">
-                            <div class="btn-select-period p-3 rounded-3 d-flex flex-column justify-content-between w-100 h-100 glowing-active-card" data-value="p_sister_ganjil_tl" style="cursor: pointer; transition: all 0.2s ease;">
-                                <div class="w-100">
-                                    <div class="d-flex justify-content-between align-items-center mb-2">
-                                        <span class="period-title fw-bold" style="font-size: 0.88rem; color: #435971;">
-                                            <i class="bx bx-calendar text-primary me-1"></i> {{ $tahunSession }}/1
-                                        </span>
-                                    </div>
-                                    <div class="period-subtitle mb-2" style="font-size: 0.71rem; line-height: 1.35;">
-                                        <div>
-                                            <span style="color: #697a8d;">Pembayaran:</span> <span class="fw-semibold" style="color: #566a7f;">Maret - Agustus</span>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="d-flex gap-2 align-items-center w-100 mt-auto">
-                                    <div class="flex-fill">
-                                        <div class="btn-stat-flat-memenuhi" title="Klik untuk menyaring data Memenuhi">
-                                            <i class="bx bx-check" style="font-size: 0.88rem; font-weight: bold; flex-shrink: 0;"></i>
-                                            <span>{{ number_format($statGanjilTL['m'], 0, ',', '.') }} memenuhi</span>
-                                        </div>
-                                    </div>
-                                    <div class="flex-fill">
-                                        <div class="btn-stat-flat-tm" title="Klik untuk menyaring data Tidak Memenuhi">
-                                            <i class="bx bx-x" style="font-size: 0.88rem; font-weight: bold; flex-shrink: 0;"></i>
-                                            <span>{{ number_format($statGanjilTL['tm'], 0, ',', '.') }} tidak memenuhi</span>
-                                        </div>
-                                    </div>
-                                </div>
+
+                        <!-- Single Header + Subtitle ringkas -->
+                        <div class="d-flex flex-wrap justify-content-between align-items-center border-top pt-3 pb-2.5 mb-3" style="border-color: #e2e8f0 !important;">
+                            <div>
+                                <h6 class="mb-0 text-dark fw-bold" id="selectedPeriodTitle" style="font-size: 0.95rem;">
+                                    <i class="bx bx-list-check text-primary me-2"></i>Daftar Dosen: {{ $tahunSession }}/1 (Memenuhi)
+                                </h6>
+                                <small class="text-muted" id="selectedPeriodSubtitle" style="font-size: 0.76rem;">Pembayaran: Maret - Agustus</small>
+                            </div>
+                            <div class="d-flex align-items-center gap-2">
+                                <button type="button" class="btn btn-sm btn-primary d-inline-flex align-items-center gap-1.5 px-3 py-1.5 fw-bold" onclick="openCreateModal()" style="border-radius: 7px; background: #0f172a; border-color: #0f172a; font-size: 0.82rem;">
+                                    <i class="bx bx-plus-circle fs-5"></i> Tambah Data Dosen
+                                </button>
+
+                                <a href="{{ route('admin.cutoff-sisternas.export', ['sisternas' => 'p_sister_ganjil_tl']) }}" id="btnExportBackupODS" class="btn btn-sm btn-outline-secondary d-inline-flex align-items-center gap-1.5 px-3 py-1.5 fw-semibold" style="border-radius: 7px; font-size: 0.82rem;">
+                                    <i class="bx bx-export fs-5"></i> Export Backup ODS
+                                </a>
                             </div>
                         </div>
 
-                        <!-- Card 2: Semester Genap (50% / col-md-6) -->
-                        <div class="col-md-6 col-sm-12 d-flex">
-                            @php
-                                $isGenapBerjalan = ((int)$tahunSession >= (int)date('Y'));
-                                $genapDefaultVal = $isGenapBerjalan ? 'n_sister_genap_bj' : 'o_sister_genap_tl';
-                                $statGenap       = $isGenapBerjalan ? $statGenapBJ : $statGenapTL;
-                            @endphp
-                            <div class="btn-select-period p-3 rounded-3 d-flex flex-column justify-content-between w-100 h-100" id="cardGenap" data-value="{{ $genapDefaultVal }}" style="cursor: pointer; transition: all 0.2s ease;">
-                                <div class="w-100">
-                                    <div class="d-flex justify-content-between align-items-center mb-2">
-                                        <span class="period-title fw-bold" style="font-size: 0.88rem; color: #435971;">
-                                            <i class="bx bx-calendar text-success me-1"></i> {{ $tahunSession }}/2
-                                        </span>
-                                    </div>
-
-                                    <div class="period-subtitle mb-2" style="font-size: 0.71rem; line-height: 1.35;">
-                                        <div>
-                                            <span style="color: #697a8d;">Pembayaran:</span> <span class="fw-semibold" style="color: #566a7f;">September - Februari</span>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div class="d-flex gap-2 align-items-center w-100 mt-auto">
-                                    <div class="flex-fill">
-                                        <div class="btn-stat-flat-memenuhi" title="Klik untuk menyaring data Memenuhi">
-                                            <i class="bx bx-check" style="font-size: 0.88rem; font-weight: bold; flex-shrink: 0;"></i>
-                                            <span>{{ number_format($statGenap['m'], 0, ',', '.') }} memenuhi</span>
-                                        </div>
-                                    </div>
-                                    <div class="flex-fill">
-                                        <div class="btn-stat-flat-tm" title="Klik untuk menyaring data Tidak Memenuhi">
-                                            <i class="bx bx-x" style="font-size: 0.88rem; font-weight: bold; flex-shrink: 0;"></i>
-                                            <span>{{ number_format($statGenap['tm'], 0, ',', '.') }} tidak memenuhi</span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
+                        <div id="loading" style="display: none;">
+                            <p>Loading...</p>
                         </div>
-                    </div>
-                </div>
 
-                <hr class="mt-2 mb-3.5" style="border-top: 1.5px solid #cbd5e1 !important;">
-                <div class="d-flex justify-content-between align-items-center mb-3">
-                    <div>
-                        <h5 class="fw-bold text-dark mb-0" id="selectedPeriodTitle">Rincian Data Cut Off Dosen</h5>
-                    </div>
-                    <!-- Hidden select untuk tetap menjaga fungsi JavaScript DataTables -->
-                    <select name="sisternas" id="sisternasSelect" class="form-select d-none">
-                        <option value="">Pilih Data...</option>
-                        <option value="o_sister_genap_tl" {{ request('sisternas') == 'o_sister_genap_tl' ? 'selected' : '' }}>Semester 2 (Genap)</option>
-                        <option value="p_sister_ganjil_tl" {{ request('sisternas') == 'p_sister_ganjil_tl' ? 'selected' : '' }}>Semester 1 (Ganjil)</option>
-                        <option value="n_sister_genap_bj" {{ request('sisternas') == 'n_sister_genap_bj' ? 'selected' : '' }}>Semester 2 (Genap)</option>
-                    </select>
+                        <div id="table-container"></div> <!-- Kontainer untuk tabel hasil -->
 
-                    <div class="d-flex align-items-center gap-2">
-                        @if(auth()->user()->role !== 'pic')
-                        <button type="button" class="btn btn-primary fw-bold" id="addDataBtn" style="background-color: #0f2b5c; border-color: #0f2b5c; display: inline-flex; align-items: center; gap: 6px; font-size: 0.85rem; padding: 8px 16px;">
-                            <i class="bx bx-plus-circle"></i> Tambah Data Dosen
-                        </button>
-                        @endif
-                        <button type="button" id="exportBackupBtn" class="btn btn-outline-primary fw-semibold" style="border-color: #cbd5e1; color: #475569; display: inline-flex; align-items: center; gap: 6px; padding: 8px 16px; font-size: 0.85rem; background-color: #ffffff;">
-                            <i class="bx bx-export"></i> Export Backup ODS
-                        </button>
-                    </div>
-                </div>
-            <hr class="mt-1 mb-2.5">
-
-            <div id="loading" style="display: none;">
-                <div class="spinner"></div>
-                <p>Loading...</p>
-            </div>
-
-            <div id="table-container"></div> <!-- Kontainer untuk tabel hasil -->
-
-
-            <!-- Tabel Data -->
-            <div class="table-responsive text-nowrap" style="overflow-x: auto;">
+                        <!-- Tabel Data -->
+                        <div class="table-responsive text-nowrap" style="overflow-x: auto;">
                             <table class="table table-hover md2-table" id="cutoffTable" style="margin-bottom: 0 !important;">
                                 <thead>
                                     <tr>
@@ -1610,7 +2064,12 @@ function updateCutoffFileName(input, targetId) {
                     </div>
                 </div>
             </div>
+            <div class="modal-footer px-4 py-2.5" style="background: #f8fafc; border-top: 1px solid #e2e8f0; border-bottom-left-radius: 16px; border-bottom-right-radius: 16px;">
+                <button type="button" class="btn btn-secondary px-4 py-2 fw-semibold" data-bs-dismiss="modal" style="border-radius: 8px;">Tutup</button>
+            </div>
         </div>
+    </div>
+</div>
 
 <!-- Modal Edit -->
 <div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
@@ -1902,7 +2361,7 @@ document.addEventListener('DOMContentLoaded', function() {
             url: '{{ route("admin.cutoff-sisternas") }}',
             data: function(d) {
                 d.sisternas = $('#sisternasSelect').val();
-                d.tahun = '{{ $tahunSession }}';
+                d.tahun = $('#tahunFilterSelect').val() || '{{ $tahunSession }}';
                 d.bkd_status = bkdStatusFilter;
             },
             ajax: null
@@ -2021,6 +2480,32 @@ document.addEventListener('DOMContentLoaded', function() {
             searchPlaceholder: "Cari data...",
             search: "Cari Data:"
         },
+    });
+
+    cutOffTable.on('xhr.dt', function (e, settings, json, xhr) {
+        if (json && json.stat_ganjil_tl) {
+            const formatNum = n => new Intl.NumberFormat('id-ID').format(n || 0);
+            const yr = json.tahun_query || $('#tahunFilterSelect').val() || '{{ $tahunSession }}';
+
+            // Card 1 (Ganjil)
+            const ganjilM = formatNum(json.stat_ganjil_tl.m);
+            const ganjilTM = formatNum(json.stat_ganjil_tl.tm);
+
+            $('.btn-select-period[data-value="p_sister_ganjil_tl"] .period-title').html('<i class="bx bx-calendar text-primary me-1"></i> ' + yr + '/1');
+            $('.btn-select-period[data-value="p_sister_ganjil_tl"] .btn-stat-flat-memenuhi span').text(ganjilM + ' memenuhi');
+            $('.btn-select-period[data-value="p_sister_ganjil_tl"] .btn-stat-flat-tm span').text(ganjilTM + ' tidak memenuhi');
+
+            // Card 2 (Genap)
+            const curYr = new Date().getFullYear();
+            const isGenapBerjalan = (parseInt(yr) >= curYr);
+            const statGenap = isGenapBerjalan ? json.stat_genap_bj : json.stat_genap_tl;
+            const genapM = formatNum(statGenap ? statGenap.m : 0);
+            const genapTM = formatNum(statGenap ? statGenap.tm : 0);
+
+            $('#cardGenap .period-title').html('<i class="bx bx-calendar text-primary me-1"></i> ' + yr + '/2');
+            $('#cardGenap .btn-stat-flat-memenuhi span').text(genapM + ' memenuhi');
+            $('#cardGenap .btn-stat-flat-tm span').text(genapTM + ' tidak memenuhi');
+        }
     });
 
     $('#sisternasSelect').change(() => {
@@ -2365,10 +2850,17 @@ document.addEventListener('DOMContentLoaded', function() {
         $('#val_genap_file').val('Tidak ada file dipilih');
     });
 
-    // Reload page when Year Filter changes
+    // Auto sync mapping table on initial page load
+    const periodeCb = document.querySelector('input[name="sp_periode_d3_cb[]"]:checked');
+    if (periodeCb) {
+        onD3PeriodeCheckboxChange(periodeCb);
+    }
+
+    // Reload DataTables via AJAX when Year Filter changes (no full page refresh)
     $('#tahunFilterSelect').on('change', function() {
-        const val = $(this).val();
-        window.location.href = `?tahun=${val}`;
+        if (typeof cutOffTable !== 'undefined' && cutOffTable) {
+            cutOffTable.ajax.reload();
+        }
     });
 });
 </script>
@@ -2403,4 +2895,299 @@ document.addEventListener('DOMContentLoaded', function() {
         </div>
     </div>
 </div>
+<script>
+const bulanLabelsD3 = {
+    januari:'Januari', februari:'Februari', maret:'Maret',
+    april:'April', mei:'Mei', juni:'Juni',
+    juli:'Juli', agustus:'Agustus', september:'September',
+    oktober:'Oktober', november:'November', desember:'Desember'
+};
+
+function onD3TahunChange(yr) {
+    const hiddenTahun = document.getElementById('d1_new_tahun_val');
+    if (hiddenTahun) hiddenTahun.value = yr;
+    updatePreviewD3();
+}
+
+function getSelectedD3PeriodeVal() {
+    const cb = document.querySelector('input[name="sp_periode_d3_cb[]"]:checked');
+    if (cb) return cb.value;
+    const sel = document.getElementById('spPeriodeLaporanSelect');
+    if (sel && sel.value) return sel.value;
+    return 'n_sister_genap_bj';
+}
+
+function onD3PeriodeCheckboxChange(el) {
+    if (el && el.checked) {
+        document.querySelectorAll('input[name="sp_periode_d3_cb[]"]').forEach(cb => {
+            if (cb !== el) cb.checked = false;
+        });
+    }
+
+    const val = getSelectedD3PeriodeVal();
+    const tableValInput = document.getElementById('d1_new_table_val');
+    if (tableValInput) {
+        tableValInput.value = val;
+    }
+
+    const ganjilBulan = ['juli', 'agustus', 'september', 'oktober', 'november', 'desember'];
+    const genapBulan = ['januari', 'februari', 'maret', 'april', 'mei', 'juni'];
+
+    if (val === 'p_sister_ganjil_tl' || val === '1') {
+        document.querySelectorAll('input[name="sp_bulan_d3[]"]').forEach(cb => {
+            cb.checked = ganjilBulan.includes(cb.value);
+        });
+    } else {
+        document.querySelectorAll('input[name="sp_bulan_d3[]"]').forEach(cb => {
+            cb.checked = genapBulan.includes(cb.value);
+        });
+    }
+
+    const allCb = document.querySelectorAll('input[name="sp_bulan_d3[]"]');
+    const checkedCb = document.querySelectorAll('input[name="sp_bulan_d3[]"]:checked');
+    const selectAllEl = document.getElementById('d3SelectAllBulan');
+    if (selectAllEl) {
+        selectAllEl.checked = (allCb.length > 0 && allCb.length === checkedCb.length);
+    }
+
+    updatePreviewD3();
+}
+
+function syncD3MappingTable() {
+    const yearSelect = document.getElementById('d1_new_tahun_val');
+    const selectedYr = yearSelect ? yearSelect.value : '';
+    const selectedPeriode = getSelectedD3PeriodeVal();
+    const checkedBulan = [...document.querySelectorAll('input[name="sp_bulan_d3[]"]:checked')].map(c => c.value);
+
+    if (!selectedYr || !selectedPeriode) return;
+
+    const isGanjil = selectedPeriode.includes('ganjil') || selectedPeriode === '1' || selectedPeriode.includes('p_sister');
+    const periodeCode = selectedYr + '-' + (isGanjil ? '1' : '2');
+
+    let bulanText = '';
+    if (checkedBulan.length > 0) {
+        if (checkedBulan.length === 6) {
+            bulanText = checkedBulan[0] + '-' + checkedBulan[checkedBulan.length - 1];
+        } else {
+            bulanText = checkedBulan.join(',');
+        }
+    }
+
+    const tbody = document.getElementById('spD3MappingTbody');
+    if (!tbody) return;
+
+    let firstRow = tbody.querySelector('tr');
+    if (!firstRow) {
+        addD3MappingRow();
+        firstRow = tbody.querySelector('tr');
+    }
+
+    if (firstRow) {
+        const inpBayarTahun = firstRow.querySelector('input[name="d3_periode_bayar_tahun[]"]');
+        const inpBayarBulan = firstRow.querySelector('input[name="d3_periode_bayar_bulan[]"]');
+        const inpPemTahun = firstRow.querySelector('input[name="d3_pembayaran_tahun[]"]');
+        const inpPemBulan = firstRow.querySelector('input[name="d3_pembayaran_bulan[]"]');
+        const inpPemPeriode = firstRow.querySelector('input[name="d3_pembayaran_periode[]"]');
+
+        if (inpBayarTahun) inpBayarTahun.value = selectedYr;
+        if (inpBayarBulan && bulanText) inpBayarBulan.value = bulanText;
+        if (inpPemTahun) inpPemTahun.value = selectedYr;
+        if (inpPemPeriode) inpPemPeriode.value = periodeCode;
+    }
+}
+
+function updatePreviewD3() {
+    const preview = document.getElementById('spPreview');
+    const yearSelect = document.getElementById('d1_new_tahun_val');
+    const selectedYr = yearSelect ? yearSelect.value : '';
+    const checkedBulan = [...document.querySelectorAll('input[name="sp_bulan_d3[]"]:checked')].map(c => c.value);
+    const selectedPeriode = getSelectedD3PeriodeVal();
+    const periodeLabel = selectedPeriode.includes('ganjil') || selectedPeriode === '1' || selectedPeriode === 'p_sister_ganjil_tl' ? '1 (Ganjil)' : '2 (Genap)';
+    
+    if (preview) {
+        if (selectedYr && checkedBulan.length > 0 && selectedPeriode) {
+            document.getElementById('spPreviewTahun').textContent = 'Tahun ' + selectedYr + ' · Periode ' + periodeLabel;
+            document.getElementById('spPreviewMonths').textContent = 'Pembayaran: ' + checkedBulan.map(b => bulanLabelsD3[b] || b).join(' · ');
+            preview.classList.add('show');
+        } else {
+            preview.classList.remove('show');
+        }
+    }
+
+    // Auto-sync ke tabel Pemetaan Periode Bayar & Pembayaran
+    syncD3MappingTable();
+}
+
+function toggleD3SelectAll(el) {
+    document.querySelectorAll('input[name="sp_bulan_d3[]"]').forEach(cb => { cb.checked = el.checked; });
+    updatePreviewD3();
+}
+
+function resetFormD3() {
+    document.querySelectorAll('input[name="sp_bulan_d3[]"]').forEach(cb => cb.checked = false);
+    const selectAllD3 = document.getElementById('d3SelectAllBulan');
+    if (selectAllD3) selectAllD3.checked = false;
+    document.querySelectorAll('input[name="sp_periode_d3"]').forEach(r => r.checked = false);
+    updatePreviewD3();
+}
+
+function addD3MappingRow() {
+    const tbody = document.getElementById('spD3MappingTbody');
+    if (!tbody) return;
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+        <td><input type="text" class="sp-d3-input" name="d3_periode_bayar_tahun[]" placeholder="misal: 2024"></td>
+        <td><input type="text" class="sp-d3-input" name="d3_periode_bayar_bulan[]" placeholder="misal: maret-agustus"></td>
+        <td><input type="text" class="sp-d3-input" name="d3_pembayaran_tahun[]" placeholder="misal: 2024"></td>
+        <td><input type="text" class="sp-d3-input" name="d3_pembayaran_bulan[]" placeholder="-"></td>
+        <td><input type="text" class="sp-d3-input" name="d3_pembayaran_periode[]" placeholder="misal: 2024-1"></td>
+        <td class="text-center">
+            <button type="button" class="btn btn-sm btn-outline-info border-0 p-1" onclick="viewD3MappingRow(this)" title="View Detail Dashboard">
+                <i class="bx bx-show fs-5"></i>
+            </button>
+        </td>
+    `;
+    tbody.appendChild(tr);
+}
+
+function viewD3MappingRow(btn) {
+    const tr = btn.closest('tr');
+    let selectedYr = '';
+
+    if (tr) {
+        const inpTahun = tr.querySelector('input[name="d3_periode_bayar_tahun[]"]');
+        if (inpTahun && inpTahun.value) {
+            selectedYr = inpTahun.value.trim();
+        }
+    }
+
+    if (!selectedYr) {
+        const mainYearSelect = document.getElementById('d1_new_tahun_val');
+        if (mainYearSelect && mainYearSelect.value) {
+            selectedYr = mainYearSelect.value.trim();
+        }
+    }
+
+    // Sync selected table type from Step 2
+    const selectedPeriodeVal = getSelectedD3PeriodeVal();
+    const sisternasSelect = document.getElementById('sisternasSelect');
+    if (sisternasSelect && selectedPeriodeVal) {
+        sisternasSelect.value = selectedPeriodeVal;
+    }
+
+    const tahunSelect = document.getElementById('tahunFilterSelect');
+    if (selectedYr && tahunSelect) {
+        let optionToSelect = [...tahunSelect.options].find(o => o.value == selectedYr);
+        if (!optionToSelect) {
+            optionToSelect = new Option(selectedYr, selectedYr, true, true);
+            tahunSelect.add(optionToSelect);
+        }
+        tahunSelect.value = selectedYr;
+        tahunSelect.dispatchEvent(new Event('change'));
+    }
+
+    $('#modalDashboardCutoff').modal('show');
+}
+
+$('#modalDashboardCutoff').on('shown.bs.modal', function () {
+    if (typeof cutOffTable !== 'undefined' && cutOffTable) {
+        cutOffTable.columns.adjust();
+        cutOffTable.ajax.reload();
+    }
+});
+
+function editD3MappingRow(btn) {
+    const tr = btn.closest('tr');
+    if (!tr) return;
+    const inputs = tr.querySelectorAll('input');
+    const isReadOnly = inputs[0] ? inputs[0].hasAttribute('readonly') : false;
+    
+    inputs.forEach(inp => {
+        if (isReadOnly) {
+            inp.removeAttribute('readonly');
+            inp.style.backgroundColor = '#ffffff';
+            inp.style.borderColor = '#3b82f6';
+        } else {
+            inp.setAttribute('readonly', 'readonly');
+            inp.style.backgroundColor = '#f8fafc';
+            inp.style.borderColor = '#cbd5e1';
+        }
+    });
+
+    if (isReadOnly) {
+        if (inputs[0]) {
+            inputs[0].focus();
+            inputs[0].select();
+        }
+        Swal.fire({
+            icon: 'info',
+            title: 'Mode Edit Manual Aktif',
+            text: 'Kolom kini dapat diubah secara manual.',
+            timer: 1400,
+            showConfirmButton: false
+        });
+    } else {
+        Swal.fire({
+            icon: 'success',
+            title: 'Mode Otomatis Aktif',
+            text: 'Kolom kembali terkunci (otomatis diisi dari setting di atas).',
+            timer: 1400,
+            showConfirmButton: false
+        });
+    }
+}
+
+function removeD3Row(btn) {
+    const tr = btn.closest('tr');
+    if (!tr) return;
+    Swal.fire({
+        title: 'Hapus Baris Pemetaan?',
+        text: 'Baris pemetaan ini akan dihapus dari tabel.',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#ef4444',
+        cancelButtonColor: '#64748b',
+        confirmButtonText: 'Ya, Hapus',
+        cancelButtonText: 'Batal'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            tr.remove();
+        }
+    });
+}
+
+function saveSettingD3() {
+    const yearSelect = document.getElementById('d1_new_tahun_val');
+    const selectedYr = yearSelect ? yearSelect.value : '';
+    const selectedPeriode = document.querySelector('input[name="sp_periode_d3"]:checked');
+    const checkedBulan = [...document.querySelectorAll('input[name="sp_bulan_d3[]"]:checked')].map(c => c.value);
+    const fileInput = document.getElementById('d1_new_file_input');
+
+    if (!selectedYr || !selectedPeriode || checkedBulan.length === 0) {
+        Swal.fire({
+            title: 'Peringatan',
+            text: 'Harap lengkapi Pemilihan Usulan & Tahun, Periode Laporan, dan Periode Pembayaran terlebih dahulu.',
+            icon: 'warning',
+            confirmButtonColor: '#2563eb'
+        });
+        return;
+    }
+
+    if (!fileInput || !fileInput.files[0]) {
+        Swal.fire({
+            title: 'Upload File CSV Terlebih Dahulu',
+            text: 'Silakan unggah file CSV Cut Off Sisternas pada Langkah 4 terlebih dahulu sebelum menyimpan.',
+            icon: 'info',
+            confirmButtonColor: '#2563eb'
+        });
+        return;
+    }
+
+    // Set / update nilai ke Setting Pemetaan Periode Bayar & Pembayaran
+    syncD3MappingTable();
+
+    // Jalankan cek pratinjau perubahan data & tampilkan konfirmasi simpan
+    coCheckDiffD1();
+}
+</script>
 @endsection

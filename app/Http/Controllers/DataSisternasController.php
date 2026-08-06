@@ -18,6 +18,29 @@ class DataSisternasController extends Controller
     return view('admin.data-sisternas', compact('dataSisternas'));
   }
 
+  public function periode()
+  {
+    $dataSisternas = Sisternas::orderBy('tahun', 'desc')->orderBy('tanggal', 'asc')->get();
+    $tahunList = range(2023, (int) date('Y'));
+
+    $periodeData = $dataSisternas->map(function ($item) {
+      $isGanjil = stripos($item->periode, 'ganjil') !== false ||
+                  in_array(strtolower($item->periode), ['juli','agustus','september','oktober','november','desember']);
+      return [
+        'id'           => $item->id,
+        'tahun'        => $item->tahun,
+        'periode'      => $item->periode,   // bulan cut-off (e.g. "Juli")
+        'bulan'        => $item->bulan,     // periode laporan (e.g. "[Sept-Des] Ganjil TL")
+        'semester'     => $isGanjil ? 'ganjil' : 'genap',
+        'periodeLabel' => $item->tahun . '/' . ($isGanjil ? '1' : '2'),
+        'tanggal'      => $item->tanggal,
+        'dokumen'      => $item->dokumen,
+      ];
+    })->values();
+
+    return redirect()->route('admin.cutoff-sisternas');
+  }
+
   public function destroy($id)
   {
     $data = Sisternas::findOrFail($id);

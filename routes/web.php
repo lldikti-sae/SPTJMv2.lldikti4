@@ -349,6 +349,7 @@ Route::prefix('admin')
   ->group(function () {
     Route::get('/data-sisternas', [DataSisternasController::class, 'index'])->name('data-sisternas');
     Route::post('/data-sisternas', [DataSisternasController::class, 'store'])->name('data-sisternas.store');
+    Route::get('/periode-sisternas', [DataSisternasController::class, 'periode'])->name('periode-sisternas');
   });
 Route::delete('/data-sisternas/{id}', [DataSisternasController::class, 'destroy'])->name('data-sisternas.destroy');
 Route::get('/admin/cutoff-sisternas', [CutOffSisternasController::class, 'index'])->name('admin.cutoff-sisternas');
