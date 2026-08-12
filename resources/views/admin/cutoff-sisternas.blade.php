@@ -1082,35 +1082,37 @@ function updateCutoffFileName(input, targetId) {
                             <span class="sp-d3-step-num">1</span>
                             <span class="sp-d3-block-title">Periode Pelaporan</span>
                         </div>
-                        <div class="row g-2 mb-3">
-                            <div class="col-md-6">
-                                <label class="form-label fw-bold text-secondary mb-1" style="font-size:0.75rem;" for="spJenisUsulan">PEMILIHAN USULAN</label>
-                                <select id="spJenisUsulan" class="form-select" name="jenis_usulan" onchange="updatePreviewD3()" required style="border-radius:7px; font-size:0.85rem; font-weight:600; border-color: #cbd5e1; background-color: #ffffff; color: #1e293b;">
-                                    <option value="" disabled>-- PILIH --</option>
-                                    <option value="SPTJM" selected>SPTJM</option>
-                                    <option value="TUKIN">TUKIN</option>
-                                </select>
-                            </div>
-                            <div class="col-md-6">
-                                <label class="form-label fw-bold text-secondary mb-1" style="font-size:0.75rem;">TAHUN LAPORAN</label>
-                                <select name="tahun" id="d1_new_tahun_val" class="form-select" onchange="onD3TahunChange(this.value)" style="border-radius:7px; font-size:0.85rem; font-weight:700; border-color: #cbd5e1; background-color: #ffffff; color: #1e293b;">
-                                    @foreach($tahunListD3 as $y)
-                                        <option value="{{ $y }}" {{ ($tahunSession == $y) ? 'selected' : '' }}>Tahun {{ $y }}</option>
-                                    @endforeach
-                                </select>
-                            </div>
-                        </div>
-
-                        <div class="mb-3">
-                            <label class="form-label fw-bold text-secondary mb-1" style="font-size:0.75rem;">PERIODE LAPORAN</label>
-                            <div class="d-flex flex-row gap-2 mt-1">
-                                <div class="sp-d3-month-item flex-grow-1">
-                                    <input type="checkbox" name="sp_periode_d3_cb[]" id="d3_periode_cb_1" value="p_sister_ganjil_tl" onchange="onD3PeriodeCheckboxChange(this)">
-                                    <label for="d3_periode_cb_1" style="font-weight: 600; justify-content: center; padding: 9px 12px;">1 (Ganjil)</label>
+                        <div class="d-flex flex-column justify-content-center my-auto py-2">
+                            <div class="row g-2 mb-3">
+                                <div class="col-md-6">
+                                    <label class="form-label fw-bold text-secondary mb-1" style="font-size:0.75rem;" for="spJenisUsulan">PEMILIHAN USULAN</label>
+                                    <select id="spJenisUsulan" class="form-select" name="jenis_usulan" onchange="updatePreviewD3()" required style="border-radius:7px; font-size:0.85rem; font-weight:600; border-color: #cbd5e1; background-color: #ffffff; color: #1e293b;">
+                                        <option value="" disabled>-- PILIH --</option>
+                                        <option value="SPTJM" selected>SPTJM</option>
+                                        <option value="TUKIN">TUKIN</option>
+                                    </select>
                                 </div>
-                                <div class="sp-d3-month-item flex-grow-1">
-                                    <input type="checkbox" name="sp_periode_d3_cb[]" id="d3_periode_cb_2" value="n_sister_genap_bj" checked onchange="onD3PeriodeCheckboxChange(this)">
-                                    <label for="d3_periode_cb_2" style="font-weight: 600; justify-content: center; padding: 9px 12px;">2 (Genap)</label>
+                                <div class="col-md-6">
+                                    <label class="form-label fw-bold text-secondary mb-1" style="font-size:0.75rem;">TAHUN LAPORAN</label>
+                                    <select name="tahun" id="d1_new_tahun_val" class="form-select" onchange="onD3TahunChange(this.value)" style="border-radius:7px; font-size:0.85rem; font-weight:700; border-color: #cbd5e1; background-color: #ffffff; color: #1e293b;">
+                                        @foreach($tahunListD3 as $y)
+                                            <option value="{{ $y }}" {{ ($tahunSession == $y) ? 'selected' : '' }}>Tahun {{ $y }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="mb-1">
+                                <label class="form-label fw-bold text-secondary mb-1" style="font-size:0.75rem;">PERIODE LAPORAN</label>
+                                <div class="d-flex flex-row gap-2 mt-1">
+                                    <div class="sp-d3-month-item flex-grow-1">
+                                        <input type="checkbox" name="sp_periode_d3_cb[]" id="d3_periode_cb_1" value="p_sister_ganjil_tl" onchange="onD3PeriodeCheckboxChange(this)">
+                                        <label for="d3_periode_cb_1" style="font-weight: 600; justify-content: center; padding: 9px 12px;">1 (Ganjil)</label>
+                                    </div>
+                                    <div class="sp-d3-month-item flex-grow-1">
+                                        <input type="checkbox" name="sp_periode_d3_cb[]" id="d3_periode_cb_2" value="n_sister_genap_bj" checked onchange="onD3PeriodeCheckboxChange(this)">
+                                        <label for="d3_periode_cb_2" style="font-weight: 600; justify-content: center; padding: 9px 12px;">2 (Genap)</label>
+                                    </div>
                                 </div>
                             </div>
                         </div>
