@@ -83,9 +83,7 @@ class CutOffSisternasController extends Controller
             if (auth()->check() && auth()->user()->role === 'pic') {
                 return '<span class="text-muted">-</span>';
             }
-            return '<button class="sptjm-icon-btn sptjm-btn-edit edit-btn">
-                                <i class="bx bx-edit"></i>
-                            </button>';
+            return '<div class="d-flex justify-content-center align-items-center"><button class="sptjm-icon-btn sptjm-btn-edit edit-btn d-inline-flex align-items-center justify-content-center" style="width:30px; height:30px;"><i class="bx bx-edit"></i></button></div>';
           })
           ->with([
             'stat_ganjil_tl' => $statGanjilTL,

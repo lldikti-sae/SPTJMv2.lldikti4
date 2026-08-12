@@ -501,9 +501,13 @@
         color: #1e293b;
         transition: all 0.15s ease;
     }
+    .sp-d3-input[readonly] {
+        cursor: default;
+        user-select: none;
+    }
     .sp-d3-input:focus {
-        border-color: #3b82f6;
-        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+        border-color: #cbd5e1;
+        box-shadow: none;
         outline: none;
     }
 
@@ -578,7 +582,7 @@
 
     {{-- Header Bar --}}
     <div class="sp-header">
-        <h1 class="sp-title">Set Periode Sisternas</h1>
+        <h1 class="sp-title">SET PERIODE SISTERNAS</h1>
         
         <div class="sp-header-controls">
             {{-- Switcher Desain 1 | Desain 2 | Desain 3 --}}
@@ -869,35 +873,34 @@
                 <table class="table sp-d3-table" id="spD3MappingTable">
                     <thead>
                         <tr>
-                            <th colspan="2" class="th-group-bayar">PERIODE BAYAR</th>
-                            <th colspan="3" class="th-group-pembuat">PEMBAYARAN / LAPORAN</th>
+                            <th colspan="3" class="th-group-bayar">PERIODE LAPORAN</th>
+                            <th colspan="2" class="th-group-pembuat">PERIODE PEMBAYARAN</th>
                             <th width="60px" style="background-color: #f8fafc; color: #475569;">AKSI</th>
                         </tr>
                         <tr>
+                            <th class="th-sub">Usulan</th>
                             <th class="th-sub">Tahun</th>
-                            <th class="th-sub">Bulan</th>
+                            <th class="th-sub">Periode Laporan</th>
                             <th class="th-sub">Tahun</th>
-                            <th class="th-sub">Bulan</th>
-                            <th class="th-sub">Periode</th>
-                            <th class="th-sub">-</th>
+                            <th class="th-sub">Periode Pembayaran</th>
                         </tr>
                     </thead>
                     <tbody id="spD3MappingTbody">
                         <tr>
                             <td>
-                                <input type="text" class="sp-d3-input" name="d3_periode_bayar_tahun[]" value="2023" placeholder="misal: 2023">
+                                <input type="text" class="sp-d3-input" name="d3_usulan[]" value="" readonly>
                             </td>
                             <td>
-                                <input type="text" class="sp-d3-input" name="d3_periode_bayar_bulan[]" value="maret-agustus" placeholder="misal: maret-agustus">
+                                <input type="text" class="sp-d3-input" name="d3_pembayaran_tahun[]" value="" readonly>
                             </td>
                             <td>
-                                <input type="text" class="sp-d3-input" name="d3_pembayaran_tahun[]" value="2023" placeholder="misal: 2023">
+                                <input type="text" class="sp-d3-input" name="d3_pembayaran_periode[]" value="" readonly>
                             </td>
                             <td>
-                                <input type="text" class="sp-d3-input" name="d3_pembayaran_bulan[]" value="" placeholder="-">
+                                <input type="text" class="sp-d3-input" name="d3_periode_bayar_tahun[]" value="" readonly>
                             </td>
                             <td>
-                                <input type="text" class="sp-d3-input" name="d3_pembayaran_periode[]" value="2022-1" placeholder="misal: 2022-1">
+                                <input type="text" class="sp-d3-input" name="d3_periode_bayar_bulan[]" value="" readonly>
                             </td>
                             <td class="text-center">
                                 <button type="button" class="btn btn-sm btn-outline-danger border-0 p-1" onclick="removeD3Row(this)" title="Hapus Baris">
@@ -907,12 +910,6 @@
                         </tr>
                         <tr>
                             <td>
-                                <input type="text" class="sp-d3-input" name="d3_periode_bayar_tahun[]" value="" placeholder="misal: 2023">
-                            </td>
-                            <td>
-                                <input type="text" class="sp-d3-input" name="d3_periode_bayar_bulan[]" value="" placeholder="misal: maret-agustus">
-                            </td>
-                            <td>
                                 <input type="text" class="sp-d3-input" name="d3_pembayaran_tahun[]" value="2024" placeholder="misal: 2024">
                             </td>
                             <td>
@@ -920,6 +917,12 @@
                             </td>
                             <td>
                                 <input type="text" class="sp-d3-input" name="d3_pembayaran_periode[]" value="2023-1" placeholder="misal: 2023-1">
+                            </td>
+                            <td>
+                                <input type="text" class="sp-d3-input" name="d3_periode_bayar_tahun[]" value="" placeholder="misal: 2023">
+                            </td>
+                            <td>
+                                <input type="text" class="sp-d3-input" name="d3_periode_bayar_bulan[]" value="" placeholder="misal: maret-agustus">
                             </td>
                             <td class="text-center">
                                 <button type="button" class="btn btn-sm btn-outline-danger border-0 p-1" onclick="removeD3Row(this)" title="Hapus Baris">
