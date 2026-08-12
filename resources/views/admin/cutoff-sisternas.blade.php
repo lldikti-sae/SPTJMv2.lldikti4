@@ -3242,10 +3242,28 @@ function toggleD3SelectAll(el) {
 }
 
 function resetFormD3() {
+    // 1. Uncheck semua bulan pembayaran
     document.querySelectorAll('input[name="sp_bulan_d3[]"]').forEach(cb => cb.checked = false);
+    
+    // 2. Uncheck 'Pilih Semua Bulan'
     const selectAllD3 = document.getElementById('d3SelectAllBulan');
     if (selectAllD3) selectAllD3.checked = false;
-    document.querySelectorAll('input[name="sp_periode_d3"]').forEach(r => r.checked = false);
+
+    // 3. Reset Pilihan Periode Laporan ke default (2 Genap)
+    const cbGanjil = document.getElementById('d3_periode_cb_1');
+    const cbGenap = document.getElementById('d3_periode_cb_2');
+    if (cbGanjil) cbGanjil.checked = false;
+    if (cbGenap) cbGenap.checked = true;
+
+    const tableValInput = document.getElementById('d1_new_table_val');
+    if (tableValInput) tableValInput.value = 'n_sister_genap_bj';
+
+    // 4. Reset Upload File CSV & Pratinjau Perubahan
+    if (typeof coResetFileD1 === 'function') {
+        coResetFileD1();
+    }
+
+    // 5. Update Pratinjau & Tabel Pemetaan
     updatePreviewD3();
 }
 
