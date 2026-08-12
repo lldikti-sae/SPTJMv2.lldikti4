@@ -1122,37 +1122,41 @@ function updateCutoffFileName(input, targetId) {
                                 <span class="sp-d3-step-num">2</span>
                                 <span class="sp-d3-block-title">Periode Pembayaran</span>
                             </div>
-                            <div style="display: flex; align-items: center; gap: 10px;">
-                                <div style="display: flex; align-items: center; gap: 6px;">
-                                    <label for="d3_tahun_pembayaran_select" class="fw-bold text-secondary mb-0" style="font-size:0.73rem; text-transform: uppercase; white-space: nowrap;">Tahun Bayar:</label>
-                                    <select name="tahun_pembayaran" id="d3_tahun_pembayaran_select" class="form-select form-select-sm" onchange="updatePreviewD3()" style="border-radius:6px; font-size:0.78rem; font-weight:700; border-color: #cbd5e1; width: auto; padding-top: 3px; padding-bottom: 3px;">
-                                        @foreach($tahunListD3 as $y)
-                                            <option value="{{ $y }}" {{ ($tahunSession + 1 == $y) ? 'selected' : '' }}>Tahun {{ $y }}</option>
-                                        @endforeach
-                                    </select>
-                                </div>
-                                <div style="display: flex; align-items: center; gap: 6px; background: #f8fafc; padding: 3px 9px; border-radius: 6px; border: 1px solid #e2e8f0;">
-                                    <input type="checkbox" id="d3SelectAllBulan" onchange="toggleD3SelectAll(this)" style="cursor: pointer; width: 14px; height: 14px; accent-color: #2563eb; margin: 0;">
-                                    <label for="d3SelectAllBulan" style="font-size: 0.73rem; font-weight: 600; color: #475569; cursor: pointer; user-select: none; margin: 0; white-space: nowrap;">Pilih Semua</label>
-                                </div>
+                            <div style="display: flex; align-items: center; gap: 6px; background: #ffffff; padding: 4px 10px; border-radius: 7px; border: 1px solid #cbd5e1; box-shadow: 0 1px 2px rgba(0,0,0,0.03);">
+                                <input type="checkbox" id="d3SelectAllBulan" onchange="toggleD3SelectAll(this)" style="cursor: pointer; width: 15px; height: 15px; accent-color: #2563eb; margin: 0;">
+                                <label for="d3SelectAllBulan" style="font-size: 0.75rem; font-weight: 700; color: #334155; cursor: pointer; user-select: none; margin: 0; white-space: nowrap;">Pilih Semua Bulan</label>
                             </div>
                         </div>
 
-                        <div class="sp-d3-month-list">
-                            @php
-                                $bulanD3Map = [
-                                    'januari'=>'Januari','februari'=>'Februari','maret'=>'Maret',
-                                    'april'=>'April','mei'=>'Mei','juni'=>'Juni',
-                                    'juli'=>'Juli','agustus'=>'Agustus','september'=>'September',
-                                    'oktober'=>'Oktober','november'=>'November','desember'=>'Desember'
-                                ];
-                            @endphp
-                            @foreach($bulanD3Map as $bKey => $bName)
-                                <div class="sp-d3-month-item">
-                                    <input type="checkbox" name="sp_bulan_d3[]" id="d3_bulan_{{ $bKey }}" value="{{ $bKey }}" onchange="updatePreviewD3()">
-                                    <label for="d3_bulan_{{ $bKey }}">{{ $bName }}</label>
-                                </div>
-                            @endforeach
+                        <div class="mb-3">
+                            <label for="d3_tahun_pembayaran_select" class="form-label fw-bold text-primary mb-1 d-flex align-items-center gap-1" style="font-size:0.75rem; letter-spacing: 0.04em;">
+                                <i class="bx bx-calendar-event text-primary" style="font-size: 1.05rem;"></i> TAHUN PEMBAYARAN
+                            </label>
+                            <select name="tahun_pembayaran" id="d3_tahun_pembayaran_select" class="form-select shadow-sm" onchange="updatePreviewD3()" style="border-radius:8px; font-size:0.88rem; font-weight:700; border: 1.5px solid #3b82f6; background-color: #eff6ff; color: #1e40af; transition: all 0.2s ease;">
+                                @foreach($tahunListD3 as $y)
+                                    <option value="{{ $y }}" {{ ($tahunSession + 1 == $y) ? 'selected' : '' }}>Tahun {{ $y }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+
+                        <div>
+                            <label class="form-label fw-bold text-secondary mb-1" style="font-size:0.75rem;">BULAN PEMBAYARAN</label>
+                            <div class="sp-d3-month-list">
+                                @php
+                                    $bulanD3Map = [
+                                        'januari'=>'Januari','februari'=>'Februari','maret'=>'Maret',
+                                        'april'=>'April','mei'=>'Mei','juni'=>'Juni',
+                                        'juli'=>'Juli','agustus'=>'Agustus','september'=>'September',
+                                        'oktober'=>'Oktober','november'=>'November','desember'=>'Desember'
+                                    ];
+                                @endphp
+                                @foreach($bulanD3Map as $bKey => $bName)
+                                    <div class="sp-d3-month-item">
+                                        <input type="checkbox" name="sp_bulan_d3[]" id="d3_bulan_{{ $bKey }}" value="{{ $bKey }}" onchange="updatePreviewD3()">
+                                        <label for="d3_bulan_{{ $bKey }}">{{ $bName }}</label>
+                                    </div>
+                                @endforeach
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -1454,13 +1458,14 @@ function updateCutoffFileName(input, targetId) {
             const hasGanjilMark = fileLower.includes('ganjil') || /[-_\s]1(?:[-_\s\.]|$)/.test(fileLower) || fileLower.includes('24-1') || fileLower.includes('23-1') || fileLower.includes('25-1');
             const hasGenapMark  = fileLower.includes('genap') || /[-_\s]2(?:[-_\s\.]|$)/.test(fileLower) || fileLower.includes('24-2') || fileLower.includes('23-2') || fileLower.includes('25-2');
 
+            // File WAJIB mengandung kata "ganjil" atau "genap" sesuai periode yang dipilih
             if (isSelectedGenap) {
-                if (hasGanjilMark && !fileLower.includes('genap') && !/[-_\s]2(?:[-_\s\.]|$)/.test(fileLower)) {
-                    return { valid: false, title: 'Periode File Tidak Sesuai!', reason: `Nama file <strong>${fileName}</strong> menandakan periode <strong>Ganjil (Semester 1)</strong>, sedangkan periode yang dipilih adalah <strong>Genap (Semester 2)</strong>.` };
+                if (!fileLower.includes('genap')) {
+                    return { valid: false, title: 'Nama File Tidak Sesuai!', reason: `Nama file <strong>${fileName}</strong> tidak memuat kata <strong>"genap"</strong>.<br><br>Untuk periode <strong>Genap (Semester 2)</strong>, nama file CSV <u>wajib memuat kata "genap"</u> (contoh: <code>sister_genap_${selectedYear ? String(selectedYear).slice(-2) : '26'}-2.csv</code>).` };
                 }
             } else if (isSelectedGanjil) {
-                if (hasGenapMark && !fileLower.includes('ganjil') && !/[-_\s]1(?:[-_\s\.]|$)/.test(fileLower)) {
-                    return { valid: false, title: 'Periode File Tidak Sesuai!', reason: `Nama file <strong>${fileName}</strong> menandakan periode <strong>Genap (Semester 2)</strong>, sedangkan periode yang dipilih adalah <strong>Ganjil (Semester 1)</strong>.` };
+                if (!fileLower.includes('ganjil')) {
+                    return { valid: false, title: 'Nama File Tidak Sesuai!', reason: `Nama file <strong>${fileName}</strong> tidak memuat kata <strong>"ganjil"</strong>.<br><br>Untuk periode <strong>Ganjil (Semester 1)</strong>, nama file CSV <u>wajib memuat kata "ganjil"</u> (contoh: <code>sister_ganjil_tl ${selectedYear ? String(selectedYear).slice(-2) : '26'}-1.csv</code>).` };
                 }
             }
         }
