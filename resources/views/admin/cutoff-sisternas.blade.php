@@ -3293,9 +3293,74 @@ function addD3MappingRow() {
 
 function removeD3MappingRow(btn) {
     const tr = btn.closest('tr');
-    if (tr) {
-        tr.querySelectorAll('input').forEach(inp => inp.value = '');
-    }
+    if (!tr) return;
+
+    const inpUsulan = tr.querySelector('input[name="d3_usulan[]"]');
+    const inpTahun = tr.querySelector('input[name="d3_pembayaran_tahun[]"]');
+    const inpPeriode = tr.querySelector('input[name="d3_pembayaran_periode[]"]');
+    
+    const usulanVal = inpUsulan && inpUsulan.value ? inpUsulan.value.trim() : 'SPTJM';
+    const tahunVal = inpTahun && inpTahun.value ? inpTahun.value.trim() : (document.getElementById('d1_new_tahun_val') ? document.getElementById('d1_new_tahun_val').value : '{{ date('Y') }}');
+    const periodeText = inpPeriode && inpPeriode.value ? inpPeriode.value.trim() : (tahunVal + '/2');
+    
+    const selectedTable = getSelectedD3PeriodeVal();
+
+    Swal.fire({
+        title: 'Hapus Data Periode Ini?',
+        html: `Apakah Anda yakin ingin menghapus seluruh data cut off sisternas untuk periode <strong>${periodeText} (${usulanVal})</strong>?<br><br><span class="text-danger small"><i class="bx bx-error me-1"></i>Data yang dihapus dari database tidak dapat dikembalikan.</span>`,
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#dc2626',
+        cancelButtonColor: '#6b7280',
+        confirmButtonText: 'Ya, Hapus Data',
+        cancelButtonText: 'Batal'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            Swal.fire({
+                title: 'Sedang Menghapus Data...',
+                html: '<div class="d-flex justify-content-center my-3"><div class="spinner-border text-danger" role="status"></div></div><span class="text-muted small">Sistem sedang menghapus data dari database...</span>',
+                showConfirmButton: false,
+                allowOutsideClick: false,
+                allowEscapeKey: false
+            });
+
+            $.ajax({
+                url: `/admin/cutoff-sisternas/clear/${selectedTable}?tahun=${tahunVal}`,
+                type: 'DELETE',
+                data: {
+                    _token: '{{ csrf_token() }}'
+                },
+                success: function(res) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Berhasil Dihapus!',
+                        text: res.message || 'Data periode berhasil dihapus dari database.',
+                        confirmButtonColor: '#2563eb'
+                    }).then(() => {
+                        tr.querySelectorAll('input').forEach(inp => inp.value = '');
+                        if (typeof coResetFileD1 === 'function') {
+                            coResetFileD1();
+                        }
+                        if (typeof cutOffTable !== 'undefined' && cutOffTable) {
+                            cutOffTable.ajax.reload();
+                        }
+                    });
+                },
+                error: function(xhr) {
+                    let msg = 'Gagal menghapus data dari database.';
+                    if (xhr.responseJSON && xhr.responseJSON.message) {
+                        msg = xhr.responseJSON.message;
+                    }
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Gagal Hapus Data!',
+                        html: msg,
+                        confirmButtonColor: '#dc2626'
+                    });
+                }
+            });
+        }
+    });
 }
 
 function viewD3MappingRow(btn) {
