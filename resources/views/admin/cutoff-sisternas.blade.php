@@ -1106,12 +1106,24 @@ function updateCutoffFileName(input, targetId) {
                             <div class="d-flex flex-row gap-2 mt-1">
                                 <div class="sp-d3-month-item flex-grow-1">
                                     <input type="checkbox" name="sp_periode_d3_cb[]" id="d3_periode_cb_1" value="p_sister_ganjil_tl" onchange="onD3PeriodeCheckboxChange(this)">
-                                    <label for="d3_periode_cb_1" style="font-weight: 600; justify-content: center;">1 (Ganjil)</label>
+                                    <label for="d3_periode_cb_1" style="font-weight: 600; justify-content: center; padding: 9px 12px;">1 (Ganjil)</label>
                                 </div>
                                 <div class="sp-d3-month-item flex-grow-1">
                                     <input type="checkbox" name="sp_periode_d3_cb[]" id="d3_periode_cb_2" value="n_sister_genap_bj" checked onchange="onD3PeriodeCheckboxChange(this)">
-                                    <label for="d3_periode_cb_2" style="font-weight: 600; justify-content: center;">2 (Genap)</label>
+                                    <label for="d3_periode_cb_2" style="font-weight: 600; justify-content: center; padding: 9px 12px;">2 (Genap)</label>
                                 </div>
+                            </div>
+                        </div>
+
+                        {{-- Info Ringkasan Pelaporan --}}
+                        <div class="p-2.5 rounded-3 mt-auto border" id="d3_step1_info_box" style="background: #ffffff; border-color: #e2e8f0 !important; font-size: 0.78rem;">
+                            <div class="d-flex align-items-center gap-2 mb-1">
+                                <i class="bx bx-info-circle text-primary" style="font-size: 1.05rem;"></i>
+                                <span class="fw-bold text-dark" style="font-size: 0.78rem;">Cakupan Pelaporan BKD:</span>
+                            </div>
+                            <div style="font-size: 0.76rem; color: #475569; line-height: 1.5;" class="ms-1">
+                                <div id="d3_info_bkd_range"><i class="bx bx-check-circle text-success me-1"></i>Pelaporan BKD: <strong class="text-dark">Maret - Agustus {{ $tahunSession }}</strong></div>
+                                <div id="d3_info_bayar_target"><i class="bx bx-time text-primary me-1"></i>Target Pembayaran: <strong class="text-dark">September {{ $tahunSession }} - Februari {{ $tahunSession + 1 }}</strong></div>
                             </div>
                         </div>
                     </div>
@@ -3218,6 +3230,21 @@ function updatePreviewD3() {
     const selectedPeriode = getSelectedD3PeriodeVal();
     const periodeLabel = selectedPeriode.includes('ganjil') || selectedPeriode === '1' || selectedPeriode === 'p_sister_ganjil_tl' ? '1 (Ganjil)' : '2 (Genap)';
     
+    // Dynamic Step 1 Info Box Update
+    const infoBkdEl = document.getElementById('d3_info_bkd_range');
+    const infoBayarEl = document.getElementById('d3_info_bayar_target');
+    if (infoBkdEl && infoBayarEl && selectedYr) {
+        const yr = parseInt(selectedYr);
+        const isGanjil = periodeLabel.includes('Ganjil');
+        if (isGanjil) {
+            infoBkdEl.innerHTML = `<i class="bx bx-check-circle text-success me-1"></i>Pelaporan BKD: <strong class="text-dark">September ${yr - 1} - Februari ${yr}</strong>`;
+            infoBayarEl.innerHTML = `<i class="bx bx-time text-primary me-1"></i>Target Pembayaran: <strong class="text-dark">Maret - Agustus ${yr}</strong>`;
+        } else {
+            infoBkdEl.innerHTML = `<i class="bx bx-check-circle text-success me-1"></i>Pelaporan BKD: <strong class="text-dark">Maret - Agustus ${yr}</strong>`;
+            infoBayarEl.innerHTML = `<i class="bx bx-time text-primary me-1"></i>Target Pembayaran: <strong class="text-dark">September ${yr} - Februari ${yr + 1}</strong>`;
+        }
+    }
+
     // Auto-sync ke tabel Pemetaan Periode Bayar & Pembayaran
     syncD3MappingTable();
 
