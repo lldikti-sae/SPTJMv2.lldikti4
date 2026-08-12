@@ -40,8 +40,9 @@
     }
     .sp-d3-grid {
         display: grid;
-        grid-template-columns: 1fr 1fr;
+        grid-template-columns: 1fr 1.35fr;
         gap: 16px;
+        align-items: start;
     }
     @media (max-width: 992px) {
         .sp-d3-grid { grid-template-columns: 1fr; }
