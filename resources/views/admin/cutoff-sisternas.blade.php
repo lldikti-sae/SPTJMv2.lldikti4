@@ -1080,11 +1080,15 @@ function updateCutoffFileName(input, targetId) {
         {{-- ===== PANEL SET PERIODE SISTERNAS (DESAIN 3 FIX) ===== --}}
         {{-- ======================================================== --}}
         <div class="sp-card mb-4">
-            <div class="sp-header">
-                <h5 class="sp-title">
+            <div class="sp-header d-flex flex-wrap justify-content-between align-items-center gap-2">
+                <h5 class="sp-title mb-0">
                     <i class="bx bx-cog text-primary" style="font-size: 1.25rem;"></i>
                     SET PERIODE SISTERNAS
                 </h5>
+                <span class="badge bg-label-warning text-dark d-inline-flex align-items-center gap-1" style="font-size: 0.75rem; font-weight: 500; padding: 6px 10px; border-radius: 6px;">
+                    <i class="bx bx-info-circle text-warning fs-6"></i>
+                    <span>Ingin ganti tahun/periode? Klik tombol <strong>Reset</strong> untuk membuka kunci input.</span>
+                </span>
             </div>
 
             <form action="{{ route('admin.cutoff-sisternas.upload') }}" method="POST" enctype="multipart/form-data" class="uploadForm" id="spFormD3">
@@ -1217,9 +1221,14 @@ function updateCutoffFileName(input, targetId) {
 
                 {{-- Footer Actions (Konfirmasi & Cek Perubahan di Atas) --}}
                 <div class="sp-footer">
-                    <button type="button" class="sp-btn-reset" onclick="resetFormD3()">
-                        <i class="bx bx-reset"></i> Reset
-                    </button>
+                    <div class="d-flex align-items-center gap-2">
+                        <button type="button" class="sp-btn-reset" onclick="resetFormD3()">
+                            <i class="bx bx-reset"></i> Reset
+                        </button>
+                        <span class="text-muted small ms-1 d-none d-sm-inline" style="font-size: 0.76rem; font-style: italic;">
+                            *Klik Reset untuk membuka kunci input jika ingin memilih periode lain
+                        </span>
+                    </div>
                     <button type="button" id="d1_check_diff_btn" class="sp-btn-save" onclick="coCheckDiffD1()">
                         <i class="bx bx-search-alt-2"></i> Konfirmasi &amp; Cek Perubahan Data
                     </button>
