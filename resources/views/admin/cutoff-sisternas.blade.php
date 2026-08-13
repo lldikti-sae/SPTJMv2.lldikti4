@@ -346,18 +346,23 @@
     .sp-btn-reset {
         padding: 7px 16px;
         border-radius: 8px;
-        border: 1px solid #cbd5e1;
-        background: #ffffff;
+        border: 1px solid #fecdd3;
+        background: #fff5f5;
         font-size: 0.82rem;
         font-weight: 600;
-        color: #475569;
+        color: #e11d48;
         cursor: pointer;
         transition: all 0.15s ease;
         display: inline-flex;
         align-items: center;
         gap: 5px;
     }
-    .sp-btn-reset:hover { background: #f1f5f9; color: #0f172a; }
+    .sp-btn-reset:hover { 
+        background: #ffe4e6; 
+        border-color: #fda4af;
+        color: #be123c;
+        box-shadow: 0 2px 4px rgba(225, 29, 72, 0.08);
+    }
     .sp-btn-save {
         display: inline-flex;
         align-items: center;
