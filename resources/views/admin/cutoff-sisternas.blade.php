@@ -3638,6 +3638,12 @@ function viewD3MappingRow(btn) {
         sisternasSelect.value = selectedTable;
     }
 
+    // Update tahun di KEDUA card LANGSUNG sebelum modal muncul
+    if (selectedYr) {
+        $('.btn-select-period[data-value="p_sister_ganjil"] .period-title').html('<i class="bx bx-calendar text-primary me-1"></i> ' + selectedYr + '/1');
+        $('#cardGenap .period-title').html('<i class="bx bx-calendar text-primary me-1"></i> ' + selectedYr + '/2');
+    }
+
     // Activate card sesuai periode (Genap vs Ganjil)
     $('.btn-select-period').removeClass('glowing-active-card active has-stat-filter');
     $('.btn-stat-flat-memenuhi, .btn-stat-flat-tm').removeClass('active-stat-filter');
@@ -3655,7 +3661,6 @@ function viewD3MappingRow(btn) {
     }
 
     // Set TAHUN FILTER di modal LANGSUNG tanpa dispatch native 'change'
-    // agar tidak men-trigger cascade yang mereset tahun kembali ke default
     const tahunSelect = document.getElementById('tahunFilterSelect');
     if (selectedYr && tahunSelect) {
         let optionToSelect = [...tahunSelect.options].find(o => o.value == selectedYr);
