@@ -1116,11 +1116,11 @@ function updateCutoffFileName(input, targetId) {
                             <label class="form-label fw-bold text-secondary mb-1" style="font-size:0.75rem;">PERIODE LAPORAN</label>
                             <div class="d-flex flex-row gap-2 mt-1">
                                 <div class="sp-d3-month-item flex-grow-1">
-                                    <input type="radio" name="sp_periode_d3_cb[]" id="d3_periode_cb_1" value="p_sister_ganjil" onchange="onD3PeriodeCheckboxChange(this)">
+                                    <input type="radio" name="sp_periode_d3" id="d3_periode_cb_1" value="p_sister_ganjil" onchange="onD3PeriodeCheckboxChange(this)">
                                     <label for="d3_periode_cb_1" style="font-weight: 600; justify-content: center; padding: 9px 12px;">1 (Ganjil)</label>
                                 </div>
                                 <div class="sp-d3-month-item flex-grow-1">
-                                    <input type="radio" name="sp_periode_d3_cb[]" id="d3_periode_cb_2" value="p_sister_genap" checked onchange="onD3PeriodeCheckboxChange(this)">
+                                    <input type="radio" name="sp_periode_d3" id="d3_periode_cb_2" value="p_sister_genap" checked onchange="onD3PeriodeCheckboxChange(this)">
                                     <label for="d3_periode_cb_2" style="font-weight: 600; justify-content: center; padding: 9px 12px;">2 (Genap)</label>
                                 </div>
                             </div>
@@ -1244,11 +1244,45 @@ function updateCutoffFileName(input, targetId) {
                                 </tr>
                             </thead>
                             <tbody id="spD3MappingTbody">
-                                <tr>
-                                    <td colspan="6" class="text-center text-muted" style="padding: 20px; font-size: 0.84rem; font-style: italic;">
-                                        <i class="bx bx-info-circle me-1"></i> Belum ada data. Upload file CSV dan simpan untuk mengisi tabel ini.
-                                    </td>
-                                </tr>
+                                @if(isset($savedMappings) && count($savedMappings) > 0)
+                                    @foreach($savedMappings as $mapping)
+                                        @php
+                                            $bayarTahunText = '';
+                                            if (!empty($mapping->bulan)) {
+                                                preg_match('/\b\d{4}\b/', $mapping->bulan, $matches);
+                                                if (!empty($matches[0])) {
+                                                    $bayarTahunText = $matches[0];
+                                                }
+                                            }
+                                            if (empty($bayarTahunText)) {
+                                                $bayarTahunText = ($mapping->periode === 'Ganjil') ? $mapping->tahun : (int)$mapping->tahun + 1;
+                                            }
+                                        @endphp
+                                        <tr>
+                                            <td><input type="text" class="sp-d3-input" name="d3_usulan[]" value="SPTJM" readonly></td>
+                                            <td><input type="text" class="sp-d3-input" name="d3_pembayaran_tahun[]" value="{{ $mapping->tahun }}" readonly></td>
+                                            <td><input type="text" class="sp-d3-input" name="d3_pembayaran_periode[]" value="{{ $mapping->tahun }}/{{ $mapping->periode === 'Ganjil' ? '1' : '2' }}" readonly></td>
+                                            <td><input type="text" class="sp-d3-input" name="d3_periode_bayar_tahun[]" value="{{ $bayarTahunText }}" readonly></td>
+                                            <td><input type="text" class="sp-d3-input" name="d3_periode_bayar_bulan[]" value="{{ $mapping->bulan }}" readonly></td>
+                                            <td class="text-center align-middle" style="text-align: center !important; vertical-align: middle !important;">
+                                                <div class="d-flex align-items-center justify-content-center gap-1">
+                                                    <button type="button" class="btn btn-sm btn-outline-info border-0 p-0 d-inline-flex align-items-center justify-content-center" onclick="viewD3MappingRow(this)" title="View Detail Dashboard" style="width: 30px; height: 30px; border-radius: 6px;">
+                                                        <i class="bx bx-show fs-5" style="display: inline-flex; align-items: center; justify-content: center; line-height: 1;"></i>
+                                                    </button>
+                                                    <button type="button" class="btn btn-sm btn-outline-danger border-0 p-0 d-inline-flex align-items-center justify-content-center" onclick="removeD3MappingRow(this)" title="Hapus Baris" style="width: 30px; height: 30px; border-radius: 6px;">
+                                                        <i class="bx bx-trash fs-5" style="display: inline-flex; align-items: center; justify-content: center; line-height: 1;"></i>
+                                                    </button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    @endforeach
+                                @else
+                                    <tr>
+                                        <td colspan="6" class="text-center text-muted" style="padding: 20px; font-size: 0.84rem; font-style: italic;">
+                                            <i class="bx bx-info-circle me-1"></i> Belum ada data. Upload file CSV dan simpan untuk mengisi tabel ini.
+                                        </td>
+                                    </tr>
+                                @endif
                             </tbody>
                         </table>
                     </div>
@@ -1730,15 +1764,6 @@ function updateCutoffFileName(input, targetId) {
             updatePreviewD3();
         }
 
-        // Step 4 SELALU kosong saat page load — hanya terisi setelah klik Konfirmasi
-        const tbody = document.getElementById('spD3MappingTbody');
-        if (tbody) {
-            tbody.innerHTML = `<tr>
-                <td colspan="6" class="text-center text-muted" style="padding: 20px; font-size: 0.84rem; font-style: italic;">
-                    <i class="bx bx-info-circle me-1"></i> Belum ada data. Upload file CSV dan simpan untuk mengisi tabel ini.
-                </td>
-            </tr>`;
-        }
         const diffBox = document.getElementById('d1_diff_box');
         if (diffBox) diffBox.style.display = 'none';
 
@@ -3092,7 +3117,7 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     // Auto sync mapping table on initial page load
-    const periodeCb = document.querySelector('input[name="sp_periode_d3_cb[]"]:checked');
+    const periodeCb = document.querySelector('input[name="sp_periode_d3"]:checked');
     if (periodeCb) {
         onD3PeriodeCheckboxChange(periodeCb);
     }
@@ -3173,7 +3198,7 @@ function onD3TahunChange(yr) {
 }
 
 function getSelectedD3PeriodeVal() {
-    const cb = document.querySelector('input[name="sp_periode_d3_cb[]"]:checked');
+    const cb = document.querySelector('input[name="sp_periode_d3"]:checked');
     if (cb && cb.value) return cb.value;
     const hiddenTable = document.getElementById('d1_new_table_val');
     if (hiddenTable && hiddenTable.value) return hiddenTable.value;
@@ -3392,51 +3417,64 @@ function restoreD3FormState() {
                 }
             }
             if (state.tahunPembayaran && document.getElementById('d3_tahun_pembayaran_select')) {
-                document.getElementById('d3_tahun_pembayaran_select').value = state.tahunPembayaran;
+                const bayarSelect = document.getElementById('d3_tahun_pembayaran_select');
+                let optExists = [...bayarSelect.options].some(o => o.value === state.tahunPembayaran);
+                if (!optExists) {
+                    const newOpt = new Option('Tahun ' + state.tahunPembayaran, state.tahunPembayaran, true, true);
+                    bayarSelect.add(newOpt);
+                }
+                bayarSelect.value = state.tahunPembayaran;
             }
-            if (Array.isArray(state.checkedMonths) && state.checkedMonths.length > 0) {
+            if (Array.isArray(state.checkedMonths)) {
                 document.querySelectorAll('input[name="sp_bulan_d3[]"]').forEach(cb => {
                     cb.checked = state.checkedMonths.includes(cb.value);
                 });
             }
         }
-    } catch (e) {}
+    } catch (e) {
+        console.error("Error in restoreD3FormState:", e);
+    }
 }
 
 function updatePreviewD3() {
-    const preview = document.getElementById('spPreview');
-    const yearSelect = document.getElementById('d1_new_tahun_val');
-    const selectedYr = yearSelect ? yearSelect.value : '';
-    const checkedBulan = [...document.querySelectorAll('input[name="sp_bulan_d3[]"]:checked')].map(c => c.value);
-    const selectedPeriode = getSelectedD3PeriodeVal();
-    const isGenap = !selectedPeriode.includes('ganjil') && selectedPeriode !== '1' && selectedPeriode !== 'p_sister_ganjil';
-    const periodeLabel = isGenap ? '2 (Genap)' : '1 (Ganjil)';
+    try {
+        const preview = document.getElementById('spPreview');
+        const yearSelect = document.getElementById('d1_new_tahun_val');
+        const selectedYr = yearSelect ? yearSelect.value : '';
+        const checkedBulan = [...document.querySelectorAll('input[name="sp_bulan_d3[]"]:checked')].map(c => c.value);
+        const selectedPeriode = getSelectedD3PeriodeVal();
+        const isGenap = selectedPeriode ? (!selectedPeriode.includes('ganjil') && selectedPeriode !== '1' && selectedPeriode !== 'p_sister_ganjil') : true;
+        const periodeLabel = isGenap ? '2 (Genap)' : '1 (Ganjil)';
 
-    const bayarYearSelect = document.getElementById('d3_tahun_pembayaran_select');
-    const Y = bayarYearSelect && bayarYearSelect.value ? parseInt(bayarYearSelect.value) : parseInt(selectedYr);
+        const bayarYearSelect = document.getElementById('d3_tahun_pembayaran_select');
+        const Y = bayarYearSelect && bayarYearSelect.value ? parseInt(bayarYearSelect.value) : (selectedYr ? parseInt(selectedYr) : new Date().getFullYear());
 
-    if (preview) {
-        if (selectedYr && checkedBulan.length > 0 && selectedPeriode) {
-            const hasNextYear = isGenap && checkedBulan.some(b => b === 'januari' || b === 'februari');
-            const bayarYearText = hasNextYear ? (Y + ' - ' + (Y + 1)) : Y;
+        if (preview) {
+            if (selectedYr && checkedBulan.length > 0 && selectedPeriode) {
+                const hasNextYear = isGenap && checkedBulan.some(b => b === 'januari' || b === 'februari');
+                const bayarYearText = hasNextYear ? (Y + ' - ' + (Y + 1)) : Y;
 
-            const monthTextList = checkedBulan.map(b => {
-                const bName = bulanLabelsD3[b] || b;
-                if (isGenap && (b === 'januari' || b === 'februari')) {
-                    return bName + ' ' + (Y + 1);
-                } else {
-                    return bName + ' ' + Y;
-                }
-            });
+                const monthTextList = checkedBulan.map(b => {
+                    const bName = typeof bulanLabelsD3 !== 'undefined' ? (bulanLabelsD3[b] || b) : b;
+                    if (isGenap && (b === 'januari' || b === 'februari')) {
+                        return bName + ' ' + (Y + 1);
+                    } else {
+                        return bName + ' ' + Y;
+                    }
+                });
 
-            document.getElementById('spPreviewTahun').textContent = 'Laporan Tahun ' + selectedYr + ' (' + periodeLabel + ') → Pembayaran Tahun ' + bayarYearText;
-            document.getElementById('spPreviewMonths').textContent = 'Rincian Pembayaran: ' + monthTextList.join(' · ');
-            preview.classList.add('show');
-        } else {
-            preview.classList.remove('show');
+                const tEl = document.getElementById('spPreviewTahun');
+                if (tEl) tEl.textContent = 'Laporan Tahun ' + selectedYr + ' (' + periodeLabel + ') → Pembayaran Tahun ' + bayarYearText;
+                const mEl = document.getElementById('spPreviewMonths');
+                if (mEl) mEl.textContent = 'Rincian Pembayaran: ' + monthTextList.join(' · ');
+                preview.classList.add('show');
+            } else {
+                preview.classList.remove('show');
+            }
         }
+    } catch (e) {
+        console.error("Error in updatePreviewD3: ", e);
     }
-
     saveD3FormState();
 }
 
@@ -3534,7 +3572,8 @@ function removeD3MappingRow(btn) {
     const tahunVal = inpTahun && inpTahun.value ? inpTahun.value.trim() : (document.getElementById('d1_new_tahun_val') ? document.getElementById('d1_new_tahun_val').value : '{{ date('Y') }}');
     const periodeText = inpPeriode && inpPeriode.value ? inpPeriode.value.trim() : (tahunVal + '/2');
     
-    const selectedTable = getSelectedD3PeriodeVal();
+    // Tentukan tabel target berdasarkan periode dari baris
+    const targetTable = periodeText.includes('/1') ? 'p_sister_ganjil' : 'p_sister_genap';
 
     Swal.fire({
         title: 'Hapus Data Periode Ini?',
@@ -3556,7 +3595,7 @@ function removeD3MappingRow(btn) {
             });
 
             $.ajax({
-                url: `/admin/cutoff-sisternas/clear/${selectedTable}?tahun=${tahunVal}`,
+                url: `/admin/cutoff-sisternas/clear/${targetTable}?tahun=${tahunVal}`,
                 type: 'DELETE',
                 data: {
                     _token: '{{ csrf_token() }}'
@@ -3581,9 +3620,12 @@ function removeD3MappingRow(btn) {
                         const preview = document.getElementById('spPreview');
                         if (preview) preview.classList.remove('show');
 
-                        // 4. Clear Step 4 table to default empty state
+                        // 4. Hapus baris spesifik ini saja dari UI
+                        tr.remove();
+
+                        // 5. Tampilkan placeholder jika tidak ada baris tersisa
                         const tbody = document.getElementById('spD3MappingTbody');
-                        if (tbody) {
+                        if (tbody && tbody.children.length === 0) {
                             tbody.innerHTML = `<tr>
                                 <td colspan="6" class="text-center text-muted" style="padding: 20px; font-size: 0.84rem; font-style: italic;">
                                     <i class="bx bx-info-circle me-1"></i> Belum ada data. Upload file CSV dan simpan untuk mengisi tabel ini.
