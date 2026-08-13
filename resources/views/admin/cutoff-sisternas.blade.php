@@ -1223,7 +1223,36 @@ function updateCutoffFileName(input, targetId) {
                     <button type="button" id="d1_check_diff_btn" class="sp-btn-save" onclick="coCheckDiffD1()">
                         <i class="bx bx-search-alt-2"></i> Konfirmasi &amp; Cek Perubahan Data
                     </button>
-                </div>             </div>
+                </div>
+
+                {{-- Diff Table Box --}}
+                <div id="d1_diff_box" style="display: none;" class="mt-3 pt-3 border-top">
+                    <div class="d-flex justify-content-between align-items-center mb-2.5">
+                        <span class="fw-bold text-dark" style="font-size:0.88rem;"><i class="bx bx-list-check text-primary me-1"></i> Pratinjau Perubahan Data:</span>
+                        <span class="badge bg-label-info text-dark" style="font-size:0.73rem; font-weight:600;"><i class="bx bx-info-circle me-1"></i> Centang kolom Aksi (kanan) jika data ingin dihapus</span>
+                    </div>
+
+                    <div class="table-responsive rounded-3 border mb-3" style="box-shadow: 0 1px 4px rgba(0,0,0,0.04); border-color: #e2e8f0 !important;">
+                        <table class="table table-hover align-middle mb-0" style="font-size: 0.84rem;">
+                            <thead style="background-color: #f8fafc; border-bottom: 1.5px solid #e2e8f0;">
+                                <tr>
+                                    <th style="padding: 11px 16px; font-weight: 700; color: #475569; text-transform: uppercase; font-size: 0.72rem; letter-spacing: 0.05em;">NIDN</th>
+                                    <th style="padding: 11px 16px; font-weight: 700; color: #475569; text-transform: uppercase; font-size: 0.72rem; letter-spacing: 0.05em;">NUPTK</th>
+                                    <th style="padding: 11px 16px; font-weight: 700; color: #475569; text-transform: uppercase; font-size: 0.72rem; letter-spacing: 0.05em;">Nama Dosen</th>
+                                    <th style="padding: 11px 16px; font-weight: 700; color: #475569; text-transform: uppercase; font-size: 0.72rem; letter-spacing: 0.05em; text-align: center;">Kesimpulan BKD Lama</th>
+                                    <th style="padding: 11px 16px; font-weight: 700; color: #475569; text-transform: uppercase; font-size: 0.72rem; letter-spacing: 0.05em; text-align: center;">Kesimpulan BKD Baru</th>
+                                    <th style="padding: 11px 16px; font-weight: 700; color: #475569; text-transform: uppercase; font-size: 0.72rem; letter-spacing: 0.05em; text-align: center; width: 130px;">Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody id="d1_diff_tbody">
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary w-100 py-2.5 fw-bold" style="background-color:#2563eb; border-color:#2563eb; border-radius:10px; font-size:0.92rem;">
+                        <i class="bx bx-save me-1"></i> Simpan Setting &amp; Data Cut Off
+                    </button>
+                </div>
 
                 {{-- Setting Pemetaan Periode Bayar & Pembayaran (Step 4 - Ditaruh Di Bawah Tombol Reset & Simpan) --}}
                 <div class="sp-d3-mapping-card mt-4">
@@ -1291,38 +1320,6 @@ function updateCutoffFileName(input, targetId) {
                             </tbody>
                         </table>
                     </div>
-                </div>
-
-                {{-- Diff Table Box --}}
-                <div id="d1_diff_box" style="display: none;" class="mt-3 pt-3 border-top">
-                    <div class="d-flex justify-content-between align-items-center mb-2.5">
-                        <span class="fw-bold text-dark" style="font-size:0.88rem;"><i class="bx bx-list-check text-primary me-1"></i> Pratinjau Perubahan Data:</span>
-                        <span class="badge bg-label-info text-dark" style="font-size:0.73rem; font-weight:600;"><i class="bx bx-info-circle me-1"></i> Centang kolom Aksi (kanan) jika data ingin dihapus</span>
-                    </div>
-
-
-                    <div class="table-responsive rounded-3 border mb-3" style="box-shadow: 0 1px 4px rgba(0,0,0,0.04); border-color: #e2e8f0 !important;">
-                        <table class="table table-hover align-middle mb-0" style="font-size: 0.84rem;">
-                            <thead style="background-color: #f8fafc; border-bottom: 1.5px solid #e2e8f0;">
-                                <tr>
-                                    <th style="padding: 11px 16px; font-weight: 700; color: #475569; text-transform: uppercase; font-size: 0.72rem; letter-spacing: 0.05em;">NIDN</th>
-                                    <th style="padding: 11px 16px; font-weight: 700; color: #475569; text-transform: uppercase; font-size: 0.72rem; letter-spacing: 0.05em;">NUPTK</th>
-                                    <th style="padding: 11px 16px; font-weight: 700; color: #475569; text-transform: uppercase; font-size: 0.72rem; letter-spacing: 0.05em;">Nama Dosen</th>
-                                    <th style="padding: 11px 16px; font-weight: 700; color: #475569; text-transform: uppercase; font-size: 0.72rem; letter-spacing: 0.05em; text-align: center;">Kesimpulan BKD Lama</th>
-                                    <th style="padding: 11px 16px; font-weight: 700; color: #475569; text-transform: uppercase; font-size: 0.72rem; letter-spacing: 0.05em; text-align: center;">Kesimpulan BKD Baru</th>
-                                    <th style="padding: 11px 16px; font-weight: 700; color: #475569; text-transform: uppercase; font-size: 0.72rem; letter-spacing: 0.05em; text-align: center; width: 130px;">Aksi</th>
-                                </tr>
-                            </thead>
-                            <tbody id="d1_diff_tbody">
-                            </tbody>
-                        </table>
-                    </div>
-
-                    <button type="submit" class="btn btn-primary w-100 py-2.5 fw-bold" style="background-color:#2563eb; border-color:#2563eb; border-radius:10px; font-size:0.92rem;">
-                        <i class="bx bx-save me-1"></i> Simpan Setting &amp; Data Cut Off
-                    </button>
-                </div>
-
             </form>
         </div>
 
