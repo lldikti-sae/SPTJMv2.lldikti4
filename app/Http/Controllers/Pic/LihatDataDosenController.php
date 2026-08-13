@@ -29,13 +29,13 @@ class LihatDataDosenController extends Controller
       $jabCol = 'Jabatan' . $bulanSession;
 
       $dataDosen = DB::table('s_transaksi_2 as d')
-        ->leftJoin('o_sister_genap_tl as genap_tl', 'd.nidn', '=', 'genap_tl.nidn')
-        ->leftJoin('p_sister_ganjil_tl as ganjil_tl', 'd.nidn', '=', 'ganjil_tl.nidn')
-        ->leftJoin('n_sister_genap_bj as genap_bj', 'd.nidn', '=', 'genap_bj.nidn')
+        ->leftJoin('p_sister_genap as genap_tl', 'd.nidn', '=', 'genap_tl.nidn')
+        ->leftJoin('p_sister_ganjil as ganjil', 'd.nidn', '=', 'ganjil.nidn')
+        ->leftJoin('p_sister_genap as genap_bj', 'd.nidn', '=', 'genap_bj.nidn')
         ->select(
           'd.*',
           'genap_tl.kesimpulan_bkd as bkd_genap_tl',
-          'ganjil_tl.kesimpulan_bkd as bkd_ganjil_tl',
+          'ganjil.kesimpulan_bkd as bkd_ganjil',
           'genap_bj.kesimpulan_bkd as bkd_genap_bj'
         )
         ->where('d.pemegang_wilayah', $wilayah)

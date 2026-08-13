@@ -46,7 +46,7 @@
                   <td>Ganjil Tahun Lalu [September - Desember]</td>
                   <td>Maret - Agustus Berjalan</td>
                   <td>
-                    <a href="{{ route('pic.data-sisternas-export',['sisternas' => 'p_sister_ganjil_tl']) }}"
+                    <a href="{{ route('pic.data-sisternas-export',['sisternas' => 'p_sister_ganjil']) }}"
                       class="btn btn-sm btn-primary">Lihat</a>
                   </td>
                 </tr>

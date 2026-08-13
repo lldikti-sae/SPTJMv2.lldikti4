@@ -80,7 +80,7 @@
                 Pelaporan BKD: <br><strong class="text-dark">September {{ $tahunLalu }} - Februari {{ $tahunSession }}</strong>
             </p>
             <div class="mt-auto pt-2">
-                <a href="{{ route('pic.data-sisternas-export', ['sisternas' => 'p_sister_ganjil_tl']) }}"
+                <a href="{{ route('pic.data-sisternas-export', ['sisternas' => 'p_sister_ganjil']) }}"
                     class="btn btn-success w-100 fw-bold py-3 shadow-sm d-flex align-items-center justify-content-center gap-2" style="border-radius: 12px; font-size: 0.95rem;">
                     <i class="bx bx-download fs-4"></i> UNDUH DATA SISTERNAS
                 </a>
@@ -102,7 +102,7 @@
                 Pelaporan BKD: <br><strong class="text-dark">Maret - Agustus {{ $tahunSession }}</strong>
             </p>
             <div class="mt-auto pt-2">
-                <a href="{{ route('pic.data-sisternas-export', ['sisternas' => 'n_sister_genap_bj']) }}"
+                <a href="{{ route('pic.data-sisternas-export', ['sisternas' => 'p_sister_genap']) }}"
                     class="btn btn-primary w-100 fw-bold py-3 shadow-sm d-flex align-items-center justify-content-center gap-2" style="border-radius: 12px; font-size: 0.95rem;">
                     <i class="bx bx-download fs-4"></i> UNDUH DATA SISTERNAS
                 </a>
@@ -124,7 +124,7 @@
                 Pelaporan BKD: <br><strong class="text-dark">Maret - Agustus {{ $tahunLalu }}</strong>
             </p>
             <div class="mt-auto pt-2">
-                <a href="{{ route('pic.data-sisternas-export', ['sisternas' => 'o_sister_genap_tl']) }}"
+                <a href="{{ route('pic.data-sisternas-export', ['sisternas' => 'p_sister_genap']) }}"
                     class="btn btn-secondary w-100 fw-bold py-3 shadow-sm d-flex align-items-center justify-content-center gap-2" style="border-radius: 12px; font-size: 0.95rem;">
                     <i class="bx bx-download fs-4"></i> UNDUH DATA SISTERNAS
                 </a>

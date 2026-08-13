@@ -20,7 +20,7 @@ class DataSisternasPicController extends Controller
 
     if ($table) {
       // Validasi agar hanya tabel yang diperbolehkan yang bisa diakses
-      $allowedTables = ['n_sister_genap_bj', 'o_sister_genap_tl', 'p_sister_ganjil_tl'];
+      $allowedTables = ['p_sister_genap', 'p_sister_genap', 'p_sister_ganjil'];
 
       if (in_array($table, $allowedTables)) {
         // No need to fetch data here, as the view does not render it and it consumes massive memory.
@@ -40,9 +40,9 @@ class DataSisternasPicController extends Controller
     //ambil dari req->query
     $sisternas = request()->query('sisternas');
     $name = [
-      'o_sister_genap_tl' => 'sister genap tl',
-      'p_sister_ganjil_tl' => 'sister ganjil tl',
-      'n_sister_genap_bj' => 'sister genap bj'
+      'p_sister_genap' => 'sister genap tl',
+      'p_sister_ganjil' => 'sister ganjil',
+      'p_sister_genap' => 'sister genap bj'
     ];
 
     $file_name = "Data-" . $name[$sisternas] . "-" . Carbon::now()->format('Ymd-His');

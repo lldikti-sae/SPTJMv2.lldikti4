@@ -1084,7 +1084,7 @@ function updateCutoffFileName(input, targetId) {
 
             <form action="{{ route('admin.cutoff-sisternas.upload') }}" method="POST" enctype="multipart/form-data" class="uploadForm" id="spFormD3">
                 @csrf
-                <input type="hidden" name="table" id="d1_new_table_val" value="n_sister_genap_bj">
+                <input type="hidden" name="table" id="d1_new_table_val" value="p_sister_genap">
 
                 <div class="sp-d3-grid">
                     {{-- Step 1: Dropdown Pemilihan, Pilih Tahun & Periode Laporan --}}
@@ -1116,11 +1116,11 @@ function updateCutoffFileName(input, targetId) {
                             <label class="form-label fw-bold text-secondary mb-1" style="font-size:0.75rem;">PERIODE LAPORAN</label>
                             <div class="d-flex flex-row gap-2 mt-1">
                                 <div class="sp-d3-month-item flex-grow-1">
-                                    <input type="radio" name="sp_periode_d3_cb[]" id="d3_periode_cb_1" value="p_sister_ganjil_tl" onchange="onD3PeriodeCheckboxChange(this)">
+                                    <input type="radio" name="sp_periode_d3_cb[]" id="d3_periode_cb_1" value="p_sister_ganjil" onchange="onD3PeriodeCheckboxChange(this)">
                                     <label for="d3_periode_cb_1" style="font-weight: 600; justify-content: center; padding: 9px 12px;">1 (Ganjil)</label>
                                 </div>
                                 <div class="sp-d3-month-item flex-grow-1">
-                                    <input type="radio" name="sp_periode_d3_cb[]" id="d3_periode_cb_2" value="n_sister_genap_bj" checked onchange="onD3PeriodeCheckboxChange(this)">
+                                    <input type="radio" name="sp_periode_d3_cb[]" id="d3_periode_cb_2" value="p_sister_genap" checked onchange="onD3PeriodeCheckboxChange(this)">
                                     <label for="d3_periode_cb_2" style="font-weight: 600; justify-content: center; padding: 9px 12px;">2 (Genap)</label>
                                 </div>
                             </div>
@@ -1457,7 +1457,7 @@ function updateCutoffFileName(input, targetId) {
                 }
             } else if (isSelectedGanjil) {
                 if (!fileLower.includes('ganjil')) {
-                    return { valid: false, title: 'Nama File Tidak Sesuai!', reason: `Nama file <strong>${fileName}</strong> tidak memuat kata <strong>"ganjil"</strong>.<br><br>Untuk periode <strong>Ganjil (Semester 1)</strong>, nama file CSV <u>wajib memuat kata "ganjil"</u> (contoh: <code>sister_ganjil_tl ${selectedYear ? String(selectedYear).slice(-2) : '26'}-1.csv</code>).` };
+                    return { valid: false, title: 'Nama File Tidak Sesuai!', reason: `Nama file <strong>${fileName}</strong> tidak memuat kata <strong>"ganjil"</strong>.<br><br>Untuk periode <strong>Ganjil (Semester 1)</strong>, nama file CSV <u>wajib memuat kata "ganjil"</u> (contoh: <code>sister_ganjil ${selectedYear ? String(selectedYear).slice(-2) : '26'}-1.csv</code>).` };
                 }
             }
         }
@@ -2004,13 +2004,13 @@ function updateCutoffFileName(input, targetId) {
 
         document.getElementById('new_tahun_val').value = yr;
 
-        const btnGanjilTL = document.querySelector('#periodToggle .co-period-btn[data-table="p_sister_ganjil_tl"]');
-        const btnGenapBJ  = document.querySelector('#periodToggle .co-period-btn[data-table="n_sister_genap_bj"]');
-        const btnGenapTL  = document.querySelector('#periodToggle .co-period-btn[data-table="o_sister_genap_tl"]');
+        const btnGanjil = document.querySelector('#periodToggle .co-period-btn[data-table="p_sister_ganjil"]');
+        const btnGenapBJ  = document.querySelector('#periodToggle .co-period-btn[data-table="p_sister_genap"]');
+        const btnGenapTL  = document.querySelector('#periodToggle .co-period-btn[data-table="p_sister_genap"]');
 
-        if (btnGanjilTL) {
-            btnGanjilTL.dataset.bkd = `Sept–Des ${yrLalu} & Jan–Feb ${yr}`;
-            btnGanjilTL.dataset.bayar = `Maret–Agustus ${yr}`;
+        if (btnGanjil) {
+            btnGanjil.dataset.bkd = `Sept–Des ${yrLalu} & Jan–Feb ${yr}`;
+            btnGanjil.dataset.bayar = `Maret–Agustus ${yr}`;
         }
         if (btnGenapBJ) {
             btnGenapBJ.dataset.bkd = `Maret–Agustus ${yr}`;
@@ -2143,7 +2143,7 @@ function updateCutoffFileName(input, targetId) {
                             <div class="row g-4 align-items-stretch mt-1 mb-3.5">
                                 <!-- Card 1: Semester Ganjil (50% / col-md-6) -->
                                 <div class="col-md-6 col-sm-12 d-flex">
-                                    <div class="btn-select-period p-3 rounded-3 d-flex flex-column justify-content-between w-100 h-100 glowing-active-card" data-value="p_sister_ganjil_tl" style="cursor: pointer; transition: all 0.2s ease;">
+                                    <div class="btn-select-period p-3 rounded-3 d-flex flex-column justify-content-between w-100 h-100 glowing-active-card" data-value="p_sister_ganjil" style="cursor: pointer; transition: all 0.2s ease;">
                                         <div class="w-100">
                                             <div class="d-flex justify-content-between align-items-center mb-2">
                                                 <span class="period-title fw-bold" style="font-size: 0.88rem; color: #435971;">
@@ -2160,13 +2160,13 @@ function updateCutoffFileName(input, targetId) {
                                             <div class="flex-fill">
                                                 <div class="btn-stat-flat-memenuhi" title="Klik untuk menyaring data Memenuhi">
                                                     <i class="bx bx-check" style="font-size: 0.88rem; font-weight: bold; flex-shrink: 0;"></i>
-                                                    <span>{{ number_format($statGanjilTL['m'], 0, ',', '.') }} memenuhi</span>
+                                                    <span>{{ number_format($statGanjil['m'], 0, ',', '.') }} memenuhi</span>
                                                 </div>
                                             </div>
                                             <div class="flex-fill">
                                                 <div class="btn-stat-flat-tm" title="Klik untuk menyaring data Tidak Memenuhi">
                                                     <i class="bx bx-x" style="font-size: 0.88rem; font-weight: bold; flex-shrink: 0;"></i>
-                                                    <span>{{ number_format($statGanjilTL['tm'], 0, ',', '.') }} tidak memenuhi</span>
+                                                    <span>{{ number_format($statGanjil['tm'], 0, ',', '.') }} tidak memenuhi</span>
                                                 </div>
                                             </div>
                                         </div>
@@ -2177,8 +2177,8 @@ function updateCutoffFileName(input, targetId) {
                                 <div class="col-md-6 col-sm-12 d-flex">
                                     @php
                                         $isGenapBerjalan = ((int)$tahunSession >= (int)date('Y'));
-                                        $genapDefaultVal = $isGenapBerjalan ? 'n_sister_genap_bj' : 'o_sister_genap_tl';
-                                        $statGenap       = $isGenapBerjalan ? $statGenapBJ : $statGenapTL;
+                                        $genapDefaultVal = $isGenapBerjalan ? 'p_sister_genap' : 'p_sister_genap';
+                                        // $statGenap is already passed from controller
                                     @endphp
                                     <div class="btn-select-period p-3 rounded-3 d-flex flex-column justify-content-between w-100 h-100" id="cardGenap" data-value="{{ $genapDefaultVal }}" style="cursor: pointer; transition: all 0.2s ease;">
                                         <div class="w-100">
@@ -2215,9 +2215,9 @@ function updateCutoffFileName(input, targetId) {
                         <!-- Dropdown hidden untuk DataTables -->
                         <div class="d-none">
                             <select name="sisternas" id="sisternasSelect">
-                                <option value="p_sister_ganjil_tl" selected>p_sister_ganjil_tl</option>
-                                <option value="n_sister_genap_bj">n_sister_genap_bj</option>
-                                <option value="o_sister_genap_tl">o_sister_genap_tl</option>
+                                <option value="p_sister_ganjil" selected>p_sister_ganjil</option>
+                                <option value="p_sister_genap">p_sister_genap</option>
+                                <option value="p_sister_genap">p_sister_genap</option>
                             </select>
                         </div>
 
@@ -2234,7 +2234,7 @@ function updateCutoffFileName(input, targetId) {
                                     <i class="bx bx-plus-circle fs-5"></i> Tambah Data Dosen
                                 </button>
 
-                                <a href="{{ route('admin.cutoff-sisternas.export', ['sisternas' => 'p_sister_ganjil_tl']) }}" id="btnExportBackupODS" class="btn btn-sm btn-outline-secondary d-inline-flex align-items-center gap-1.5 px-3 py-1.5 fw-semibold" style="border-radius: 7px; font-size: 0.82rem;">
+                                <a href="{{ route('admin.cutoff-sisternas.export', ['sisternas' => 'p_sister_ganjil']) }}" id="btnExportBackupODS" class="btn btn-sm btn-outline-secondary d-inline-flex align-items-center gap-1.5 px-3 py-1.5 fw-semibold" style="border-radius: 7px; font-size: 0.82rem;">
                                     <i class="bx bx-export fs-5"></i> Export Backup ODS
                                 </a>
                             </div>
@@ -2690,17 +2690,17 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     cutOffTable.on('xhr.dt', function (e, settings, json, xhr) {
-        if (json && json.stat_ganjil_tl) {
+        if (json && json.stat_ganjil) {
             const formatNum = n => new Intl.NumberFormat('id-ID').format(n || 0);
             const yr = json.tahun_query || $('#tahunFilterSelect').val() || '{{ $tahunSession }}';
 
             // Card 1 (Ganjil)
-            const ganjilM = formatNum(json.stat_ganjil_tl.m);
-            const ganjilTM = formatNum(json.stat_ganjil_tl.tm);
+            const ganjilM = formatNum(json.stat_ganjil.m);
+            const ganjilTM = formatNum(json.stat_ganjil.tm);
 
-            $('.btn-select-period[data-value="p_sister_ganjil_tl"] .period-title').html('<i class="bx bx-calendar text-primary me-1"></i> ' + yr + '/1');
-            $('.btn-select-period[data-value="p_sister_ganjil_tl"] .btn-stat-flat-memenuhi span').text(ganjilM + ' memenuhi');
-            $('.btn-select-period[data-value="p_sister_ganjil_tl"] .btn-stat-flat-tm span').text(ganjilTM + ' tidak memenuhi');
+            $('.btn-select-period[data-value="p_sister_ganjil"] .period-title').html('<i class="bx bx-calendar text-primary me-1"></i> ' + yr + '/1');
+            $('.btn-select-period[data-value="p_sister_ganjil"] .btn-stat-flat-memenuhi span').text(ganjilM + ' memenuhi');
+            $('.btn-select-period[data-value="p_sister_ganjil"] .btn-stat-flat-tm span').text(ganjilTM + ' tidak memenuhi');
 
             // Card 2 (Genap)
             const curYr = new Date().getFullYear();
@@ -2785,7 +2785,7 @@ document.addEventListener('DOMContentLoaded', function() {
     window.switchCardGenap = function(type) {
         const card = $('#cardGenap');
         const isBJ = (type === 'bj');
-        const val  = isBJ ? 'n_sister_genap_bj' : 'o_sister_genap_tl';
+        const val  = isBJ ? 'p_sister_genap' : 'p_sister_genap';
 
         $('#btnCardGenapBJ').toggleClass('active', isBJ);
         $('#btnCardGenapTL').toggleClass('active', !isBJ);
@@ -2840,7 +2840,7 @@ document.addEventListener('DOMContentLoaded', function() {
             $('#createForm')[0].reset();
         }
         $('#create_sisternas').val(selected);
-        const semesterLabel = (selected === 'p_sister_ganjil_tl') ? 'Semester 1 (Ganjil)' : 'Semester 2 (Genap)';
+        const semesterLabel = (selected === 'p_sister_ganjil') ? 'Semester 1 (Ganjil)' : 'Semester 2 (Genap)';
         $('#create_sisternas_label').val(semesterLabel).attr('value', semesterLabel).attr('placeholder', semesterLabel);
         
         const activeYear = $('#tahunFilterSelect').val() || $('#d1_new_tahun_val').val() || '{{ $tahunSession }}';
@@ -2859,7 +2859,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Jaga-jaga: saat modal akan ditampilkan, sinkronkan lagi label & hidden
     $('#createModal').on('show.bs.modal', function () {
         const selected = $('#sisternasSelect').val();
-        const semesterLabel = (selected === 'p_sister_ganjil_tl') ? 'Semester 1 (Ganjil)' : 'Semester 2 (Genap)';
+        const semesterLabel = (selected === 'p_sister_ganjil') ? 'Semester 1 (Ganjil)' : 'Semester 2 (Genap)';
         $('#create_sisternas').val(selected);
         $('#create_sisternas_label').val(semesterLabel).attr('value', semesterLabel).attr('placeholder', semesterLabel);
         const activeYear = $('#tahunFilterSelect').val() || $('#d1_new_tahun_val').val() || '{{ $tahunSession }}';
@@ -3046,7 +3046,7 @@ document.addEventListener('DOMContentLoaded', function() {
     $('#btn_toggle_genap_bj').on('click', function() {
         $('#btn_toggle_genap_bj').addClass('active');
         $('#btn_toggle_genap_tl').removeClass('active');
-        $('#genap_table_select').val('n_sister_genap_bj');
+        $('#genap_table_select').val('p_sister_genap');
         $('#genap_pembayaran_text').text('Sept-Des {{ $tahunSession }} & Jan-Feb {{ $tahunDepan }}');
         $('#genap_bkd_text').text('[Maret - Agustus {{ $tahunSession }}]');
         // Reset file input inside Genap form to prevent uploading to the wrong table
@@ -3057,7 +3057,7 @@ document.addEventListener('DOMContentLoaded', function() {
     $('#btn_toggle_genap_tl').on('click', function() {
         $('#btn_toggle_genap_tl').addClass('active');
         $('#btn_toggle_genap_bj').removeClass('active');
-        $('#genap_table_select').val('o_sister_genap_tl');
+        $('#genap_table_select').val('p_sister_genap');
         $('#genap_pembayaran_text').text('Sept-Des {{ $tahunLalu }} & Jan-Feb {{ $tahunSession }}');
         $('#genap_bkd_text').text('[Maret - Agustus {{ $tahunLalu }}]');
         // Reset file input inside Genap form
@@ -3148,7 +3148,7 @@ function getSelectedD3PeriodeVal() {
     if (cb) return cb.value;
     const sel = document.getElementById('spPeriodeLaporanSelect');
     if (sel && sel.value) return sel.value;
-    return 'n_sister_genap_bj';
+    return 'p_sister_genap';
 }
 
 function onD3PeriodeCheckboxChange(el) {
@@ -3186,6 +3186,12 @@ function onBayarTahunInput(el) {
 
 function syncD3MappingTable() {
     const selectedUsulan = document.getElementById('spJenisUsulan') ? document.getElementById('spJenisUsulan').value : 'SPTJM';
+<<<<<<< HEAD
+=======
+    const checkedBulan = [...document.querySelectorAll('input[name="sp_bulan_d3[]"]:checked')].map(c => c.value);
+    const selectedPeriode = getSelectedD3PeriodeVal();
+    const isGanjil = selectedPeriode.includes('ganjil') || selectedPeriode === '1' || selectedPeriode === 'p_sister_ganjil';
+>>>>>>> 0659101 (Update table p_sister_ganjil and create p_sister_tukin)
     
     // Ambil Tahun Laporan dari Step 1
     const tahunLaporanSelect = document.getElementById('d1_new_tahun_val');
@@ -3314,7 +3320,7 @@ function updatePreviewD3() {
     const selectedYr = yearSelect ? yearSelect.value : '';
     const checkedBulan = [...document.querySelectorAll('input[name="sp_bulan_d3[]"]:checked')].map(c => c.value);
     const selectedPeriode = getSelectedD3PeriodeVal();
-    const periodeLabel = selectedPeriode.includes('ganjil') || selectedPeriode === '1' || selectedPeriode === 'p_sister_ganjil_tl' ? '1 (Ganjil)' : '2 (Genap)';
+    const periodeLabel = selectedPeriode.includes('ganjil') || selectedPeriode === '1' || selectedPeriode === 'p_sister_ganjil' ? '1 (Ganjil)' : '2 (Genap)';
     // Catatan: tabel Step 4 TIDAK di-sync otomatis di sini.
     // Tabel hanya terisi setelah data berhasil disimpan ke database (AJAX success).
 
@@ -3354,7 +3360,7 @@ function resetFormD3() {
     if (cbGenap) cbGenap.checked = true;
 
     const tableValInput = document.getElementById('d1_new_table_val');
-    if (tableValInput) tableValInput.value = 'n_sister_genap_bj';
+    if (tableValInput) tableValInput.value = 'p_sister_genap';
 
     // 4. Reset Upload File CSV & Pratinjau Perubahan
     if (typeof coResetFileD1 === 'function') {

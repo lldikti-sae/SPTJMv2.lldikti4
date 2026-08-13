@@ -34,7 +34,7 @@
                     <th>BKD Genap TL
                         <br>(P = Jan - Feb)
                     </th>
-                    <th>BKD Ganjil TL
+                    <th>BKD Ganjil
                         <br>(P = Mar - Agu)
                     </th>
                     <th>BKD Genap BJ
@@ -96,8 +96,8 @@ $(document).ready(() => {
                 searchable: false
             },
             {
-                data: 'bkd_ganjil_tl',
-                name: 'bkd_ganjil_tl',
+                data: 'bkd_ganjil',
+                name: 'bkd_ganjil',
                 searchable: false
             },
             {

@@ -32,7 +32,7 @@ class CutOffSisternasController extends Controller
         ]);
       }
 
-      $allowedTables = ['n_sister_genap_bj', 'o_sister_genap_tl', 'p_sister_ganjil_tl'];
+      $allowedTables = ['p_sister_genap', 'p_sister_ganjil'];
 
       if (in_array($table, $allowedTables)) {
         if (!Schema::hasTable($table)) {
@@ -70,9 +70,9 @@ class CutOffSisternasController extends Controller
             ];
         };
 
-        $statGenapTL = $getStat('o_sister_genap_tl');
-        $statGanjilTL = $getStat('p_sister_ganjil_tl');
-        $statGenapBJ = $getStat('n_sister_genap_bj');
+        $statGenapTL = $getStat('p_sister_genap');
+        $statGanjil = $getStat('p_sister_ganjil');
+        $statGenapBJ = $getStat('p_sister_genap');
 
         return DataTables::of($query)
           ->addIndexColumn()
@@ -92,7 +92,7 @@ class CutOffSisternasController extends Controller
             return '<div class="d-flex justify-content-center align-items-center"><button class="sptjm-icon-btn sptjm-btn-edit edit-btn d-inline-flex align-items-center justify-content-center" style="width:30px; height:30px;"><i class="bx bx-edit"></i></button></div>';
           })
           ->with([
-            'stat_ganjil_tl' => $statGanjilTL,
+            'stat_ganjil' => $statGanjil,
             'stat_genap_bj'  => $statGenapBJ,
             'stat_genap_tl'  => $statGenapTL,
             'tahun_query'    => $tahun
@@ -130,9 +130,8 @@ class CutOffSisternasController extends Controller
         ];
     };
 
-    $statGenapTL = $getStat('o_sister_genap_tl');
-    $statGanjilTL = $getStat('p_sister_ganjil_tl');
-    $statGenapBJ = $getStat('n_sister_genap_bj');
+    $statGenap = $getStat('p_sister_genap');
+    $statGanjil = $getStat('p_sister_ganjil');
 
     // Ambil daftar tahun versi dinamis dari Pengaturan Versi Admin (ActiveYears + database s_transaksi_2)
     $activeYears = \App\Helpers\ActiveYears::load();
@@ -142,7 +141,7 @@ class CutOffSisternasController extends Controller
     $listTahun = array_values(array_filter($mergedYears, fn($y) => $y >= 2021));
 
     // kalau bukan request ajax, kembalikan view beserta data statistik
-    return view('admin.cutoff-sisternas', compact('statGenapTL', 'statGanjilTL', 'statGenapBJ', 'listTahun'));
+    return view('admin.cutoff-sisternas', compact('statGenap', 'statGanjil', 'listTahun'));
   }
 
 
@@ -151,7 +150,7 @@ class CutOffSisternasController extends Controller
     $request->validate([
       // some lecturers only have one identifier; accept either nidn or nuptk
       'nidn' => 'nullable|string|required_without:nuptk',
-      'sisternas' => 'required|in:n_sister_genap_bj,o_sister_genap_tl,p_sister_ganjil_tl',
+      'sisternas' => 'required|in:p_sister_genap,p_sister_ganjil',
       // allow other fields to be nullable so editing rows with blank values won't fail validation
       'nuptk' => 'nullable|string|required_without:nidn',
       'no_sertifikat' => 'nullable|string',
@@ -240,7 +239,7 @@ class CutOffSisternasController extends Controller
 
     $request->validate([
       'dokumen' => 'required',
-      'table' => 'required|in:n_sister_genap_bj,o_sister_genap_tl,p_sister_ganjil_tl',
+      'table' => 'required|in:p_sister_genap,p_sister_ganjil',
     ]);
     $file = $request->file('dokumen');
     $fileName = strtolower($file->getClientOriginalName());
@@ -285,11 +284,11 @@ class CutOffSisternasController extends Controller
         fclose($handle);
         return response()->json(['success' => false, 'message' => 'Header CSV tidak terbaca.'], 422);
       }
-      $firstLine = preg_replace('/[\xEF\xBB\xBF\uFEFF\u200B]/', '', $firstLine);
+      $firstLine = str_replace(["\xEF\xBB\xBF", "\xE2\x80\x8B"], '', $firstLine);
       $delimiter = (substr_count($firstLine, ';') > substr_count($firstLine, ',')) ? ';' : ',';
       $header = str_getcsv($firstLine, $delimiter);
       $header = array_map(function ($h) {
-        $h = preg_replace('/[\xEF\xBB\xBF\uFEFF\u200B\r\n\t]/', '', (string)$h);
+        $h = str_replace(["\xEF\xBB\xBF", "\xE2\x80\x8B", "\r", "\n", "\t"], '', (string)$h);
         return strtolower(trim($h, " \t\n\r\0\x0B\"'"));
       }, $header);
 
@@ -337,7 +336,7 @@ class CutOffSisternasController extends Controller
       $inserted = 0;
       $chunkSize = 500;
       $tahun = $request->input('tahun', session('tahun') ?: date('Y'));
-      $updateCols = ['nuptk', 'no_sertifikat', 'nama_dosen', 'kode_pt', 'pt', 'prodi', 'kesimpulan_bkd', 'kewajiban_khusus', 'kesimpulan', 'kd', 'kp', 'potongan_periodik'];
+      $updateCols = ['nuptk', 'no_sertifikat', 'nama_dosen', 'kode_pt', 'pt', 'prodi', 'kesimpulan_bkd', 'kewajiban_khusus', 'kesimpulan', 'kd', 'kp', 'potongan_periodik', 'tahun'];
 
       // Ambil NIDN/NUPTK yang dicentang di kolom Aksi untuk dihapus
       $rawDeleteNidns = $request->input('delete_nidn', []);
@@ -506,7 +505,7 @@ class CutOffSisternasController extends Controller
 
   public function clear($table, Request $request)
   {
-    $allowedTables = ['n_sister_genap_bj', 'o_sister_genap_tl', 'p_sister_ganjil_tl'];
+    $allowedTables = ['p_sister_genap', 'p_sister_ganjil'];
 
     if (!in_array($table, $allowedTables)) {
       return response()->json(['success' => false, 'message' => 'Tabel tidak valid.']);
@@ -521,7 +520,7 @@ class CutOffSisternasController extends Controller
   public function create(Request $request)
   {
     $request->validate([
-      'sisternas' => 'required|in:n_sister_genap_bj,o_sister_genap_tl,p_sister_ganjil_tl',
+      'sisternas' => 'required|in:p_sister_genap,p_sister_ganjil',
       'tahun' => 'nullable|integer',
       'nidn' => 'required|string',
       'nuptk' => 'required|string',
@@ -570,7 +569,7 @@ class CutOffSisternasController extends Controller
     set_time_limit(0);
     ini_set('memory_limit', '2048M');
     $table = $request->query('table');
-    $allowedTables = ['n_sister_genap_bj', 'o_sister_genap_tl', 'p_sister_ganjil_tl'];
+    $allowedTables = ['p_sister_genap', 'p_sister_ganjil'];
 
     if (!$table || !in_array($table, $allowedTables)) {
       return redirect()->back()->with('error', 'Tabel tidak valid untuk export.');

@@ -14,7 +14,7 @@ class AddTahunToSisternasTables extends Migration
      */
     public function up()
     {
-        $tables = ['n_sister_genap_bj', 'o_sister_genap_tl', 'p_sister_ganjil_tl'];
+        $tables = ['n_sister_genap_bj', 'o_sister_genap_tl', 'p_sister_ganjil'];
 
         foreach ($tables as $tableName) {
             Schema::table($tableName, function (Blueprint $table) use ($tableName) {
@@ -45,7 +45,7 @@ class AddTahunToSisternasTables extends Migration
      */
     public function down()
     {
-        $tables = ['n_sister_genap_bj', 'o_sister_genap_tl', 'p_sister_ganjil_tl'];
+        $tables = ['n_sister_genap_bj', 'o_sister_genap_tl', 'p_sister_ganjil'];
 
         foreach ($tables as $tableName) {
             Schema::table($tableName, function (Blueprint $table) {

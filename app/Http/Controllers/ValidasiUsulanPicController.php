@@ -479,7 +479,7 @@ class ValidasiUsulanPicController extends Controller
     if (($namaBulan == "Januari") or
       ($namaBulan == "Februari")
     ) {
-      $sisternas = "o_sister_genap_tl";
+      $sisternas = "p_sister_genap";
     }
     if (($namaBulan == "Maret") or
       ($namaBulan == "April") or
@@ -488,14 +488,14 @@ class ValidasiUsulanPicController extends Controller
       ($namaBulan == "Juli") or
       ($namaBulan == "Agustus")
     ) {
-      $sisternas = "p_sister_ganjil_tl";
+      $sisternas = "p_sister_ganjil";
     }
     if (($namaBulan == "September") or
       ($namaBulan == "Oktober") or
       ($namaBulan == "November") or
       ($namaBulan == "Desember")
     ) {
-      $sisternas = "n_sister_genap_bj";
+      $sisternas = "p_sister_genap";
     }
 
     // Ambil data dosen: beda sumber untuk SPTJM vs TUKIN
@@ -613,7 +613,7 @@ class ValidasiUsulanPicController extends Controller
       if (($namaBulan == "Januari") or
         ($namaBulan == "Februari")
       ) {
-        $sisternas = "o_sister_genap_tl";
+        $sisternas = "p_sister_genap";
       }
       if (($namaBulan == "Maret") or
         ($namaBulan == "April") or
@@ -622,14 +622,14 @@ class ValidasiUsulanPicController extends Controller
         ($namaBulan == "Juli") or
         ($namaBulan == "Agustus")
       ) {
-        $sisternas = "p_sister_ganjil_tl";
+        $sisternas = "p_sister_ganjil";
       }
       if (($namaBulan == "September") or
         ($namaBulan == "Oktober") or
         ($namaBulan == "November") or
         ($namaBulan == "Desember")
       ) {
-        $sisternas = "n_sister_genap_bj";
+        $sisternas = "p_sister_genap";
       }
 
       //bulan angka

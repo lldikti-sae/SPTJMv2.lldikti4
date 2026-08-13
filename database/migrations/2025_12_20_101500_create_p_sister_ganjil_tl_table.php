@@ -13,8 +13,8 @@ class CreatePSisterGanjilTlTable extends Migration
      */
     public function up()
     {
-        if (!Schema::hasTable('p_sister_ganjil_tl')) {
-        Schema::create('p_sister_ganjil_tl', function (Blueprint $table) {
+        if (!Schema::hasTable('p_sister_ganjil')) {
+        Schema::create('p_sister_ganjil', function (Blueprint $table) {
             $table->string('nidn', 50);
             $table->string('nuptk', 50);
             $table->string('no_sertifikat', 250)->nullable();
@@ -48,6 +48,6 @@ class CreatePSisterGanjilTlTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('p_sister_ganjil_tl');
+        Schema::dropIfExists('p_sister_ganjil');
     }
 }

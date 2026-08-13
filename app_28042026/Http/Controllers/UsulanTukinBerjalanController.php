@@ -40,7 +40,7 @@ class UsulanTukinBerjalanController extends Controller
 			if (in_array($bulan, [1, 2])) {
 				$joinTable = ['table' => 'o_sister_genap_tl as b', 'kode_pt' => 'b.kode_pt'];
 			} elseif (in_array($bulan, [3, 4, 5, 6, 7, 8])) {
-				$joinTable = ['table' => 'p_sister_ganjil_tl as b', 'kode_pt' => 'b.kode_pt'];
+				$joinTable = ['table' => 'p_sister_ganjil as b', 'kode_pt' => 'b.kode_pt'];
 			} else {
 				$joinTable = ['table' => 'n_sister_genap_bj as b', 'kode_pt' => 'b.kode_pt'];
 			}
@@ -241,7 +241,7 @@ class UsulanTukinBerjalanController extends Controller
 		if (in_array($bulan, [1, 2])) {
 			$joinTable = ['table' => 'o_sister_genap_tl as b'];
 		} elseif (in_array($bulan, [3, 4, 5, 6, 7, 8])) {
-			$joinTable = ['table' => 'p_sister_ganjil_tl as b'];
+			$joinTable = ['table' => 'p_sister_ganjil as b'];
 		} else {
 			$joinTable = ['table' => 'n_sister_genap_bj as b'];
 		}
@@ -557,7 +557,7 @@ class UsulanTukinBerjalanController extends Controller
 		if (in_array($bulan, [1, 2])) {
 			$joinTable = ['table' => 'o_sister_genap_tl as b', 'kode_pt' => 'b.kode_pt'];
 		} elseif (in_array($bulan, [3, 4, 5, 6, 7, 8])) {
-			$joinTable = ['table' => 'p_sister_ganjil_tl as b', 'kode_pt' => 'b.kode_pt'];
+			$joinTable = ['table' => 'p_sister_ganjil as b', 'kode_pt' => 'b.kode_pt'];
 		} else {
 			$joinTable = ['table' => 'n_sister_genap_bj as b', 'kode_pt' => 'b.kode_pt'];
 		}

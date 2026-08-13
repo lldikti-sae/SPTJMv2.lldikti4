@@ -31,7 +31,7 @@ class CutOffSisternasController extends Controller
         ]);
       }
 
-      $allowedTables = ['n_sister_genap_bj', 'o_sister_genap_tl', 'p_sister_ganjil_tl'];
+      $allowedTables = ['n_sister_genap_bj', 'o_sister_genap_tl', 'p_sister_ganjil'];
 
       if (in_array($table, $allowedTables)) {
         $query = DB::table($table);
@@ -62,7 +62,7 @@ class CutOffSisternasController extends Controller
     $request->validate([
       // some lecturers only have one identifier; accept either nidn or nuptk
       'nidn' => 'nullable|string|required_without:nuptk',
-      'sisternas' => 'required|in:n_sister_genap_bj,o_sister_genap_tl,p_sister_ganjil_tl',
+      'sisternas' => 'required|in:n_sister_genap_bj,o_sister_genap_tl,p_sister_ganjil',
       // allow other fields to be nullable so editing rows with blank values won't fail validation
       'nuptk' => 'nullable|string|required_without:nidn',
       'no_sertifikat' => 'nullable|string',
@@ -147,7 +147,7 @@ class CutOffSisternasController extends Controller
 
     $request->validate([
       'dokumen' => 'required',
-      'table' => 'required|in:n_sister_genap_bj,o_sister_genap_tl,p_sister_ganjil_tl',
+      'table' => 'required|in:n_sister_genap_bj,o_sister_genap_tl,p_sister_ganjil',
     ]);
     $file = $request->file(key: 'dokumen');
     $table = $request->input('table');
@@ -289,7 +289,7 @@ class CutOffSisternasController extends Controller
 
   public function clear($table)
   {
-    $allowedTables = ['n_sister_genap_bj', 'o_sister_genap_tl', 'p_sister_ganjil_tl'];
+    $allowedTables = ['n_sister_genap_bj', 'o_sister_genap_tl', 'p_sister_ganjil'];
 
     if (!in_array($table, $allowedTables)) {
       return response()->json(['success' => false, 'message' => 'Tabel tidak valid.']);
@@ -303,7 +303,7 @@ class CutOffSisternasController extends Controller
   public function create(Request $request)
   {
     $request->validate([
-      'sisternas' => 'required|in:n_sister_genap_bj,o_sister_genap_tl,p_sister_ganjil_tl',
+      'sisternas' => 'required|in:n_sister_genap_bj,o_sister_genap_tl,p_sister_ganjil',
       'nidn' => 'required|string',
       'nuptk' => 'required|string',
       'no_sertifikat' => 'required|string',
@@ -348,7 +348,7 @@ class CutOffSisternasController extends Controller
   public function export(Request $request)
   {
     $table = $request->query('table');
-    $allowedTables = ['n_sister_genap_bj', 'o_sister_genap_tl', 'p_sister_ganjil_tl'];
+    $allowedTables = ['n_sister_genap_bj', 'o_sister_genap_tl', 'p_sister_ganjil'];
 
     if (!$table || !in_array($table, $allowedTables)) {
       return redirect()->back()->with('error', 'Tabel tidak valid untuk export.');

@@ -30,7 +30,7 @@ class DataSisternasController extends Controller
         'id'           => $item->id,
         'tahun'        => $item->tahun,
         'periode'      => $item->periode,   // bulan cut-off (e.g. "Juli")
-        'bulan'        => $item->bulan,     // periode laporan (e.g. "[Sept-Des] Ganjil TL")
+        'bulan'        => $item->bulan,     // periode laporan (e.g. "[Sept-Des] Ganjil")
         'semester'     => $isGanjil ? 'ganjil' : 'genap',
         'periodeLabel' => $item->tahun . '/' . ($isGanjil ? '1' : '2'),
         'tanggal'      => $item->tanggal,

@@ -370,7 +370,10 @@
                         <div class="hs-periode-label">{{ $periodeLabel }}</div>
                     </td>
                     <td>
-                        <span class="hs-cutoff-date">{{ $item->tanggal }}</span>
+                        <span class="hs-cutoff-date" style="display: block;">{{ \Carbon\Carbon::parse($item->tanggal)->format('d-m-Y') }}</span>
+                        @if($item->created_at)
+                            <span style="font-size: 0.75rem; color: #6b7280;"><i class="bx bx-time-five"></i> {{ \Carbon\Carbon::parse($item->created_at)->format('H:i') }} WIB</span>
+                        @endif
                     </td>
                     <td>
                         <a href="{{ asset('storage/File_Data_Sisternas2/' . $item->dokumen) }}" target="_blank" class="hs-dokumen-link">
