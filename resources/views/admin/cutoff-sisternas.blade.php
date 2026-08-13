@@ -3173,10 +3173,8 @@ function syncD3TahunPembayaran() {
     if (!yearSelect || !yearSelect.value) return;
     const selectedYr = parseInt(yearSelect.value);
     
-    const selectedPeriode = getSelectedD3PeriodeVal();
-    const isGanjil = selectedPeriode.includes('ganjil') || selectedPeriode === '1' || selectedPeriode === 'p_sister_ganjil';
-    
-    const targetBayarYear = isGanjil ? selectedYr.toString() : (selectedYr + 1).toString();
+    // Rumus: Tahun Pembayaran = Tahun Laporan + 1
+    const targetBayarYear = (selectedYr + 1).toString();
     
     const bayarYearSelect = document.getElementById('d3_tahun_pembayaran_select');
     if (bayarYearSelect) {
