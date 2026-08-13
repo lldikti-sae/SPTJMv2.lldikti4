@@ -1207,6 +1207,11 @@ function updateCutoffFileName(input, targetId) {
                         <div class="sp-preview-months" id="spPreviewMonths"></div>
                     </div>
                 </div>
+                
+                {{-- Temporary Debug Div --}}
+                <div id="spPreviewDebug" style="background: #fafafa; border: 1px dashed #cccccc; border-radius: 8px; padding: 10px; margin-top: 10px; font-size: 0.78rem; font-family: monospace; color: #333333; line-height: 1.4;">
+                    Memuat status pratinjau...
+                </div>
 
                 {{-- Footer Actions (Konfirmasi & Cek Perubahan di Atas) --}}
                 <div class="sp-footer">
@@ -3451,6 +3456,15 @@ function updatePreviewD3() {
         const bayarYearSelect = document.getElementById('d3_tahun_pembayaran_select');
         const Y = bayarYearSelect && bayarYearSelect.value ? parseInt(bayarYearSelect.value) : (selectedYr ? parseInt(selectedYr) : new Date().getFullYear());
 
+        const debugDiv = document.getElementById('spPreviewDebug');
+        if (debugDiv) {
+            debugDiv.innerHTML = `<strong>Diagnostic Status:</strong><br>` +
+                                 `- Selected Yr: "${selectedYr}"<br>` +
+                                 `- Selected Period: "${selectedPeriode}" (isGenap: ${isGenap})<br>` +
+                                 `- Checked Months (${checkedBulan.length}): [${checkedBulan.join(', ')}]<br>` +
+                                 `- Y: ${Y}, bayarYearSelect: ${bayarYearSelect ? 'found' : 'not found'}`;
+        }
+
         if (preview) {
             if (selectedYr && checkedBulan.length > 0 && selectedPeriode) {
                 const hasNextYear = isGenap && checkedBulan.some(b => b === 'januari' || b === 'februari');
@@ -3476,6 +3490,10 @@ function updatePreviewD3() {
         }
     } catch (e) {
         console.error("Error in updatePreviewD3: ", e);
+        const debugDiv = document.getElementById('spPreviewDebug');
+        if (debugDiv) {
+            debugDiv.innerHTML = `<span style="color:red;">Error: ${e.message}</span>`;
+        }
     }
     saveD3FormState();
 }
