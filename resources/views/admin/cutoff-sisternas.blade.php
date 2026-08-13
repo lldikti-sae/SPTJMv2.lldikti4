@@ -3160,18 +3160,6 @@ function onD3TahunChange(yr) {
         coResetFileD1();
     }
 
-    // Reset Step 4 table to empty placeholder when year changes
-    const tbody = document.getElementById('spD3MappingTbody');
-    if (tbody) {
-        tbody.innerHTML = `<tr>
-            <td colspan="6" class="text-center text-muted" style="padding: 20px; font-size: 0.84rem; font-style: italic;">
-                <i class="bx bx-info-circle me-1"></i> Belum ada data. Upload file CSV dan simpan untuk mengisi tabel ini.
-            </td>
-        </tr>`;
-    }
-    const diffBox = document.getElementById('d1_diff_box');
-    if (diffBox) diffBox.style.display = 'none';
-
     updatePreviewD3();
 }
 
@@ -3194,18 +3182,6 @@ function onD3PeriodeCheckboxChange(el) {
     if (tableValInput) {
         tableValInput.value = val;
     }
-
-    // Reset Step 4 table to empty placeholder when period changes
-    const tbody = document.getElementById('spD3MappingTbody');
-    if (tbody) {
-        tbody.innerHTML = `<tr>
-            <td colspan="6" class="text-center text-muted" style="padding: 20px; font-size: 0.84rem; font-style: italic;">
-                <i class="bx bx-info-circle me-1"></i> Belum ada data. Upload file CSV dan simpan untuk mengisi tabel ini.
-            </td>
-        </tr>`;
-    }
-    const diffBox = document.getElementById('d1_diff_box');
-    if (diffBox) diffBox.style.display = 'none';
 
     updatePreviewD3();
 }
