@@ -3262,9 +3262,22 @@ function resetFormD3() {
     if (typeof coResetFileD1 === 'function') {
         coResetFileD1();
     }
-
+    
     // 5. Update Pratinjau & Tabel Pemetaan
     updatePreviewD3();
+}
+
+function saveSettingD3() {
+    const diffBox = document.getElementById('d1_diff_box');
+    const form = document.getElementById('spFormD3');
+    
+    if (diffBox && window.getComputedStyle(diffBox).display !== 'none') {
+        if (form) {
+            $(form).trigger('submit');
+        }
+    } else {
+        coCheckDiffD1();
+    }
 }
 
 function addD3MappingRow() {
