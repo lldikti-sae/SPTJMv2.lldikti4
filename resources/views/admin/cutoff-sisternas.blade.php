@@ -1244,38 +1244,36 @@ function updateCutoffFileName(input, targetId) {
                                 </tr>
                             </thead>
                             <tbody id="spD3MappingTbody">
-                                @if(isset($savedMappings) && count($savedMappings) > 0)
-                                    @foreach($savedMappings as $mapping)
-                                        @php
-                                            $bayarTahunText = '';
-                                            if (!empty($mapping->bulan)) {
-                                                preg_match('/\b\d{4}\b/', $mapping->bulan, $matches);
-                                                if (!empty($matches[0])) {
-                                                    $bayarTahunText = $matches[0];
-                                                }
+                                @if(isset($latestMapping) && !empty($latestMapping))
+                                    @php
+                                        $bayarTahunText = '';
+                                        if (!empty($latestMapping->bulan)) {
+                                            preg_match('/\b\d{4}\b/', $latestMapping->bulan, $matches);
+                                            if (!empty($matches[0])) {
+                                                $bayarTahunText = $matches[0];
                                             }
-                                            if (empty($bayarTahunText)) {
-                                                $bayarTahunText = ($mapping->periode === 'Ganjil') ? $mapping->tahun : (int)$mapping->tahun + 1;
-                                            }
-                                        @endphp
-                                        <tr>
-                                            <td><input type="text" class="sp-d3-input" name="d3_usulan[]" value="SPTJM" readonly></td>
-                                            <td><input type="text" class="sp-d3-input" name="d3_pembayaran_tahun[]" value="{{ $mapping->tahun }}" readonly></td>
-                                            <td><input type="text" class="sp-d3-input" name="d3_pembayaran_periode[]" value="{{ $mapping->tahun }}/{{ $mapping->periode === 'Ganjil' ? '1' : '2' }}" readonly></td>
-                                            <td><input type="text" class="sp-d3-input" name="d3_periode_bayar_tahun[]" value="{{ $bayarTahunText }}" readonly></td>
-                                            <td><input type="text" class="sp-d3-input" name="d3_periode_bayar_bulan[]" value="{{ $mapping->bulan }}" readonly></td>
-                                            <td class="text-center align-middle" style="text-align: center !important; vertical-align: middle !important;">
-                                                <div class="d-flex align-items-center justify-content-center gap-1">
-                                                    <button type="button" class="btn btn-sm btn-outline-info border-0 p-0 d-inline-flex align-items-center justify-content-center" onclick="viewD3MappingRow(this)" title="View Detail Dashboard" style="width: 30px; height: 30px; border-radius: 6px;">
-                                                        <i class="bx bx-show fs-5" style="display: inline-flex; align-items: center; justify-content: center; line-height: 1;"></i>
-                                                    </button>
-                                                    <button type="button" class="btn btn-sm btn-outline-danger border-0 p-0 d-inline-flex align-items-center justify-content-center" onclick="removeD3MappingRow(this)" title="Hapus Baris" style="width: 30px; height: 30px; border-radius: 6px;">
-                                                        <i class="bx bx-trash fs-5" style="display: inline-flex; align-items: center; justify-content: center; line-height: 1;"></i>
-                                                    </button>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                    @endforeach
+                                        }
+                                        if (empty($bayarTahunText)) {
+                                            $bayarTahunText = ($latestMapping->periode === 'Ganjil') ? $latestMapping->tahun : (int)$latestMapping->tahun + 1;
+                                        }
+                                    @endphp
+                                    <tr>
+                                        <td><input type="text" class="sp-d3-input" name="d3_usulan[]" value="SPTJM" readonly></td>
+                                        <td><input type="text" class="sp-d3-input" name="d3_pembayaran_tahun[]" value="{{ $latestMapping->tahun }}" readonly></td>
+                                        <td><input type="text" class="sp-d3-input" name="d3_pembayaran_periode[]" value="{{ $latestMapping->tahun }}/{{ $latestMapping->periode === 'Ganjil' ? '1' : '2' }}" readonly></td>
+                                        <td><input type="text" class="sp-d3-input" name="d3_periode_bayar_tahun[]" value="{{ $bayarTahunText }}" readonly></td>
+                                        <td><input type="text" class="sp-d3-input" name="d3_periode_bayar_bulan[]" value="{{ $latestMapping->bulan }}" readonly></td>
+                                        <td class="text-center align-middle" style="text-align: center !important; vertical-align: middle !important;">
+                                            <div class="d-flex align-items-center justify-content-center gap-1">
+                                                <button type="button" class="btn btn-sm btn-outline-info border-0 p-0 d-inline-flex align-items-center justify-content-center" onclick="viewD3MappingRow(this)" title="View Detail Dashboard" style="width: 30px; height: 30px; border-radius: 6px;">
+                                                    <i class="bx bx-show fs-5" style="display: inline-flex; align-items: center; justify-content: center; line-height: 1;"></i>
+                                                </button>
+                                                <button type="button" class="btn btn-sm btn-outline-danger border-0 p-0 d-inline-flex align-items-center justify-content-center" onclick="removeD3MappingRow(this)" title="Hapus Baris" style="width: 30px; height: 30px; border-radius: 6px;">
+                                                    <i class="bx bx-trash fs-5" style="display: inline-flex; align-items: center; justify-content: center; line-height: 1;"></i>
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </tr>
                                 @else
                                     <tr>
                                         <td colspan="6" class="text-center text-muted" style="padding: 20px; font-size: 0.84rem; font-style: italic;">
@@ -3485,14 +3483,22 @@ function toggleD3SelectAll(el) {
 
 function resetFormD3() {
     localStorage.removeItem('d3_cutoff_form_state');
-    // 1. Uncheck semua bulan pembayaran
+    
+    // 1. Reset Pilihan Tahun Laporan ke default session & trigger change
+    const yearSelect = document.getElementById('d1_new_tahun_val');
+    if (yearSelect) {
+        yearSelect.value = "{{ $tahunSession }}";
+        yearSelect.dispatchEvent(new Event('change'));
+    }
+
+    // 2. Uncheck semua bulan pembayaran
     document.querySelectorAll('input[name="sp_bulan_d3[]"]').forEach(cb => cb.checked = false);
     
-    // 2. Uncheck 'Pilih Semua Bulan'
+    // 3. Uncheck 'Pilih Semua Bulan'
     const selectAllD3 = document.getElementById('d3SelectAllBulan');
     if (selectAllD3) selectAllD3.checked = false;
 
-    // 3. Reset Pilihan Periode Laporan ke default (2 Genap)
+    // 4. Reset Pilihan Periode Laporan ke default (2 Genap)
     const cbGanjil = document.getElementById('d3_periode_cb_1');
     const cbGenap = document.getElementById('d3_periode_cb_2');
     if (cbGanjil) cbGanjil.checked = false;
@@ -3501,7 +3507,7 @@ function resetFormD3() {
     const tableValInput = document.getElementById('d1_new_table_val');
     if (tableValInput) tableValInput.value = 'p_sister_genap';
 
-    // 4. Reset Upload File CSV & Pratinjau Perubahan
+    // 5. Reset Upload File CSV & Pratinjau Perubahan
     if (typeof coResetFileD1 === 'function') {
         coResetFileD1();
     }
@@ -3512,7 +3518,7 @@ function resetFormD3() {
     const diffBox = document.getElementById('d1_diff_box');
     if (diffBox) diffBox.style.display = 'none';
 
-    // 5. Reset Step 4 table to default placeholder
+    // 6. Reset Step 4 table to default placeholder
     const tbody = document.getElementById('spD3MappingTbody');
     if (tbody) {
         tbody.innerHTML = `<tr>
