@@ -20,7 +20,7 @@ class DataSisternasPicController extends Controller
 
     if ($table) {
       // Validasi agar hanya tabel yang diperbolehkan yang bisa diakses
-      $allowedTables = ['p_sister_genap', 'p_sister_genap', 'p_sister_ganjil'];
+      $allowedTables = ['p_sister_genap', 'p_sister_ganjil', 'p_sister_tukin'];
 
       if (in_array($table, $allowedTables)) {
         // No need to fetch data here, as the view does not render it and it consumes massive memory.

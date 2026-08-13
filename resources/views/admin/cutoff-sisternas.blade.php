@@ -176,13 +176,13 @@
     .sp-d3-month-item input[type="radio"] + label::before {
         border-radius: 50%;
     }
-    .sp-d3-month-item input:checked + label {
+    .sp-d3-month-item input:checked + label, .sp-d3-month-item input[type="radio"]:checked + label {
         background: #eff6ff;
         border-color: #3b82f6;
         color: #1d4ed8;
         font-weight: 700;
     }
-    .sp-d3-month-item input[type="checkbox"]:checked + label::before {
+    .sp-d3-month-item input[type="checkbox"]:checked + label::before, .sp-d3-month-item input[type="radio"]:checked + label::before {
         background: #2563eb;
         border-color: #2563eb;
         background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='9' height='9' viewBox='0 0 24 24' fill='none' stroke='%23ffffff' stroke-width='3.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='20 6 9 17 4 12'%3E%3C/polyline%3E%3C/svg%3E");

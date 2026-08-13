@@ -32,7 +32,7 @@ class CutOffSisternasController extends Controller
         ]);
       }
 
-      $allowedTables = ['p_sister_genap', 'p_sister_ganjil'];
+      $allowedTables = ['p_sister_genap', 'p_sister_ganjil', 'p_sister_tukin'];
 
       if (in_array($table, $allowedTables)) {
         if (!Schema::hasTable($table)) {
@@ -239,12 +239,19 @@ class CutOffSisternasController extends Controller
 
     $request->validate([
       'dokumen' => 'required',
-      'table' => 'required|in:p_sister_genap,p_sister_ganjil',
+      'table' => 'required|in:p_sister_genap,p_sister_ganjil,p_sister_tukin',
     ]);
     $file = $request->file('dokumen');
     $fileName = strtolower($file->getClientOriginalName());
     $table = $request->input('table');
     $uploadType = $request->input('upload_type', 'new');
+    $jenisUsulan = $request->input('jenis_usulan', 'SPTJM');
+
+    $periodeTukin = '';
+    if (strtoupper($jenisUsulan) === 'TUKIN') {
+      $periodeTukin = strpos($table, 'ganjil') !== false ? 'Ganjil' : 'Genap';
+      $table = 'p_sister_tukin';
+    }
 
     // Validasi Jika Tipe Upload Adalah UPDATE (Wajib memuat kata 'update')
     if ($uploadType === 'update' && strpos($fileName, 'update') === false) {
@@ -267,6 +274,13 @@ class CutOffSisternasController extends Controller
         return response()->json([
           'success' => false,
           'message' => 'Nama file (' . $file->getClientOriginalName() . ') tidak sesuai! Untuk periode Genap, nama file CSV wajib memuat kata "genap" (contoh: dosen_genap_' . date('Y') . '.csv).'
+        ], 422);
+      }
+    } else if (strpos($table, 'tukin') !== false) {
+      if (strpos($fileName, 'tukin') === false) {
+        return response()->json([
+          'success' => false,
+          'message' => 'Nama file (' . $file->getClientOriginalName() . ') tidak sesuai! Untuk Tukin, nama file CSV wajib memuat kata "tukin" (contoh: dosen_tukin_' . date('Y') . '.csv).'
         ], 422);
       }
     }
@@ -384,17 +398,29 @@ class CutOffSisternasController extends Controller
           'tahun' => (string)$tahun,
         ];
 
+        if (!empty($periodeTukin)) {
+          $data['periode'] = $periodeTukin;
+        }
+
         $batch[] = $data;
 
         if (count($batch) >= $chunkSize) {
-          DB::table($table)->upsert($batch, ['nidn', 'tahun'], $updateCols);
+          $uniqueKeys = ['nidn', 'tahun'];
+          if (!empty($periodeTukin)) {
+            $uniqueKeys[] = 'periode';
+          }
+          DB::table($table)->upsert($batch, $uniqueKeys, $updateCols);
           $inserted += count($batch);
           $batch = [];
         }
       }
 
       if (!empty($batch)) {
-        DB::table($table)->upsert($batch, ['nidn', 'tahun'], $updateCols);
+        $uniqueKeys = ['nidn', 'tahun'];
+        if (!empty($periodeTukin)) {
+          $uniqueKeys[] = 'periode';
+        }
+        DB::table($table)->upsert($batch, $uniqueKeys, $updateCols);
         $inserted += count($batch);
       }
 
@@ -403,8 +429,12 @@ class CutOffSisternasController extends Controller
       // Hapus data dosen yang dicentang di kolom Aksi dari tabel Cut Off
       $deleted = 0;
       if (!empty($deleteNidns)) {
-        $deleted = DB::table($table)
-          ->where('tahun', (string)$tahun)
+        $queryDelete = DB::table($table)->where('tahun', (string)$tahun);
+        if (!empty($periodeTukin)) {
+          $queryDelete->where('periode', $periodeTukin);
+        }
+        
+        $deleted = $queryDelete
           ->where(function ($q) use ($deleteNidns) {
             $q->whereIn('nidn', $deleteNidns)
               ->orWhereIn('nuptk', $deleteNidns);
@@ -505,7 +535,7 @@ class CutOffSisternasController extends Controller
 
   public function clear($table, Request $request)
   {
-    $allowedTables = ['p_sister_genap', 'p_sister_ganjil'];
+    $allowedTables = ['p_sister_genap', 'p_sister_ganjil', 'p_sister_tukin'];
 
     if (!in_array($table, $allowedTables)) {
       return response()->json(['success' => false, 'message' => 'Tabel tidak valid.']);
@@ -569,7 +599,7 @@ class CutOffSisternasController extends Controller
     set_time_limit(0);
     ini_set('memory_limit', '2048M');
     $table = $request->query('table');
-    $allowedTables = ['p_sister_genap', 'p_sister_ganjil'];
+    $allowedTables = ['p_sister_genap', 'p_sister_ganjil', 'p_sister_tukin'];
 
     if (!$table || !in_array($table, $allowedTables)) {
       return redirect()->back()->with('error', 'Tabel tidak valid untuk export.');
