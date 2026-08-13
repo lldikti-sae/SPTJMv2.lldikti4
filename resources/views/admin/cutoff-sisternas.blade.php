@@ -3172,8 +3172,12 @@ function onD3TahunChange(yr) {
     if (hiddenTahun) hiddenTahun.value = yr;
     const filterTahunSelect = document.getElementById('tahunFilterSelect');
     if (filterTahunSelect) {
-        filterTahunSelect.value = yr;
-        $(filterTahunSelect).trigger('change');
+        try {
+            filterTahunSelect.value = yr;
+            $(filterTahunSelect).trigger('change');
+        } catch (e) {
+            console.error("Error triggering filterTahunSelect change: ", e);
+        }
     }
 
     // Auto-set Tahun Pembayaran = Tahun Laporan + 1 (otomatis buat option jika belum ada)
@@ -3488,7 +3492,11 @@ function resetFormD3() {
     const yearSelect = document.getElementById('d1_new_tahun_val');
     if (yearSelect) {
         yearSelect.value = "{{ $tahunSession }}";
-        yearSelect.dispatchEvent(new Event('change'));
+        try {
+            yearSelect.dispatchEvent(new Event('change'));
+        } catch (e) {
+            console.error("Error dispatching yearSelect change: ", e);
+        }
     }
 
     // 2. Uncheck semua bulan pembayaran
