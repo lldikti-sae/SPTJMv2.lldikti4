@@ -1749,17 +1749,18 @@ function updateCutoffFileName(input, targetId) {
         if (typeof restoreD3FormState === 'function') {
             restoreD3FormState();
         }
+        if (typeof syncD3TahunPembayaran === 'function') {
+            syncD3TahunPembayaran();
+        }
         if (typeof updatePreviewD3 === 'function') {
             updatePreviewD3();
         }
 
-        // Lock Year & Period inputs if there is already a saved mapping in Step 4 table
+        // Lock all Step 1, 2, 3 inputs if there is already a saved mapping in Step 4 table
         const tbody = document.getElementById('spD3MappingTbody');
         const hasMapping = tbody && tbody.querySelector('tr') && !tbody.querySelector('td[colspan]');
-        if (hasMapping) {
-            const yearSelect = document.getElementById('d1_new_tahun_val');
-            if (yearSelect) yearSelect.disabled = true;
-            document.querySelectorAll('input[name="sp_periode_d3"]').forEach(rb => rb.disabled = true);
+        if (hasMapping && typeof lockAllD3Inputs === 'function') {
+            lockAllD3Inputs(true);
         }
 
         const diffBox = document.getElementById('d1_diff_box');
@@ -2182,7 +2183,7 @@ function updateCutoffFileName(input, targetId) {
                                     @endforeach
                                 </select>
                             </div>
-                            <div class="row g-4 align-items-stretch mt-1 mb-3.5">
+                            <div class="row g-4 align-items-stretch mt-1 mb-3.5 justify-content-center">
                                 <!-- Card 1: Semester Ganjil (50% / col-md-6) -->
                                 <div class="col-md-6 col-sm-12 d-flex" id="colCardGanjil">
                                     <div class="btn-select-period p-3 rounded-3 d-flex flex-column justify-content-between w-100 h-100" data-value="p_sister_ganjil" style="cursor: pointer; transition: all 0.2s ease;">
@@ -3513,9 +3514,11 @@ function resetFormD3() {
     if (yearSelect) {
         yearSelect.value = "{{ $tahunSession }}";
         try {
-            yearSelect.dispatchEvent(new Event('change'));
+            if (typeof onD3TahunChange === 'function') {
+                onD3TahunChange(yearSelect.value);
+            }
         } catch (e) {
-            console.error("Error dispatching yearSelect change: ", e);
+            console.error("Error calling onD3TahunChange: ", e);
         }
     }
 
@@ -3775,12 +3778,12 @@ function viewD3MappingRow(btn) {
     // Tampilkan modal
     $('#modalDashboardCutoff').modal('show');
 
-    // Tampilkan hanya card periode yang sesuai & buat spans full-width
+    // Tampilkan hanya card periode yang sesuai (tetap berukuran col-md-6 agar tidak melebar aneh)
     if (selectedTable === 'p_sister_ganjil') {
-        $('#colCardGanjil').show().removeClass('col-md-6').addClass('col-md-12');
+        $('#colCardGanjil').show();
         $('#colCardGenap').hide();
     } else {
-        $('#colCardGenap').show().removeClass('col-md-6').addClass('col-md-12');
+        $('#colCardGenap').show();
         $('#colCardGanjil').hide();
     }
 
@@ -3805,8 +3808,8 @@ $('#modalDashboardCutoff').on('shown.bs.modal', function () {
 });
 
 $('#modalDashboardCutoff').on('hidden.bs.modal', function () {
-    // Reset layout card ke semula (50-50 col-md-6)
-    $('#colCardGanjil, #colCardGenap').show().removeClass('col-md-12').addClass('col-md-6');
+    // Reset layout card ke semula (keduanya tampil)
+    $('#colCardGanjil, #colCardGenap').show();
 });
 
 function editD3MappingRow(btn) {
