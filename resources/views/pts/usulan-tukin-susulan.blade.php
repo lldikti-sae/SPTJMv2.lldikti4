@@ -131,7 +131,7 @@
                 </tr>
               @empty
                 <tr>
-                  <td colspan="13" class="text-center">Tidak ada data dosen.</td>
+                  <td colspan="14" class="text-center">Tidak ada data dosen.</td>
                 </tr>
               @endforelse
             </tbody>

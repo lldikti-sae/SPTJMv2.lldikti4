@@ -97,6 +97,7 @@
 								<th>KD</th>
 								<th>KP</th>
 								<th>PP</th>
+								<th>Nilai Kurang</th>
 								<th>Status</th>
 								<th>Ket. Status</th>
 							</tr>
@@ -127,6 +128,15 @@
 								<td class="text-center">{{ $d->kp ?? '-' }}</td>
 								<td class="text-center">{{ $d->pp ?? '-' }}</td>
 								<td class="text-center">
+									@if(isset($d->nilai_kurang) && $d->nilai_kurang > 0)
+										<span class="badge bg-label-danger border border-danger">
+											Rp {{ number_format($d->nilai_kurang, 0, ',', '.') }}
+										</span>
+									@else
+										-
+									@endif
+								</td>
+								<td class="text-center">
 									@if(($d->aktif ?? 0) == 1)
 										<span class="badge bg-label-success border border-success">Aktif</span>
 									@else
@@ -137,7 +147,7 @@
 							</tr>
 							@empty
 							<tr>
-								<td colspan="13" class="text-center">Tidak ada data dosen.</td>
+								<td colspan="14" class="text-center">Tidak ada data dosen.</td>
 							</tr>
 							@endforelse
 						</tbody>

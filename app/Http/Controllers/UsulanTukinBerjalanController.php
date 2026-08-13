@@ -74,7 +74,9 @@ class UsulanTukinBerjalanController extends Controller
 					DB::raw('MAX(b.kp) as kp'),
 					DB::raw('MAX(b.potongan_periodik) as pp'),
 					DB::raw('MAX(b.nuptk) as nuptk'),
-					DB::raw('d.Keterangan as keterangan')
+					DB::raw('d.Keterangan as keterangan'),
+					DB::raw('d.Gaji' . $bulan . ' as gaji_serdos'),
+					DB::raw('d.TPD' . $bulan . ' as pembayaran_serdos')
 				)
 				->where('d.Kode_PT', $kodePts)
 				->where($joinTable['kode_pt'], $kodePts)
@@ -97,7 +99,7 @@ class UsulanTukinBerjalanController extends Controller
 								->whereRaw("TRIM($kodeCol) != '-'");
 						});
 				})
-				->groupBy('d.NIDN', 'd.NUPTK', 'd.Nama', 'd.Jabatan' . $bulan, 'd.Gol' . $bulan, 'd.Tahun' . $bulan, 'd.Aktif', 'd.Jenis', 'd.Sertifikat_Dosen', 'd.KodeUsulan' . $bulan, 'd.Keterangan')
+				->groupBy('d.NIDN', 'd.NUPTK', 'd.Nama', 'd.Jabatan' . $bulan, 'd.Gol' . $bulan, 'd.Tahun' . $bulan, 'd.Aktif', 'd.Jenis', 'd.Sertifikat_Dosen', 'd.KodeUsulan' . $bulan, 'd.Keterangan', 'd.Gaji' . $bulan, 'd.TPD' . $bulan)
 				->orderBy('d.Nama')
 				->get();
 
@@ -138,14 +140,57 @@ class UsulanTukinBerjalanController extends Controller
 
 				if (!empty($existingSet)) {
 					$dosenList = $dosenList->filter(function ($row) use ($existingSet) {
-						$nidn = isset($row->nidn) ? trim((string) $row->nidn) : '';
-						$nuptk = isset($row->nuptk) ? trim((string) $row->nuptk) : '';
-						$nuptkD = isset($row->nuptk_d) ? trim((string) $row->nuptk_d) : '';
+						$nidn = trim((string) ($row->NIDN ?? $row->nidn ?? ''));
+						$nuptk = trim((string) ($row->NUPTK ?? $row->nuptk ?? ''));
+						$nuptkD = trim((string) ($row->NUPTK_D ?? $row->nuptk_d ?? ''));
 						if ($nidn !== '' && $nidn !== '-' && isset($existingSet[$nidn])) return false;
 						if ($nuptk !== '' && $nuptk !== '-' && isset($existingSet[$nuptk])) return false;
 						if ($nuptkD !== '' && $nuptkD !== '-' && isset($existingSet[$nuptkD])) return false;
 						return true;
 					})->values();
+				}
+				
+				// --- LOGIC NILAI KURANG TUKIN (BACKLOG) ---
+				$ids = $dosenList->pluck('NIDN')->merge($dosenList->pluck('NUPTK'))->filter()->unique()->toArray();
+				if (empty($ids)) {
+					$ids = $dosenList->pluck('nidn')->merge($dosenList->pluck('nuptk'))->filter()->unique()->toArray();
+				}
+
+				$pendingKurangBayar = [];
+				if (\Illuminate\Support\Facades\Schema::hasTable('t_uraian_pembayaran') && !empty($ids)) {
+					$kurangBayarRows = \Illuminate\Support\Facades\DB::table('t_uraian_pembayaran')
+						->whereIn('nidn', $ids)
+						->where('status_cair', 0)
+						->get();
+					foreach ($kurangBayarRows as $kb) {
+						$kbNidn = trim((string) $kb->nidn);
+						if (!isset($pendingKurangBayar[$kbNidn])) {
+							$pendingKurangBayar[$kbNidn] = 0;
+						}
+						$pendingKurangBayar[$kbNidn] += (float) $kb->bersih;
+					}
+				}
+
+				foreach ($dosenList as $row) {
+					$nidn = trim((string) ($row->NIDN ?? $row->nidn ?? ''));
+					$nuptk = trim((string) ($row->NUPTK ?? $row->nuptk ?? ''));
+					$nuptkD = trim((string) ($row->NUPTK_D ?? $row->nuptk_d ?? ''));
+					$identifier = ($nidn !== '' && $nidn !== '-') ? $nidn : (($nuptk !== '' && $nuptk !== '-') ? $nuptk : (($nuptkD !== '' && $nuptkD !== '-') ? $nuptkD : ''));
+					
+					// Penyesuaian Serdos: Selisih Serdos = Gaji Serdos - Pembayaran Serdos
+					$gajiSerdos = (float) ($row->gaji_serdos ?? 0);
+					$pembayaranSerdos = (float) ($row->pembayaran_serdos ?? 0);
+					$selisihSerdos = $gajiSerdos - $pembayaranSerdos;
+					
+					$row->selisih_serdos = $selisihSerdos;
+					
+					// Nilai Kurang awal = dari inputan manual Admin (t_uraian_pembayaran) + (Jika Selisih Serdos > 0)
+					$baseKurang = $pendingKurangBayar[$identifier] ?? 0;
+					$tambahanKurang = ($selisihSerdos > 0) ? $selisihSerdos : 0;
+					$row->nilai_kurang = $baseKurang + $tambahanKurang;
+					
+					// Jika Lebih bayar serdos
+					$row->nilai_lebih = ($selisihSerdos < 0) ? abs($selisihSerdos) : 0;
 				}
 
 				// $removed = $beforeCount - $dosenList->count();
@@ -157,7 +202,7 @@ class UsulanTukinBerjalanController extends Controller
 			// Tukin hanya untuk dosen PNS
 			$dosenListPNS = $dosenList
 				->filter(function ($row) {
-					$jenis = isset($row->jenis) ? trim((string) $row->jenis) : '';
+					$jenis = trim((string) ($row->Jenis ?? $row->jenis ?? ''));
 					return strtoupper($jenis) === 'PNS';
 				})
 				->values();
@@ -277,7 +322,9 @@ class UsulanTukinBerjalanController extends Controller
 				DB::raw('MAX(b.kd) as kd'),
 				DB::raw('MAX(b.kp) as kp'),
 				DB::raw('MAX(b.potongan_periodik) as pp'),
-				DB::raw('MAX(b.nuptk) as nuptk')
+				DB::raw('MAX(b.nuptk) as nuptk'),
+				DB::raw('d.Gaji' . $bulan . ' as gaji_serdos'),
+				DB::raw('d.TPD' . $bulan . ' as pembayaran_serdos')
 			)
 			->where('d.Kode_PT', $kodePts)
 			->where('b.kode_pt', $kodePts)
@@ -298,7 +345,7 @@ class UsulanTukinBerjalanController extends Controller
 							->whereRaw("TRIM($kodeCol) != '-'");
 					});
 			})
-			->groupBy('d.NIDN', 'd.NUPTK', 'd.Nama', 'd.Jabatan' . $bulan, 'd.Gol' . $bulan, 'd.Tahun' . $bulan, 'd.Aktif', 'd.Jenis', 'd.Sertifikat_Dosen', 'd.Keterangan', 'd.KodeUsulan' . $bulan)
+			->groupBy('d.NIDN', 'd.NUPTK', 'd.Nama', 'd.Jabatan' . $bulan, 'd.Gol' . $bulan, 'd.Tahun' . $bulan, 'd.Aktif', 'd.Jenis', 'd.Sertifikat_Dosen', 'd.Keterangan', 'd.KodeUsulan' . $bulan, 'd.Gaji' . $bulan, 'd.TPD' . $bulan)
 			->orderBy('d.Nama')
 			->get();
 
@@ -324,6 +371,19 @@ class UsulanTukinBerjalanController extends Controller
 			return redirect()
 				->route('pts.usulan-tukin-berjalan', ['bulan' => $bulan])
 				->with('error', 'Sudah melakukan usulan Tukin Berjalan pada periode ini. Pengusulan ganda tidak diperbolehkan.');
+		}
+
+		// Validasi: TUKIN hanya dapat diusulkan setelah SPTJM (Serdos) sudah diusulkan
+		$sptjmDiUsulkan = DB::table('q_sptjm')
+			->where('kode_pts', $kodePts)
+			->where('bulan', $bulanTeks)
+			->where('tahun', (string) $tahun)
+			->where('id_usulan', 'like', 'B %')
+			->exists();
+		if (!$sptjmDiUsulkan) {
+			return redirect()
+				->route('pts.usulan-tukin-berjalan', ['bulan' => $bulan])
+				->with('error', 'Usulan TUKIN ditolak. Anda harus mengusulkan SPTJM (Serdos) terlebih dahulu untuk periode ini.');
 		}
 
 		$countUsulan = DB::table('s_tunjangan_kinerja')
@@ -442,8 +502,8 @@ class UsulanTukinBerjalanController extends Controller
 				->select(['NIDN', 'NUPTK'])
 				->get();
 			foreach ($existingRows as $r) {
-				$nidn = isset($r->NIDN) ? trim((string) $r->NIDN) : '';
-				$nuptk = isset($r->NUPTK) ? trim((string) $r->NUPTK) : '';
+				$nidn = trim((string) ($r->NIDN ?? $r->nidn ?? ''));
+				$nuptk = trim((string) ($r->NUPTK ?? $r->nuptk ?? ''));
 				if ($nidn !== '' && $nidn !== '-') $existingKinerjaSet[$nidn] = true;
 				if ($nuptk !== '' && $nuptk !== '-') $existingKinerjaSet[$nuptk] = true;
 			}
@@ -452,24 +512,63 @@ class UsulanTukinBerjalanController extends Controller
 		$toInsertKinerja = [];
 		$rowErrorCount = 0;
 		$rowErrorSamples = [];
+		$ids = $dosenList->pluck('NIDN')->merge($dosenList->pluck('NUPTK'))->filter()->unique()->toArray();
+		if (empty($ids)) {
+			$ids = $dosenList->pluck('nidn')->merge($dosenList->pluck('nuptk'))->filter()->unique()->toArray();
+		}
+
+		$pendingKurangBayar = [];
+		if (\Illuminate\Support\Facades\Schema::hasTable('t_uraian_pembayaran') && !empty($ids)) {
+			$kurangBayarRows = \Illuminate\Support\Facades\DB::table('t_uraian_pembayaran')
+				->whereIn('nidn', $ids)
+				->where('status_cair', 0)
+				->get();
+			foreach ($kurangBayarRows as $kb) {
+				$kbNidn = trim((string) $kb->nidn);
+				if (!isset($pendingKurangBayar[$kbNidn])) {
+					$pendingKurangBayar[$kbNidn] = 0;
+				}
+				$pendingKurangBayar[$kbNidn] += (float) $kb->bersih;
+			}
+		}
+
+		$updatedKurangBayarIds = [];
+
 		foreach ($dosenList as $row) {
 			try {
-				$nidn = isset($row->nidn) ? trim((string) $row->nidn) : '';
-				$nuptk = isset($row->nuptk) ? trim((string) $row->nuptk) : '';
-				$nuptkD = isset($row->nuptk_d) ? trim((string) $row->nuptk_d) : '';
+				$nidn = trim((string) ($row->NIDN ?? $row->nidn ?? ''));
+				$nuptk = trim((string) ($row->NUPTK ?? $row->nuptk ?? ''));
+				$nuptkD = trim((string) ($row->NUPTK_D ?? $row->nuptk_d ?? ''));
 				$identifier = ($nidn !== '' && $nidn !== '-') ? $nidn : (($nuptk !== '' && $nuptk !== '-') ? $nuptk : (($nuptkD !== '' && $nuptkD !== '-') ? $nuptkD : ''));
 				if ($identifier === '') continue;
 				if (isset($existingKinerjaSet[$identifier])) continue;
 
 				$jab = $row->jabatan ?? '';
 				$kelas = $mapNilai[$jab]['kelas'] ?? '-';
-				$nilai = $mapNilai[$jab]['nilai'] ?? null;
+				$nilaiDasar = (float) ($mapNilai[$jab]['nilai'] ?? 0);
 				$statusTxt = (($row->aktif ?? '0') == '1') ? '1' : '0';
+
+				// Perhitungan TUKIN sesuai Sheet2
+				// % KD = 60%, % KP (diberikan dari sister, tapi di sister ini adalah nilai kp langsung atau persentasenya?)
+				// Wait, di Sheet2: Nilai KD = Nilai Tukin * 60%
+				// Nilai KP = Nilai Tukin * %KP. 
+				// Tapi $row->kd dari sister mungkin berupa angka persentase atau nominal?
+				// User instructions: "% Kinerja Dasar = 60%. % Kinerja Prestasi mengikuti persentase 0-40% sesuai nilai kinerja. Nilai KD = Nilai Tukin x %KD. Nilai KP = Nilai Tukin x %KP."
+				// Kita asumsikan $row->kd dan $row->kp dari data bkd/sister adalah nilai persentase (contoh: 60, 40).
+				// Jika dari awal nilainya sudah tersimpan (atau harus kita hitung manual di sini?)
+				// Kita akan asumsikan $row->kd adalah 60 (persentase) atau nominal?
+				// Biar aman, kita hitung nominalnya.
+				$persenKD = 60 / 100; // Selalu 60% berdasarkan instruksi Sheet2
+				$persenKP = (float) ($row->kp ?? 0) / 100; // Asumsi $row->kp adalah angka persentase 0-40
+				$nilaiKD = $nilaiDasar * $persenKD;
+				$nilaiKP = $nilaiDasar * $persenKP;
+				$potonganPeriodik = (float) ($row->pp ?? 0);
+				
+				$nilaiTukinMurni = $nilaiKD + $nilaiKP - $potonganPeriodik;
 
 				$toInsertKinerja[] = [
 					'Kode_Usulan' => $idUsulan,
 					'NUPTK' => ($nuptk !== '' && $nuptk !== '-') ? $nuptk : (($nuptkD !== '' && $nuptkD !== '-') ? $nuptkD : null),
-					// Simpan NIDN jika tersedia; jika tidak, simpan identifier (bisa NUPTK) agar tetap bisa ditelusuri.
 					'NIDN' => ($nidn !== '' && $nidn !== '-') ? $nidn : $identifier,
 					'Nama' => $row->nama,
 					'Jenis' => $row->jenis ?? 'PNS',
@@ -477,7 +576,7 @@ class UsulanTukinBerjalanController extends Controller
 					'Nama_PTS' => $namaPts,
 					'Jabatan' => $row->jabatan ?? null,
 					'Kelas_Jabatan' => $kelas,
-					'Nilai_tukin_Jabatan' => $nilai,
+					'Nilai_tukin_Jabatan' => $nilaiDasar,
 					'Status' => $statusTxt,
 					'Keterangan_Status' => $row->keterangan ?? null,
 					'Serdos' => $row->sertifikat_dosen ?? null,
@@ -485,16 +584,20 @@ class UsulanTukinBerjalanController extends Controller
 					'Bulan' => $bulanTeks,
 					'Tahun' => (string) $tahun,
 					'Kode_Cair' => null,
-					'KD' => $row->kd ?? null,
-					'KP' => $row->kp ?? null,
-					'PP' => $row->pp ?? null,
-					'Nilai_Bersih_Serdos' => null,
-					'Nilai_Tukin' => null,
-					'Pajak' => null,
-					'Nilai_Pajak' => null,
-					'Nilai_Bersih' => null,
+					'KD' => $nilaiKD,
+					'KP' => $nilaiKP,
+					'PP' => $potonganPeriodik,
+					'Nilai_Bersih_Serdos' => 0,
+					'Nilai_Tukin' => $nilaiTukinMurni,
+					'Pajak' => 0,
+					'Nilai_Pajak' => 0,
+					'Nilai_Bersih' => $nilaiTukinMurni,
+					'Nilai_Kurang' => 0,
 				];
 
+				if (isset($pendingKurangBayar[$identifier]) && $pendingKurangBayar[$identifier] > 0) {
+					$updatedKurangBayarIds[] = $identifier;
+				}
 				// all detail rows will be stored in s_tunjangan_kinerja; no transaction table usage
 			} catch (\Throwable $e) {
 				$rowErrorCount++;
@@ -519,6 +622,12 @@ class UsulanTukinBerjalanController extends Controller
 		try {
 			foreach (array_chunk($toInsertKinerja, $batchSize) as $chunk) {
 				DB::table('s_tunjangan_kinerja')->insert($chunk);
+			}
+
+			if (!empty($updatedKurangBayarIds) && \Illuminate\Support\Facades\Schema::hasTable('t_uraian_pembayaran')) {
+				\Illuminate\Support\Facades\DB::table('t_uraian_pembayaran')
+					->whereIn('nidn', $updatedKurangBayarIds)
+					->update(['status_cair' => 1]);
 			}
             
 			return redirect()->route('pts.usulan-tukin-berjalan', ['bulan' => $bulan])
@@ -626,6 +735,29 @@ class UsulanTukinBerjalanController extends Controller
 			->groupBy('d.NIDN', 'd.NUPTK', 'd.Nama', 'd.Jabatan' . $bulan, 'd.Gol' . $bulan, 'd.Tahun' . $bulan, 'd.Aktif', 'd.Jenis', 'd.Sertifikat_Dosen', 'd.Keterangan')
 			->orderBy('d.Nama')
 			->get();
+
+		$ids = $dosenList->pluck('nidn')->merge($dosenList->pluck('nuptk_d'))->filter()->unique()->toArray();
+		$pendingKurangBayar = [];
+		if (\Illuminate\Support\Facades\Schema::hasTable('t_uraian_pembayaran') && !empty($ids)) {
+			$kurangBayarRows = \Illuminate\Support\Facades\DB::table('t_uraian_pembayaran')
+				->whereIn('nidn', $ids)
+				->where('status_cair', 0)
+				->get();
+			foreach ($kurangBayarRows as $kb) {
+				$kbNidn = trim((string) $kb->nidn);
+				if (!isset($pendingKurangBayar[$kbNidn])) {
+					$pendingKurangBayar[$kbNidn] = 0;
+				}
+				$pendingKurangBayar[$kbNidn] += (float) $kb->bersih;
+			}
+		}
+
+		foreach ($dosenList as $row) {
+			$nidn = trim((string) ($row->nidn ?? ''));
+			$nuptk = trim((string) ($row->nuptk_d ?? ''));
+			$identifier = ($nidn !== '' && $nidn !== '-') ? $nidn : (($nuptk !== '' && $nuptk !== '-') ? $nuptk : '');
+			$row->nilai_kurang = $pendingKurangBayar[$identifier] ?? 0;
+		}
 
 		Log::debug('printTukin Berjalan loaded', [
 			'kode_pts' => $kodePts,

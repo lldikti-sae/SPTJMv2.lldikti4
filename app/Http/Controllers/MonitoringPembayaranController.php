@@ -315,6 +315,34 @@ class MonitoringPembayaranController extends Controller
         }
     }
 
+    // Cek bulan-bulan yang sudah diproses SP2D kekurangan/kelebihan (dari t_kekurangan)
+    $resolvedMonths = [];
+    try {
+      $resolvedRows = DB::table('t_kekurangan')
+          ->where('tahun', $selectedYear)
+          ->where(function ($q) use ($nidn) {
+              $q->where('nidn', $nidn)
+                ->orWhere('nuptk', $nidn);
+          })
+          ->where('jenis_pembayaran', 'like', 'PEMBAYARAN_%')
+          ->get();
+
+      foreach ($resolvedRows as $r) {
+        $parts = explode('_', $r->jenis_pembayaran);
+        $m = isset($parts[1]) ? (int) $parts[1] : 0;
+        if ($m > 0) {
+            if (!isset($resolvedMonths[$m])) {
+              $resolvedMonths[$m] = [
+                'nomor' => $r->kode_bayar_k,
+                'tanggal' => $r->tgl_bayar_k,
+                'nominal' => 0
+              ];
+            }
+            $resolvedMonths[$m]['nominal'] += (float) $r->selisih;
+        }
+      }
+    } catch (\Throwable $e) { /* table might not exist yet */ }
+
     // Ambil data dari bulan 1–12
     $golonganBulanan = [];
     $jabatanBulanan = [];
@@ -325,6 +353,7 @@ class MonitoringPembayaranController extends Controller
     $tukinPrestasi = [];
     $tukinPotongan = [];
     $tukinBersihSerdos = [];
+    $tukinNilaiKurang = [];
     $kotorTkgb = [];
     $pajakTpd = [];
     $pajakTkgb = [];
@@ -373,12 +402,16 @@ class MonitoringPembayaranController extends Controller
               $tPrestasi = (float) ($tk->KP ?? 0);
               $tPotongan = (float) ($tk->PP ?? 0);
               $tBersihSerdos = (float) ($tk->Nilai_Bersih_Serdos ?? 0);
+              $tNilaiKurang = (float) ($tk->Nilai_Kurang ?? 0);
               
               $bersihTpdVal = $tBersihSerdos;
+              $kotorTkgbVal = (float) ($tk->Nilai_Tukin ?? 0);
+              $bersihTkgbVal = (float) ($tk->Nilai_Bersih ?? 0);
               
           } else {
               $gajiAsli = 0;
               $tDasar = 0.60;
+              $tNilaiKurang = 0;
           }
       } elseif ($jenisTunjangan === 'semua') {
           if (isset($tukinRecords[$i])) {
@@ -393,10 +426,18 @@ class MonitoringPembayaranController extends Controller
               $nominalPotongan = $nominalTukin * $tPotongan;
               
               $kotorTkgbVal = $nominalTukin;
-              $bersihTkgbVal = $nominalDasar + $nominalPrestasi - $bersihTpdVal - $nominalPotongan;
+              
+              // Adjustment dari rekap admin (t_kekurangan)
+              $adjustment = $resolvedMonths[$i]['nominal'] ?? 0;
+              
+              // Nilai_Kurang pada tab Semua difungsikan untuk menampilkan penyesuaian (Selisih Serdos)
+              $tNilaiKurang = $adjustment; 
+              
+              $bersihTkgbVal = $nominalDasar + $nominalPrestasi - $nominalPotongan + $adjustment;
           } else {
               $kotorTkgbVal = 0;
               $bersihTkgbVal = 0;
+              $tNilaiKurang = 0;
           }
       }
       
@@ -404,6 +445,7 @@ class MonitoringPembayaranController extends Controller
       $tukinPrestasi[] = $tPrestasi;
       $tukinPotongan[] = $tPotongan;
       $tukinBersihSerdos[] = $tBersihSerdos;
+      $tukinNilaiKurang[] = $tNilaiKurang ?? 0;
 
       $gajiBulanan[] = $gajiAsli;
 
@@ -457,36 +499,7 @@ class MonitoringPembayaranController extends Controller
     $summaryKewajiban = 0.0;
     $summaryDibayar = 0.0;
 
-    // Cek bulan-bulan yang sudah diproses SP2D kekurangan/kelebihan (dari t_kekurangan & s_transaksi_2 JSON)
-    $resolvedMonths = [];
-    try {
-      // 1. Ambil dari t_kekurangan (aktif)
-      $resolvedRows = DB::table('t_kekurangan')
-          ->where('tahun', $selectedYear)
-          ->where(function ($q) use ($nidn) {
-              $q->where('nidn', $nidn)
-                ->orWhere('nuptk', $nidn);
-          })
-          ->where('jenis_pembayaran', 'like', 'PEMBAYARAN_%')
-          ->get();
-
-      foreach ($resolvedRows as $r) {
-        $parts = explode('_', $r->jenis_pembayaran);
-        $m = isset($parts[1]) ? (int) $parts[1] : 0;
-        if ($m > 0) {
-            if (!isset($resolvedMonths[$m])) {
-              $resolvedMonths[$m] = [
-                'nomor' => $r->kode_bayar_k,
-                'tanggal' => $r->tgl_bayar_k,
-                'nominal' => 0
-              ];
-            }
-            $resolvedMonths[$m]['nominal'] += (float) $r->selisih;
-        }
-      }
-
-      // 2. Ambil dari s_transaksi_2 JSON (arsip/backup) dihapus karena kolom Riwayat_Pembayaran sudah dihapus.
-    } catch (\Throwable $e) { /* table might not exist yet */ }
+    // (Query t_kekurangan was moved above to calculate adjustments)
     $totalPajakAll = array_sum($pajakTpd) + array_sum($pajakTkgb);
     $totalKotorAll = array_sum($kotorTpd) + array_sum($kotorTkgb);
     $globalTarif = $totalKotorAll > 0 ? ($totalPajakAll / $totalKotorAll) : 0;
@@ -843,6 +856,7 @@ class MonitoringPembayaranController extends Controller
         'tukinPrestasi',
         'tukinPotongan',
         'tukinBersihSerdos',
+        'tukinNilaiKurang',
         'selisihTotals',
         'selisihBulanan',
         'statusBulanan',
@@ -1015,6 +1029,7 @@ class MonitoringPembayaranController extends Controller
     $tukinPrestasi = [];
     $tukinPotongan = [];
     $tukinBersihSerdos = [];
+    $tukinNilaiKurang = [];
     $kotorTkgb = [];
     $pajakTpd = [];
     $pajakTkgb = [];
@@ -1064,10 +1079,12 @@ class MonitoringPembayaranController extends Controller
               $tPrestasi = (float) ($tk->KP ?? 0);
               $tPotongan = (float) ($tk->PP ?? 0);
               $tBersihSerdos = (float) ($tk->Nilai_Bersih_Serdos ?? 0);
+              $tNilaiKurang = (float) ($tk->Nilai_Kurang ?? 0);
               
           } else {
               $gajiAsli = 0;
               $tDasar = 0.60;
+              $tNilaiKurang = 0;
           }
       } elseif ($jenisTunjangan === 'semua') {
           if (isset($tukinRecords[$i])) {
@@ -1086,6 +1103,7 @@ class MonitoringPembayaranController extends Controller
           } else {
               $kotorTkgbVal = 0;
               $bersihTkgbVal = 0;
+              $tNilaiKurang = 0;
           }
       }
 
@@ -1093,6 +1111,7 @@ class MonitoringPembayaranController extends Controller
       $tukinPrestasi[] = $tPrestasi;
       $tukinPotongan[] = $tPotongan;
       $tukinBersihSerdos[] = $tBersihSerdos;
+      $tukinNilaiKurang[] = $tNilaiKurang ?? 0;
 
       $gajiBulanan[] = $gajiAsli;
 
@@ -1507,6 +1526,7 @@ class MonitoringPembayaranController extends Controller
       'tukinPrestasi' => $tukinPrestasi,
       'tukinPotongan' => $tukinPotongan,
       'tukinBersihSerdos' => $tukinBersihSerdos,
+      'tukinNilaiKurang' => $tukinNilaiKurang,
       'gajiBulanan' => $gajiBulanan,
       'kotorTpd' => $kotorTpd,
       'kotorTkgb' => $kotorTkgb,

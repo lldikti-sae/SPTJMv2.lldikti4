@@ -1928,6 +1928,20 @@ class KekuranganBayarController extends Controller
           $insertBatch[] = $riwayatBaru;
           $totalGenerated++;
 
+          // --- LOGIC BACKLOG TUKIN ---
+          $jenisDsn = trim((string) ($dosen->Jenis ?? $dosen->jenis ?? ''));
+          if ($isKurang && stripos($jenisDsn, 'PNS') !== false && \Illuminate\Support\Facades\Schema::hasTable('t_uraian_pembayaran')) {
+              $uraianInsertBatch[] = [
+                  'nidn' => $nidn,
+                  'bersih' => round($paymentBersih, 2),
+                  'sp2d' => $noSp2d ?: $noSp2dBulan,
+                  'tanggal' => $tanggalSp2d ?: $tglSp2dBulan,
+                  'status_cair' => 0,
+                  'created_at' => now()->toDateTimeString(),
+                  'updated_at' => now()->toDateTimeString(),
+              ];
+          }
+
           if ($inputNominal !== null) {
               $remainingBudgetNet -= $paymentBersih;
           }

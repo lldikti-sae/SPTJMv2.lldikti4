@@ -758,7 +758,7 @@ $months = [
           const thead=tbl?.querySelector('thead');
           if(thead){
             if (currentJenis === 'tukin') {
-                thead.innerHTML=`<tr><th class="text-center align-middle">Tahun</th><th class="text-center align-middle col-bulan">Bulan</th><th class="text-center align-middle">Kode Usulan</th><th class="text-center align-middle">Jabatan / Gol-MK</th><th class="text-center align-middle">Nominal TUKIN</th><th class="text-center align-middle">% KD</th><th class="text-center align-middle">Nominal Kinerja Dasar</th><th class="text-center align-middle">% KP</th><th class="text-center align-middle">Nominal Kinerja Prestasi</th><th class="text-center align-middle">Nominal Bersih TPD</th><th class="text-center align-middle">% PP </th><th class="text-center align-middle">Potongan Periodik</th><th class="text-center align-middle">Nilai Bersih TUKIN</th><th class="text-center align-middle">No SP2D</th><th class="text-center align-middle">Tgl SP2D</th><th class="text-center align-middle">Status</th></tr>`;
+                thead.innerHTML=`<tr><th class="text-center align-middle">Tahun</th><th class="text-center align-middle col-bulan">Bulan</th><th class="text-center align-middle">Kode Usulan</th><th class="text-center align-middle">Jabatan / Gol-MK</th><th class="text-center align-middle">Nominal TUKIN</th><th class="text-center align-middle">% KD</th><th class="text-center align-middle">Nominal Kinerja Dasar</th><th class="text-center align-middle">% KP</th><th class="text-center align-middle">Nominal Kinerja Prestasi</th><th class="text-center align-middle">Nominal Bersih TPD</th><th class="text-center align-middle">% PP </th><th class="text-center align-middle">Potongan Periodik</th><th class="text-center align-middle">Nilai Kurang</th><th class="text-center align-middle">Nilai Bersih TUKIN</th><th class="text-center align-middle">No SP2D</th><th class="text-center align-middle">Tgl SP2D</th><th class="text-center align-middle">Status</th></tr>`;
             } else if (currentJenis === 'sptjm') {
                 thead.innerHTML=`<tr><th rowspan="2" class="text-center align-middle">Tahun</th><th rowspan="2" class="text-center align-middle">Bulan</th><th rowspan="2" class="text-center align-middle">Kode Usulan</th><th rowspan="2" class="text-center align-middle">Jabatan / Gol/MK</th><th rowspan="2" class="text-center align-middle">Gaji</th><th colspan="${hasTkgb ? 4 : 2}" class="text-center align-middle">Nominal</th><th rowspan="2" class="text-center align-middle">NO SP2D</th><th rowspan="2" class="text-center align-middle">TGL SP2D</th>${!data.isPns ? '<th rowspan="2" class="text-center align-middle">Selisih</th>' : ''}<th rowspan="2" class="text-center align-middle">Status</th></tr><tr><th class="text-center align-middle">Kotor TPD</th><th class="text-center align-middle">Bersih TPD</th>${hasTkgb?'<th class="text-center align-middle tkgb-col">Kotor TKGB</th>':''}${hasTkgb?'<th class="text-center align-middle tkgb-col">Bersih TKGB</th>':''}</tr>`;
             } else {
@@ -766,7 +766,7 @@ $months = [
             }
           }
 
-          let totGaji=0, totDasar=0, totPrestasi=0, totBersihTpd=0, totPotongan=0, totNilaiBersih=0;
+          let totGaji=0, totDasar=0, totPrestasi=0, totBersihTpd=0, totPotongan=0, totNilaiBersih=0, totNilaiKurang=0;
           const tkc=(v)=>hasTkgb?`<td class="text-end tkgb-col">${fmt(v)}</td>`:'';
           const tbody=tbl?.querySelector('tbody'); 
           if(tbody) {
@@ -790,6 +790,7 @@ $months = [
             data.pajakTpd = data.pajakTpd || [];
             data.pajakTkgb = data.pajakTkgb || [];
             data.kodeUsulanBulanan = data.kodeUsulanBulanan || [];
+            data.tukinNilaiKurang = data.tukinNilaiKurang || [];
 
 
             if (currentJenis === 'tukin') {
@@ -807,8 +808,9 @@ $months = [
                     const nominalPrestasi = nominalTukin * persenPrestasi;
                     const nominalBersihTpd = data.bersihTpd ? (data.bersihTpd[i] ?? 0) : 0;
                     const nominalPotongan = nominalTukin * persenPotongan;
+                    const nominalKurang = data.tukinNilaiKurang ? (data.tukinNilaiKurang[i] ?? 0) : 0;
                     
-                    const nilaiBersihTukin = nominalDasar + nominalPrestasi - nominalBersihTpd - nominalPotongan;
+                    const nilaiBersihTukin = nominalDasar + nominalPrestasi - nominalBersihTpd - nominalPotongan + nominalKurang;
 
                     let jb = data.jabatanBulanan[i] ?? '-';
                     let gl = data.golonganBulanan[i] ?? '-';
@@ -828,14 +830,15 @@ $months = [
 
                     totGaji += nominalTukin; totDasar += nominalDasar; totPrestasi += nominalPrestasi;
                     totBersihTpd += nominalBersihTpd; totPotongan += nominalPotongan; totNilaiBersih += nilaiBersihTukin;
+                    totNilaiKurang += nominalKurang;
                     
                     const pDasarStr = String(Math.round(persenDasar * 100 * 100) / 100) + '%';
                     const pPrestasiStr = String(Math.round(persenPrestasi * 100 * 100) / 100) + '%';
                     const pPotonganStr = String(Math.round(persenPotongan * 100 * 100) / 100) + '%';
 
-                    tbody.innerHTML += `<tr><td class="text-center">${data.selectedYear||'-'}</td><td class="col-bulan">${months[i]}</td><td class="text-center">${data.kodeUsulanBulanan[i]??'-'}</td><td class="text-center">${jabatanText}</td><td class="text-end">${fmt(nominalTukin)}</td><td class="text-center">${pDasarStr}</td><td class="text-end">${fmt(nominalDasar)}</td><td class="text-center">${pPrestasiStr}</td><td class="text-end">${fmt(nominalPrestasi)}</td><td class="text-end">${fmt(nominalBersihTpd)}</td><td class="text-center">${pPotonganStr}</td><td class="text-end">${fmt(nominalPotongan)}</td><td class="text-end">${fmt(nilaiBersihTukin)}</td><td class="text-center" style="font-size:11px">${data.noSp2d[i]??'-'}</td><td class="text-center" style="font-size:11px">${tglMain}</td><td class="text-center">${stH}</td></tr>`;
+                    tbody.innerHTML += `<tr><td class="text-center">${data.selectedYear||'-'}</td><td class="col-bulan">${months[i]}</td><td class="text-center">${data.kodeUsulanBulanan[i]??'-'}</td><td class="text-center">${jabatanText}</td><td class="text-end">${fmt(nominalTukin)}</td><td class="text-center">${pDasarStr}</td><td class="text-end">${fmt(nominalDasar)}</td><td class="text-center">${pPrestasiStr}</td><td class="text-end">${fmt(nominalPrestasi)}</td><td class="text-end">${fmt(nominalBersihTpd)}</td><td class="text-center">${pPotonganStr}</td><td class="text-end">${fmt(nominalPotongan)}</td><td class="text-end" style="color:red;">${fmt(nominalKurang)}</td><td class="text-end">${fmt(nilaiBersihTukin)}</td><td class="text-center" style="font-size:11px">${data.noSp2d[i]??'-'}</td><td class="text-center" style="font-size:11px">${tglMain}</td><td class="text-center">${stH}</td></tr>`;
                 }
-                tbody.innerHTML += `<tr class="fw-bold table-light"><td colspan="4" class="text-center">Jumlah</td><td class="text-end">${fmt(totGaji)}</td><td></td><td class="text-end">${fmt(totDasar)}</td><td></td><td class="text-end">${fmt(totPrestasi)}</td><td class="text-end">${fmt(totBersihTpd)}</td><td></td><td class="text-end">${fmt(totPotongan)}</td><td class="text-end">${fmt(totNilaiBersih)}</td><td colspan="3"></td></tr>`;
+                tbody.innerHTML += `<tr class="fw-bold table-light"><td colspan="4" class="text-center">Jumlah</td><td class="text-end">${fmt(totGaji)}</td><td></td><td class="text-end">${fmt(totDasar)}</td><td></td><td class="text-end">${fmt(totPrestasi)}</td><td class="text-end">${fmt(totBersihTpd)}</td><td></td><td class="text-end">${fmt(totPotongan)}</td><td class="text-end" style="color:red;">${fmt(totNilaiKurang)}</td><td class="text-end">${fmt(totNilaiBersih)}</td><td colspan="3"></td></tr>`;
               } else if (currentJenis === 'sptjm') {
                 for(let i=0;i<months.length;i++){
                   const st=stb[i];

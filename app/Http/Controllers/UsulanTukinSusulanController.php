@@ -95,9 +95,9 @@ class UsulanTukinSusulanController extends Controller
                                 ->whereRaw("TRIM($kodeCol) != '-'");
                         });
                 })
-                ->groupBy('d.NIDN', 'd.NUPTK', 'd.Nama', 'd.Jabatan' . $bulan, 'd.Gol' . $bulan, 'd.Tahun' . $bulan, 'd.Aktif', 'd.Jenis', 'd.Sertifikat_Dosen', 'd.KodeUsulan' . $bulan, 'd.Keterangan')
-                ->orderBy('d.Nama')
-                ->get();
+            ->groupBy('d.NIDN', 'd.NUPTK', 'd.Nama', 'd.Jabatan' . $bulan, 'd.Gol' . $bulan, 'd.Tahun' . $bulan, 'd.Aktif', 'd.Jenis', 'd.Sertifikat_Dosen', 'd.KodeUsulan' . $bulan, 'd.Keterangan', 'd.Gaji' . $bulan, 'd.TPD' . $bulan)
+            ->orderBy('d.Nama')
+            ->get();
 
             // Filter: jika dosen sudah pernah diusulkan pada periode ini (BT/ST) maka tidak ditampilkan
             $beforeCount = $dosenList->count();
@@ -144,6 +144,18 @@ class UsulanTukinSusulanController extends Controller
                         if ($nuptkD !== '' && $nuptkD !== '-' && isset($existingSet[$nuptkD])) return false;
                         return true;
                     })->values();
+                }
+
+                foreach ($dosenList as $row) {
+                    $gajiSerdos = (float) ($row->gaji_serdos ?? 0);
+                    $pembayaranSerdos = (float) ($row->pembayaran_serdos ?? 0);
+                    $selisihSerdos = $gajiSerdos - $pembayaranSerdos;
+                    
+                    $row->selisih_serdos = $selisihSerdos;
+                    
+                    // Khusus susulan, Nilai Kurang hanya dari selisih Serdos
+                    $row->nilai_kurang = ($selisihSerdos > 0) ? $selisihSerdos : 0;
+                    $row->nilai_lebih = ($selisihSerdos < 0) ? abs($selisihSerdos) : 0;
                 }
 
                 // $removed = $beforeCount - $dosenList->count();
@@ -274,7 +286,9 @@ class UsulanTukinSusulanController extends Controller
                 DB::raw('MAX(b.kd) as kd'),
                 DB::raw('MAX(b.kp) as kp'),
                 DB::raw('MAX(b.potongan_periodik) as pp'),
-                DB::raw('MAX(b.nuptk) as nuptk')
+                DB::raw('MAX(b.nuptk) as nuptk'),
+                DB::raw('d.Gaji' . $bulan . ' as gaji_serdos'),
+                DB::raw('d.TPD' . $bulan . ' as pembayaran_serdos')
             )
             ->where('d.Kode_PT', $kodePts)
             ->where('b.kode_pt', $kodePts)
@@ -295,7 +309,7 @@ class UsulanTukinSusulanController extends Controller
                             ->whereRaw("TRIM($kodeCol) != '-'");
                     });
             })
-            ->groupBy('d.NIDN', 'd.NUPTK', 'd.Nama', 'd.Jabatan' . $bulan, 'd.Gol' . $bulan, 'd.Tahun' . $bulan, 'd.Aktif', 'd.Jenis', 'd.Sertifikat_Dosen', 'd.KodeUsulan' . $bulan, 'd.Keterangan')
+            ->groupBy('d.NIDN', 'd.NUPTK', 'd.Nama', 'd.Jabatan' . $bulan, 'd.Gol' . $bulan, 'd.Tahun' . $bulan, 'd.Aktif', 'd.Jenis', 'd.Sertifikat_Dosen', 'd.KodeUsulan' . $bulan, 'd.Keterangan', 'd.Gaji' . $bulan, 'd.TPD' . $bulan)
             ->orderBy('d.Nama')
             ->get();
 
@@ -313,6 +327,32 @@ class UsulanTukinSusulanController extends Controller
         // - Penomoran berbasis kode_pts + bulan + tahun
         // Referensi penomoran memakai s_tunjangan_kinerja agar percobaan gagal tidak menaikkan nomor.
         $currentMonth = \Carbon\Carbon::now()->month;
+        $sudahAda = DB::table('s_tunjangan_kinerja')
+            ->where('Kode_PTS', $kodePts)
+            ->where('Bulan', $bulanTeks)
+            ->where('Tahun', (string)$tahun)
+            ->where('Kode_Usulan', 'like', 'SBT %')
+            ->exists();
+
+        if ($sudahAda) {
+            return redirect()
+                ->route('pts.usulan-tukin-susulan', ['bulan' => $bulan])
+                ->with('error', 'Sudah melakukan usulan Tukin Susulan pada periode ini.');
+        }
+
+        // Validasi: TUKIN hanya dapat diusulkan setelah SPTJM (Serdos) sudah diusulkan
+		$sptjmDiUsulkan = DB::table('q_sptjm')
+			->where('kode_pts', $kodePts)
+			->where('bulan', $bulanTeks)
+			->where('tahun', (string) $tahun)
+			->where('id_usulan', 'like', 'S %')
+			->exists();
+		if (!$sptjmDiUsulkan) {
+			return redirect()
+				->route('pts.usulan-tukin-susulan', ['bulan' => $bulan])
+				->with('error', 'Usulan TUKIN Susulan ditolak. Anda harus mengusulkan SPTJM Susulan (Serdos) terlebih dahulu untuk periode ini.');
+		}
+
         $countUsulan = DB::table('s_tunjangan_kinerja')
             ->where('Kode_PTS', $kodePts)
             ->whereMonth('Tanggal_Usulan', $currentMonth)
@@ -444,13 +484,21 @@ class UsulanTukinSusulanController extends Controller
 
                 $jab = $row->jabatan ?? '';
                 $kelas = $mapNilai[$jab]['kelas'] ?? '-';
-                $nilai = $mapNilai[$jab]['nilai'] ?? null;
+                $nilaiDasar = (float) ($mapNilai[$jab]['nilai'] ?? 0);
                 $statusTxt = (($row->aktif ?? '0') == '1') ? '1' : '0';
+
+                // Perhitungan TUKIN sesuai Sheet2
+                $persenKD = 60 / 100; // Selalu 60% berdasarkan instruksi Sheet2
+                $persenKP = (float) ($row->kp ?? 0) / 100; // Asumsi $row->kp adalah angka persentase 0-40
+                $nilaiKD = $nilaiDasar * $persenKD;
+                $nilaiKP = $nilaiDasar * $persenKP;
+                $potonganPeriodik = (float) ($row->pp ?? 0);
+                
+                $nilaiTukinMurni = $nilaiKD + $nilaiKP - $potonganPeriodik;
 
                 $toInsertKinerja[] = [
                     'Kode_Usulan' => $idUsulan,
                     'NUPTK' => ($nuptk !== '' && $nuptk !== '-') ? $nuptk : (($nuptkD !== '' && $nuptkD !== '-') ? $nuptkD : null),
-                    // Simpan NIDN jika tersedia; jika tidak, simpan identifier (bisa NUPTK) agar tetap bisa ditelusuri.
                     'NIDN' => ($nidn !== '' && $nidn !== '-') ? $nidn : $identifier,
                     'Nama' => $row->nama,
                     'Jenis' => $row->jenis ?? 'PNS',
@@ -458,7 +506,7 @@ class UsulanTukinSusulanController extends Controller
                     'Nama_PTS' => $namaPts,
                     'Jabatan' => $row->jabatan ?? null,
                     'Kelas_Jabatan' => $kelas,
-                    'Nilai_tukin_Jabatan' => $nilai,
+                    'Nilai_tukin_Jabatan' => $nilaiDasar,
                     'Status' => $statusTxt,
                     'Keterangan_Status' => $row->keterangan ?? null,
                     'Serdos' => $row->sertifikat_dosen ?? null,
@@ -466,14 +514,15 @@ class UsulanTukinSusulanController extends Controller
                     'Bulan' => $bulanTeks,
                     'Tahun' => (string) $tahun,
                     'Kode_Cair' => null,
-                    'KD' => $row->kd ?? null,
-                    'KP' => $row->kp ?? null,
-                    'PP' => $row->pp ?? null,
-                    'Nilai_Bersih_Serdos' => null,
-                    'Nilai_Tukin' => null,
-                    'Pajak' => null,
-                    'Nilai_Pajak' => null,
-                    'Nilai_Bersih' => null,
+                    'KD' => $nilaiKD,
+                    'KP' => $nilaiKP,
+                    'PP' => $potonganPeriodik,
+                    'Nilai_Bersih_Serdos' => 0,
+                    'Nilai_Tukin' => $nilaiTukinMurni,
+                    'Pajak' => 0,
+                    'Nilai_Pajak' => 0,
+                    'Nilai_Bersih' => $nilaiTukinMurni,
+                    'Nilai_Kurang' => 0,
                 ];
 
                 // no transaction rows; all detail data stored in s_tunjangan_kinerja
@@ -583,7 +632,9 @@ class UsulanTukinSusulanController extends Controller
                 DB::raw('MAX(b.kp) as kp'),
                 DB::raw('MAX(b.potongan_periodik) as pp'),
                 DB::raw('MAX(b.nuptk) as nuptk'),
-                DB::raw('d.Keterangan as keterangan')
+                DB::raw('d.Keterangan as keterangan'),
+                DB::raw('d.Gaji' . $bulan . ' as gaji_serdos'),
+                DB::raw('d.TPD' . $bulan . ' as pembayaran_serdos')
             )
             ->where('d.Kode_PT', $kodePts)
             ->where($joinTable['kode_pt'], $kodePts)
