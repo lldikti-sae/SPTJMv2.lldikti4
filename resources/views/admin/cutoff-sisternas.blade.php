@@ -1590,134 +1590,116 @@ function updateCutoffFileName(input, targetId) {
             return;
         }
 
-        const file = fileInput.files[0];
-        const reader = new FileReader();
-        reader.onload = function(e) {
-            const text = e.target.result;
-            // Split lines dengan dukungan Windows (CRLF \r\n), Mac (\r), dan Linux (\n)
-            const lines = text.split(/\r\n|\n|\r/).map(l => l.replace(/[\uFEFF\u200B]/g, '').trim()).filter(l => l.length > 0);
-            
-            if (lines.length === 0) {
-                if (diffBox) diffBox.style.display = 'none';
-                Swal.fire({
-                    icon: 'error',
-                    title: 'File CSV Kosong!',
-                    text: 'File CSV yang Anda pilih tidak berisi data.',
-                    confirmButtonColor: '#ef4444'
-                });
-                return;
-            }
+        Swal.fire({
+            title: 'Memeriksa Isi File CSV...',
+            html: '<div class="d-flex flex-column align-items-center py-2"><div class="spinner-border text-primary mb-3" role="status"></div><span class="text-muted small">Sistem sedang mencocokkan data CSV dengan database MySQL...</span></div>',
+            showConfirmButton: false,
+            allowOutsideClick: false,
+            allowEscapeKey: false
+        });
 
-            // Helper parser baris CSV dengan dukungan tanda kutip
-            function parseCSVLine(line, del) {
-                const fields = [];
-                let field = '';
-                let inQuotes = false;
-                for (let i = 0; i < line.length; i++) {
-                    const c = line[i];
-                    if (c === '"' || c === "'") {
-                        if (inQuotes && i + 1 < line.length && line[i + 1] === c) {
-                            field += c;
-                            i++;
-                        } else {
-                            inQuotes = !inQuotes;
-                        }
-                    } else if (c === del && !inQuotes) {
-                        fields.push(field.replace(/^["']|["']$/g, '').trim());
-                        field = '';
-                    } else {
-                        field += c;
+        const formData = new FormData();
+        formData.append('_token', '{{ csrf_token() }}');
+        formData.append('dokumen', fileInput.files[0]);
+        formData.append('table', selectedPeriod);
+        formData.append('tahun', selectedYear);
+
+        $.ajax({
+            url: '{{ route('admin.cutoff-sisternas.check-diff') }}',
+            type: 'POST',
+            data: formData,
+            processData: false,
+            contentType: false,
+            success: function(res) {
+                Swal.close();
+                if (res.success) {
+                    // Case 1: Upload Data Baru (Database masih kosong untuk tahun ini)
+                    if (res.is_new_upload) {
+                        if (diffBox) diffBox.style.display = 'none';
+                        Swal.fire({
+                            icon: 'info',
+                            title: 'File Data Baru Siap Disimpan',
+                            html: 'Belum ada data di database untuk tahun ini.<br><br>File CSV ini akan disimpan sebagai <strong>data Cut Off baru</strong>.',
+                            showCancelButton: true,
+                            confirmButtonText: 'Simpan Sekarang',
+                            cancelButtonText: 'Batal',
+                            confirmButtonColor: '#2563eb',
+                            cancelButtonColor: '#64748b'
+                        }).then((result) => {
+                            if (result.isConfirmed) {
+                                coSubmitFormD3();
+                            }
+                        });
+                        return;
                     }
+
+                    // Case 2: Upload Ulang tapi TIDAK ADA perubahan status sama sekali
+                    if (!res.has_changes) {
+                        if (diffBox) diffBox.style.display = 'none';
+                        Swal.fire({
+                            icon: 'info',
+                            title: 'Tidak Ada Perubahan Data',
+                            html: 'Semua data di dalam file CSV yang Anda pilih <strong>sudah sama persis</strong> dengan data di database.<br><br>Tidak ada perubahan status BKD yang perlu ditinjau.',
+                            confirmButtonColor: '#2563eb'
+                        });
+                        return;
+                    }
+
+                    // Case 3: Ada perubahan status BKD riil (misal: TM -> M)
+                    if (res.data && res.data.length > 0) {
+                        const tbody = document.getElementById('d1_diff_tbody');
+                        if (tbody) {
+                            let html = '';
+                            res.data.forEach((row) => {
+                                const isChecked = (row.bkd_lama === 'TM' && row.bkd_baru === 'M');
+
+                                html += `<tr style="border-bottom: 1px solid #f1f5f9;">
+                                    <td style="padding: 12px 16px;"><code class="fw-bold text-dark" style="font-size:0.83rem;">${row.nidn}</code></td>
+                                    <td style="padding: 12px 16px;"><code class="text-secondary" style="font-size:0.83rem;">${row.nuptk}</code></td>
+                                    <td style="padding: 12px 16px; font-weight: 600; color: #1e293b;">${row.nama_dosen}</td>
+                                    <td style="padding: 12px 16px; text-align: center; font-weight: 600; color: #64748b;">${row.bkd_lama}</td>
+                                    <td style="padding: 12px 16px; text-align: center; font-weight: 600; color: #0f172a;">${row.bkd_baru}</td>
+                                    <td style="padding: 12px 16px; text-align: center;">
+                                        <input type="checkbox" name="delete_nidn[]" value="${row.nidn}" class="form-check-input" ${isChecked ? 'checked' : ''} style="width: 19px; height: 19px; cursor: pointer;" title="Centang untuk memperbarui data ini">
+                                    </td>
+                                </tr>`;
+                            });
+                            tbody.innerHTML = html;
+                        }
+
+                        if (diffBox) {
+                            diffBox.style.display = 'block';
+                            diffBox.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                        }
+                    }
+                } else {
+                    if (diffBox) diffBox.style.display = 'none';
+                    Swal.fire({
+                        icon: 'info',
+                        title: 'Tidak Ada Data',
+                        text: 'File CSV tidak berisi baris data dosen yang dapat dibandingkan.',
+                        confirmButtonColor: '#2563eb'
+                    });
                 }
-                fields.push(field.replace(/^["']|["']$/g, '').trim());
-                return fields;
-            }
-
-            // ── VALIDASI TEMPLATE HEADER CSV FLEXIBLE & STRICT ──
-            const headerLine = lines[0];
-            const delimiter = (headerLine.match(/;/g) || []).length > (headerLine.match(/,/g) || []).length ? ';' : ',';
-            const headers = parseCSVLine(headerLine, delimiter).map(h => {
-                return h.replace(/[\uFEFF\u200B\r\n\t]/g, '')
-                        .toLowerCase()
-                        .replace(/\s+/g, '_');
-            });
-
-            // Mengecek keberadaan kolom NIDN / NUPTK, NAMA DOSEN, dan KESIMPULAN BKD (Wajib)
-            const hasNidn = headers.some(h => h.includes('nidn') || h.includes('nuptk'));
-            const hasNama = headers.some(h => h.includes('nama') || h.includes('dosen') || h.includes('sdm') || h.includes('pegawai'));
-            const hasBkd  = headers.some(h => h.includes('bkd') || h.includes('kesimpulan'));
-
-            if (!hasNidn || !hasNama || !hasBkd) {
-                const missing = [];
-                if (!hasNidn) missing.push('nidn / nuptk');
-                if (!hasNama) missing.push('nama_dosen');
-                if (!hasBkd)  missing.push('kesimpulan_bkd');
-
+            },
+            error: function(xhr) {
                 if (diffBox) diffBox.style.display = 'none';
+                let msg = 'Terjadi kesalahan saat memeriksa file CSV.';
+                let title = 'Periksa File Gagal!';
+                if (xhr.responseJSON && xhr.responseJSON.message) {
+                    msg = xhr.responseJSON.message;
+                }
+                if (xhr.responseJSON && xhr.responseJSON.is_content_mismatch) {
+                    title = 'Isi Data CSV Tidak Sesuai Periode/Tahun!';
+                }
                 Swal.fire({
                     icon: 'error',
-                    title: 'Format Template CSV Tidak Sesuai!',
-                    html: `File <strong>${file.name}</strong> <u>tidak dapat diproses/diperiksa</u> karena format kolom header tidak sesuai dengan template CSV Sisternas.<br><br>` +
-                          `Kolom wajib yang tidak ditemukan: <code class="text-danger fw-bold">${missing.join(', ')}</code>.<br><br>` +
-                          `Format header yang terbaca di file Anda:<br><code style="font-size:0.75rem;">${headers.join(', ')}</code>`,
-                    confirmButtonText: 'Tutup & Perbaiki File',
+                    title: title,
+                    html: msg,
                     confirmButtonColor: '#ef4444'
                 });
-                return;
             }
-
-            // Cari indeks kolom secara dinamis berdasarkan header CSV
-            const nidnIdx  = headers.findIndex(h => h.includes('nidn'));
-            const nuptkIdx = headers.findIndex(h => h.includes('nuptk') || h.includes('n_u_p_t_k') || h.includes('nik'));
-            const namaIdx  = headers.findIndex(h => h.includes('nama') || h.includes('dosen') || h.includes('sdm') || h.includes('pegawai'));
-            const bkdIdx   = headers.findIndex(h => h.includes('bkd') || h.includes('kesimpulan'));
-
-            const idxNidn  = nidnIdx !== -1 ? nidnIdx : (nuptkIdx !== -1 ? nuptkIdx : 0);
-            const idxNuptk = nuptkIdx !== -1 ? nuptkIdx : nidnIdx;
-            const idxNama  = namaIdx !== -1 ? namaIdx : (headers.length > 3 ? 3 : 2);
-            const idxBkd   = bkdIdx !== -1 ? bkdIdx : (headers.length - 1);
-
-            const tbody = document.getElementById('d1_diff_tbody');
-            if (tbody && lines.length > 1) {
-                let html = '';
-                const dataRows = lines.slice(1, 10);
-                dataRows.forEach((row, idx) => {
-                    const cols = parseCSVLine(row, delimiter);
-
-                    const nidnVal  = (idxNidn !== -1 && cols[idxNidn] && cols[idxNidn].trim() !== '' && cols[idxNidn].trim() !== '-') ? cols[idxNidn].trim() : '';
-                    const nuptkVal = (idxNuptk !== -1 && cols[idxNuptk] && cols[idxNuptk].trim() !== '' && cols[idxNuptk].trim() !== '-') ? cols[idxNuptk].trim() : '';
-                    const namaVal  = (idxNama !== -1 && cols[idxNama] && cols[idxNama].trim() !== '' && cols[idxNama].trim() !== '-') ? cols[idxNama].trim() : '';
-
-                    const nidn  = nidnVal !== '' ? nidnVal : '—';
-                    const nuptk = nuptkVal !== '' ? formatNuptk(nuptkVal) : '—';
-                    const nama  = namaVal !== '' ? namaVal : '—';
-                    const bkdVal = (idxBkd !== -1 && cols[idxBkd]) ? cols[idxBkd].toUpperCase() : '';
-
-                    if (nidn === '—' && nuptk === '—' && nama === '—') return;
-
-                    const labelLama = (idx % 2 === 0) ? 'TM' : 'M';
-                    const labelBaru = bkdVal ? ((bkdVal.includes('MEMENUHI') && !bkdVal.includes('TIDAK')) || bkdVal === 'M' ? 'M' : 'TM') : 'M';
-                    const isChecked = (labelLama === 'TM' && labelBaru === 'M');
-
-                    html += `<tr style="border-bottom: 1px solid #f1f5f9;">
-                        <td style="padding: 12px 16px;"><code class="fw-bold text-dark" style="font-size:0.83rem;">${nidn}</code></td>
-                        <td style="padding: 12px 16px;"><code class="text-secondary" style="font-size:0.83rem;">${nuptk}</code></td>
-                        <td style="padding: 12px 16px; font-weight: 600; color: #1e293b;">${nama}</td>
-                        <td style="padding: 12px 16px; text-align: center; font-weight: 600; color: #64748b;">${labelLama}</td>
-                        <td style="padding: 12px 16px; text-align: center; font-weight: 600; color: #0f172a;">${labelBaru}</td>
-                        <td style="padding: 12px 16px; text-align: center;">
-                            <input type="checkbox" name="delete_nidn[]" value="${nidn}" class="form-check-input" ${isChecked ? 'checked' : ''} style="width: 19px; height: 19px; cursor: pointer;" title="Centang untuk menghapus data ini">
-                        </td>
-                    </tr>`;
-                });
-                tbody.innerHTML = html;
-            }
-
-            if (diffBox) {
-                diffBox.style.display = 'block';
-                diffBox.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-            }
-        };
+        });
         reader.readAsText(file);
     }
 
@@ -3314,25 +3296,46 @@ function syncD3MappingTable() {
     });
 }
 
+function coSubmitFormD3() {
+    const form = document.getElementById('spFormD3');
+    if (!form) return;
+    if (typeof form.requestSubmit === 'function') {
+        form.requestSubmit();
+    } else {
+        const btn = form.querySelector('button[type="submit"]');
+        if (btn) btn.click();
+        else $(form).trigger('submit');
+    }
+}
+
 function updatePreviewD3() {
     const preview = document.getElementById('spPreview');
     const yearSelect = document.getElementById('d1_new_tahun_val');
     const selectedYr = yearSelect ? yearSelect.value : '';
     const checkedBulan = [...document.querySelectorAll('input[name="sp_bulan_d3[]"]:checked')].map(c => c.value);
     const selectedPeriode = getSelectedD3PeriodeVal();
-    const periodeLabel = selectedPeriode.includes('ganjil') || selectedPeriode === '1' || selectedPeriode === 'p_sister_ganjil' ? '1 (Ganjil)' : '2 (Genap)';
-    // Catatan: tabel Step 4 TIDAK di-sync otomatis di sini.
-    // Tabel hanya terisi setelah data berhasil disimpan ke database (AJAX success).
+    const isGenap = !selectedPeriode.includes('ganjil') && selectedPeriode !== '1' && selectedPeriode !== 'p_sister_ganjil';
+    const periodeLabel = isGenap ? '2 (Genap)' : '1 (Ganjil)';
+
+    const bayarYearSelect = document.getElementById('d3_tahun_pembayaran_select');
+    const Y = bayarYearSelect && bayarYearSelect.value ? parseInt(bayarYearSelect.value) : (parseInt(selectedYr) + 1);
 
     if (preview) {
-        const tbody = document.getElementById('spD3MappingTbody');
-        const firstRow = tbody ? tbody.querySelector('tr') : null;
-        const bayarYrInp = firstRow ? firstRow.querySelector('input[name="d3_periode_bayar_tahun[]"]') : null;
-        const bayarYrText = bayarYrInp ? bayarYrInp.value : '';
-
         if (selectedYr && checkedBulan.length > 0 && selectedPeriode) {
-            document.getElementById('spPreviewTahun').textContent = 'Laporan Tahun ' + selectedYr + ' (' + periodeLabel + ')' + (bayarYrText ? (' → Pembayaran Tahun ' + bayarYrText) : '');
-            document.getElementById('spPreviewMonths').textContent = 'Rincian Pembayaran: ' + checkedBulan.map(b => bulanLabelsD3[b] || b).join(' · ');
+            const hasNextYear = isGenap && checkedBulan.some(b => b === 'januari' || b === 'februari');
+            const bayarYearText = hasNextYear ? (Y + ' - ' + (Y + 1)) : Y;
+
+            const monthTextList = checkedBulan.map(b => {
+                const bName = bulanLabelsD3[b] || b;
+                if (isGenap && (b === 'januari' || b === 'februari')) {
+                    return bName + ' ' + (Y + 1);
+                } else {
+                    return bName + ' ' + Y;
+                }
+            });
+
+            document.getElementById('spPreviewTahun').textContent = 'Laporan Tahun ' + selectedYr + ' (' + periodeLabel + ') → Pembayaran Tahun ' + bayarYearText;
+            document.getElementById('spPreviewMonths').textContent = 'Rincian Pembayaran: ' + monthTextList.join(' · ');
             preview.classList.add('show');
         } else {
             preview.classList.remove('show');

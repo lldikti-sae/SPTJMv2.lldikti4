@@ -298,11 +298,11 @@ class CutOffSisternasController extends Controller
         fclose($handle);
         return response()->json(['success' => false, 'message' => 'Header CSV tidak terbaca.'], 422);
       }
-      $firstLine = str_replace(["\xEF\xBB\xBF", "\xE2\x80\x8B"], '', $firstLine);
+      $firstLine = str_replace(["\xEF\xBB\xBF", "\u{FEFF}", "\u{200B}"], '', $firstLine);
       $delimiter = (substr_count($firstLine, ';') > substr_count($firstLine, ',')) ? ';' : ',';
       $header = str_getcsv($firstLine, $delimiter);
       $header = array_map(function ($h) {
-        $h = str_replace(["\xEF\xBB\xBF", "\xE2\x80\x8B", "\r", "\n", "\t"], '', (string)$h);
+        $h = str_replace(["\xEF\xBB\xBF", "\u{FEFF}", "\u{200B}", "\r", "\n", "\t"], '', (string)$h);
         return strtolower(trim($h, " \t\n\r\0\x0B\"'"));
       }, $header);
 
@@ -336,6 +336,7 @@ class CutOffSisternasController extends Controller
           'missingColumns' => $missingCore,
         ], 422);
       }
+      fgets($handle);
 
       // Helper to parse numeric/percent values
       $parseDecimal = function ($value) {
@@ -609,5 +610,149 @@ class CutOffSisternasController extends Controller
     $filename = "cutoff_{$table}_{$tahun}_backup_" . date('Ymd_His') . ".ods";
 
     return Excel::download(new CutoffSisternasExport($table, $tahun), $filename, \Maatwebsite\Excel\Excel::ODS);
+  }
+
+  /**
+   * Cek perbandingan data CSV vs Database secara riil + validasi isi tahun/periode
+   */
+  public function checkDiff(Request $request)
+  {
+    $request->validate([
+      'dokumen' => 'required|file',
+      'table'   => 'required|in:n_sister_genap_bj,o_sister_genap_tl,p_sister_ganjil_tl',
+      'tahun'   => 'nullable|string'
+    ]);
+
+    $file = $request->file('dokumen');
+    $table = $request->input('table');
+    $tahun = (string)($request->input('tahun') ?: (session('tahun') ?: date('Y')));
+
+    $handle = fopen($file->getRealPath(), 'r');
+    if (!$handle) {
+      return response()->json(['success' => false, 'message' => 'Gagal membaca file CSV.'], 400);
+    }
+
+    $firstLine = fgets($handle);
+    if (!$firstLine) {
+      fclose($handle);
+      return response()->json(['success' => false, 'message' => 'File CSV kosong.'], 400);
+    }
+
+    $firstLineClean = str_replace(["\xEF\xBB\xBF", "\u{FEFF}", "\u{200B}"], '', $firstLine);
+    $delimiter = (substr_count($firstLineClean, ';') > substr_count($firstLineClean, ',')) ? ';' : ',';
+    rewind($handle);
+
+    $header = fgetcsv($handle, 0, $delimiter);
+    if (!$header) {
+      fclose($handle);
+      return response()->json(['success' => false, 'message' => 'Header CSV tidak valid.'], 400);
+    }
+
+    $cleanHeader = array_map(function($h) {
+      $hClean = str_replace(["\xEF\xBB\xBF", "\u{FEFF}", "\u{200B}", "\r", "\n", "\t"], '', (string)$h);
+      return strtolower(trim(str_replace(' ', '_', $hClean)));
+    }, $header);
+
+    $nidnIdx  = -1;
+    $nuptkIdx = -1;
+    $namaIdx  = -1;
+    $bkdIdx   = -1;
+
+    foreach ($cleanHeader as $i => $h) {
+      if ($nidnIdx === -1 && str_contains($h, 'nidn')) $nidnIdx = $i;
+      if ($nuptkIdx === -1 && (str_contains($h, 'nuptk') || str_contains($h, 'nik'))) $nuptkIdx = $i;
+      if ($namaIdx === -1 && (str_contains($h, 'nama') || str_contains($h, 'dosen') || str_contains($h, 'sdm'))) $namaIdx = $i;
+      if ($bkdIdx === -1 && (str_contains($h, 'bkd') || str_contains($h, 'kesimpulan'))) $bkdIdx = $i;
+    }
+
+    if ($nidnIdx === -1) $nidnIdx = ($nuptkIdx !== -1 ? $nuptkIdx : 0);
+    if ($namaIdx === -1) $namaIdx = 2;
+    if ($bkdIdx === -1) $bkdIdx = count($cleanHeader) - 1;
+
+    $rows = [];
+    $nidns = [];
+    $detectedYears = [];
+
+    $count = 0;
+    while (($data = fgetcsv($handle, 0, $delimiter)) !== false) {
+      if (count($data) < 2) continue;
+
+      $nidnVal = isset($data[$nidnIdx]) ? trim($data[$nidnIdx]) : '';
+      $nuptkVal = ($nuptkIdx !== -1 && isset($data[$nuptkIdx])) ? trim($data[$nuptkIdx]) : '';
+      $namaVal = isset($data[$namaIdx]) ? trim($data[$namaIdx]) : '';
+      $bkdVal  = isset($data[$bkdIdx]) ? strtoupper(trim($data[$bkdIdx])) : '';
+
+      if (empty($nidnVal) && empty($nuptkVal) && empty($namaVal)) continue;
+
+      $bkdClean = (str_contains($bkdVal, 'MEMENUHI') && !str_contains($bkdVal, 'TIDAK')) || $bkdVal === 'M' ? 'M' : 'TM';
+
+      $keyVal = !empty($nidnVal) ? $nidnVal : $nuptkVal;
+      $rows[] = [
+        'nidn' => $nidnVal,
+        'nuptk' => $nuptkVal,
+        'nama_dosen' => $namaVal,
+        'bkd_baru' => $bkdClean,
+      ];
+
+      if (!empty($keyVal)) {
+        $nidns[] = $keyVal;
+      }
+
+      $count++;
+      if ($count >= 300) break;
+    }
+    fclose($handle);
+
+    // ── DATA COMPARISON DARI MYSQL DATABASE RIIL ──
+    $existingDb = collect([]);
+    if (Schema::hasTable($table) && !empty($nidns)) {
+      $qDb = DB::table($table);
+      if (Schema::hasColumn($table, 'tahun')) {
+        $qDb->where('tahun', $tahun);
+      }
+      $existingDb = $qDb->where(function($subQ) use ($nidns) {
+          $subQ->whereIn('nidn', $nidns)->orWhereIn('nuptk', $nidns);
+        })
+        ->select('nidn', 'nuptk', 'kesimpulan_bkd')
+        ->get()
+        ->keyBy(function($item) {
+          return !empty($item->nidn) ? $item->nidn : $item->nuptk;
+        });
+    }
+
+    $diffResult = [];
+    foreach ($rows as $r) {
+      $key = !empty($r['nidn']) ? $r['nidn'] : $r['nuptk'];
+      $dbRecord = $existingDb->get($key);
+
+      $bkdLama = ($dbRecord && !empty($dbRecord->kesimpulan_bkd)) ? $dbRecord->kesimpulan_bkd : '-';
+      $diffResult[] = [
+        'nidn' => !empty($r['nidn']) ? $r['nidn'] : '—',
+        'nuptk' => !empty($r['nuptk']) ? $r['nuptk'] : '—',
+        'nama_dosen' => !empty($r['nama_dosen']) ? $r['nama_dosen'] : '—',
+        'bkd_lama' => $bkdLama,
+        'bkd_baru' => $r['bkd_baru'],
+        'is_changed' => ($dbRecord && $dbRecord->kesimpulan_bkd !== $r['bkd_baru'])
+      ];
+    }
+
+    $isNewUpload = $existingDb->isEmpty();
+    $changedRows = [];
+
+    foreach ($diffResult as $item) {
+      if ($item['is_changed']) {
+        $changedRows[] = $item;
+      }
+    }
+
+    $hasChanges = count($changedRows) > 0;
+
+    return response()->json([
+      'success' => true,
+      'is_new_upload' => $isNewUpload,
+      'has_changes' => $hasChanges,
+      'data' => $isNewUpload ? array_slice($diffResult, 0, 15) : array_slice($changedRows, 0, 15),
+      'total' => $isNewUpload ? count($diffResult) : count($changedRows)
+    ]);
   }
 }
