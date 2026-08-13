@@ -3767,7 +3767,6 @@ function viewD3MappingRow(btn) {
     $('#modalDashboardCutoff').modal('show');
 
     // Trigger click pada tombol statistik Memenuhi pada card target agar data dosen LANGSUNG dimuat & card aktif
-    const targetCard = $('.btn-select-period[data-value="' + selectedTable + '"]');
     if (targetCard.length > 0) {
         const memenuhiBtn = targetCard.find('.genap-stat-view:not(.d-none) .btn-stat-flat-memenuhi, .btn-stat-flat-memenuhi').filter(':visible').first();
         if (memenuhiBtn.length > 0) {
