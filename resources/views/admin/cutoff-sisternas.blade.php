@@ -2577,6 +2577,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
     //datatable
     let bkdStatusFilter = '';
+    // Override tahun dari viewD3MappingRow (prioritas tertinggi)
+    window._viewD3OverrideYear = null;
 
     //datatable
     const cutOffTable = $('#cutoffTable').DataTable({
@@ -2586,7 +2588,8 @@ document.addEventListener('DOMContentLoaded', function() {
             url: '{{ route("admin.cutoff-sisternas") }}',
             data: function(d) {
                 d.sisternas = $('#sisternasSelect').val();
-                d.tahun = $('#tahunFilterSelect').val() || '{{ $tahunSession }}';
+                // Prioritas: override dari viewD3MappingRow > tahunFilterSelect > session default
+                d.tahun = window._viewD3OverrideYear || $('#tahunFilterSelect').val() || '{{ $tahunSession }}';
                 d.bkd_status = bkdStatusFilter;
             },
             ajax: null
@@ -3661,10 +3664,8 @@ function viewD3MappingRow(btn) {
             tahunSelect.add(optionToSelect);
         }
         tahunSelect.value = selectedYr;
-        // Reload DataTable secara langsung tanpa trigger event berantai
-        if (typeof cutOffTable !== 'undefined' && cutOffTable) {
-            cutOffTable.ajax.reload();
-        }
+        // Set override global agar DataTable PASTI query tahun yg benar
+        window._viewD3OverrideYear = selectedYr;
     }
 
     $('#modalDashboardCutoff').modal('show');
@@ -3673,7 +3674,10 @@ function viewD3MappingRow(btn) {
 $('#modalDashboardCutoff').on('shown.bs.modal', function () {
     if (typeof cutOffTable !== 'undefined' && cutOffTable) {
         cutOffTable.columns.adjust();
-        cutOffTable.ajax.reload();
+        cutOffTable.ajax.reload(function() {
+            // Clear override setelah reload selesai agar tidak mempengaruhi reload berikutnya
+            window._viewD3OverrideYear = null;
+        });
     }
 });
 
