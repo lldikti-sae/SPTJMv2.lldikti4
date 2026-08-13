@@ -2493,6 +2493,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
     const uploadForm = document.querySelectorAll('.uploadForm');
     uploadForm.forEach(form => {
+        // Skip spFormD3 — sudah ditangani oleh handler di atas (line ~1744)
+        if (form.id === 'spFormD3') return;
         form.addEventListener('submit', function(e) {
             e.preventDefault();
 
