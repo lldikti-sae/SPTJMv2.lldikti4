@@ -1186,16 +1186,7 @@ function updateCutoffFileName(input, targetId) {
                             <i class="bx bx-x fs-4"></i>
                         </button>
                     </div>
-                </div>
-
-                {{-- Tombol Cek Perubahan --}}
-                <button type="button" id="d1_check_diff_btn" class="btn w-100 mt-3 fw-semibold d-none"
-                    onclick="coCheckDiffD1()"
-                    style="background: #0f172a; color:#fff; border-radius:9px; font-size:0.88rem; padding:9px 0; display:inline-flex; align-items:center; justify-content:center; gap:6px; transition: all 0.18s ease;">
-                    <i class="bx bx-search-alt-2 fs-5"></i> Cek Perubahan Data
-                </button>
-
-                {{-- Shared Preview Box --}}
+                     {{-- Shared Preview Box --}}
                 <div class="sp-preview mt-3" id="spPreview">
                     <i class="bx bx-check-circle sp-preview-icon"></i>
                     <div>
@@ -1205,15 +1196,15 @@ function updateCutoffFileName(input, targetId) {
                     </div>
                 </div>
 
-                {{-- Footer Actions --}}
+                {{-- Footer Actions (Konfirmasi & Cek Perubahan di Atas) --}}
                 <div class="sp-footer">
                     <button type="button" class="sp-btn-reset" onclick="resetFormD3()">
                         <i class="bx bx-reset"></i> Reset
                     </button>
-                    <button type="button" class="sp-btn-save" onclick="saveSettingD3()">
-                        <i class="bx bx-save"></i> Simpan Setting
+                    <button type="button" id="d1_check_diff_btn" class="sp-btn-save" onclick="coCheckDiffD1()">
+                        <i class="bx bx-search-alt-2"></i> Konfirmasi &amp; Cek Perubahan Data
                     </button>
-                </div>
+                </div>             </div>
 
                 {{-- Setting Pemetaan Periode Bayar & Pembayaran (Step 4 - Ditaruh Di Bawah Tombol Reset & Simpan) --}}
                 <div class="sp-d3-mapping-card mt-4">
@@ -1289,7 +1280,7 @@ function updateCutoffFileName(input, targetId) {
                     </div>
 
                     <button type="submit" class="btn btn-primary w-100 py-2.5 fw-bold" style="background-color:#2563eb; border-color:#2563eb; border-radius:10px; font-size:0.92rem;">
-                        <i class="bx bx-check-circle me-1"></i> Konfirmasi &amp; Simpan Data Cut Off
+                        <i class="bx bx-save me-1"></i> Simpan Setting &amp; Data Cut Off
                     </button>
                 </div>
 
@@ -1541,10 +1532,6 @@ function updateCutoffFileName(input, targetId) {
             removeBtn.classList.remove('d-inline-flex');
         }
         if (diffBox) diffBox.style.display = 'none';
-        if (checkDiffBtn) {
-            checkDiffBtn.style.display = 'none';
-            checkDiffBtn.classList.add('d-none');
-        }
     }
 
     function coCheckDiffD1() {
