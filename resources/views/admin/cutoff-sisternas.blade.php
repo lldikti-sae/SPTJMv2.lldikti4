@@ -3616,33 +3616,36 @@ function viewD3MappingRow(btn) {
     let selectedTable = '';
 
     if (tr) {
-        const inpTahun = tr.querySelector('input[name="d3_pembayaran_tahun[]"]');
-        if (inpTahun && inpTahun.value) {
-            selectedYr = inpTahun.value.trim();
+        // Baca TAHUN LAPORAN dari kolom d3_pembayaran_tahun[] (baris Step 4)
+        const inpTahunLaporan = tr.querySelector('input[name="d3_pembayaran_tahun[]"]');
+        if (inpTahunLaporan && inpTahunLaporan.value) {
+            selectedYr = inpTahunLaporan.value.trim();
         }
+        // Baca PERIODE LAPORAN (misal "2024/1" → Ganjil, "2024/2" → Genap)
         const inpPeriode = tr.querySelector('input[name="d3_pembayaran_periode[]"]');
         if (inpPeriode && inpPeriode.value) {
             selectedTable = inpPeriode.value.includes('/1') ? 'p_sister_ganjil' : 'p_sister_genap';
         }
     }
 
+    // Fallback ke Step 1 jika baris kosong
     if (!selectedYr) {
         const mainYearSelect = document.getElementById('d1_new_tahun_val');
         if (mainYearSelect && mainYearSelect.value) {
             selectedYr = mainYearSelect.value.trim();
         }
     }
-
     if (!selectedTable) {
         selectedTable = getSelectedD3PeriodeVal();
     }
 
+    // Set dropdown periode di modal
     const sisternasSelect = document.getElementById('sisternasSelect');
     if (sisternasSelect && selectedTable) {
         sisternasSelect.value = selectedTable;
     }
 
-    // Activate card corresponding strictly to selectedTable (Genap vs Ganjil)
+    // Activate card sesuai periode (Genap vs Ganjil)
     $('.btn-select-period').removeClass('glowing-active-card active has-stat-filter');
     $('.btn-stat-flat-memenuhi, .btn-stat-flat-tm').removeClass('active-stat-filter');
     
@@ -3658,6 +3661,8 @@ function viewD3MappingRow(btn) {
         bkdStatusFilter = '';
     }
 
+    // Set TAHUN FILTER di modal LANGSUNG tanpa dispatch native 'change'
+    // agar tidak men-trigger cascade yang mereset tahun kembali ke default
     const tahunSelect = document.getElementById('tahunFilterSelect');
     if (selectedYr && tahunSelect) {
         let optionToSelect = [...tahunSelect.options].find(o => o.value == selectedYr);
@@ -3666,7 +3671,10 @@ function viewD3MappingRow(btn) {
             tahunSelect.add(optionToSelect);
         }
         tahunSelect.value = selectedYr;
-        tahunSelect.dispatchEvent(new Event('change'));
+        // Reload DataTable secara langsung tanpa trigger event berantai
+        if (typeof cutOffTable !== 'undefined' && cutOffTable) {
+            cutOffTable.ajax.reload();
+        }
     }
 
     $('#modalDashboardCutoff').modal('show');
