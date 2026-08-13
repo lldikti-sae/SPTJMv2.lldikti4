@@ -2148,7 +2148,7 @@ function updateCutoffFileName(input, targetId) {
                             <div class="row g-4 align-items-stretch mt-1 mb-3.5">
                                 <!-- Card 1: Semester Ganjil (50% / col-md-6) -->
                                 <div class="col-md-6 col-sm-12 d-flex">
-                                    <div class="btn-select-period p-3 rounded-3 d-flex flex-column justify-content-between w-100 h-100 glowing-active-card" data-value="p_sister_ganjil" style="cursor: pointer; transition: all 0.2s ease;">
+                                    <div class="btn-select-period p-3 rounded-3 d-flex flex-column justify-content-between w-100 h-100" data-value="p_sister_ganjil" style="cursor: pointer; transition: all 0.2s ease;">
                                         <div class="w-100">
                                             <div class="d-flex justify-content-between align-items-center mb-2">
                                                 <span class="period-title fw-bold" style="font-size: 0.88rem; color: #435971;">
@@ -3407,10 +3407,6 @@ function updatePreviewD3() {
         }
     }
 
-    if (typeof syncD3MappingTable === 'function') {
-        syncD3MappingTable();
-    }
-
     saveD3FormState();
 }
 
@@ -3442,8 +3438,21 @@ function resetFormD3() {
         coResetFileD1();
     }
     
-    // 5. Update Pratinjau & Tabel Pemetaan
-    updatePreviewD3();
+    const preview = document.getElementById('spPreview');
+    if (preview) preview.classList.remove('show');
+
+    const diffBox = document.getElementById('d1_diff_box');
+    if (diffBox) diffBox.style.display = 'none';
+
+    // 5. Reset Step 4 table to default placeholder
+    const tbody = document.getElementById('spD3MappingTbody');
+    if (tbody) {
+        tbody.innerHTML = `<tr>
+            <td colspan="6" class="text-center text-muted" style="padding: 20px; font-size: 0.84rem; font-style: italic;">
+                <i class="bx bx-info-circle me-1"></i> Belum ada data. Upload file CSV dan simpan untuk mengisi tabel ini.
+            </td>
+        </tr>`;
+    }
 }
 
 function saveSettingD3() {
@@ -3604,6 +3613,22 @@ function viewD3MappingRow(btn) {
     const sisternasSelect = document.getElementById('sisternasSelect');
     if (sisternasSelect && selectedTable) {
         sisternasSelect.value = selectedTable;
+    }
+
+    // Activate card corresponding strictly to selectedTable (Genap vs Ganjil)
+    $('.btn-select-period').removeClass('glowing-active-card active has-stat-filter');
+    $('.btn-stat-flat-memenuhi, .btn-stat-flat-tm').removeClass('active-stat-filter');
+    
+    const targetCard = $('.btn-select-period[data-value="' + selectedTable + '"]');
+    if (targetCard.length > 0) {
+        targetCard.addClass('glowing-active-card active');
+        const periodTitle = targetCard.find('.period-title').text().trim();
+        const bkdInfo = targetCard.find('.period-subtitle:not(.d-none)').text().replace(/\s+/g, ' ').trim();
+        $('#selectedPeriodTitle').html('<i class="bx bx-list-check text-primary me-2"></i>Daftar Dosen: ' + periodTitle);
+        $('#selectedPeriodSubtitle').text(bkdInfo);
+    }
+    if (typeof bkdStatusFilter !== 'undefined') {
+        bkdStatusFilter = '';
     }
 
     const tahunSelect = document.getElementById('tahunFilterSelect');
