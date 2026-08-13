@@ -1648,23 +1648,10 @@ function updateCutoffFileName(input, targetId) {
             success: function(res) {
                 Swal.close();
                 if (res.success) {
-                    // Case 1: Upload Data Baru (Database masih kosong untuk tahun ini)
+                    // Case 1: Upload Data Baru (Database masih kosong untuk tahun ini) - Langsung simpan/masukkan datanya
                     if (res.is_new_upload) {
                         if (diffBox) diffBox.style.display = 'none';
-                        Swal.fire({
-                            icon: 'info',
-                            title: 'File Data Baru Siap Disimpan',
-                            html: 'Belum ada data di database untuk tahun ini.<br><br>File CSV ini akan disimpan sebagai <strong>data Cut Off baru</strong>.',
-                            showCancelButton: true,
-                            confirmButtonText: 'Simpan Sekarang',
-                            cancelButtonText: 'Batal',
-                            confirmButtonColor: '#2563eb',
-                            cancelButtonColor: '#64748b'
-                        }).then((result) => {
-                            if (result.isConfirmed) {
-                                coSubmitFormD3();
-                            }
-                        });
+                        coSubmitFormD3();
                         return;
                     }
 
@@ -1762,6 +1749,15 @@ function updateCutoffFileName(input, targetId) {
         }
         if (typeof updatePreviewD3 === 'function') {
             updatePreviewD3();
+        }
+
+        // Lock Year & Period inputs if there is already a saved mapping in Step 4 table
+        const tbody = document.getElementById('spD3MappingTbody');
+        const hasMapping = tbody && tbody.querySelector('tr') && !tbody.querySelector('td[colspan]');
+        if (hasMapping) {
+            const yearSelect = document.getElementById('d1_new_tahun_val');
+            if (yearSelect) yearSelect.disabled = true;
+            document.querySelectorAll('input[name="sp_periode_d3"]').forEach(rb => rb.disabled = true);
         }
 
         const diffBox = document.getElementById('d1_diff_box');
@@ -3385,6 +3381,11 @@ function syncD3MappingTable() {
         `;
         tbody.appendChild(tr);
     });
+
+    // Lock Year & Period inputs since a mapping exists in Step 4
+    const yearSelect = document.getElementById('d1_new_tahun_val');
+    if (yearSelect) yearSelect.disabled = true;
+    document.querySelectorAll('input[name="sp_periode_d3"]').forEach(rb => rb.disabled = true);
 }
 
 function coSubmitFormD3() {
@@ -3503,6 +3504,7 @@ function resetFormD3() {
     // 1. Reset Pilihan Tahun Laporan ke default session & trigger change
     const yearSelect = document.getElementById('d1_new_tahun_val');
     if (yearSelect) {
+        yearSelect.disabled = false; // Unlock dropdown tahun
         yearSelect.value = "{{ $tahunSession }}";
         try {
             yearSelect.dispatchEvent(new Event('change'));
@@ -3510,6 +3512,9 @@ function resetFormD3() {
             console.error("Error dispatching yearSelect change: ", e);
         }
     }
+
+    // Unlock radio buttons periode
+    document.querySelectorAll('input[name="sp_periode_d3"]').forEach(rb => rb.disabled = false);
 
     // 2. Uncheck semua bulan pembayaran
     document.querySelectorAll('input[name="sp_bulan_d3[]"]').forEach(cb => cb.checked = false);
