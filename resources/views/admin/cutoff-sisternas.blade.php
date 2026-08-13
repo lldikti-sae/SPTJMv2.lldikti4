@@ -2863,8 +2863,8 @@ document.addEventListener('DOMContentLoaded', function() {
             return;
         }
 
-        // Cari tombol Memenuhi yang terlihat pada card ini lalu trigger click
-        const memenuhiBtn = $(this).find('.genap-stat-view:not(.d-none) .btn-stat-flat-memenuhi, .btn-stat-flat-memenuhi').filter(':visible').first();
+        // Cari tombol Memenuhi pada card ini lalu trigger click
+        const memenuhiBtn = $(this).find('.genap-stat-view:not(.d-none) .btn-stat-flat-memenuhi, .btn-stat-flat-memenuhi').first();
         if (memenuhiBtn.length > 0) {
             memenuhiBtn.trigger('click');
         }
@@ -3752,7 +3752,7 @@ function viewD3MappingRow(btn) {
 
     // Trigger click pada tombol statistik Memenuhi pada card target agar data dosen LANGSUNG dimuat & card aktif
     if (targetCard.length > 0) {
-        const memenuhiBtn = targetCard.find('.genap-stat-view:not(.d-none) .btn-stat-flat-memenuhi, .btn-stat-flat-memenuhi').filter(':visible').first();
+        const memenuhiBtn = targetCard.find('.genap-stat-view:not(.d-none) .btn-stat-flat-memenuhi, .btn-stat-flat-memenuhi').first();
         if (memenuhiBtn.length > 0) {
             memenuhiBtn.trigger('click');
         } else {
