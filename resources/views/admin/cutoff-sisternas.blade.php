@@ -1571,7 +1571,9 @@ function updateCutoffFileName(input, targetId) {
         // Validasi tahun & periode nama file vs yang dipilih
         const selectedYrEl = document.getElementById('d1_new_tahun_val');
         const selectedYear = selectedYrEl ? selectedYrEl.value : '';
-        const selectedPeriod = typeof getSelectedD3PeriodeVal === 'function' ? getSelectedD3PeriodeVal() : '';
+        const selectedPeriod = (typeof getSelectedD3PeriodeVal === 'function' ? getSelectedD3PeriodeVal() : '') || 'p_sister_genap';
+        const hiddenTableInput = document.getElementById('d1_new_table_val');
+        if (hiddenTableInput) hiddenTableInput.value = selectedPeriod;
         const fileName = fileInput.files[0].name.toLowerCase();
         const fileCheck = checkFileValidity(fileName, selectedYear, selectedPeriod);
 
@@ -3151,14 +3153,16 @@ function onD3TahunChange(yr) {
         $(filterTahunSelect).trigger('change');
     }
 
-    // Auto-set Tahun Pembayaran = Tahun Laporan + 1 (admin bisa override manual)
+    // Auto-set Tahun Pembayaran = Tahun Laporan + 1 (otomatis buat option jika belum ada)
     const bayarYearSelect = document.getElementById('d3_tahun_pembayaran_select');
     if (bayarYearSelect) {
         const targetBayarYear = (parseInt(yr) + 1).toString();
-        const optExists = [...bayarYearSelect.options].some(o => o.value === targetBayarYear);
-        if (optExists) {
-            bayarYearSelect.value = targetBayarYear;
+        let optExists = [...bayarYearSelect.options].some(o => o.value === targetBayarYear);
+        if (!optExists) {
+            const newOpt = new Option('Tahun ' + targetBayarYear, targetBayarYear, true, true);
+            bayarYearSelect.add(newOpt);
         }
+        bayarYearSelect.value = targetBayarYear;
     }
 
     if (typeof coResetFileD1 === 'function') {
@@ -3170,9 +3174,15 @@ function onD3TahunChange(yr) {
 
 function getSelectedD3PeriodeVal() {
     const cb = document.querySelector('input[name="sp_periode_d3_cb[]"]:checked');
-    if (cb) return cb.value;
+    if (cb && cb.value) return cb.value;
+    const hiddenTable = document.getElementById('d1_new_table_val');
+    if (hiddenTable && hiddenTable.value) return hiddenTable.value;
     const sel = document.getElementById('spPeriodeLaporanSelect');
     if (sel && sel.value) return sel.value;
+    
+    // Auto-check Genap default jika tidak ada radio yg tercentang
+    const cbGenap = document.getElementById('d3_periode_cb_2');
+    if (cbGenap) cbGenap.checked = true;
     return 'p_sister_genap';
 }
 
