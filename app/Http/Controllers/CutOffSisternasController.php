@@ -736,8 +736,7 @@ class CutOffSisternasController extends Controller
       $dbRecord = $existingDb->get($key);
 
       $bkdLama = ($dbRecord && !empty($dbRecord->kesimpulan_bkd)) ? $dbRecord->kesimpulan_bkd : '-';
-      
-      $isNewOrEmpty = (!$dbRecord || empty($dbRecord->kesimpulan_bkd));
+      $isNewOrEmpty = (!$dbRecord || empty($dbRecord->kesimpulan_bkd) || trim($dbRecord->kesimpulan_bkd) === '-');
       if ($isNewOrEmpty) {
           $hasNew = true;
       }
