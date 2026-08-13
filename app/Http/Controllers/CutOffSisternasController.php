@@ -35,6 +35,9 @@ class CutOffSisternasController extends Controller
       $allowedTables = ['n_sister_genap_bj', 'o_sister_genap_tl', 'p_sister_ganjil_tl'];
 
       if (in_array($table, $allowedTables)) {
+        if (!Schema::hasTable($table)) {
+            return DataTables::of(collect([]))->make(true);
+        }
         $tahun = $request->query('tahun', session('tahun') ?: date('Y'));
         $query = DB::table($table);
         if (Schema::hasColumn($table, 'tahun')) {
@@ -47,6 +50,9 @@ class CutOffSisternasController extends Controller
         }
 
         $getStat = function ($tableName) use ($tahun) {
+            if (!Schema::hasTable($tableName)) {
+                return ['total' => 0, 'm' => 0, 'tm' => 0];
+            }
             $qTotal = DB::table($tableName);
             $qM = DB::table($tableName);
             $qTm = DB::table($tableName);
@@ -104,6 +110,9 @@ class CutOffSisternasController extends Controller
     $tahun = (string)($request->query('tahun', session('tahun') ?: date('Y')));
 
     $getStat = function ($tableName) use ($tahun) {
+        if (!Schema::hasTable($tableName)) {
+            return ['total' => 0, 'm' => 0, 'tm' => 0];
+        }
         $qTotal = DB::table($tableName);
         $qM = DB::table($tableName);
         $qTm = DB::table($tableName);
