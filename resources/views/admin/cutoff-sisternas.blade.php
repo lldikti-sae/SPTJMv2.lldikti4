@@ -1232,21 +1232,10 @@ function updateCutoffFileName(input, targetId) {
                                 </tr>
                             </thead>
                             <tbody id="spD3MappingTbody">
+                                {{-- Kosong saat awal, terisi otomatis setelah data tersimpan ke database --}}
                                 <tr>
-                                    <td><input type="text" class="sp-d3-input" name="d3_usulan[]" value="" readonly></td>
-                                    <td><input type="text" class="sp-d3-input" name="d3_pembayaran_tahun[]" value="" readonly></td>
-                                    <td><input type="text" class="sp-d3-input" name="d3_pembayaran_periode[]" value="" readonly></td>
-                                    <td><input type="text" class="sp-d3-input" name="d3_periode_bayar_tahun[]" value="" readonly></td>
-                                    <td><input type="text" class="sp-d3-input" name="d3_periode_bayar_bulan[]" value="" readonly></td>
-                                    <td class="text-center align-middle" style="text-align: center !important; vertical-align: middle !important;">
-                                        <div class="d-flex align-items-center justify-content-center gap-1">
-                                            <button type="button" class="btn btn-sm btn-outline-info border-0 p-0 d-inline-flex align-items-center justify-content-center" onclick="viewD3MappingRow(this)" title="View Detail Dashboard" style="width: 30px; height: 30px; border-radius: 6px;">
-                                                <i class="bx bx-show fs-5" style="display: inline-flex; align-items: center; justify-content: center; line-height: 1;"></i>
-                                            </button>
-                                            <button type="button" class="btn btn-sm btn-outline-danger border-0 p-0 d-inline-flex align-items-center justify-content-center" onclick="removeD3MappingRow(this)" title="Hapus Baris" style="width: 30px; height: 30px; border-radius: 6px;">
-                                                <i class="bx bx-trash fs-5" style="display: inline-flex; align-items: center; justify-content: center; line-height: 1;"></i>
-                                            </button>
-                                        </div>
+                                    <td colspan="6" class="text-center text-muted" style="padding: 20px; font-size: 0.84rem; font-style: italic;">
+                                        <i class="bx bx-info-circle me-1"></i> Belum ada data. Upload file CSV dan simpan untuk mengisi tabel ini.
                                     </td>
                                 </tr>
                             </tbody>
@@ -1838,6 +1827,10 @@ function updateCutoffFileName(input, targetId) {
                             text: res.message || 'Data CSV berhasil disimpan ke database.',
                             confirmButtonColor: '#2563eb'
                         }).then(() => {
+                            // Isi tabel Step 4 setelah data berhasil tersimpan ke DB
+                            if (typeof syncD3MappingTable === 'function') {
+                                syncD3MappingTable();
+                            }
                             if (typeof cutOffTable !== 'undefined') {
                                 cutOffTable.ajax.reload();
                             }
@@ -3237,9 +3230,8 @@ function updatePreviewD3() {
     const checkedBulan = [...document.querySelectorAll('input[name="sp_bulan_d3[]"]:checked')].map(c => c.value);
     const selectedPeriode = getSelectedD3PeriodeVal();
     const periodeLabel = selectedPeriode.includes('ganjil') || selectedPeriode === '1' || selectedPeriode === 'p_sister_ganjil_tl' ? '1 (Ganjil)' : '2 (Genap)';
-    
-    // Auto-sync ke tabel Pemetaan Periode Bayar & Pembayaran
-    syncD3MappingTable();
+    // Catatan: tabel Step 4 TIDAK di-sync otomatis di sini.
+    // Tabel hanya terisi setelah data berhasil disimpan ke database (AJAX success).
 
     if (preview) {
         const tbody = document.getElementById('spD3MappingTbody');
