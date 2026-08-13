@@ -3776,13 +3776,15 @@ function viewD3MappingRow(btn) {
     // Tampilkan modal
     $('#modalDashboardCutoff').modal('show');
 
-    // Tampilkan hanya card periode yang sesuai (tetap berukuran col-md-6 agar tidak melebar aneh)
+    // Tampilkan hanya card periode yang sesuai (dan pastikan card lawan BENER-BENER tersembunyi)
+    const colGanjil = document.getElementById('colCardGanjil');
+    const colGenap = document.getElementById('colCardGenap');
     if (selectedTable === 'p_sister_ganjil') {
-        $('#colCardGanjil').show();
-        $('#colCardGenap').hide();
+        if (colGanjil) { colGanjil.classList.remove('d-none'); colGanjil.style.display = 'flex'; }
+        if (colGenap) { colGenap.classList.add('d-none'); colGenap.style.display = 'none'; }
     } else {
-        $('#colCardGenap').show();
-        $('#colCardGanjil').hide();
+        if (colGenap) { colGenap.classList.remove('d-none'); colGenap.style.display = 'flex'; }
+        if (colGanjil) { colGanjil.classList.add('d-none'); colGanjil.style.display = 'none'; }
     }
 
     // Trigger click pada tombol statistik Memenuhi pada card target agar data dosen LANGSUNG dimuat & card aktif
@@ -3799,15 +3801,15 @@ function viewD3MappingRow(btn) {
 $('#modalDashboardCutoff').on('shown.bs.modal', function () {
     if (typeof cutOffTable !== 'undefined' && cutOffTable) {
         cutOffTable.columns.adjust();
-        setTimeout(function() {
-            window._viewD3OverrideYear = null;
-        }, 500);
     }
 });
 
 $('#modalDashboardCutoff').on('hidden.bs.modal', function () {
-    // Reset layout card ke semula (keduanya tampil)
-    $('#colCardGanjil, #colCardGenap').show();
+    window._viewD3OverrideYear = null;
+    const colGanjil = document.getElementById('colCardGanjil');
+    const colGenap = document.getElementById('colCardGenap');
+    if (colGanjil) { colGanjil.classList.remove('d-none'); colGanjil.style.display = 'flex'; }
+    if (colGenap) { colGenap.classList.remove('d-none'); colGenap.style.display = 'flex'; }
 });
 
 function editD3MappingRow(btn) {
