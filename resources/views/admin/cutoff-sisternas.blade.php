@@ -3382,10 +3382,10 @@ function syncD3MappingTable() {
         tbody.appendChild(tr);
     });
 
-    // Lock Year & Period inputs since a mapping exists in Step 4
-    const yearSelect = document.getElementById('d1_new_tahun_val');
-    if (yearSelect) yearSelect.disabled = true;
-    document.querySelectorAll('input[name="sp_periode_d3"]').forEach(rb => rb.disabled = true);
+    // Lock Steps 1, 2, and 3 inputs since a mapping exists in Step 4
+    if (typeof lockAllD3Inputs === 'function') {
+        lockAllD3Inputs(true);
+    }
 }
 
 function coSubmitFormD3() {
@@ -3501,10 +3501,14 @@ function toggleD3SelectAll(el) {
 function resetFormD3() {
     localStorage.removeItem('d3_cutoff_form_state');
     
+    // Unlock all inputs in Steps 1, 2, and 3
+    if (typeof lockAllD3Inputs === 'function') {
+        lockAllD3Inputs(false);
+    }
+
     // 1. Reset Pilihan Tahun Laporan ke default session & trigger change
     const yearSelect = document.getElementById('d1_new_tahun_val');
     if (yearSelect) {
-        yearSelect.disabled = false; // Unlock dropdown tahun
         yearSelect.value = "{{ $tahunSession }}";
         try {
             yearSelect.dispatchEvent(new Event('change'));
@@ -3512,9 +3516,6 @@ function resetFormD3() {
             console.error("Error dispatching yearSelect change: ", e);
         }
     }
-
-    // Unlock radio buttons periode
-    document.querySelectorAll('input[name="sp_periode_d3"]').forEach(rb => rb.disabled = false);
 
     // 2. Uncheck semua bulan pembayaran
     document.querySelectorAll('input[name="sp_bulan_d3[]"]').forEach(cb => cb.checked = false);
@@ -3662,6 +3663,13 @@ function removeD3MappingRow(btn) {
                                     <i class="bx bx-info-circle me-1"></i> Belum ada data. Upload file CSV dan simpan untuk mengisi tabel ini.
                                 </td>
                             </tr>`;
+                        }
+
+                        // Jika kosong, unlock input Step 1, 2, 3
+                        if (tbody && (tbody.children.length === 0 || tbody.querySelector('td[colspan]'))) {
+                            if (typeof lockAllD3Inputs === 'function') {
+                                lockAllD3Inputs(false);
+                            }
                         }
 
                         if (typeof cutOffTable !== 'undefined' && cutOffTable) {
@@ -3877,6 +3885,37 @@ function saveSettingD3() {
 
     // Jalankan cek pratinjau perubahan data & tampilkan konfirmasi simpan
     coCheckDiffD1();
+}
+function lockAllD3Inputs(lock) {
+    // 1. Step 1 inputs
+    const yearSelect = document.getElementById('d1_new_tahun_val');
+    if (yearSelect) yearSelect.disabled = lock;
+    document.querySelectorAll('input[name="sp_periode_d3"]').forEach(rb => rb.disabled = lock);
+
+    // 2. Step 2 inputs
+    const bayarYearSelect = document.getElementById('d3_tahun_pembayaran_select');
+    if (bayarYearSelect) bayarYearSelect.disabled = lock;
+    document.querySelectorAll('input[name="sp_bulan_d3[]"]').forEach(cb => cb.disabled = lock);
+    const selectAllD3 = document.getElementById('d3SelectAllBulan');
+    if (selectAllD3) selectAllD3.disabled = lock;
+
+    // 3. Step 3 inputs & dropzone
+    const fileInput = document.getElementById('d1_new_file_input');
+    if (fileInput) fileInput.disabled = lock;
+    
+    const dropzone = document.getElementById('d1_file_dropzone');
+    if (dropzone) {
+        if (lock) {
+            dropzone.style.pointerEvents = 'none';
+            dropzone.style.opacity = '0.6';
+        } else {
+            dropzone.style.pointerEvents = 'auto';
+            dropzone.style.opacity = '1';
+        }
+    }
+
+    const checkDiffBtn = document.getElementById('d1_check_diff_btn');
+    if (checkDiffBtn) checkDiffBtn.disabled = lock;
 }
 </script>
 @endsection
