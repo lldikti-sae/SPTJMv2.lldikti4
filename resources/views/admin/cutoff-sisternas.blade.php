@@ -3660,7 +3660,7 @@ function viewD3MappingRow(btn) {
         bkdStatusFilter = '';
     }
 
-    // Set TAHUN FILTER di modal LANGSUNG tanpa dispatch native 'change'
+    // Set TAHUN FILTER di modal LANGSUNG
     const tahunSelect = document.getElementById('tahunFilterSelect');
     if (selectedYr && tahunSelect) {
         let optionToSelect = [...tahunSelect.options].find(o => o.value == selectedYr);
@@ -3673,16 +3673,33 @@ function viewD3MappingRow(btn) {
         window._viewD3OverrideYear = selectedYr;
     }
 
+    // Update tahun di KEDUA card LANGSUNG sebelum modal muncul
+    if (selectedYr) {
+        $('.btn-select-period[data-value="p_sister_ganjil"] .period-title').html('<i class="bx bx-calendar text-primary me-1"></i> ' + selectedYr + '/1');
+        $('#cardGenap .period-title').html('<i class="bx bx-calendar text-primary me-1"></i> ' + selectedYr + '/2');
+    }
+
+    // Tampilkan modal
     $('#modalDashboardCutoff').modal('show');
+
+    // Trigger click pada tombol statistik Memenuhi pada card target agar data dosen LANGSUNG dimuat & card aktif
+    const targetCard = $('.btn-select-period[data-value="' + selectedTable + '"]');
+    if (targetCard.length > 0) {
+        const memenuhiBtn = targetCard.find('.genap-stat-view:not(.d-none) .btn-stat-flat-memenuhi, .btn-stat-flat-memenuhi').filter(':visible').first();
+        if (memenuhiBtn.length > 0) {
+            memenuhiBtn.trigger('click');
+        } else {
+            targetCard.trigger('click');
+        }
+    }
 }
 
 $('#modalDashboardCutoff').on('shown.bs.modal', function () {
     if (typeof cutOffTable !== 'undefined' && cutOffTable) {
         cutOffTable.columns.adjust();
-        cutOffTable.ajax.reload(function() {
-            // Clear override setelah reload selesai agar tidak mempengaruhi reload berikutnya
+        setTimeout(function() {
             window._viewD3OverrideYear = null;
-        });
+        }, 500);
     }
 });
 
