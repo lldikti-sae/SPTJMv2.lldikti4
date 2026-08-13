@@ -3168,12 +3168,8 @@ function onBayarTahunInput(el) {
 
 function syncD3MappingTable() {
     const selectedUsulan = document.getElementById('spJenisUsulan') ? document.getElementById('spJenisUsulan').value : 'SPTJM';
-<<<<<<< HEAD
-=======
-    const checkedBulan = [...document.querySelectorAll('input[name="sp_bulan_d3[]"]:checked')].map(c => c.value);
     const selectedPeriode = getSelectedD3PeriodeVal();
     const isGanjil = selectedPeriode.includes('ganjil') || selectedPeriode === '1' || selectedPeriode === 'p_sister_ganjil';
->>>>>>> 0659101 (Update table p_sister_ganjil and create p_sister_tukin)
     
     // Ambil Tahun Laporan dari Step 1
     const tahunLaporanSelect = document.getElementById('d1_new_tahun_val');

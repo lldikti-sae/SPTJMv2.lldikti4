@@ -146,8 +146,6 @@ class RekapPencairanController extends Controller
             ->update([
               'No_sp2d_' . $i => $request->no_sp2d,
               'Tgl_sp2d_' . $i => $formattedDate,
-              'Kode_PT_' . $i => DB::raw('Kode_PT'),
-              'Nama_PT_' . $i => DB::raw('PTS'),
             ]);
         }
 

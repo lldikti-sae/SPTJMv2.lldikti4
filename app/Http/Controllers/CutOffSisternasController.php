@@ -617,9 +617,10 @@ class CutOffSisternasController extends Controller
    */
   public function checkDiff(Request $request)
   {
+    \Illuminate\Support\Facades\Log::info('checkDiff called with:', $request->all());
     $request->validate([
       'dokumen' => 'required|file',
-      'table'   => 'required|in:n_sister_genap_bj,o_sister_genap_tl,p_sister_ganjil_tl',
+      'table'   => 'required|in:p_sister_genap,p_sister_ganjil,p_sister_tukin',
       'tahun'   => 'nullable|string'
     ]);
 
