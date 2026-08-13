@@ -3114,6 +3114,17 @@ function onD3TahunChange(yr) {
         filterTahunSelect.value = yr;
         $(filterTahunSelect).trigger('change');
     }
+
+    // Auto-set Tahun Pembayaran = Tahun Laporan + 1 (admin bisa override manual)
+    const bayarYearSelect = document.getElementById('d3_tahun_pembayaran_select');
+    if (bayarYearSelect) {
+        const targetBayarYear = (parseInt(yr) + 1).toString();
+        const optExists = [...bayarYearSelect.options].some(o => o.value === targetBayarYear);
+        if (optExists) {
+            bayarYearSelect.value = targetBayarYear;
+        }
+    }
+
     if (typeof coResetFileD1 === 'function') {
         coResetFileD1();
     }
@@ -3168,36 +3179,54 @@ function onBayarTahunInput(el) {
 
 function syncD3MappingTable() {
     const selectedUsulan = document.getElementById('spJenisUsulan') ? document.getElementById('spJenisUsulan').value : 'SPTJM';
-    const bayarYearSelect = document.getElementById('d3_tahun_pembayaran_select');
-    if (!bayarYearSelect || !bayarYearSelect.value) return;
+    
+    // Ambil Tahun Laporan dari Step 1
+    const tahunLaporanSelect = document.getElementById('d1_new_tahun_val');
+    if (!tahunLaporanSelect || !tahunLaporanSelect.value) return;
+    const tahunLaporan = parseInt(tahunLaporanSelect.value);
 
-    const Y = parseInt(bayarYearSelect.value); // Tahun Pembayaran
-    const tahunAjaran = Y - 1;                 // Tahun Ajaran selalu Y-1
+    // Ambil Tahun Pembayaran dari Step 2 (bisa di-override manual oleh admin)
+    const bayarYearSelect = document.getElementById('d3_tahun_pembayaran_select');
+    const Y = bayarYearSelect && bayarYearSelect.value ? parseInt(bayarYearSelect.value) : (tahunLaporan + 1);
+
+    // Cek periode mana yang dicentang di Step 1
+    const cbGanjil = document.getElementById('d3_periode_cb_1');
+    const cbGenap = document.getElementById('d3_periode_cb_2');
+    const isGanjilChecked = cbGanjil && cbGanjil.checked;
+    const isGenapChecked = cbGenap && cbGenap.checked;
 
     // ═══ Rumus Dinamis (berlaku selamanya untuk tahun berapapun) ═══
-    // Baris 1 — Ganjil: Laporan Sep-Des (Y-1) & Jan-Feb Y → Bayar Mar-Ags Y
-    // Baris 2 — Genap:  Laporan Mar-Ags Y               → Bayar Sep-Des Y & Jan-Feb (Y+1)
-    const mappingRows = [
-        {
+    // Ganjil: Laporan Sep-Des (tahunLaporan) & Jan-Feb (tahunLaporan+1) → Bayar Mar-Ags Y
+    // Genap:  Laporan Mar-Ags (tahunLaporan+1)                         → Bayar Sep-Des Y & Jan-Feb (Y+1)
+    const mappingRows = [];
+
+    if (isGanjilChecked) {
+        mappingRows.push({
             usulan: selectedUsulan,
-            lapTahun: tahunAjaran.toString(),
-            lapPeriode: tahunAjaran + '/1',
+            lapTahun: tahunLaporan.toString(),
+            lapPeriode: tahunLaporan + '/1',
             bayarTahun: Y.toString(),
             bayarBulan: 'Maret - Agustus ' + Y
-        },
-        {
+        });
+    }
+
+    if (isGenapChecked) {
+        mappingRows.push({
             usulan: selectedUsulan,
-            lapTahun: tahunAjaran.toString(),
-            lapPeriode: tahunAjaran + '/2',
+            lapTahun: tahunLaporan.toString(),
+            lapPeriode: tahunLaporan + '/2',
             bayarTahun: Y + ' - ' + (Y + 1),
             bayarBulan: 'September - Desember ' + Y + ' & Januari - Februari ' + (Y + 1)
-        }
-    ];
+        });
+    }
+
+    // Jika tidak ada periode yang dicentang, tidak tampilkan apa-apa
+    if (mappingRows.length === 0) return;
 
     const tbody = document.getElementById('spD3MappingTbody');
     if (!tbody) return;
 
-    // Bersihkan baris lama, lalu isi 2 baris baru
+    // Bersihkan baris lama, lalu isi sesuai periode yang dipilih
     tbody.innerHTML = '';
 
     mappingRows.forEach(row => {
