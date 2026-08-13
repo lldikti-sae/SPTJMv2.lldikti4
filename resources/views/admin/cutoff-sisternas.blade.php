@@ -3197,26 +3197,75 @@ function syncD3MappingTable() {
 
     // ═══ Rumus Dinamis (berlaku selamanya untuk tahun berapapun) ═══
     // Ganjil: Laporan Sep-Des (tahunLaporan) & Jan-Feb (tahunLaporan+1) → Bayar Mar-Ags Y
-    // Genap:  Laporan Mar-Ags (tahunLaporan+1)                         → Bayar Sep-Des Y & Jan-Feb (Y+1)
+    // Genap:  Laporan Mar-Ags (tahunLaporan+1) → Bayar Sep-Des Y & Jan-Feb (Y+1)
+    //         ↑ Jan & Feb masuk tahun Y+1 (beda tahun dari Sep-Des)
     const mappingRows = [];
 
+    // Ambil bulan yang benar-benar dicentang di Step 2
+    const checkedBulan = [...document.querySelectorAll('input[name="sp_bulan_d3[]"]:checked')].map(c => c.value);
+
     if (isGanjilChecked) {
+        // Ganjil: semua bulan pembayaran berada di tahun Y (Mar-Ags)
+        let bayarBulanText = 'Maret - Agustus ' + Y;
+        if (checkedBulan.length > 0) {
+            bayarBulanText = checkedBulan.map(b => (bulanLabelsD3[b] || b) + ' ' + Y).join(', ');
+        }
         mappingRows.push({
             usulan: selectedUsulan,
             lapTahun: tahunLaporan.toString(),
             lapPeriode: tahunLaporan + '/1',
             bayarTahun: Y.toString(),
-            bayarBulan: 'Maret - Agustus ' + Y
+            bayarBulan: bayarBulanText
         });
     }
 
     if (isGenapChecked) {
+        // Genap: Sep-Des masuk tahun Y, Jan-Feb masuk tahun Y+1
+        const bulanTahunY = ['september', 'oktober', 'november', 'desember'];
+        const bulanTahunY1 = ['januari', 'februari'];
+
+        let groupY = [];
+        let groupY1 = [];
+
+        if (checkedBulan.length > 0) {
+            checkedBulan.forEach(b => {
+                if (bulanTahunY.includes(b)) {
+                    groupY.push((bulanLabelsD3[b] || b) + ' ' + Y);
+                } else if (bulanTahunY1.includes(b)) {
+                    groupY1.push((bulanLabelsD3[b] || b) + ' ' + (Y + 1));
+                } else {
+                    // Bulan lain (Mar-Ags) → ikut tahun Y
+                    groupY.push((bulanLabelsD3[b] || b) + ' ' + Y);
+                }
+            });
+        } else {
+            groupY = ['September - Desember ' + Y];
+            groupY1 = ['Januari - Februari ' + (Y + 1)];
+        }
+
+        let bayarBulanText = '';
+        if (groupY.length > 0 && groupY1.length > 0) {
+            bayarBulanText = groupY.join(', ') + ' & ' + groupY1.join(', ');
+        } else if (groupY.length > 0) {
+            bayarBulanText = groupY.join(', ');
+        } else if (groupY1.length > 0) {
+            bayarBulanText = groupY1.join(', ');
+        }
+
+        // Tentukan bayarTahun berdasarkan bulan yang dicentang
+        let bayarTahunText = Y.toString();
+        if (groupY.length > 0 && groupY1.length > 0) {
+            bayarTahunText = Y + ' - ' + (Y + 1);
+        } else if (groupY1.length > 0 && groupY.length === 0) {
+            bayarTahunText = (Y + 1).toString();
+        }
+
         mappingRows.push({
             usulan: selectedUsulan,
             lapTahun: tahunLaporan.toString(),
             lapPeriode: tahunLaporan + '/2',
-            bayarTahun: Y + ' - ' + (Y + 1),
-            bayarBulan: 'September - Desember ' + Y + ' & Januari - Februari ' + (Y + 1)
+            bayarTahun: bayarTahunText,
+            bayarBulan: bayarBulanText
         });
     }
 
