@@ -755,7 +755,9 @@ class CutOffSisternasController extends Controller
 
       $bkdLama = ($dbRecord && !empty($dbRecord->kesimpulan_bkd)) ? $dbRecord->kesimpulan_bkd : '-';
       $isNewOrEmpty = (!$dbRecord || empty($dbRecord->kesimpulan_bkd) || trim($dbRecord->kesimpulan_bkd) === '-');
-      if ($isNewOrEmpty) {
+      
+      // Hanya anggap data baru jika dosen tersebut berstatus TM di CSV (karena database hanya menyimpan dosen TM)
+      if ($isNewOrEmpty && $r['bkd_baru'] === 'TM') {
           $hasNew = true;
       }
       
