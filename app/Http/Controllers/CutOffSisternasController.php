@@ -771,7 +771,16 @@ class CutOffSisternasController extends Controller
       ];
     }
 
-    $isNewUpload = $existingDb->isEmpty();
+    // Merupakan upload baru HANYA JIKA belum ada pemetaan di k_data_sister DAN belum ada data di tabel data
+    $periodName = (str_contains($table, 'ganjil')) ? 'Ganjil' : ((str_contains($table, 'genap')) ? 'Genap' : '');
+    $hasMappingInSister = DB::table('k_data_sister')
+        ->where('tahun', $tahun)
+        ->when(!empty($periodName), function($q) use ($periodName) {
+            return $q->where('periode', $periodName);
+        })->exists();
+    $hasDataInTable = Schema::hasTable($table) && DB::table($table)->where('tahun', $tahun)->exists();
+
+    $isNewUpload = !$hasMappingInSister && !$hasDataInTable;
     $changedRows = [];
 
     foreach ($diffResult as $item) {
