@@ -140,11 +140,12 @@ class CutOffSisternasController extends Controller
     sort($mergedYears);
     $listTahun = array_values(array_filter($mergedYears, fn($y) => $y >= 2021));
 
-    // Ambil pemetaan aktif terbaru dari database k_data_sister
+    // Ambil pemetaan aktif terbaru dari database k_data_sister (hanya tipe Ganjil/Genap baru)
     $savedMappings = [];
     if (Schema::hasTable('k_data_sister')) {
         $subQuery = DB::table('k_data_sister')
             ->select('tahun', 'periode', DB::raw('MAX(id) as max_id'))
+            ->whereIn('periode', ['Ganjil', 'Genap'])
             ->groupBy('tahun', 'periode');
 
         $savedMappings = DB::table('k_data_sister as k')
