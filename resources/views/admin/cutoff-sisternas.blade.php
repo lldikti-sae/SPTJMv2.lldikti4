@@ -1104,11 +1104,11 @@ function updateCutoffFileName(input, targetId) {
                             <label class="form-label fw-bold text-secondary mb-1" style="font-size:0.75rem;">PERIODE LAPORAN</label>
                             <div class="d-flex flex-row gap-2 mt-1">
                                 <div class="sp-d3-month-item flex-grow-1">
-                                    <input type="checkbox" name="sp_periode_d3_cb[]" id="d3_periode_cb_1" value="p_sister_ganjil_tl" onchange="onD3PeriodeCheckboxChange(this)">
+                                    <input type="radio" name="sp_periode_d3_cb[]" id="d3_periode_cb_1" value="p_sister_ganjil_tl" onchange="onD3PeriodeCheckboxChange(this)">
                                     <label for="d3_periode_cb_1" style="font-weight: 600; justify-content: center; padding: 9px 12px;">1 (Ganjil)</label>
                                 </div>
                                 <div class="sp-d3-month-item flex-grow-1">
-                                    <input type="checkbox" name="sp_periode_d3_cb[]" id="d3_periode_cb_2" value="n_sister_genap_bj" checked onchange="onD3PeriodeCheckboxChange(this)">
+                                    <input type="radio" name="sp_periode_d3_cb[]" id="d3_periode_cb_2" value="n_sister_genap_bj" checked onchange="onD3PeriodeCheckboxChange(this)">
                                     <label for="d3_periode_cb_2" style="font-weight: 600; justify-content: center; padding: 9px 12px;">2 (Genap)</label>
                                 </div>
                             </div>
@@ -3140,11 +3140,6 @@ function getSelectedD3PeriodeVal() {
 }
 
 function onD3PeriodeCheckboxChange(el) {
-    if (el && el.checked) {
-        document.querySelectorAll('input[name="sp_periode_d3_cb[]"]').forEach(cb => {
-            if (cb !== el) cb.checked = false;
-        });
-    }
 
     if (typeof coResetFileD1 === 'function') {
         coResetFileD1();
