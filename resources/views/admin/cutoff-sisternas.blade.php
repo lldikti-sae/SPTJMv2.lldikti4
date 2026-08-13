@@ -1222,12 +1222,12 @@ function updateCutoffFileName(input, targetId) {
                 {{-- Footer Actions (Konfirmasi & Cek Perubahan di Atas) --}}
                 <div class="sp-footer">
                     <div class="d-flex align-items-center gap-2">
+                        <span class="text-muted small me-1 d-none d-sm-inline" style="font-size: 0.76rem; font-style: italic;">
+                            *Klik Reset untuk membuka kunci input jika ingin memilih periode lain
+                        </span>
                         <button type="button" class="sp-btn-reset" onclick="resetFormD3()">
                             <i class="bx bx-reset"></i> Reset
                         </button>
-                        <span class="text-muted small ms-1 d-none d-sm-inline" style="font-size: 0.76rem; font-style: italic;">
-                            *Klik Reset untuk membuka kunci input jika ingin memilih periode lain
-                        </span>
                     </div>
                     <button type="button" id="d1_check_diff_btn" class="sp-btn-save" onclick="coCheckDiffD1()">
                         <i class="bx bx-search-alt-2"></i> Konfirmasi &amp; Cek Perubahan Data
