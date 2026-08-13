@@ -545,6 +545,14 @@ class CutOffSisternasController extends Controller
     $tahun = (string)($request->input('tahun') ?: ($request->query('tahun') ?: (session('tahun') ?: date('Y'))));
     DB::table($table)->where('tahun', $tahun)->delete();
 
+    if (Schema::hasTable('k_data_sister')) {
+      $isGanjil = str_contains($table, 'ganjil');
+      DB::table('k_data_sister')
+        ->where('tahun', $tahun)
+        ->where('periode', $isGanjil ? 'Ganjil' : 'Genap')
+        ->delete();
+    }
+
     return response()->json(['success' => true, 'message' => 'Data berhasil dihapus!']);
   }
 

@@ -1244,7 +1244,6 @@ function updateCutoffFileName(input, targetId) {
                                 </tr>
                             </thead>
                             <tbody id="spD3MappingTbody">
-                                {{-- Kosong saat awal, terisi otomatis setelah data tersimpan ke database --}}
                                 <tr>
                                     <td colspan="6" class="text-center text-muted" style="padding: 20px; font-size: 0.84rem; font-style: italic;">
                                         <i class="bx bx-info-circle me-1"></i> Belum ada data. Upload file CSV dan simpan untuk mengisi tabel ini.
@@ -1704,6 +1703,12 @@ function updateCutoffFileName(input, targetId) {
     }
 
     document.addEventListener('DOMContentLoaded', function() {
+        if (typeof restoreD3FormState === 'function') {
+            restoreD3FormState();
+        }
+        if (typeof updatePreviewD3 === 'function') {
+            updatePreviewD3();
+        }
 
         // Intercept all upload form submissions via AJAX with SweetAlert Loading & Auto-Reload
         document.querySelectorAll('.uploadForm').forEach(form => {
@@ -3178,7 +3183,7 @@ function syncD3MappingTable() {
 
     // Ambil Tahun Pembayaran dari Step 2 (bisa di-override manual oleh admin)
     const bayarYearSelect = document.getElementById('d3_tahun_pembayaran_select');
-    const Y = bayarYearSelect && bayarYearSelect.value ? parseInt(bayarYearSelect.value) : (tahunLaporan + 1);
+    const Y = bayarYearSelect && bayarYearSelect.value ? parseInt(bayarYearSelect.value) : tahunLaporan;
 
     // Cek periode mana yang dicentang di Step 1
     const cbGanjil = document.getElementById('d3_periode_cb_1');
@@ -3243,13 +3248,8 @@ function syncD3MappingTable() {
             bayarBulanText = groupY1.join(', ');
         }
 
-        // Tentukan bayarTahun berdasarkan bulan yang dicentang
+        // Tentukan bayarTahun sebagai tahun tunggal Y
         let bayarTahunText = Y.toString();
-        if (groupY.length > 0 && groupY1.length > 0) {
-            bayarTahunText = Y + ' - ' + (Y + 1);
-        } else if (groupY1.length > 0 && groupY.length === 0) {
-            bayarTahunText = (Y + 1).toString();
-        }
 
         mappingRows.push({
             usulan: selectedUsulan,
@@ -3304,6 +3304,49 @@ function coSubmitFormD3() {
     }
 }
 
+function saveD3FormState() {
+    try {
+        const state = {
+            tahun: document.getElementById('d1_new_tahun_val') ? document.getElementById('d1_new_tahun_val').value : '',
+            periode: getSelectedD3PeriodeVal(),
+            tahunPembayaran: document.getElementById('d3_tahun_pembayaran_select') ? document.getElementById('d3_tahun_pembayaran_select').value : '',
+            checkedMonths: [...document.querySelectorAll('input[name="sp_bulan_d3[]"]:checked')].map(c => c.value)
+        };
+        localStorage.setItem('d3_cutoff_form_state', JSON.stringify(state));
+    } catch (e) {}
+}
+
+function restoreD3FormState() {
+    try {
+        const saved = localStorage.getItem('d3_cutoff_form_state');
+        if (saved) {
+            const state = JSON.parse(saved);
+            if (state.tahun && document.getElementById('d1_new_tahun_val')) {
+                document.getElementById('d1_new_tahun_val').value = state.tahun;
+            }
+            if (state.periode) {
+                const cbGanjil = document.getElementById('d3_periode_cb_1');
+                const cbGenap = document.getElementById('d3_periode_cb_2');
+                if (state.periode.includes('ganjil') || state.periode === '1' || state.periode === 'p_sister_ganjil') {
+                    if (cbGanjil) cbGanjil.checked = true;
+                    if (cbGenap) cbGenap.checked = false;
+                } else {
+                    if (cbGanjil) cbGanjil.checked = false;
+                    if (cbGenap) cbGenap.checked = true;
+                }
+            }
+            if (state.tahunPembayaran && document.getElementById('d3_tahun_pembayaran_select')) {
+                document.getElementById('d3_tahun_pembayaran_select').value = state.tahunPembayaran;
+            }
+            if (Array.isArray(state.checkedMonths) && state.checkedMonths.length > 0) {
+                document.querySelectorAll('input[name="sp_bulan_d3[]"]').forEach(cb => {
+                    cb.checked = state.checkedMonths.includes(cb.value);
+                });
+            }
+        }
+    } catch (e) {}
+}
+
 function updatePreviewD3() {
     const preview = document.getElementById('spPreview');
     const yearSelect = document.getElementById('d1_new_tahun_val');
@@ -3314,7 +3357,7 @@ function updatePreviewD3() {
     const periodeLabel = isGenap ? '2 (Genap)' : '1 (Ganjil)';
 
     const bayarYearSelect = document.getElementById('d3_tahun_pembayaran_select');
-    const Y = bayarYearSelect && bayarYearSelect.value ? parseInt(bayarYearSelect.value) : (parseInt(selectedYr) + 1);
+    const Y = bayarYearSelect && bayarYearSelect.value ? parseInt(bayarYearSelect.value) : parseInt(selectedYr);
 
     if (preview) {
         if (selectedYr && checkedBulan.length > 0 && selectedPeriode) {
@@ -3337,6 +3380,12 @@ function updatePreviewD3() {
             preview.classList.remove('show');
         }
     }
+
+    if (typeof syncD3MappingTable === 'function') {
+        syncD3MappingTable();
+    }
+
+    saveD3FormState();
 }
 
 function toggleD3SelectAll(el) {
@@ -3345,6 +3394,7 @@ function toggleD3SelectAll(el) {
 }
 
 function resetFormD3() {
+    localStorage.removeItem('d3_cutoff_form_state');
     // 1. Uncheck semua bulan pembayaran
     document.querySelectorAll('input[name="sp_bulan_d3[]"]').forEach(cb => cb.checked = false);
     
@@ -3453,10 +3503,29 @@ function removeD3MappingRow(btn) {
                         text: res.message || 'Data periode berhasil dihapus dari database.',
                         confirmButtonColor: '#2563eb'
                     }).then(() => {
-                        tr.querySelectorAll('input').forEach(inp => inp.value = '');
-                        if (typeof coResetFileD1 === 'function') {
-                            coResetFileD1();
+                        // 1. Clear saved form state from localStorage
+                        localStorage.removeItem('d3_cutoff_form_state');
+
+                        // 2. Uncheck all month checkboxes
+                        document.querySelectorAll('input[name="sp_bulan_d3[]"]').forEach(cb => cb.checked = false);
+                        const selectAllD3 = document.getElementById('d3SelectAllBulan');
+                        if (selectAllD3) selectAllD3.checked = false;
+
+                        // 3. Reset upload CSV file & preview
+                        if (typeof coResetFileD1 === 'function') coResetFileD1();
+                        const preview = document.getElementById('spPreview');
+                        if (preview) preview.classList.remove('show');
+
+                        // 4. Clear Step 4 table to default empty state
+                        const tbody = document.getElementById('spD3MappingTbody');
+                        if (tbody) {
+                            tbody.innerHTML = `<tr>
+                                <td colspan="6" class="text-center text-muted" style="padding: 20px; font-size: 0.84rem; font-style: italic;">
+                                    <i class="bx bx-info-circle me-1"></i> Belum ada data. Upload file CSV dan simpan untuk mengisi tabel ini.
+                                </td>
+                            </tr>`;
                         }
+
                         if (typeof cutOffTable !== 'undefined' && cutOffTable) {
                             cutOffTable.ajax.reload();
                         }
@@ -3482,11 +3551,16 @@ function removeD3MappingRow(btn) {
 function viewD3MappingRow(btn) {
     const tr = btn.closest('tr');
     let selectedYr = '';
+    let selectedTable = '';
 
     if (tr) {
-        const inpTahun = tr.querySelector('input[name="d3_periode_bayar_tahun[]"]');
+        const inpTahun = tr.querySelector('input[name="d3_pembayaran_tahun[]"]');
         if (inpTahun && inpTahun.value) {
             selectedYr = inpTahun.value.trim();
+        }
+        const inpPeriode = tr.querySelector('input[name="d3_pembayaran_periode[]"]');
+        if (inpPeriode && inpPeriode.value) {
+            selectedTable = inpPeriode.value.includes('/1') ? 'p_sister_ganjil' : 'p_sister_genap';
         }
     }
 
@@ -3497,11 +3571,13 @@ function viewD3MappingRow(btn) {
         }
     }
 
-    // Sync selected table type from Step 2
-    const selectedPeriodeVal = getSelectedD3PeriodeVal();
+    if (!selectedTable) {
+        selectedTable = getSelectedD3PeriodeVal();
+    }
+
     const sisternasSelect = document.getElementById('sisternasSelect');
-    if (sisternasSelect && selectedPeriodeVal) {
-        sisternasSelect.value = selectedPeriodeVal;
+    if (sisternasSelect && selectedTable) {
+        sisternasSelect.value = selectedTable;
     }
 
     const tahunSelect = document.getElementById('tahunFilterSelect');
