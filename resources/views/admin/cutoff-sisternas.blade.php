@@ -1555,6 +1555,19 @@ function updateCutoffFileName(input, targetId) {
             return;
         }
 
+        // Validasi Bulan Pembayaran (Wajib dicentang minimal 1 bulan)
+        const checkedBulan = document.querySelectorAll('input[name="sp_bulan_d3[]"]:checked');
+        if (checkedBulan.length === 0) {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Bulan Pembayaran Belum Dipilih!',
+                html: 'Silakan centang setidaknya <strong>satu bulan pembayaran</strong> pada Step 2 (Periode Pembayaran) sebelum mengecek perubahan data.',
+                confirmButtonColor: '#f59e0b',
+                confirmButtonText: 'Pilih Bulan'
+            });
+            return;
+        }
+
         // Validasi tahun & periode nama file vs yang dipilih
         const selectedYrEl = document.getElementById('d1_new_tahun_val');
         const selectedYear = selectedYrEl ? selectedYrEl.value : '';
@@ -1723,6 +1736,19 @@ function updateCutoffFileName(input, targetId) {
                     } else {
                         alert('Silakan pilih file CSV terlebih dahulu.');
                     }
+                    return false;
+                }
+
+                // Validasi Bulan Pembayaran (Wajib centang minimal 1 bulan)
+                const checkedBulanSubmit = document.querySelectorAll('input[name="sp_bulan_d3[]"]:checked');
+                if (checkedBulanSubmit.length === 0) {
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Bulan Pembayaran Belum Dipilih!',
+                        html: 'Silakan centang setidaknya <strong>satu bulan pembayaran</strong> pada Step 2 (Periode Pembayaran) sebelum mengunggah data.',
+                        confirmButtonColor: '#f59e0b',
+                        confirmButtonText: 'Pilih Bulan'
+                    });
                     return false;
                 }
 
