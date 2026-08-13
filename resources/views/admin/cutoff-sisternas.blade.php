@@ -1635,13 +1635,31 @@ function updateCutoffFileName(input, targetId) {
                     // Case 2: Upload Ulang tapi TIDAK ADA perubahan status sama sekali
                     if (!res.has_changes) {
                         if (diffBox) diffBox.style.display = 'none';
-                        Swal.fire({
-                            icon: 'info',
-                            title: 'Tidak Ada Perubahan Data',
-                            html: 'Semua data di dalam file CSV yang Anda pilih <strong>sudah sama persis</strong> dengan data di database.<br><br>Tidak ada perubahan status BKD yang perlu ditinjau.',
-                            confirmButtonColor: '#2563eb'
-                        });
-                        return;
+                        if (res.has_new) {
+                            Swal.fire({
+                                icon: 'info',
+                                title: 'Penambahan Data Baru',
+                                html: 'Tidak ada perubahan status pada data lama, namun ditemukan <strong>penambahan data dosen baru</strong> di dalam CSV ini.<br><br>Apakah Anda ingin menyimpannya?',
+                                showCancelButton: true,
+                                confirmButtonColor: '#2563eb',
+                                cancelButtonColor: '#64748b',
+                                confirmButtonText: 'Simpan Data Baru',
+                                cancelButtonText: 'Batal'
+                            }).then((result) => {
+                                if (result.isConfirmed) {
+                                    coSubmitFormD3();
+                                }
+                            });
+                            return;
+                        } else {
+                            Swal.fire({
+                                icon: 'info',
+                                title: 'Tidak Ada Perubahan Data',
+                                html: 'Semua data di dalam file CSV yang Anda pilih <strong>sudah sama persis</strong> dengan data di database.<br><br>Tidak ada perubahan atau penambahan data baru.',
+                                confirmButtonColor: '#2563eb'
+                            });
+                            return;
+                        }
                     }
 
                     // Case 3: Ada perubahan status BKD riil (misal: TM -> M)
@@ -3161,10 +3179,10 @@ function onBayarTahunInput(el) {
     
     if (checkedBulan.length > 0) {
         let monthRange = '';
-        if (checkedBulan.length === 6) {
+        if (checkedBulan.length > 1) {
             monthRange = (bulanLabelsD3[checkedBulan[0]] || checkedBulan[0]) + ' - ' + (bulanLabelsD3[checkedBulan[checkedBulan.length - 1]] || checkedBulan[checkedBulan.length - 1]);
         } else {
-            monthRange = checkedBulan.map(b => bulanLabelsD3[b] || b).join(', ');
+            monthRange = bulanLabelsD3[checkedBulan[0]] || checkedBulan[0];
         }
         const yr = el.value ? el.value.trim() : '';
         if (inpBayarBulan) inpBayarBulan.value = yr ? (monthRange + ' ' + yr) : monthRange;
@@ -3192,9 +3210,6 @@ function syncD3MappingTable() {
     const isGenapChecked = cbGenap && cbGenap.checked;
 
     // ═══ Rumus Dinamis (berlaku selamanya untuk tahun berapapun) ═══
-    // Ganjil: Laporan Sep-Des (tahunLaporan) & Jan-Feb (tahunLaporan+1) → Bayar Mar-Ags Y
-    // Genap:  Laporan Mar-Ags (tahunLaporan+1) → Bayar Sep-Des Y & Jan-Feb (Y+1)
-    //         ↑ Jan & Feb masuk tahun Y+1 (beda tahun dari Sep-Des)
     const mappingRows = [];
 
     // Ambil bulan yang benar-benar dicentang di Step 2
@@ -3204,7 +3219,11 @@ function syncD3MappingTable() {
         // Ganjil: semua bulan pembayaran berada di tahun Y (Mar-Ags)
         let bayarBulanText = 'Maret - Agustus ' + Y;
         if (checkedBulan.length > 0) {
-            bayarBulanText = checkedBulan.map(b => (bulanLabelsD3[b] || b) + ' ' + Y).join(', ');
+            if (checkedBulan.length > 1) {
+                bayarBulanText = (bulanLabelsD3[checkedBulan[0]] || checkedBulan[0]) + ' - ' + (bulanLabelsD3[checkedBulan[checkedBulan.length - 1]] || checkedBulan[checkedBulan.length - 1]) + ' ' + Y;
+            } else {
+                bayarBulanText = (bulanLabelsD3[checkedBulan[0]] || checkedBulan[0]) + ' ' + Y;
+            }
         }
         mappingRows.push({
             usulan: selectedUsulan,
@@ -3216,38 +3235,45 @@ function syncD3MappingTable() {
     }
 
     if (isGenapChecked) {
-        // Genap: Sep-Des masuk tahun Y, Jan-Feb masuk tahun Y+1
+        // Genap: Sep-Des ikut tahun Y, Jan-Feb ikut tahun Y+1
         const bulanTahunY = ['september', 'oktober', 'november', 'desember'];
         const bulanTahunY1 = ['januari', 'februari'];
 
-        let groupY = [];
-        let groupY1 = [];
+        let groupYRaw = [];
+        let groupY1Raw = [];
 
         if (checkedBulan.length > 0) {
             checkedBulan.forEach(b => {
                 if (bulanTahunY.includes(b)) {
-                    groupY.push((bulanLabelsD3[b] || b) + ' ' + Y);
+                    groupYRaw.push(bulanLabelsD3[b] || b);
                 } else if (bulanTahunY1.includes(b)) {
-                    groupY1.push((bulanLabelsD3[b] || b) + ' ' + (Y + 1));
+                    groupY1Raw.push(bulanLabelsD3[b] || b);
                 } else {
-                    // Bulan lain (Mar-Ags) → ikut tahun Y
-                    groupY.push((bulanLabelsD3[b] || b) + ' ' + Y);
+                    groupYRaw.push(bulanLabelsD3[b] || b);
                 }
             });
-        } else {
-            groupY = ['September - Desember ' + Y];
-            groupY1 = ['Januari - Februari ' + (Y + 1)];
         }
+        
+        const formatGroup = (group, year) => {
+            if (group.length === 0) return '';
+            if (group.length > 1) return group[0] + ' - ' + group[group.length - 1] + ' ' + year;
+            return group[0] + ' ' + year;
+        };
 
         let bayarBulanText = '';
-        if (groupY.length > 0 && groupY1.length > 0) {
-            bayarBulanText = groupY.join(', ') + ' & ' + groupY1.join(', ');
-        } else if (groupY.length > 0) {
-            bayarBulanText = groupY.join(', ');
-        } else if (groupY1.length > 0) {
-            bayarBulanText = groupY1.join(', ');
+        if (checkedBulan.length > 0) {
+            const textY = formatGroup(groupYRaw, Y);
+            const textY1 = formatGroup(groupY1Raw, Y + 1);
+            if (textY && textY1) {
+                bayarBulanText = textY + ' & ' + textY1;
+            } else if (textY) {
+                bayarBulanText = textY;
+            } else if (textY1) {
+                bayarBulanText = textY1;
+            }
+        } else {
+            bayarBulanText = 'September - Desember ' + Y + ' & Januari - Februari ' + (Y + 1);
         }
-
         // Tentukan bayarTahun sebagai tahun tunggal Y
         let bayarTahunText = Y.toString();
 
