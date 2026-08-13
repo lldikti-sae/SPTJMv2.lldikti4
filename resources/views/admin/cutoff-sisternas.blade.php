@@ -3169,6 +3169,28 @@ const bulanLabelsD3 = {
     oktober:'Oktober', november:'November', desember:'Desember'
 };
 
+function syncD3TahunPembayaran() {
+    const yearSelect = document.getElementById('d1_new_tahun_val');
+    if (!yearSelect || !yearSelect.value) return;
+    const selectedYr = parseInt(yearSelect.value);
+    
+    const selectedPeriode = getSelectedD3PeriodeVal();
+    const isGanjil = selectedPeriode.includes('ganjil') || selectedPeriode === '1' || selectedPeriode === 'p_sister_ganjil';
+    
+    const targetBayarYear = isGanjil ? selectedYr.toString() : (selectedYr + 1).toString();
+    
+    const bayarYearSelect = document.getElementById('d3_tahun_pembayaran_select');
+    if (bayarYearSelect) {
+        let optExists = [...bayarYearSelect.options].some(o => o.value === targetBayarYear);
+        if (!optExists) {
+            const newOpt = new Option('Tahun ' + targetBayarYear, targetBayarYear, true, true);
+            bayarYearSelect.add(newOpt);
+        }
+        bayarYearSelect.value = targetBayarYear;
+    }
+    updatePreviewD3();
+}
+
 function onD3TahunChange(yr) {
     const hiddenTahun = document.getElementById('d1_new_tahun_val');
     if (hiddenTahun) hiddenTahun.value = yr;
@@ -3182,23 +3204,11 @@ function onD3TahunChange(yr) {
         }
     }
 
-    // Auto-set Tahun Pembayaran = Tahun Laporan + 1 (otomatis buat option jika belum ada)
-    const bayarYearSelect = document.getElementById('d3_tahun_pembayaran_select');
-    if (bayarYearSelect) {
-        const targetBayarYear = (parseInt(yr) + 1).toString();
-        let optExists = [...bayarYearSelect.options].some(o => o.value === targetBayarYear);
-        if (!optExists) {
-            const newOpt = new Option('Tahun ' + targetBayarYear, targetBayarYear, true, true);
-            bayarYearSelect.add(newOpt);
-        }
-        bayarYearSelect.value = targetBayarYear;
-    }
+    syncD3TahunPembayaran();
 
     if (typeof coResetFileD1 === 'function') {
         coResetFileD1();
     }
-
-    updatePreviewD3();
 }
 
 function getSelectedD3PeriodeVal() {
@@ -3227,7 +3237,7 @@ function onD3PeriodeCheckboxChange(el) {
         tableValInput.value = val;
     }
 
-    updatePreviewD3();
+    syncD3TahunPembayaran();
 }
 
 function onBayarTahunInput(el) {
