@@ -147,7 +147,8 @@
         max-height: 280px;
         overflow-y: auto;
     }
-    .sp-d3-month-item input[type="checkbox"] { display: none; }
+    .sp-d3-month-item input[type="checkbox"],
+    .sp-d3-month-item input[type="radio"] { display: none !important; }
     .sp-d3-month-item label {
         display: flex;
         align-items: center;
@@ -172,7 +173,10 @@
         background: #fff;
         flex-shrink: 0;
     }
-    .sp-d3-month-item input[type="checkbox"]:checked + label {
+    .sp-d3-month-item input[type="radio"] + label::before {
+        border-radius: 50%;
+    }
+    .sp-d3-month-item input:checked + label {
         background: #eff6ff;
         border-color: #3b82f6;
         color: #1d4ed8;
@@ -185,6 +189,14 @@
         background-repeat: no-repeat;
         background-position: center;
         background-size: 9px;
+    }
+    .sp-d3-month-item input[type="radio"]:checked + label::before {
+        background: #2563eb;
+        border-color: #2563eb;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='6' height='6' viewBox='0 0 24 24' fill='%23ffffff'%3E%3Ccircle cx='12' cy='12' r='10'/%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: center;
+        background-size: 6px;
     }
     .sp-d3-mapping-card {
         background: #ffffff;
