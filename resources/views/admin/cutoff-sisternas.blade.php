@@ -3174,52 +3174,60 @@ function onBayarTahunInput(el) {
 }
 
 function syncD3MappingTable() {
-    const yearSelect = document.getElementById('d1_new_tahun_val');
-    const selectedYrStr = yearSelect ? yearSelect.value : '';
     const selectedUsulan = document.getElementById('spJenisUsulan') ? document.getElementById('spJenisUsulan').value : 'SPTJM';
-    const checkedBulan = [...document.querySelectorAll('input[name="sp_bulan_d3[]"]:checked')].map(c => c.value);
-    const selectedPeriode = getSelectedD3PeriodeVal();
-    const isGanjil = selectedPeriode.includes('ganjil') || selectedPeriode === '1' || selectedPeriode === 'p_sister_ganjil_tl';
-    
-    const baseYr = selectedYrStr ? parseInt(selectedYrStr) : new Date().getFullYear();
-    const periodeCode = selectedYrStr ? (selectedYrStr + '/' + (isGanjil ? '1' : '2')) : '';
-
     const bayarYearSelect = document.getElementById('d3_tahun_pembayaran_select');
-    let bayarTahunStr = bayarYearSelect ? bayarYearSelect.value : (baseYr + 1).toString();
+    if (!bayarYearSelect || !bayarYearSelect.value) return;
 
-    let bulanText = '';
-    if (checkedBulan.length > 0) {
-        let monthRange = '';
-        if (checkedBulan.length === 6) {
-            monthRange = (bulanLabelsD3[checkedBulan[0]] || checkedBulan[0]) + ' - ' + (bulanLabelsD3[checkedBulan[checkedBulan.length - 1]] || checkedBulan[checkedBulan.length - 1]);
-        } else {
-            monthRange = checkedBulan.map(b => bulanLabelsD3[b] || b).join(', ');
+    const Y = parseInt(bayarYearSelect.value); // Tahun Pembayaran
+    const tahunAjaran = Y - 1;                 // Tahun Ajaran selalu Y-1
+
+    // ═══ Rumus Dinamis (berlaku selamanya untuk tahun berapapun) ═══
+    // Baris 1 — Ganjil: Laporan Sep-Des (Y-1) & Jan-Feb Y → Bayar Mar-Ags Y
+    // Baris 2 — Genap:  Laporan Mar-Ags Y               → Bayar Sep-Des Y & Jan-Feb (Y+1)
+    const mappingRows = [
+        {
+            usulan: selectedUsulan,
+            lapTahun: tahunAjaran.toString(),
+            lapPeriode: tahunAjaran + '/1',
+            bayarTahun: Y.toString(),
+            bayarBulan: 'Maret - Agustus ' + Y
+        },
+        {
+            usulan: selectedUsulan,
+            lapTahun: tahunAjaran.toString(),
+            lapPeriode: tahunAjaran + '/2',
+            bayarTahun: Y + ' - ' + (Y + 1),
+            bayarBulan: 'September - Desember ' + Y + ' & Januari - Februari ' + (Y + 1)
         }
-        bulanText = bayarTahunStr ? (monthRange + ' ' + bayarTahunStr) : monthRange;
-    }
+    ];
 
     const tbody = document.getElementById('spD3MappingTbody');
     if (!tbody) return;
 
-    let firstRow = tbody.querySelector('tr');
-    if (!firstRow) {
-        addD3MappingRow();
-        firstRow = tbody.querySelector('tr');
-    }
+    // Bersihkan baris lama, lalu isi 2 baris baru
+    tbody.innerHTML = '';
 
-    if (firstRow) {
-        const inpUsulan = firstRow.querySelector('input[name="d3_usulan[]"]');
-        const inpPemTahun = firstRow.querySelector('input[name="d3_pembayaran_tahun[]"]');
-        const inpPemPeriode = firstRow.querySelector('input[name="d3_pembayaran_periode[]"]');
-        const inpBayarTahun = firstRow.querySelector('input[name="d3_periode_bayar_tahun[]"]');
-        const inpBayarBulan = firstRow.querySelector('input[name="d3_periode_bayar_bulan[]"]');
-
-        if (inpUsulan) inpUsulan.value = selectedUsulan;
-        if (inpPemTahun) inpPemTahun.value = selectedYrStr;
-        if (inpPemPeriode) inpPemPeriode.value = periodeCode;
-        if (inpBayarTahun) inpBayarTahun.value = bayarTahunStr;
-        if (inpBayarBulan) inpBayarBulan.value = bulanText || '';
-    }
+    mappingRows.forEach(row => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+            <td><input type="text" class="sp-d3-input" name="d3_usulan[]" value="${row.usulan}" readonly></td>
+            <td><input type="text" class="sp-d3-input" name="d3_pembayaran_tahun[]" value="${row.lapTahun}" readonly></td>
+            <td><input type="text" class="sp-d3-input" name="d3_pembayaran_periode[]" value="${row.lapPeriode}" readonly></td>
+            <td><input type="text" class="sp-d3-input" name="d3_periode_bayar_tahun[]" value="${row.bayarTahun}" readonly></td>
+            <td><input type="text" class="sp-d3-input" name="d3_periode_bayar_bulan[]" value="${row.bayarBulan}" readonly></td>
+            <td class="text-center align-middle" style="text-align: center !important; vertical-align: middle !important;">
+                <div class="d-flex align-items-center justify-content-center gap-1">
+                    <button type="button" class="btn btn-sm btn-outline-info border-0 p-0 d-inline-flex align-items-center justify-content-center" onclick="viewD3MappingRow(this)" title="View Detail Dashboard" style="width: 30px; height: 30px; border-radius: 6px;">
+                        <i class="bx bx-show fs-5" style="display: inline-flex; align-items: center; justify-content: center; line-height: 1;"></i>
+                    </button>
+                    <button type="button" class="btn btn-sm btn-outline-danger border-0 p-0 d-inline-flex align-items-center justify-content-center" onclick="removeD3MappingRow(this)" title="Hapus Baris" style="width: 30px; height: 30px; border-radius: 6px;">
+                        <i class="bx bx-trash fs-5" style="display: inline-flex; align-items: center; justify-content: center; line-height: 1;"></i>
+                    </button>
+                </div>
+            </td>
+        `;
+        tbody.appendChild(tr);
+    });
 }
 
 function updatePreviewD3() {
