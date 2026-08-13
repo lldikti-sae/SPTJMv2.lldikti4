@@ -23,7 +23,7 @@
           <th>Kode PTS</th>
           <th>PTS</th>
           <th>BKD Genap TL<br>(P = Jan - Feb)</th>
-          <th>BKD Ganjil TL<br>(P = Mar - Agu)</th>
+          <th>BKD Ganjil<br>(P = Mar - Agu)</th>
           <th>BKD Genap BJ<br>(P = Sep - Des)</th>
           <th>Status</th>
           <th>Keterangan</th>
@@ -91,8 +91,8 @@
           searchable: false
         },
         {
-          data: 'bkd_ganjil_tl',
-          name: 'bkd_ganjil_tl',
+          data: 'bkd_ganjil',
+          name: 'bkd_ganjil',
           searchable: false
         },
         {

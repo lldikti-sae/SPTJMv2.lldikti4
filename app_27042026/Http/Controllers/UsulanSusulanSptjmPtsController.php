@@ -60,7 +60,7 @@ class UsulanSusulanSptjmPtsController extends Controller
         $ptsColumn = 'o.kode_pt';
       } elseif (in_array($bulan, [3, 4, 5, 6, 7, 8])) {
         $bkdColumn = 'p.kesimpulan_bkd'; // Ganjil Tahun Lalu
-        $joinTable = ['table' => 'p_sister_ganjil_tl as p', 'alias' => 'p'];
+        $joinTable = ['table' => 'p_sister_ganjil as p', 'alias' => 'p'];
         $ptsColumn = 'p.kode_pt';
       } else {
         $bkdColumn = 'n.kesimpulan_bkd'; // Genap Berjalan
@@ -221,7 +221,7 @@ class UsulanSusulanSptjmPtsController extends Controller
       $ptsColumn = 'o.kode_pt';
     } elseif (in_array($bulan, [3, 4, 5, 6, 7, 8])) {
       $bkdColumn = 'p.kesimpulan_bkd'; // Ganjil Tahun Lalu
-      $joinTable = ['table' => 'p_sister_ganjil_tl as p', 'alias' => 'p'];
+      $joinTable = ['table' => 'p_sister_ganjil as p', 'alias' => 'p'];
       $ptsColumn = 'p.kode_pt';
     } else {
       $bkdColumn = 'n.kesimpulan_bkd'; // Genap Berjalan
@@ -489,7 +489,7 @@ class UsulanSusulanSptjmPtsController extends Controller
       $ptsColumn = 'o.kode_pt';
     } elseif (in_array($bulanNow, [3, 4, 5, 6, 7, 8])) {
       $bkdColumn = 'p.kesimpulan_bkd';
-      $joinTable = ['table' => 'p_sister_ganjil_tl as p', 'alias' => 'p'];
+      $joinTable = ['table' => 'p_sister_ganjil as p', 'alias' => 'p'];
       $ptsColumn = 'p.kode_pt';
     } else {
       $bkdColumn = 'n.kesimpulan_bkd';

@@ -20,7 +20,7 @@ class DataSisternasPicController extends Controller
 
     if ($table) {
       // Validasi agar hanya tabel yang diperbolehkan yang bisa diakses
-      $allowedTables = ['n_sister_genap_bj', 'o_sister_genap_tl', 'p_sister_ganjil_tl'];
+      $allowedTables = ['n_sister_genap_bj', 'o_sister_genap_tl', 'p_sister_ganjil'];
 
       if (in_array($table, $allowedTables)) {
         $data = DB::table($table)->get();
@@ -38,7 +38,7 @@ class DataSisternasPicController extends Controller
     $sisternas = request()->query('sisternas');
     $name = [
       'o_sister_genap_tl' => 'sister genap tl',
-      'p_sister_ganjil_tl' => 'sister ganjil tl',
+      'p_sister_ganjil' => 'sister ganjil',
       'n_sister_genap_bj' => 'sister genap bj'
     ];
 

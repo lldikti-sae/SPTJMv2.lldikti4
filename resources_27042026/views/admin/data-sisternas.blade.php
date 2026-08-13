@@ -17,7 +17,7 @@
                 <label class="form-label">Periode</label>
                 <select class="form-select" name="periode">
                     <option value="[Maret - Agustus] Genap Tahun Lalu">[Maret - Agustus] Genap TL</option>
-                    <option value="[September - Desember] Ganjil Tahun Lalu">[September - Desember] Ganjil TL</option>
+                    <option value="[September - Desember] Ganjil Tahun Lalu">[September - Desember] Ganjil</option>
                     <option value="[Maret - Agustus] Genap Berjalan">[Maret - Agustus] Genap BJ</option>
                 </select>
             </div>

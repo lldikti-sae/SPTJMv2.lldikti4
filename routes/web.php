@@ -349,12 +349,14 @@ Route::prefix('admin')
   ->group(function () {
     Route::get('/data-sisternas', [DataSisternasController::class, 'index'])->name('data-sisternas');
     Route::post('/data-sisternas', [DataSisternasController::class, 'store'])->name('data-sisternas.store');
+    Route::get('/periode-sisternas', [DataSisternasController::class, 'periode'])->name('periode-sisternas');
   });
 Route::delete('/data-sisternas/{id}', [DataSisternasController::class, 'destroy'])->name('data-sisternas.destroy');
 Route::get('/admin/cutoff-sisternas', [CutOffSisternasController::class, 'index'])->name('admin.cutoff-sisternas');
 Route::post('/admin/cutoff-sisternas/upload', [CutOffSisternasController::class, 'upload'])->name(
   'admin.cutoff-sisternas.upload'
 );
+Route::post('/admin/cutoff-sisternas/check-diff', [CutOffSisternasController::class, 'checkDiff'])->name('admin.cutoff-sisternas.check-diff');
 Route::put('/admin/cutoff-sisternas/update', [CutOffSisternasController::class, 'update'])->name('admin.cutoff-sisternas.update');
 Route::delete('/admin/cutoff-sisternas/clear/{table}', [CutOffSisternasController::class, 'clear'])->name('admin.cutoff-sisternas.clear');
 Route::post('/admin/cutoff-sisternas/create', [CutOffSisternasController::class, 'create'])->name('admin.cutoff-sisternas.create');

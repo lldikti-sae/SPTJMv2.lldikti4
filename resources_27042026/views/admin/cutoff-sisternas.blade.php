@@ -50,7 +50,7 @@
                                     enctype="multipart/form-data" class="uploadForm">
                                     @csrf
                                     <td>
-                                        <input name="table" value="p_sister_ganjil_tl" type="hidden">
+                                        <input name="table" value="p_sister_ganjil" type="hidden">
                                         <strong>Ganjil Tahun Lalu [September - Desember]</strong>
                                     </td>
                                     <td>Maret - Agustus Berjalan</td>
@@ -60,7 +60,7 @@
                                     <td>
                                         <div class="d-flex">
                                             <button type="button" class="btn btn-sm btn-warning clear-data-btn"
-                                                data-table="p_sister_ganjil_tl">Clear
+                                                data-table="p_sister_ganjil">Clear
                                                 Data</button>
                                             <button type="submit" class="btn btn-sm btn-success mx-2">Simpan</button>
                                         </div>
@@ -108,8 +108,8 @@
                     <option value="o_sister_genap_tl"
                         {{ request('sisternas') == 'o_sister_genap_tl' ? 'selected' : '' }}>Genap Tahun Lalu [Januari
                         - Februari]</option>
-                    <option value="p_sister_ganjil_tl"
-                        {{ request('sisternas') == 'p_sister_ganjil_tl' ? 'selected' : '' }}>Ganjil Tahun Lalu
+                    <option value="p_sister_ganjil"
+                        {{ request('sisternas') == 'p_sister_ganjil' ? 'selected' : '' }}>Ganjil Tahun Lalu
                         [Maret - Agustus]</option>
                     <option value="n_sister_genap_bj"
                         {{ request('sisternas') == 'n_sister_genap_bj' ? 'selected' : '' }}>Genap Berjalan [September -

@@ -65,6 +65,7 @@ class RoleMiddleware
               // Data Sisternas
               'admin/data-sisternas' => 'sisternas-data',
               'admin/cutoff-sisternas' => 'sisternas-cutoff',
+              'admin/periode-sisternas' => 'sisternas-cutoff',
 
               // Proses Pembayaran
               'admin/pengaturan-usulan' => 'proses-pengaturan',

@@ -145,24 +145,28 @@
             pointer-events: none !important;
         }
 
-        /* ─── FORCE FULL-HIDE SIDEBAR for layout-menu-fixed + collapsed ─── */
-        /* Sneat excludes layout-menu-fixed from mini-collapse — we override
-           to fully hide the sidebar and expand content to full width. */
-        @media (min-width: 1200px) {
-            html.layout-menu-collapsed.layout-menu-fixed .layout-menu {
-                width: 0 !important;
-                min-width: 0 !important;
-                overflow: hidden !important;
-                transition: width 0.3s ease !important;
-            }
-            html.layout-menu-collapsed.layout-menu-fixed .layout-page {
-                padding-left: 0 !important;
-                transition: padding-left 0.3s ease !important;
-            }
-            html.layout-menu-collapsed.layout-menu-fixed .layout-navbar {
-                left: 0 !important;
-                transition: left 0.3s ease !important;
-            }
+        /* ─── FORCE FULL-HIDE SIDEBAR & FULL-WIDTH SHIFT WHEN COLLAPSED ─── */
+        html.layout-menu-collapsed .layout-menu {
+            width: 0 !important;
+            min-width: 0 !important;
+            max-width: 0 !important;
+            overflow: hidden !important;
+            transform: translate3d(-100%, 0, 0) !important;
+            transition: all 0.3s ease !important;
+        }
+        html.layout-menu-collapsed .layout-page {
+            padding-left: 0 !important;
+            margin-left: 0 !important;
+            transition: all 0.3s ease !important;
+        }
+        html.layout-menu-collapsed .layout-navbar {
+            left: 0 !important;
+            width: 100% !important;
+            transition: all 0.3s ease !important;
+        }
+        /* Make content containers expand 100% full width */
+        .container-xxl, .container-p-y {
+            max-width: 100% !important;
         }
 
         /* ─── TOP-LEVEL: Parent aktif atau terbuka (open) ─── */

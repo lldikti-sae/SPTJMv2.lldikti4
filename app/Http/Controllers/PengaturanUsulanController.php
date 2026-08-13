@@ -71,12 +71,20 @@ class PengaturanUsulanController extends Controller
       $configAktif = null;
     }
 
+    // Ambil daftar tahun versi dinamis dari Pengaturan Versi Admin (ActiveYears + database s_transaksi_2)
+    $activeYears = \App\Helpers\ActiveYears::load();
+    $dbYears = \Illuminate\Support\Facades\DB::table('s_transaksi_2')->distinct()->pluck('Tahun_Versi')->map(fn($y) => (int)$y)->toArray();
+    $mergedYears = array_unique(array_merge([2023, (int)date('Y'), (int)session('tahun')], $activeYears, $dbYears));
+    sort($mergedYears);
+    $listTahun = array_values(array_filter($mergedYears, fn($y) => $y >= 2021));
+
     return view('admin.pengaturan-usulan', compact(
       'pengaturanUsulan',
       'existingSptjm',
       'existingTukin',
       'maxSptjm',
-      'configAktif'
+      'configAktif',
+      'listTahun'
     ));
   }
 

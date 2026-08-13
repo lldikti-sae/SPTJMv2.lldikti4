@@ -37,15 +37,15 @@ class UsulanTukinSusulanController extends Controller
 
             // Tentukan sumber BKD berdasarkan bulan
             if (in_array($bulan, [1, 2])) {
-                $joinTable = ['table' => 'o_sister_genap_tl as b', 'kode_pt' => 'b.kode_pt'];
+                $joinTable = ['table' => 'p_sister_tukin as b', 'kode_pt' => 'b.kode_pt', 'periode' => 'Genap'];
             } elseif (in_array($bulan, [3, 4, 5, 6, 7, 8])) {
-                $joinTable = ['table' => 'p_sister_ganjil_tl as b', 'kode_pt' => 'b.kode_pt'];
+                $joinTable = ['table' => 'p_sister_tukin as b', 'kode_pt' => 'b.kode_pt', 'periode' => 'Ganjil'];
             } else {
-                $joinTable = ['table' => 'n_sister_genap_bj as b', 'kode_pt' => 'b.kode_pt'];
+                $joinTable = ['table' => 'p_sister_tukin as b', 'kode_pt' => 'b.kode_pt', 'periode' => 'Genap'];
             }
 
             $dosenList = DB::table('s_transaksi_2 as d')
-                ->leftJoin($joinTable['table'], function ($join) {
+                ->leftJoin($joinTable['table'], function ($join) use ($joinTable) {
                     $join->on(function ($on) {
                         $on->where(function ($q) {
                             $q->whereColumn('d.NIDN', '=', 'b.nidn')
@@ -57,6 +57,9 @@ class UsulanTukinSusulanController extends Controller
                                 ->whereRaw("TRIM(d.NUPTK) != '-'");
                         });
                     });
+                    if (isset($joinTable['periode'])) {
+                        $join->where('b.periode', '=', $joinTable['periode']);
+                    }
                 })
                 ->select(
                     DB::raw('d.Nama as nama'),
@@ -248,11 +251,11 @@ class UsulanTukinSusulanController extends Controller
 
         // Sumber BKD
         if (in_array($bulan, [1, 2])) {
-            $joinTable = ['table' => 'o_sister_genap_tl as b'];
+            $joinTable = ['table' => 'p_sister_genap as b'];
         } elseif (in_array($bulan, [3, 4, 5, 6, 7, 8])) {
-            $joinTable = ['table' => 'p_sister_ganjil_tl as b'];
+            $joinTable = ['table' => 'p_sister_ganjil as b'];
         } else {
-            $joinTable = ['table' => 'n_sister_genap_bj as b'];
+            $joinTable = ['table' => 'p_sister_genap as b'];
         }
 
         // Ambil list dosen persis seperti Berjalan (Aktif PNS)
@@ -596,11 +599,11 @@ class UsulanTukinSusulanController extends Controller
 
         // Tentukan sumber BKD berdasarkan bulan
         if (in_array($bulan, [1, 2])) {
-            $joinTable = ['table' => 'o_sister_genap_tl as b', 'kode_pt' => 'b.kode_pt'];
+            $joinTable = ['table' => 'p_sister_genap as b', 'kode_pt' => 'b.kode_pt'];
         } elseif (in_array($bulan, [3, 4, 5, 6, 7, 8])) {
-            $joinTable = ['table' => 'p_sister_ganjil_tl as b', 'kode_pt' => 'b.kode_pt'];
+            $joinTable = ['table' => 'p_sister_ganjil as b', 'kode_pt' => 'b.kode_pt'];
         } else {
-            $joinTable = ['table' => 'n_sister_genap_bj as b', 'kode_pt' => 'b.kode_pt'];
+            $joinTable = ['table' => 'p_sister_genap as b', 'kode_pt' => 'b.kode_pt'];
         }
 
         $dosenList = DB::table('s_transaksi_2 as d')

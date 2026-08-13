@@ -112,7 +112,7 @@
       "submenu": [
         {
           "url": "admin/cutoff-sisternas",
-          "name": "Cut Off Data Sisternas",
+          "name": "Set Periode Sisternas",
           "slug": "sisternas-data-cut"
         },
         {

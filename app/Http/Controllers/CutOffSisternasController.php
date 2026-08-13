@@ -32,9 +32,12 @@ class CutOffSisternasController extends Controller
         ]);
       }
 
-      $allowedTables = ['n_sister_genap_bj', 'o_sister_genap_tl', 'p_sister_ganjil_tl'];
+      $allowedTables = ['p_sister_genap', 'p_sister_ganjil', 'p_sister_tukin'];
 
       if (in_array($table, $allowedTables)) {
+        if (!Schema::hasTable($table)) {
+            return DataTables::of(collect([]))->make(true);
+        }
         $tahun = $request->query('tahun', session('tahun') ?: date('Y'));
         $query = DB::table($table);
         if (Schema::hasColumn($table, 'tahun')) {
@@ -45,6 +48,31 @@ class CutOffSisternasController extends Controller
         if ($bkdStatus === 'M' || $bkdStatus === 'TM') {
             $query->where('kesimpulan_bkd', $bkdStatus);
         }
+
+        $getStat = function ($tableName) use ($tahun) {
+            if (!Schema::hasTable($tableName)) {
+                return ['total' => 0, 'm' => 0, 'tm' => 0];
+            }
+            $qTotal = DB::table($tableName);
+            $qM = DB::table($tableName);
+            $qTm = DB::table($tableName);
+
+            if (Schema::hasColumn($tableName, 'tahun')) {
+                $qTotal->where('tahun', $tahun);
+                $qM->where('tahun', $tahun);
+                $qTm->where('tahun', $tahun);
+            }
+
+            return [
+                'total' => $qTotal->count(),
+                'm' => $qM->where('kesimpulan_bkd', 'M')->count(),
+                'tm' => $qTm->where('kesimpulan_bkd', 'TM')->count(),
+            ];
+        };
+
+        $statGenapTL = $getStat('p_sister_genap');
+        $statGanjil = $getStat('p_sister_ganjil');
+        $statGenapBJ = $getStat('p_sister_genap');
 
         return DataTables::of($query)
           ->addIndexColumn()
@@ -61,10 +89,14 @@ class CutOffSisternasController extends Controller
             if (auth()->check() && auth()->user()->role === 'pic') {
                 return '<span class="text-muted">-</span>';
             }
-            return '<button class="sptjm-icon-btn sptjm-btn-edit edit-btn">
-                                <i class="bx bx-edit"></i>
-                            </button>';
+            return '<div class="d-flex justify-content-center align-items-center"><button class="sptjm-icon-btn sptjm-btn-edit edit-btn d-inline-flex align-items-center justify-content-center" style="width:30px; height:30px;"><i class="bx bx-edit"></i></button></div>';
           })
+          ->with([
+            'stat_ganjil' => $statGanjil,
+            'stat_genap_bj'  => $statGenapBJ,
+            'stat_genap_tl'  => $statGenapTL,
+            'tahun_query'    => $tahun
+          ])
           ->rawColumns(['aksi', 'tahun_periode'])
           ->make(true);
       }
@@ -78,6 +110,9 @@ class CutOffSisternasController extends Controller
     $tahun = (string)($request->query('tahun', session('tahun') ?: date('Y')));
 
     $getStat = function ($tableName) use ($tahun) {
+        if (!Schema::hasTable($tableName)) {
+            return ['total' => 0, 'm' => 0, 'tm' => 0];
+        }
         $qTotal = DB::table($tableName);
         $qM = DB::table($tableName);
         $qTm = DB::table($tableName);
@@ -95,9 +130,8 @@ class CutOffSisternasController extends Controller
         ];
     };
 
-    $statGenapTL = $getStat('o_sister_genap_tl');
-    $statGanjilTL = $getStat('p_sister_ganjil_tl');
-    $statGenapBJ = $getStat('n_sister_genap_bj');
+    $statGenap = $getStat('p_sister_genap');
+    $statGanjil = $getStat('p_sister_ganjil');
 
     // Ambil daftar tahun versi dinamis dari Pengaturan Versi Admin (ActiveYears + database s_transaksi_2)
     $activeYears = \App\Helpers\ActiveYears::load();
@@ -106,8 +140,26 @@ class CutOffSisternasController extends Controller
     sort($mergedYears);
     $listTahun = array_values(array_filter($mergedYears, fn($y) => $y >= 2021));
 
+    // Ambil pemetaan aktif terbaru dari database k_data_sister (hanya tipe Ganjil/Genap baru)
+    $savedMappings = [];
+    if (Schema::hasTable('k_data_sister')) {
+        $subQuery = DB::table('k_data_sister')
+            ->select('tahun', 'periode', DB::raw('MAX(id) as max_id'))
+            ->whereIn('periode', ['Ganjil', 'Genap'])
+            ->groupBy('tahun', 'periode');
+
+        $savedMappings = DB::table('k_data_sister as k')
+            ->joinSub($subQuery, 'sub', function ($join) {
+                $join->on('k.id', '=', 'sub.max_id');
+            })
+            ->select('k.tahun', 'k.periode', 'k.bulan')
+            ->orderBy('k.tahun', 'desc')
+            ->orderBy('k.periode', 'desc')
+            ->get();
+    }
+
     // kalau bukan request ajax, kembalikan view beserta data statistik
-    return view('admin.cutoff-sisternas', compact('statGenapTL', 'statGanjilTL', 'statGenapBJ', 'listTahun'));
+    return view('admin.cutoff-sisternas', compact('statGenap', 'statGanjil', 'listTahun', 'savedMappings'));
   }
 
 
@@ -116,7 +168,7 @@ class CutOffSisternasController extends Controller
     $request->validate([
       // some lecturers only have one identifier; accept either nidn or nuptk
       'nidn' => 'nullable|string|required_without:nuptk',
-      'sisternas' => 'required|in:n_sister_genap_bj,o_sister_genap_tl,p_sister_ganjil_tl',
+      'sisternas' => 'required|in:p_sister_genap,p_sister_ganjil',
       // allow other fields to be nullable so editing rows with blank values won't fail validation
       'nuptk' => 'nullable|string|required_without:nidn',
       'no_sertifikat' => 'nullable|string',
@@ -205,12 +257,19 @@ class CutOffSisternasController extends Controller
 
     $request->validate([
       'dokumen' => 'required',
-      'table' => 'required|in:n_sister_genap_bj,o_sister_genap_tl,p_sister_ganjil_tl',
+      'table' => 'required|in:p_sister_genap,p_sister_ganjil,p_sister_tukin',
     ]);
     $file = $request->file('dokumen');
     $fileName = strtolower($file->getClientOriginalName());
     $table = $request->input('table');
     $uploadType = $request->input('upload_type', 'new');
+    $jenisUsulan = $request->input('jenis_usulan', 'SPTJM');
+
+    $periodeTukin = '';
+    if (strtoupper($jenisUsulan) === 'TUKIN') {
+      $periodeTukin = strpos($table, 'ganjil') !== false ? 'Ganjil' : 'Genap';
+      $table = 'p_sister_tukin';
+    }
 
     // Validasi Jika Tipe Upload Adalah UPDATE (Wajib memuat kata 'update')
     if ($uploadType === 'update' && strpos($fileName, 'update') === false) {
@@ -235,6 +294,13 @@ class CutOffSisternasController extends Controller
           'message' => 'Nama file (' . $file->getClientOriginalName() . ') tidak sesuai! Untuk periode Genap, nama file CSV wajib memuat kata "genap" (contoh: dosen_genap_' . date('Y') . '.csv).'
         ], 422);
       }
+    } else if (strpos($table, 'tukin') !== false) {
+      if (strpos($fileName, 'tukin') === false) {
+        return response()->json([
+          'success' => false,
+          'message' => 'Nama file (' . $file->getClientOriginalName() . ') tidak sesuai! Untuk Tukin, nama file CSV wajib memuat kata "tukin" (contoh: dosen_tukin_' . date('Y') . '.csv).'
+        ], 422);
+      }
     }
     try {
       // Manual CSV parsing (mirip dengan migrasi) to avoid PhpSpreadsheet timeouts
@@ -250,11 +316,11 @@ class CutOffSisternasController extends Controller
         fclose($handle);
         return response()->json(['success' => false, 'message' => 'Header CSV tidak terbaca.'], 422);
       }
-      $firstLine = preg_replace('/[\xEF\xBB\xBF\uFEFF\u200B]/', '', $firstLine);
+      $firstLine = str_replace(["\xEF\xBB\xBF", "\u{FEFF}", "\u{200B}"], '', $firstLine);
       $delimiter = (substr_count($firstLine, ';') > substr_count($firstLine, ',')) ? ';' : ',';
       $header = str_getcsv($firstLine, $delimiter);
       $header = array_map(function ($h) {
-        $h = preg_replace('/[\xEF\xBB\xBF\uFEFF\u200B\r\n\t]/', '', (string)$h);
+        $h = str_replace(["\xEF\xBB\xBF", "\u{FEFF}", "\u{200B}", "\r", "\n", "\t"], '', (string)$h);
         return strtolower(trim($h, " \t\n\r\0\x0B\"'"));
       }, $header);
 
@@ -288,6 +354,7 @@ class CutOffSisternasController extends Controller
           'missingColumns' => $missingCore,
         ], 422);
       }
+      fgets($handle);
 
       // Helper to parse numeric/percent values
       $parseDecimal = function ($value) {
@@ -302,7 +369,7 @@ class CutOffSisternasController extends Controller
       $inserted = 0;
       $chunkSize = 500;
       $tahun = $request->input('tahun', session('tahun') ?: date('Y'));
-      $updateCols = ['nuptk', 'no_sertifikat', 'nama_dosen', 'kode_pt', 'pt', 'prodi', 'kesimpulan_bkd', 'kewajiban_khusus', 'kesimpulan', 'kd', 'kp', 'potongan_periodik'];
+      $updateCols = ['nuptk', 'no_sertifikat', 'nama_dosen', 'kode_pt', 'pt', 'prodi', 'kesimpulan_bkd', 'kewajiban_khusus', 'kesimpulan', 'kd', 'kp', 'potongan_periodik', 'tahun'];
 
       // Ambil NIDN/NUPTK yang dicentang di kolom Aksi untuk dihapus
       $rawDeleteNidns = $request->input('delete_nidn', []);
@@ -350,17 +417,29 @@ class CutOffSisternasController extends Controller
           'tahun' => (string)$tahun,
         ];
 
+        if (!empty($periodeTukin)) {
+          $data['periode'] = $periodeTukin;
+        }
+
         $batch[] = $data;
 
         if (count($batch) >= $chunkSize) {
-          DB::table($table)->upsert($batch, ['nidn', 'tahun'], $updateCols);
+          $uniqueKeys = ['nidn', 'tahun'];
+          if (!empty($periodeTukin)) {
+            $uniqueKeys[] = 'periode';
+          }
+          DB::table($table)->upsert($batch, $uniqueKeys, $updateCols);
           $inserted += count($batch);
           $batch = [];
         }
       }
 
       if (!empty($batch)) {
-        DB::table($table)->upsert($batch, ['nidn', 'tahun'], $updateCols);
+        $uniqueKeys = ['nidn', 'tahun'];
+        if (!empty($periodeTukin)) {
+          $uniqueKeys[] = 'periode';
+        }
+        DB::table($table)->upsert($batch, $uniqueKeys, $updateCols);
         $inserted += count($batch);
       }
 
@@ -369,8 +448,12 @@ class CutOffSisternasController extends Controller
       // Hapus data dosen yang dicentang di kolom Aksi dari tabel Cut Off
       $deleted = 0;
       if (!empty($deleteNidns)) {
-        $deleted = DB::table($table)
-          ->where('tahun', (string)$tahun)
+        $queryDelete = DB::table($table)->where('tahun', (string)$tahun);
+        if (!empty($periodeTukin)) {
+          $queryDelete->where('periode', $periodeTukin);
+        }
+        
+        $deleted = $queryDelete
           ->where(function ($q) use ($deleteNidns) {
             $q->whereIn('nidn', $deleteNidns)
               ->orWhereIn('nuptk', $deleteNidns);
@@ -471,7 +554,7 @@ class CutOffSisternasController extends Controller
 
   public function clear($table, Request $request)
   {
-    $allowedTables = ['n_sister_genap_bj', 'o_sister_genap_tl', 'p_sister_ganjil_tl'];
+    $allowedTables = ['p_sister_genap', 'p_sister_ganjil', 'p_sister_tukin'];
 
     if (!in_array($table, $allowedTables)) {
       return response()->json(['success' => false, 'message' => 'Tabel tidak valid.']);
@@ -480,13 +563,21 @@ class CutOffSisternasController extends Controller
     $tahun = (string)($request->input('tahun') ?: ($request->query('tahun') ?: (session('tahun') ?: date('Y'))));
     DB::table($table)->where('tahun', $tahun)->delete();
 
+    if (Schema::hasTable('k_data_sister')) {
+      $isGanjil = str_contains($table, 'ganjil');
+      DB::table('k_data_sister')
+        ->where('tahun', $tahun)
+        ->where('periode', $isGanjil ? 'Ganjil' : 'Genap')
+        ->delete();
+    }
+
     return response()->json(['success' => true, 'message' => 'Data berhasil dihapus!']);
   }
 
   public function create(Request $request)
   {
     $request->validate([
-      'sisternas' => 'required|in:n_sister_genap_bj,o_sister_genap_tl,p_sister_ganjil_tl',
+      'sisternas' => 'required|in:p_sister_genap,p_sister_ganjil',
       'tahun' => 'nullable|integer',
       'nidn' => 'required|string',
       'nuptk' => 'required|string',
@@ -535,7 +626,7 @@ class CutOffSisternasController extends Controller
     set_time_limit(0);
     ini_set('memory_limit', '2048M');
     $table = $request->query('table');
-    $allowedTables = ['n_sister_genap_bj', 'o_sister_genap_tl', 'p_sister_ganjil_tl'];
+    $allowedTables = ['p_sister_genap', 'p_sister_ganjil', 'p_sister_tukin'];
 
     if (!$table || !in_array($table, $allowedTables)) {
       return redirect()->back()->with('error', 'Tabel tidak valid untuk export.');
@@ -545,5 +636,157 @@ class CutOffSisternasController extends Controller
     $filename = "cutoff_{$table}_{$tahun}_backup_" . date('Ymd_His') . ".ods";
 
     return Excel::download(new CutoffSisternasExport($table, $tahun), $filename, \Maatwebsite\Excel\Excel::ODS);
+  }
+
+  /**
+   * Cek perbandingan data CSV vs Database secara riil + validasi isi tahun/periode
+   */
+  public function checkDiff(Request $request)
+  {
+    \Illuminate\Support\Facades\Log::info('checkDiff called with:', $request->all());
+    $request->validate([
+      'dokumen' => 'required|file',
+      'table'   => 'required|in:p_sister_genap,p_sister_ganjil,p_sister_tukin',
+      'tahun'   => 'nullable|string'
+    ]);
+
+    $file = $request->file('dokumen');
+    $table = $request->input('table');
+    $tahun = (string)($request->input('tahun') ?: (session('tahun') ?: date('Y')));
+
+    $handle = fopen($file->getRealPath(), 'r');
+    if (!$handle) {
+      return response()->json(['success' => false, 'message' => 'Gagal membaca file CSV.'], 400);
+    }
+
+    $firstLine = fgets($handle);
+    if (!$firstLine) {
+      fclose($handle);
+      return response()->json(['success' => false, 'message' => 'File CSV kosong.'], 400);
+    }
+
+    $firstLineClean = str_replace(["\xEF\xBB\xBF", "\u{FEFF}", "\u{200B}"], '', $firstLine);
+    $delimiter = (substr_count($firstLineClean, ';') > substr_count($firstLineClean, ',')) ? ';' : ',';
+    rewind($handle);
+
+    $header = fgetcsv($handle, 0, $delimiter);
+    if (!$header) {
+      fclose($handle);
+      return response()->json(['success' => false, 'message' => 'Header CSV tidak valid.'], 400);
+    }
+
+    $cleanHeader = array_map(function($h) {
+      $hClean = str_replace(["\xEF\xBB\xBF", "\u{FEFF}", "\u{200B}", "\r", "\n", "\t"], '', (string)$h);
+      return strtolower(trim(str_replace(' ', '_', $hClean)));
+    }, $header);
+
+    $nidnIdx  = -1;
+    $nuptkIdx = -1;
+    $namaIdx  = -1;
+    $bkdIdx   = -1;
+
+    foreach ($cleanHeader as $i => $h) {
+      if ($nidnIdx === -1 && str_contains($h, 'nidn')) $nidnIdx = $i;
+      if ($nuptkIdx === -1 && (str_contains($h, 'nuptk') || str_contains($h, 'nik'))) $nuptkIdx = $i;
+      if ($namaIdx === -1 && (str_contains($h, 'nama') || str_contains($h, 'dosen') || str_contains($h, 'sdm'))) $namaIdx = $i;
+      if ($bkdIdx === -1 && (str_contains($h, 'bkd') || str_contains($h, 'kesimpulan'))) $bkdIdx = $i;
+    }
+
+    if ($nidnIdx === -1) $nidnIdx = ($nuptkIdx !== -1 ? $nuptkIdx : 0);
+    if ($namaIdx === -1) $namaIdx = 2;
+    if ($bkdIdx === -1) $bkdIdx = count($cleanHeader) - 1;
+
+    $rows = [];
+    $nidns = [];
+    $detectedYears = [];
+
+    $count = 0;
+    while (($data = fgetcsv($handle, 0, $delimiter)) !== false) {
+      if (count($data) < 2) continue;
+
+      $nidnVal = isset($data[$nidnIdx]) ? trim($data[$nidnIdx]) : '';
+      $nuptkVal = ($nuptkIdx !== -1 && isset($data[$nuptkIdx])) ? trim($data[$nuptkIdx]) : '';
+      $namaVal = isset($data[$namaIdx]) ? trim($data[$namaIdx]) : '';
+      $bkdVal  = isset($data[$bkdIdx]) ? strtoupper(trim($data[$bkdIdx])) : '';
+
+      if (empty($nidnVal) && empty($nuptkVal) && empty($namaVal)) continue;
+
+      $bkdClean = (str_contains($bkdVal, 'MEMENUHI') && !str_contains($bkdVal, 'TIDAK')) || $bkdVal === 'M' ? 'M' : 'TM';
+
+      $keyVal = !empty($nidnVal) ? $nidnVal : $nuptkVal;
+      $rows[] = [
+        'nidn' => $nidnVal,
+        'nuptk' => $nuptkVal,
+        'nama_dosen' => $namaVal,
+        'bkd_baru' => $bkdClean,
+      ];
+
+      if (!empty($keyVal)) {
+        $nidns[] = $keyVal;
+      }
+
+      $count++;
+      if ($count >= 300) break;
+    }
+    fclose($handle);
+
+    // ── DATA COMPARISON DARI MYSQL DATABASE RIIL ──
+    $existingDb = collect([]);
+    if (Schema::hasTable($table) && !empty($nidns)) {
+      $qDb = DB::table($table);
+      if (Schema::hasColumn($table, 'tahun')) {
+        $qDb->where('tahun', $tahun);
+      }
+      $existingDb = $qDb->where(function($subQ) use ($nidns) {
+          $subQ->whereIn('nidn', $nidns)->orWhereIn('nuptk', $nidns);
+        })
+        ->select('nidn', 'nuptk', 'kesimpulan_bkd')
+        ->get()
+        ->keyBy(function($item) {
+          return !empty($item->nidn) ? $item->nidn : $item->nuptk;
+        });
+    }
+
+    $diffResult = [];
+    $hasNew = false;
+    foreach ($rows as $r) {
+      $key = !empty($r['nidn']) ? $r['nidn'] : $r['nuptk'];
+      $dbRecord = $existingDb->get($key);
+
+      $bkdLama = ($dbRecord && !empty($dbRecord->kesimpulan_bkd)) ? $dbRecord->kesimpulan_bkd : '-';
+      $isNewOrEmpty = (!$dbRecord || empty($dbRecord->kesimpulan_bkd) || trim($dbRecord->kesimpulan_bkd) === '-');
+      if ($isNewOrEmpty) {
+          $hasNew = true;
+      }
+      
+      $diffResult[] = [
+        'nidn' => !empty($r['nidn']) ? $r['nidn'] : '—',
+        'nuptk' => !empty($r['nuptk']) ? $r['nuptk'] : '—',
+        'nama_dosen' => !empty($r['nama_dosen']) ? $r['nama_dosen'] : '—',
+        'bkd_lama' => $bkdLama,
+        'bkd_baru' => $r['bkd_baru'],
+        'is_changed' => (!$isNewOrEmpty && $dbRecord->kesimpulan_bkd !== $r['bkd_baru'])
+      ];
+    }
+
+    $isNewUpload = $existingDb->isEmpty();
+    $changedRows = [];
+
+    foreach ($diffResult as $item) {
+      if ($item['is_changed']) {
+        $changedRows[] = $item;
+      }
+    }
+
+    $hasChanges = count($changedRows) > 0;
+
+    return response()->json([
+      'success' => true,
+      'is_new_upload' => $isNewUpload,
+      'has_changes' => $hasChanges,
+      'has_new' => $hasNew,
+      'data' => $isNewUpload ? array_slice($diffResult, 0, 15) : array_slice($changedRows, 0, 15),
+      'total' => $isNewUpload ? count($diffResult) : count($changedRows)
+    ]);
   }
 }

@@ -879,7 +879,7 @@ class SkppController extends Controller
                 DB::table('i_complain')->where('id', $request->skpp_id)->update([
                     'lampiran' => $filename,
                     'status' => 'setuju',
-                    'handled_by' => auth()->user() ? auth()->user()->email : 'Admin',
+                    'handled_by' => auth()->user() ? auth()->user()->id : null,
                     'handled_at' => now(),
                     'updated_at' => now(),
                 ]);
@@ -907,7 +907,7 @@ class SkppController extends Controller
                 DB::table('i_complain')->where('id', $request->skpp_id)->update([
                     'lampiran' => $filename,
                     'status' => 'menunggu_konfirmasi',
-                    'handled_by' => auth()->user() ? auth()->user()->email : 'Admin',
+                    'handled_by' => auth()->user() ? auth()->user()->id : null,
                     'handled_at' => now(),
                     'updated_at' => now(),
                 ]);
@@ -980,7 +980,7 @@ class SkppController extends Controller
         DB::table('i_complain')->where('id', $id)->update([
             'status' => 'tolak',
             'admin_balasan' => $request->input('alasan', 'Ditolak oleh Admin/PIC'),
-            'handled_by' => auth()->user() ? auth()->user()->email : 'Admin',
+            'handled_by' => auth()->user() ? auth()->user()->id : null,
             'handled_at' => now(),
             'updated_at' => now(),
         ]);

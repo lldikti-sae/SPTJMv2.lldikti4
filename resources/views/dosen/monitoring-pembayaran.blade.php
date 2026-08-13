@@ -553,7 +553,7 @@ $months = [
       const endYearInput = document.getElementById('hidden_end_year');
       const jenisTunjanganInput = document.getElementById('hidden_jenis_tunjangan');
       let currentJenis = jenisTunjanganInput ? jenisTunjanganInput.value : 'sptjm';
-
+      
       const fmt = n => Number(n).toLocaleString('id-ID',{maximumFractionDigits:0});
       const fmtDec = n => Number(n).toLocaleString('id-ID',{minimumFractionDigits:2, maximumFractionDigits:2});
       const statusCfg = {usulan:['bg-label-warning','Usulan'],proses:['bg-label-info','Proses'],kurang:['bg-label-danger','Kurang'],lebih:['bg-label-secondary','Lebih'],selesai:['bg-label-success','Selesai']};
@@ -572,7 +572,20 @@ $months = [
             }
         });
 
-        // Tampilkan state loading
+        // Toggle wrap untuk tabel khusus tukin
+        const wrapper = document.getElementById('mp-table-wrapper');
+        const table = document.getElementById('mp-table');
+        if (wrapper) {
+            if (currentJenis === 'tukin') {
+                wrapper.classList.remove('text-nowrap');
+                if (table) table.classList.add('tukin-wrap');
+            } else {
+                wrapper.classList.add('text-nowrap');
+                if (table) table.classList.remove('tukin-wrap');
+            }
+        }
+
+        // Tampilkan state loading agar tidak terasa "mentok"
         filterSelect.disabled = true;
 
         fetch("{{ route('dosen.monitoring-pembayaran.data') }}", {
@@ -589,17 +602,17 @@ $months = [
 
           // Header
           const el1=document.getElementById('hdr-nidn'); if(el1) el1.value=(h.NIDN||'')+' - '+(h.Nama||'');
-          const el2=document.getElementById('hdr-jabatan'); if(el2) el2.value=(h.JabatanSelected||'')+' - '+(h.Aktif==1?'Aktif':'Tidak Aktif');
+          const spanJenis=document.getElementById('hdr-status-jenis');
+          const spanAktif=document.getElementById('hdr-status-aktif');
+          if(spanJenis && spanAktif) {
+              const j=(h.Jenis||'').toUpperCase(), pns=j.indexOf('PNS')!==-1&&j.indexOf('NON')===-1;
+              spanJenis.textContent = pns ? 'PNS' : 'NON PNS';
+              spanJenis.style.color = '#0056b3';
+              spanAktif.textContent = h.Aktif==1 ? 'Aktif' : 'Tidak Aktif';
+          }
           const el3=document.getElementById('hdr-pt'); if(el3) el3.value=(h.Kode_PT||'')+' - '+(h.PTS||'');
 
-          // PNS badge
-          const badge=document.getElementById('badge-jenis');
-          if(badge){
-            const j=(h.Jenis||'').toUpperCase(), pns=j.indexOf('PNS')!==-1&&j.indexOf('NON')===-1;
-            badge.textContent=pns?'PNS':'Non-PNS';
-            badge.className='badge '+(pns?'bg-label-primary':'bg-label-success');
-            badge.style.cssText='font-size:13px;font-weight:700;padding:6px 14px;';
-          }
+
           const sm=data.summary||{};
           const ek=document.getElementById('sum-kewajiban'); if(ek) ek.textContent='Rp '+fmt(sm.totalKewajiban||0);
           const ed=document.getElementById('sum-dibayar'); if(ed) ed.textContent='Rp '+fmt(sm.totalDibayar||0);
@@ -608,27 +621,27 @@ $months = [
           const si=document.getElementById('sum-selisih-icon');
           if(si){si.className='avatar-initial rounded '+((sm.totalSelisih||0)==0?'bg-label-success':'bg-label-danger')+' me-2';}
 
-          const sumTkgb=[...(data.kotorTkgb||[]),...(data.pajakTkgb||[]),...(data.bersihTkgb||[])].reduce((a,b)=>a+Number(b),0);
-          let hasTkgb=sumTkgb!=0;
+          let hasTkgb = data.isGuruBesar || false;
           const tbl=document.getElementById('mp-table');
           if(tbl) tbl.dataset.hasTkgb=hasTkgb?'1':'0';
 
           const thead=tbl?.querySelector('thead');
           if(thead){
             if (currentJenis === 'tukin') {
-                thead.innerHTML=`<tr><th class="text-center">Tahun</th><th class="text-center col-bulan">Bulan</th><th class="text-center">Kode Usulan</th><th class="text-center">Jabatan / Gol/MK</th><th class="text-center">Nominal TUKIN</th><th class="text-center">Nominal Diterima</th><th class="text-center">Nominal kinerja dasar</th><th class="text-center">Nominal Kinerja Prestasi</th><th class="text-center">Potongan Periodik</th><th class="text-center">Nominal Bersih TPD</th><th class="text-center">NilaiBersih TUKIN</th><th class="text-center">NO SP2D</th><th class="text-center">TGL SP2D</th><th class="text-center">Selisih</th><th class="text-center">Status</th></tr>`;
+                thead.innerHTML=`<tr><th class="text-center align-middle">Tahun</th><th class="text-center align-middle col-bulan">Bulan</th><th class="text-center align-middle">Kode Usulan</th><th class="text-center align-middle">Jabatan / Gol-MK</th><th class="text-center align-middle">Nominal TUKIN</th><th class="text-center align-middle">% KD</th><th class="text-center align-middle">Nominal Kinerja Dasar</th><th class="text-center align-middle">% KP</th><th class="text-center align-middle">Nominal Kinerja Prestasi</th><th class="text-center align-middle">Nominal Bersih TPD</th><th class="text-center align-middle">% PP </th><th class="text-center align-middle">Potongan Periodik</th><th class="text-center align-middle">Nilai Bersih TUKIN</th><th class="text-center align-middle">No SP2D</th><th class="text-center align-middle">Tgl SP2D</th><th class="text-center align-middle">Status</th></tr>`;
             } else if (currentJenis === 'sptjm') {
-                let thHtml=`<tr><th rowspan="2" class="text-center align-middle">TAHUN</th><th rowspan="2" class="text-center align-middle">BULAN</th><th rowspan="2" class="text-center align-middle">KODE USULAN</th><th rowspan="2" class="text-center align-middle">GOL/MK</th><th rowspan="2" class="text-center align-middle">GAJI</th><th colspan="${hasTkgb?6:3}" class="text-center align-middle">NOMINAL</th><th rowspan="2" class="text-center align-middle">NO SP2D</th><th rowspan="2" class="text-center align-middle">TGL SP2D</th><th rowspan="2" class="text-center align-middle">SELISIH</th><th rowspan="2" class="text-center align-middle">STATUS</th></tr><tr><th class="text-center align-middle">KOTOR TPD</th><th class="text-center align-middle">PAJAK TPD</th>${hasTkgb?'<th class="text-center align-middle tkgb-col">KOTOR TKGB</th>':''}${hasTkgb?'<th class="text-center align-middle tkgb-col">PAJAK TKGB</th>':''}<th class="text-center align-middle">BERSIH TPD</th>${hasTkgb?'<th class="text-center align-middle tkgb-col">BERSIH TKGB</th>':''}</tr>`;
-                thead.innerHTML = thHtml;
+                thead.innerHTML=`<tr><th rowspan="2" class="text-center align-middle">Tahun</th><th rowspan="2" class="text-center align-middle">Bulan</th><th rowspan="2" class="text-center align-middle">Kode Usulan</th><th rowspan="2" class="text-center align-middle">Jabatan / Gol/MK</th><th rowspan="2" class="text-center align-middle">Gaji</th><th colspan="${hasTkgb ? 4 : 2}" class="text-center align-middle">Nominal</th><th rowspan="2" class="text-center align-middle">NO SP2D</th><th rowspan="2" class="text-center align-middle">TGL SP2D</th>${!data.isPns ? '<th rowspan="2" class="text-center align-middle">Selisih</th>' : ''}<th rowspan="2" class="text-center align-middle">Status</th></tr><tr><th class="text-center align-middle">Kotor TPD</th><th class="text-center align-middle">Bersih TPD</th>${hasTkgb?'<th class="text-center align-middle tkgb-col">Kotor TKGB</th>':''}${hasTkgb?'<th class="text-center align-middle tkgb-col">Bersih TKGB</th>':''}</tr>`;
             } else {
-                thead.innerHTML=`<tr><th class="text-center">Tahun</th><th class="text-center">Bulan</th><th class="text-center">Kode Usulan</th><th class="text-center">Gol/MK</th><th class="text-center">Gaji</th><th class="text-center">Nominal SPTJM</th>${hasTkgb?'<th class="text-center tkgb-col">Nominal TUKIN</th>':''}<th class="text-center">Bersih SPTJM</th>${hasTkgb?'<th class="text-center tkgb-col">Bersih TUKIN</th>':''}<th class="text-center">NO SP2D</th><th class="text-center">TGL SP2D</th><th class="text-center">Selisih</th><th class="text-center">Status</th></tr>`;
+                thead.innerHTML=`<tr><th class="text-center">Tahun</th><th class="text-center">Bulan</th><th class="text-center">Jabatan / Gol-MK</th><th class="text-center">Gaji</th><th class="text-center">Nominal SPTJM</th>${hasTkgb?'<th class="text-center tkgb-col">Nominal TUKIN</th>':''}<th class="text-center">Bersih SPTJM</th>${hasTkgb?'<th class="text-center tkgb-col">Bersih TUKIN</th>':''}<th class="text-center">Selisih</th><th class="text-center">Status</th></tr>`;
             }
           }
 
+          let totGaji=0, totDasar=0, totPrestasi=0, totBersihTpd=0, totPotongan=0, totNilaiBersih=0;
+          const tkc=(v)=>hasTkgb?`<td class="text-end tkgb-col">${fmt(v)}</td>`:'';
           const tbody=tbl?.querySelector('tbody'); 
           if(tbody) {
             tbody.innerHTML='';
-            const months=data.months||[], sb=data.selisihBulanan||[], stb=data.statusBulanan||[], tTotals=data.totals||{};
+            const months=data.months||[], sb=data.selisihBulanan||[], stb=data.statusBulanan||[];
             
             // Ensure all array properties exist to prevent 'Cannot read properties of undefined'
             data.gajiBulanan = data.gajiBulanan || [];
@@ -648,69 +661,108 @@ $months = [
             data.pajakTkgb = data.pajakTkgb || [];
             data.kodeUsulanBulanan = data.kodeUsulanBulanan || [];
 
-            const tkc=(v)=>hasTkgb?`<td class="text-end tkgb-col">${fmt(v)}</td>`:'';
 
             if (currentJenis === 'tukin') {
-                let totGaji=0, totTukin=0, totDasar=0, totPrestasi=0, totPotongan=0, totBersihTpd=0, totNilaiBersih=0;
                 for(let i=0;i<months.length;i++){
                     const st=stb[i];
                     let stH='-'; if(st&&statusCfg[st]) stH=`<span class="badge ${statusCfg[st][0]}" style="font-size:10px">${statusCfg[st][1]}</span>`; else if(st&&st.startsWith('kode:')) stH=`<span class="badge bg-label-secondary" style="font-size:10px">${st.substring(5)}</span>`;
-                    const gaji = data.gajiBulanan[i] ?? 0;
-                    const nominalTukin = data.kotorTpd[i] ?? 0;
-                    const kinerjaDasar = nominalTukin * 0.6;
-                    const kinerjaPrestasi = 0;
-                    const potongan = 0;
-                    const bersihTpdVal = 0;
-                    let nilaiBersihTukin = 0;
-                    if (nominalTukin > 0) {
-                        nilaiBersihTukin = (kinerjaDasar + kinerjaPrestasi - potongan) - bersihTpdVal;
+                    
+                    const nominalTukin = data.gajiBulanan[i] ?? 0;
+                    
+                    const persenDasar = data.tukinDasar ? (data.tukinDasar[i] ?? 0.60) : 0.60;
+                    const persenPrestasi = data.tukinPrestasi ? (data.tukinPrestasi[i] ?? 0) : 0;
+                    const persenPotongan = data.tukinPotongan ? (data.tukinPotongan[i] ?? 0) : 0;
+                    
+                    const nominalDasar = nominalTukin * persenDasar;
+                    const nominalPrestasi = nominalTukin * persenPrestasi;
+                    const nominalBersihTpd = data.bersihTpd ? (data.bersihTpd[i] ?? 0) : 0;
+                    const nominalPotongan = nominalTukin * persenPotongan;
+                    
+                    const nilaiBersihTukin = nominalDasar + nominalPrestasi - nominalBersihTpd - nominalPotongan;
+
+                    let jb = data.jabatanBulanan[i] ?? '-';
+                    let gl = data.golonganBulanan[i] ?? '-';
+                    let mk = data.tahunBulanan[i] ?? '-';
+                    const jabatanText = `${jb} / ${gl}-${mk}`;
+                    
+                    let tglMain = data.tglSp2d[i] ?? '-';
+                    if (tglMain !== '' && tglMain !== '-') {
+                        const dMain = new Date(tglMain);
+                        if(!isNaN(dMain)) {
+                            const d = String(dMain.getDate()).padStart(2, '0');
+                            const m = String(dMain.getMonth() + 1).padStart(2, '0');
+                            const y = dMain.getFullYear();
+                            tglMain = `${d}/${m}/${y}`;
+                        }
                     }
-                    totGaji += gaji; totTukin += nominalTukin; totDasar += kinerjaDasar;
-                    totPrestasi += kinerjaPrestasi; totPotongan += potongan;
-                    totBersihTpd += bersihTpdVal; totNilaiBersih += nilaiBersihTukin;
-                    tbody.innerHTML += `<tr><td class="text-center">${data.selectedYear||'-'}</td><td>${months[i]}</td><td class="text-center">${data.kodeUsulanBulanan[i]??'-'}</td><td class="text-center">${data.golonganBulanan[i]??'-'} - ${data.tahunBulanan[i]??'-'}</td><td class="text-end">${fmt(gaji)}</td><td class="text-end">${fmt(nominalTukin)}</td><td class="text-end">${fmtDec(kinerjaDasar)}</td><td class="text-end">${fmtDec(kinerjaPrestasi)}</td><td class="text-end">${fmtDec(potongan)}</td><td class="text-end">${fmt(bersihTpdVal)}</td><td class="text-end">${fmt(nilaiBersihTukin)}</td><td class="text-center" style="font-size:11px">-</td><td class="text-center" style="font-size:11px">-</td><td class="text-end fw-bold text-success">0</td><td class="text-center">${stH}</td></tr>`;
+
+                    totGaji += nominalTukin; totDasar += nominalDasar; totPrestasi += nominalPrestasi;
+                    totBersihTpd += nominalBersihTpd; totPotongan += nominalPotongan; totNilaiBersih += nilaiBersihTukin;
+                    
+                    const pDasarStr = String(Math.round(persenDasar * 100 * 100) / 100) + '%';
+                    const pPrestasiStr = String(Math.round(persenPrestasi * 100 * 100) / 100) + '%';
+                    const pPotonganStr = String(Math.round(persenPotongan * 100 * 100) / 100) + '%';
+
+                    tbody.innerHTML += `<tr><td class="text-center">${data.selectedYear||'-'}</td><td class="col-bulan">${months[i]}</td><td class="text-center">${data.kodeUsulanBulanan[i]??'-'}</td><td class="text-center">${jabatanText}</td><td class="text-end">${fmt(nominalTukin)}</td><td class="text-center">${pDasarStr}</td><td class="text-end">${fmt(nominalDasar)}</td><td class="text-center">${pPrestasiStr}</td><td class="text-end">${fmt(nominalPrestasi)}</td><td class="text-end">${fmt(nominalBersihTpd)}</td><td class="text-center">${pPotonganStr}</td><td class="text-end">${fmt(nominalPotongan)}</td><td class="text-end">${fmt(nilaiBersihTukin)}</td><td class="text-center" style="font-size:11px">${data.noSp2d[i]??'-'}</td><td class="text-center" style="font-size:11px">${tglMain}</td><td class="text-center">${stH}</td></tr>`;
                 }
-                tbody.innerHTML += `<tr class="fw-bold table-light"><td colspan="4" class="text-center">Jumlah</td><td class="text-end">${fmt(totGaji)}</td><td class="text-end">${fmt(totTukin)}</td><td class="text-end">${fmtDec(totDasar)}</td><td class="text-end">${fmtDec(totPrestasi)}</td><td class="text-end">${fmtDec(totPotongan)}</td><td class="text-end">${fmt(totBersihTpd)}</td><td class="text-end">${fmt(totNilaiBersih)}</td><td colspan="2"></td><td colspan="2"></td></tr>`;
-            } else if (currentJenis === 'sptjm') {
+                tbody.innerHTML += `<tr class="fw-bold table-light"><td colspan="4" class="text-center">Jumlah</td><td class="text-end">${fmt(totGaji)}</td><td></td><td class="text-end">${fmt(totDasar)}</td><td></td><td class="text-end">${fmt(totPrestasi)}</td><td class="text-end">${fmt(totBersihTpd)}</td><td></td><td class="text-end">${fmt(totPotongan)}</td><td class="text-end">${fmt(totNilaiBersih)}</td><td colspan="3"></td></tr>`;
+              } else if (currentJenis === 'sptjm') {
                 for(let i=0;i<months.length;i++){
                   const st=stb[i];
                   let stH='-'; if(st&&statusCfg[st]) stH=`<span class="badge ${statusCfg[st][0]}" style="font-size:10px">${statusCfg[st][1]}</span>`; else if(st&&st.startsWith('kode:')) stH=`<span class="badge bg-label-secondary" style="font-size:10px">${st.substring(5)}</span>`;
-                  const pfx=sb[i]<0?'-':(sb[i]>0?'+':''), s=sb[i]||0, sc=s<0?'text-danger fw-bold':(s>0?'text-success fw-bold':'text-success fw-bold');
-                  const ss='font-size:12px; font-weight:700; font-family:"Roboto",sans-serif; letter-spacing:0.3px;';
+                  
                   let tglMain=data.tglSp2d[i]??'-';
                   if(tglMain!=='-'){ try{ const pd=new Date(tglMain); if(!isNaN(pd)) tglMain=('0'+pd.getDate()).slice(-2)+'/'+('0'+(pd.getMonth()+1)).slice(-2)+'/'+pd.getFullYear(); }catch(e){} }
+                  
                   const gaji = data.gajiBulanan[i]??0;
                   const kotorTpdCol = `<td class="text-end">${fmt(data.kotorTpd[i]??0)}</td>`;
-                  const pajakTpdCol = `<td class="text-end">${fmt(data.pajakTpd[i]??0)}</td>`;
-                  const kotorTkgbCol = tkc(data.kotorTkgb[i]??0);
-                  const pajakTkgbCol = tkc(data.pajakTkgb[i]??0);
                   const bersihTpdCol = `<td class="text-end">${fmt(data.bersihTpd[i]??0)}</td>`;
-                  const bersihTkgbCol = tkc(data.bersihTkgb[i]??0);
-                  let nomCols = kotorTpdCol + pajakTpdCol + kotorTkgbCol + pajakTkgbCol + bersihTpdCol + bersihTkgbCol;
-                  tbody.innerHTML+=`<tr><td class="text-center">${data.selectedYear||'-'}</td><td>${months[i]}</td><td class="text-center">${data.kodeUsulanBulanan[i]??'-'}</td><td class="text-center">${data.golonganBulanan[i]??'-'} - ${data.tahunBulanan[i]??'-'}</td><td class="text-end">${fmt(gaji)}</td>${nomCols}<td class="text-center" style="font-size:11px">${data.noSp2d[i]??'-'}</td><td class="text-center" style="font-size:11px">${tglMain}</td><td class="${sc}" style="${ss}">${pfx}${fmt(Math.abs(s))}</td><td class="text-center">${stH}</td></tr>`;
+                  let nomCols = kotorTpdCol + bersihTpdCol;
+                  if (hasTkgb) {
+                      nomCols += `<td class="text-end tkgb-col">${fmt(data.kotorTkgb[i]??0)}</td>`;
+                      nomCols += `<td class="text-end tkgb-col">${fmt(data.bersihTkgb[i]??0)}</td>`;
+                  }
+                  
+                  let selTd = '';
+                  if (!data.isPns) {
+                      let s = sb[i]||0;
+                      let sc=s<0?'text-end text-danger fw-bold':(s>0?'text-end text-success fw-bold':'text-end text-success fw-bold');
+                      let pfx=s<0?'-':(s>0?'+':'');
+                      selTd = `<td class="${sc}">${pfx}${fmt(Math.abs(s))}</td>`;
+                  }
+                  
+                  tbody.innerHTML+=`<tr><td class="text-center">${data.selectedYear||'-'}</td><td>${months[i]}</td><td class="text-center">${data.kodeUsulanBulanan[i]??'-'}</td><td class="text-center">${data.jabatanBulanan[i]??'-'} / ${data.golonganBulanan[i]??'-'} - ${data.tahunBulanan[i]??'-'}</td><td class="text-end">${fmt(gaji)}</td>${nomCols}<td class="text-center" style="font-size:11px">${data.noSp2d[i]??'-'}</td><td class="text-center" style="font-size:11px">${tglMain}</td>${selTd}<td class="text-center">${stH}</td></tr>`;
                 }
-                const tSptjm=data.totals||{};
-                let sumCols = `<td class="text-end">${fmt(tSptjm.kotorTpd||0)}</td><td class="text-end">${fmt(tSptjm.pajakTpd||0)}</td>${tkc(tSptjm.kotorTkgb||0)}${tkc(tSptjm.pajakTkgb||0)}<td class="text-end">${fmt(tSptjm.bersihTpd||0)}</td>${tkc(tSptjm.bersihTkgb||0)}`;
-                let sumColspan = 4;
-                tbody.innerHTML+=`<tr class="fw-bold table-light"><td colspan="${sumColspan}" class="text-center">Jumlah</td><td class="text-end">${fmt(tSptjm.gaji||0)}</td>${sumCols}<td colspan="2"></td><td colspan="2"></td></tr>`;
-                
-                const sumOri = data.summaryOriginal || {};
-                const valKGrRow = sumOri.k_gross || 0, valKPjRow = sumOri.k_pajak || 0, valKNeRow = sumOri.k_net || 0;
-                const valLGrRow = sumOri.l_gross || 0, valLPjRow = sumOri.l_pajak || 0, valLNeRow = sumOri.l_net || 0;
-                
-                tbody.innerHTML+=`<tr class="fw-bold" style="background-color:#ffdcdc"><td colspan="${sumColspan}" class="text-center">Pembayaran Kekurangan</td><td></td><td class="text-end">${fmt(valKGrRow)}</td><td class="text-end">${fmt(valKPjRow)}</td>${tkc(0)}${tkc(0)}<td class="text-end">${fmt(valKNeRow)}</td>${tkc(0)}<td colspan="2"></td><td colspan="2"></td></tr>`;
-                tbody.innerHTML+=`<tr class="fw-bold" style="background-color:#dbeafe"><td colspan="${sumColspan}" class="text-center">Pengembalian Kelebihan</td><td></td><td class="text-end">${fmt(valLGrRow)}</td><td class="text-end">${fmt(valLPjRow)}</td>${tkc(0)}${tkc(0)}<td class="text-end">${fmt(valLNeRow)}</td>${tkc(0)}<td colspan="2"></td><td colspan="2"></td></tr>`;
-                
-                const taKotorTpd = (tSptjm.kotorTpd||0) + valKGrRow - valLGrRow;
-                const taPajakTpd = (tSptjm.pajakTpd||0) + valKPjRow - valLPjRow;
-                const taBersihTpd = (tSptjm.bersihTpd||0) + valKNeRow - valLNeRow;
-                
-                tbody.innerHTML+=`<tr class="fw-bold" style="background-color:#d1fae5"><td colspan="${sumColspan}" class="text-center">Total Akhir</td><td class="text-end">${fmt(tSptjm.gaji||0)}</td><td class="text-end">${fmt(taKotorTpd)}</td><td class="text-end">${fmt(taPajakTpd)}</td>${tkc(0)}${tkc(0)}<td class="text-end">${fmt(taBersihTpd)}</td>${tkc(0)}<td colspan="2"></td><td colspan="2"></td></tr>`;
-            } else {
+    
+                // Totals
+                const t=data.totals||{};
+                const sumCols = `<td class="text-end">${fmt(t.kotorTpd||0)}</td><td class="text-end">${fmt(t.bersihTpd||0)}</td>${hasTkgb ? `<td class="text-end tkgb-col">${fmt(t.kotorTkgb||0)}</td><td class="text-end tkgb-col">${fmt(t.bersihTkgb||0)}</td>` : ''}`;
+                tbody.innerHTML+=`<tr class="fw-bold table-light"><td colspan="4" class="text-center">Jumlah</td><td class="text-end">${fmt(t.gaji||0)}</td>${sumCols}<td colspan="${!data.isPns ? '4' : '3'}"></td></tr>`;
+              } else {
                 for(let i=0;i<months.length;i++){
-                  const s=sb[i]||0, st=stb[i], sc=s<0?'text-end text-danger fw-bold':(s>0?'text-end text-success fw-bold':'text-end text-success fw-bold'), ss='';
+                  const gaji = data.gajiBulanan[i]??0;
+                  const nomSptjm = data.kotorTpd[i]??0;
+                  const nomTukin = data.kotorTkgb[i]??0;
+                  
+                  let s = sb[i]||0;
+                  let st = stb[i];
+                  
+                  if (currentJenis === 'semua') {
+                      s = gaji - (nomSptjm + nomTukin);
+                      if (s > 0) st = 'kurang';
+                      else if (s < 0) st = 'lebih';
+                      else st = 'selesai';
+                  }
+
+                  let sc=s<0?'text-end text-danger fw-bold':(s>0?'text-end text-success fw-bold':'text-end text-success fw-bold'), ss='';
                   const pfx=s<0?'-':(s>0?'+':'');
-                  let stH='-'; if(st&&statusCfg[st]) stH=`<span class="badge ${statusCfg[st][0]}" style="font-size:10px">${statusCfg[st][1]}</span>`; else if(st&&st.startsWith('kode:')) stH=`<span class="badge bg-label-secondary" style="font-size:10px">${st.substring(5)}</span>`;
+                  let stH='-'; 
+                  if(st&&statusCfg[st]) {
+                      stH=`<span class="badge ${statusCfg[st][0]}" style="font-size:10px">${statusCfg[st][1]}</span>`; 
+                  } else if(st&&st.startsWith('kode:')) {
+                      stH=`<span class="badge bg-label-secondary" style="font-size:10px">${st.substring(5)}</span>`;
+                  }
+                  
                   let tglMain = data.tglSp2d[i] ?? '-';
                   if (tglMain !== '' && tglMain !== '-') {
                       const dMain = new Date(tglMain);
@@ -721,36 +773,64 @@ $months = [
                           tglMain = `${dd}/${mm}/${yy}`;
                       }
                   }
-                  const gaji = data.gajiBulanan[i]??0;
-                  const kotorTpdCol = `<td class="text-end">${fmt(data.kotorTpd[i]??0)}</td>`;
-                  const kotorTkgbCol = tkc(data.kotorTkgb[i]??0);
+    
+                  const kotorTpdCol = `<td class="text-end">${fmt(nomSptjm)}</td>`;
+                  const kotorTkgbCol = tkc(nomTukin);
                   const bersihTpdCol = `<td class="text-end">${fmt(data.bersihTpd[i]??0)}</td>`;
                   const bersihTkgbCol = tkc(data.bersihTkgb[i]??0);
+                  
                   let nomCols = kotorTpdCol + kotorTkgbCol + bersihTpdCol + bersihTkgbCol;
-                  tbody.innerHTML+=`<tr><td class="text-center">${data.selectedYear||'-'}</td><td>${months[i]}</td><td class="text-center">${data.kodeUsulanBulanan[i]??'-'}</td><td class="text-center">${data.golonganBulanan[i]??'-'} - ${data.tahunBulanan[i]??'-'}</td><td class="text-end">${fmt(gaji)}</td>${nomCols}<td class="text-center" style="font-size:11px">${data.noSp2d[i]??'-'}</td><td class="text-center" style="font-size:11px">${tglMain}</td><td class="${sc}" style="${ss}">${pfx}${fmt(Math.abs(s))}</td><td class="text-center">${stH}</td></tr>`;
+                  
+                  let jb = data.jabatanBulanan[i] ?? '-';
+                  let gl = data.golonganBulanan[i] ?? '-';
+                  let mk = data.tahunBulanan[i] ?? '-';
+                  let jabatanGolMk = `${jb} / ${gl}-${mk}`;
+    
+                  tbody.innerHTML+=`<tr><td class="text-center">${data.selectedYear||'-'}</td><td>${months[i]}</td><td class="text-center">${jabatanGolMk}</td><td class="text-end">${fmt(gaji)}</td>${nomCols}<td class="${sc}">${pfx}${fmt(Math.abs(s))}</td><td class="text-center">${stH}</td></tr>`;
                 }
+    
                 const t=data.totals||{};
                 let sumCols = `<td class="text-end">${fmt(t.kotorTpd||0)}</td>${tkc(t.kotorTkgb||0)}<td class="text-end">${fmt(t.bersihTpd||0)}</td>${tkc(t.bersihTkgb||0)}`;
-                let sumColspan2 = 4;
-                tbody.innerHTML+=`<tr class="fw-bold table-light"><td colspan="${sumColspan2}" class="text-center">Jumlah</td><td class="text-end">${fmt(t.gaji||0)}</td>${sumCols}<td colspan="2"></td><td colspan="2"></td></tr>`;
-                const sumOri = data.summaryOriginal || {};
-                const valKGrRow = sumOri.k_gross || 0, valKPjRow = sumOri.k_pajak || 0, valKNeRow = sumOri.k_net || 0;
-                const valLGrRow = sumOri.l_gross || 0, valLPjRow = sumOri.l_pajak || 0, valLNeRow = sumOri.l_net || 0;
-                
-                tbody.innerHTML+=`<tr class="fw-bold" style="background-color:#ffdcdc"><td colspan="${sumColspan2}" class="text-center">Pembayaran Kekurangan</td><td></td><td class="text-end">${fmt(valKGrRow)}</td>${tkc(0)}<td class="text-end">${fmt(valKNeRow)}</td>${tkc(0)}<td colspan="2"></td><td colspan="2"></td></tr>`;
-                tbody.innerHTML+=`<tr class="fw-bold" style="background-color:#dbeafe"><td colspan="${sumColspan2}" class="text-center">Pengembalian Kelebihan</td><td></td><td class="text-end">${fmt(valLGrRow)}</td>${tkc(0)}<td class="text-end">${fmt(valLNeRow)}</td>${tkc(0)}<td colspan="2"></td><td colspan="2"></td></tr>`;
-                
-                const taKotorTpd = (t.kotorTpd||0) + valKGrRow - valLGrRow;
-                const taBersihTpd = (t.bersihTpd||0) + valKNeRow - valLNeRow;
-                
-                tbody.innerHTML+=`<tr class="fw-bold" style="background-color:#d1fae5"><td colspan="${sumColspan2}" class="text-center">Total Akhir</td><td class="text-end">${fmt(t.gaji||0)}</td><td class="text-end">${fmt(taKotorTpd)}</td>${tkc(0)}<td class="text-end">${fmt(taBersihTpd)}</td>${tkc(0)}<td colspan="2"></td><td colspan="2"></td></tr>`;
+                tbody.innerHTML+=`<tr class="fw-bold table-light"><td colspan="3" class="text-center">Jumlah</td><td class="text-end">${fmt(t.gaji||0)}</td>${sumCols}<td colspan="2"></td></tr>`;
             }
           }
           
+          const tfoot=tbl?.querySelector('tfoot');
+          if(tfoot) {
+            tfoot.innerHTML='';
+            const tTotals = data.totals || {};
+            const sumOri = data.summaryOriginal || {};
+            const valKGrRow = sumOri.k_gross || 0;
+            const valKNeRow = sumOri.k_net || 0;
+            const valLGrRow = sumOri.l_gross || 0;
+            const valLNeRow = sumOri.l_net || 0;
+
+            if (currentJenis === 'tukin') {
+                tfoot.innerHTML+=`<tr class="fw-bold" style="background-color:#ffdcdc"><td colspan="4" class="text-center">Pembayaran Kekurangan</td><td colspan="12"></td></tr>`;
+                tfoot.innerHTML+=`<tr class="fw-bold" style="background-color:#dbeafe"><td colspan="4" class="text-center">Pengembalian Kelebihan</td><td colspan="12"></td></tr>`;
+                tfoot.innerHTML+=`<tr class="fw-bold" style="background-color:#d1fae5"><td colspan="4" class="text-center">Total Akhir</td><td class="text-end">${fmt(totGaji)}</td><td></td><td class="text-end">${fmt(totDasar)}</td><td></td><td class="text-end">${fmt(totPrestasi)}</td><td class="text-end">${fmt(totBersihTpd)}</td><td></td><td class="text-end">${fmt(totPotongan)}</td><td class="text-end">${fmt(totNilaiBersih)}</td><td colspan="3"></td></tr>`;
+            } else if (currentJenis === 'sptjm') {
+                const taKotorTpd = (tTotals.kotorTpd||0) + valKGrRow - valLGrRow;
+                const taBersihTpd = (tTotals.bersihTpd||0) + valKNeRow - valLNeRow;
+                tfoot.innerHTML+=`<tr class="fw-bold" style="background-color:#ffdcdc"><td colspan="4" class="text-center">Pembayaran Kekurangan</td><td></td><td class="text-end">${fmt(valKGrRow)}</td><td class="text-end">${fmt(valKNeRow)}</td>${hasTkgb?'<td class="text-end tkgb-col">0</td><td class="text-end tkgb-col">0</td>':''}<td colspan="${!data.isPns ? '4' : '3'}"></td></tr>`;
+                tfoot.innerHTML+=`<tr class="fw-bold" style="background-color:#dbeafe"><td colspan="4" class="text-center">Pengembalian Kelebihan</td><td></td><td class="text-end">${fmt(valLGrRow)}</td><td class="text-end">${fmt(valLNeRow)}</td>${hasTkgb?'<td class="text-end tkgb-col">0</td><td class="text-end tkgb-col">0</td>':''}<td colspan="${!data.isPns ? '4' : '3'}"></td></tr>`;
+                tfoot.innerHTML+=`<tr class="fw-bold" style="background-color:#d1fae5"><td colspan="4" class="text-center">Total Akhir</td><td class="text-end">${fmt(tTotals.gaji||0)}</td><td class="text-end">${fmt(taKotorTpd)}</td><td class="text-end">${fmt(taBersihTpd)}</td>${hasTkgb?`<td class="text-end tkgb-col">${fmt(tTotals.kotorTkgb||0)}</td><td class="text-end tkgb-col">${fmt(tTotals.bersihTkgb||0)}</td>`:''}<td colspan="${!data.isPns ? '4' : '3'}"></td></tr>`;
+            } else {
+                const taKotorTpd = (tTotals.kotorTpd||0) + (tTotals.kotorTkgb||0) + valKGrRow - valLGrRow;
+                const taBersihTpd = (tTotals.bersihTpd||0) + (tTotals.bersihTkgb||0) + valKNeRow - valLNeRow;
+                tfoot.innerHTML+=`<tr class="fw-bold" style="background-color:#ffdcdc"><td colspan="3" class="text-center">Pembayaran Kekurangan</td><td></td><td class="text-end">${fmt(valKGrRow)}</td>${tkc(0)}<td class="text-end">${fmt(valKNeRow)}</td>${tkc(0)}<td colspan="2"></td></tr>`;
+                tfoot.innerHTML+=`<tr class="fw-bold" style="background-color:#dbeafe"><td colspan="3" class="text-center">Pengembalian Kelebihan</td><td></td><td class="text-end">${fmt(valLGrRow)}</td>${tkc(0)}<td class="text-end">${fmt(valLNeRow)}</td>${tkc(0)}<td colspan="2"></td></tr>`;
+                tfoot.innerHTML+=`<tr class="fw-bold" style="background-color:#d1fae5"><td colspan="3" class="text-center">Total Akhir</td><td class="text-end">${fmt(tTotals.gaji||0)}</td><td class="text-end">${fmt(taKotorTpd)}</td>${tkc(0)}<td class="text-end">${fmt(taBersihTpd)}</td>${tkc(0)}<td colspan="2"></td></tr>`;
+            }
+          }
+
+          // UPDATE TABEL KEDUA (URAIAN PEMBAYARAN)
           const tbodyRiwayat = document.querySelector('#tabel-riwayat tbody');
           if (tbodyRiwayat) {
             tbodyRiwayat.innerHTML = '';
             const riwayatData = data.riwayatPembayaran || [];
+            
+            let totalUraianBersih = 0;
             let totalUraianNominal = 0;
             let totalUraianPajak = 0;
             
@@ -867,7 +947,7 @@ $months = [
 
         }).catch(err=>{
             filterSelect.disabled = false;
-            alert("Terjadi kesalahan: " + err.message);
+            alert("Terjadi kesalahan: " + err.message + "\n\nStack: " + err.stack);
             console.error(err);
         });
       }
@@ -877,12 +957,34 @@ $months = [
       document.querySelectorAll('.md-status-btn').forEach(btn => {
           btn.addEventListener('click', function() {
               currentJenis = this.getAttribute('data-jenis');
-              if (jenisTunjanganInput) {
-                  jenisTunjanganInput.value = currentJenis;
+              // Append a hidden input to the main form so it remembers the filter if user clicks "Cari"
+              let form = document.querySelector('form[action="{{ route('dosen.monitoring-pembayaran.cari') }}"]');
+              if (form) {
+                  let hiddenInput = form.querySelector('input[name="jenis_tunjangan"]');
+                  if (!hiddenInput) {
+                      hiddenInput = document.createElement('input');
+                      hiddenInput.type = 'hidden';
+                      hiddenInput.name = 'jenis_tunjangan';
+                      form.appendChild(hiddenInput);
+                  }
+                  hiddenInput.value = currentJenis;
               }
               loadData();
           });
       });
+      
+      // Initialize form hidden input
+      let mainForm = document.querySelector('form[action="{{ route('dosen.monitoring-pembayaran.cari') }}"]');
+      if (mainForm && currentJenis) {
+          let hiddenInput = mainForm.querySelector('input[name="jenis_tunjangan"]');
+          if (!hiddenInput) {
+              hiddenInput = document.createElement('input');
+              hiddenInput.type = 'hidden';
+              hiddenInput.name = 'jenis_tunjangan';
+              mainForm.appendChild(hiddenInput);
+          }
+          hiddenInput.value = currentJenis;
+      }
     });
   </script>
   @endif

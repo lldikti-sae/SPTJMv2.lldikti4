@@ -27,16 +27,16 @@ class CekDataDosenPtsController extends Controller
     if (request()->ajax()) {
       // Query utama dengan join ke 3 tabel BKD, dan filter sesuai halaman native (M/null/empty)
       $dataDosen = DB::table('s_transaksi_2 as d')
-        ->leftJoin('o_sister_genap_tl as genap_tl', 'd.nidn', '=', 'genap_tl.nidn')
-        ->leftJoin('p_sister_ganjil_tl as ganjil_tl', 'd.nidn', '=', 'ganjil_tl.nidn')
-        ->leftJoin('n_sister_genap_bj as genap_bj', 'd.nidn', '=', 'genap_bj.nidn')
+        ->leftJoin('p_sister_genap as genap_tl', 'd.nidn', '=', 'genap_tl.nidn')
+        ->leftJoin('p_sister_ganjil as ganjil', 'd.nidn', '=', 'ganjil.nidn')
+        ->leftJoin('p_sister_genap as genap_bj', 'd.nidn', '=', 'genap_bj.nidn')
         ->select(
           'd.*',
           DB::raw("NULLIF(d.{$golonganCol}, '') as gol"),
           DB::raw("NULLIF(d.{$masaKerjaCol}, '') as masa_kerja"),
           DB::raw("NULLIF(d.{$jabatanCol}, '') as jabatan"),
           'genap_tl.kesimpulan_bkd as bkd_genap_tl',
-          'ganjil_tl.kesimpulan_bkd as bkd_ganjil_tl',
+          'ganjil.kesimpulan_bkd as bkd_ganjil',
           'genap_bj.kesimpulan_bkd as bkd_genap_bj'
         )
         ->where('d.kode_pt', $kodePts)
@@ -52,9 +52,9 @@ class CekDataDosenPtsController extends Controller
             ->orWhere('genap_tl.kesimpulan_bkd', '=','');
         })
         ->where(function ($q) {
-          $q->where('ganjil_tl.kesimpulan_bkd', 'M')
-            ->orWhereNull('ganjil_tl.kesimpulan_bkd')
-            ->orWhere('ganjil_tl.kesimpulan_bkd', '=','');
+          $q->where('ganjil.kesimpulan_bkd', 'M')
+            ->orWhereNull('ganjil.kesimpulan_bkd')
+            ->orWhere('ganjil.kesimpulan_bkd', '=','');
         })
         // Tampilkan dosen aktif dulu lalu urutkan berdasarkan nama
         ->orderByDesc('d.Aktif')
@@ -73,7 +73,7 @@ class CekDataDosenPtsController extends Controller
             ->orWhereRaw("COALESCE(NULLIF(d.{$jabatanCol}, ''), '') LIKE ?", ['%' . $search . '%'])
             // cari juga di kolom BKD join
             ->orWhere('genap_tl.kesimpulan_bkd', 'like', '%' . $search . '%')
-            ->orWhere('ganjil_tl.kesimpulan_bkd', 'like', '%' . $search . '%')
+            ->orWhere('ganjil.kesimpulan_bkd', 'like', '%' . $search . '%')
             ->orWhere('genap_bj.kesimpulan_bkd', 'like', '%' . $search . '%');
           });
         }

@@ -391,7 +391,7 @@ class ValidasiUsulanPicController extends Controller
       ($namaBulan == "Juli") or
       ($namaBulan == "Agustus")
     ) {
-      $sisternas = "p_sister_ganjil_tl";
+      $sisternas = "p_sister_ganjil";
     }
     if (($namaBulan == "September") or
       ($namaBulan == "Oktober") or
@@ -585,7 +585,7 @@ class ValidasiUsulanPicController extends Controller
         ($namaBulan == "Juli") or
         ($namaBulan == "Agustus")
       ) {
-        $sisternas = "p_sister_ganjil_tl";
+        $sisternas = "p_sister_ganjil";
       }
       if (($namaBulan == "September") or
         ($namaBulan == "Oktober") or
