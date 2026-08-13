@@ -2187,7 +2187,7 @@ function updateCutoffFileName(input, targetId) {
                             </div>
                             <div class="row g-4 align-items-stretch mt-1 mb-3.5">
                                 <!-- Card 1: Semester Ganjil (50% / col-md-6) -->
-                                <div class="col-md-6 col-sm-12 d-flex">
+                                <div class="col-md-6 col-sm-12 d-flex" id="colCardGanjil">
                                     <div class="btn-select-period p-3 rounded-3 d-flex flex-column justify-content-between w-100 h-100" data-value="p_sister_ganjil" style="cursor: pointer; transition: all 0.2s ease;">
                                         <div class="w-100">
                                             <div class="d-flex justify-content-between align-items-center mb-2">
@@ -2219,7 +2219,7 @@ function updateCutoffFileName(input, targetId) {
                                 </div>
 
                                 <!-- Card 2: Semester Genap (50% / col-md-6) -->
-                                <div class="col-md-6 col-sm-12 d-flex">
+                                <div class="col-md-6 col-sm-12 d-flex" id="colCardGenap">
                                     @php
                                         $isGenapBerjalan = ((int)$tahunSession >= (int)date('Y'));
                                         $genapDefaultVal = $isGenapBerjalan ? 'p_sister_genap' : 'p_sister_genap';
@@ -3778,6 +3778,15 @@ function viewD3MappingRow(btn) {
     // Tampilkan modal
     $('#modalDashboardCutoff').modal('show');
 
+    // Tampilkan hanya card periode yang sesuai & buat spans full-width
+    if (selectedTable === 'p_sister_ganjil') {
+        $('#colCardGanjil').show().removeClass('col-md-6').addClass('col-md-12');
+        $('#colCardGenap').hide();
+    } else {
+        $('#colCardGenap').show().removeClass('col-md-6').addClass('col-md-12');
+        $('#colCardGanjil').hide();
+    }
+
     // Trigger click pada tombol statistik Memenuhi pada card target agar data dosen LANGSUNG dimuat & card aktif
     if (targetCard.length > 0) {
         const memenuhiBtn = targetCard.find('.genap-stat-view:not(.d-none) .btn-stat-flat-memenuhi, .btn-stat-flat-memenuhi').first();
@@ -3796,6 +3805,11 @@ $('#modalDashboardCutoff').on('shown.bs.modal', function () {
             window._viewD3OverrideYear = null;
         }, 500);
     }
+});
+
+$('#modalDashboardCutoff').on('hidden.bs.modal', function () {
+    // Reset layout card ke semula (50-50 col-md-6)
+    $('#colCardGanjil, #colCardGenap').show().removeClass('col-md-12').addClass('col-md-6');
 });
 
 function editD3MappingRow(btn) {
