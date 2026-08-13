@@ -2720,8 +2720,10 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
-    $('#sisternasSelect').change(() => {
-        cutOffTable.ajax.reload()
+    $('#sisternasSelect, #tahunFilterSelect').on('change', function() {
+        if (typeof cutOffTable !== 'undefined' && cutOffTable) {
+            cutOffTable.ajax.reload();
+        }
     });
 
     // Klik pada tombol statistik Memenuhi di dalam card
