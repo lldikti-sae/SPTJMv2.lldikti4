@@ -568,6 +568,8 @@ class UsulanTukinBerjalanController extends Controller
 				$potonganPeriodik = (float) ($row->pp ?? 0);
 				
 				$nilaiTukinMurni = $nilaiKD + $nilaiKP - $potonganPeriodik;
+                $tukinAdjustment = $pendingKurangBayar[$identifier] ?? 0;
+                $nilaiTukinDisesuaikan = $nilaiTukinMurni + $tukinAdjustment;
 
 				$toInsertKinerja[] = [
 					'Kode_Usulan' => $idUsulan,
@@ -594,11 +596,11 @@ class UsulanTukinBerjalanController extends Controller
 					'Nilai_Tukin' => $nilaiTukinMurni,
 					'Pajak' => 0,
 					'Nilai_Pajak' => 0,
-					'Nilai_Bersih' => $nilaiTukinMurni,
-					'Nilai_Kurang' => 0,
+					'Nilai_Bersih' => $nilaiTukinDisesuaikan,
+					'Nilai_Kurang' => $tukinAdjustment,
 				];
 
-				if (isset($pendingKurangBayar[$identifier]) && $pendingKurangBayar[$identifier] > 0) {
+				if (isset($pendingKurangBayar[$identifier]) && $pendingKurangBayar[$identifier] != 0) {
 					$updatedKurangBayarIds[] = $identifier;
 				}
 				// all detail rows will be stored in s_tunjangan_kinerja; no transaction table usage

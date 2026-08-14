@@ -45,7 +45,7 @@
         content: '';
         position: absolute;
         top: 0; left: 0; right: 0; bottom: 0;
-        background: linear-gradient(135deg, rgba(21, 101, 192, 0.40) 0%, rgba(30, 136, 229, 0.25) 100%);
+        background: linear-gradient(135deg, rgba(0, 0, 0, 0.30) 0%, rgba(0, 0, 0, 0.10) 100%);
         z-index: 0;
     }
 
@@ -74,12 +74,13 @@
         position: relative;
         z-index: 1;
         width: 100%;
-        max-width: 1280px;
+        max-width: 1400px;
         margin: 0 auto;
         display: flex;
         align-items: center;
+        justify-content: flex-end;
         min-height: 100vh;
-        padding: 2rem 3rem;
+        padding: 2rem 2rem 2rem 3rem;
         gap: 2rem;
     }
 
@@ -139,8 +140,8 @@
         flex: 0 0 420px;
         display: flex;
         align-items: center;
-        justify-content: center;
-        padding: 2rem 1rem;
+        justify-content: flex-end;
+        padding: 2rem 0;
     }
 
     /* ── Glassmorphism Card ── */
@@ -151,8 +152,8 @@
         border: 1px solid rgba(255, 255, 255, 0.25) !important;
         border-radius: 24px !important;
         box-shadow:
-            0 20px 40px rgba(0, 0, 0, 0.15),
-            0 2px 8px rgba(0, 0, 0, 0.05) !important;
+            0 20px 40px rgba(0, 0, 0, 0.20),
+            0 2px 8px rgba(0, 0, 0, 0.08) !important;
         padding: 2.5rem 2.25rem 2rem !important;
         width: 100% !important;
         max-width: 400px;
@@ -218,7 +219,7 @@
         left: 14px;
         top: 50%;
         transform: translateY(-50%);
-        color: #93c5fd;
+        color: rgba(255, 255, 255, 0.65);
         font-size: 1rem;
         z-index: 2;
         pointer-events: none;
@@ -229,7 +230,7 @@
         right: 14px;
         top: 50%;
         transform: translateY(-50%);
-        color: #93c5fd;
+        color: rgba(255, 255, 255, 0.65);
         font-size: 1rem;
         z-index: 2;
         cursor: pointer;
@@ -239,7 +240,7 @@
         width: 100%;
         height: 48px;
         background: rgba(255, 255, 255, 0.05) !important;
-        border: 1.5px solid #60a5fa !important;
+        border: 1.5px solid rgba(255, 255, 255, 0.35) !important;
         border-radius: 12px !important;
         padding: 0 42px 0 42px !important;
         font-size: 0.875rem !important;

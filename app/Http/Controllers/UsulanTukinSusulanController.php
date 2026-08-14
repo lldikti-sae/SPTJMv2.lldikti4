@@ -453,6 +453,28 @@ class UsulanTukinSusulanController extends Controller
         }
         $allIdentifiers = array_values(array_unique($allIdentifiers));
 
+        $ids = $dosenList->pluck('nidn')->merge($dosenList->pluck('nuptk'))->filter()->unique()->toArray();
+        if (empty($ids)) {
+            $ids = $dosenList->pluck('nidn')->merge($dosenList->pluck('nuptk'))->filter()->unique()->toArray();
+        }
+
+        $pendingKurangBayar = [];
+        if (\Illuminate\Support\Facades\Schema::hasTable('t_uraian_pembayaran') && !empty($ids)) {
+            $kurangBayarRows = \Illuminate\Support\Facades\DB::table('t_uraian_pembayaran')
+                ->whereIn('nidn', $ids)
+                ->where('status_cair', 0)
+                ->get();
+            foreach ($kurangBayarRows as $kb) {
+                $kbNidn = trim((string) $kb->nidn);
+                if (!isset($pendingKurangBayar[$kbNidn])) {
+                    $pendingKurangBayar[$kbNidn] = 0;
+                }
+                $pendingKurangBayar[$kbNidn] += (float) $kb->bersih;
+            }
+        }
+
+        $updatedKurangBayarIds = [];
+
         $existingKinerjaSet = [];
         if (!empty($allIdentifiers)) {
             $existingRows = DB::table('s_tunjangan_kinerja')
@@ -498,6 +520,8 @@ class UsulanTukinSusulanController extends Controller
                 $potonganPeriodik = (float) ($row->pp ?? 0);
                 
                 $nilaiTukinMurni = $nilaiKD + $nilaiKP - $potonganPeriodik;
+                $tukinAdjustment = $pendingKurangBayar[$identifier] ?? 0;
+                $nilaiTukinDisesuaikan = $nilaiTukinMurni + $tukinAdjustment;
 
                 $toInsertKinerja[] = [
                     'Kode_Usulan' => $idUsulan,
@@ -524,9 +548,13 @@ class UsulanTukinSusulanController extends Controller
                     'Nilai_Tukin' => $nilaiTukinMurni,
                     'Pajak' => 0,
                     'Nilai_Pajak' => 0,
-                    'Nilai_Bersih' => $nilaiTukinMurni,
-                    'Nilai_Kurang' => 0,
+                    'Nilai_Bersih' => $nilaiTukinDisesuaikan,
+                    'Nilai_Kurang' => $tukinAdjustment,
                 ];
+
+                if (isset($pendingKurangBayar[$identifier]) && $pendingKurangBayar[$identifier] != 0) {
+                    $updatedKurangBayarIds[] = $identifier;
+                }
 
                 // no transaction rows; all detail data stored in s_tunjangan_kinerja
             } catch (\Throwable $e) {
@@ -551,6 +579,12 @@ class UsulanTukinSusulanController extends Controller
         try {
             foreach (array_chunk($toInsertKinerja, $batchSize) as $chunk) {
                 DB::table('s_tunjangan_kinerja')->insert($chunk);
+            }
+
+            if (!empty($updatedKurangBayarIds) && \Illuminate\Support\Facades\Schema::hasTable('t_uraian_pembayaran')) {
+                \Illuminate\Support\Facades\DB::table('t_uraian_pembayaran')
+                    ->whereIn('nidn', $updatedKurangBayarIds)
+                    ->update(['status_cair' => 1]);
             }
 
             return redirect()->route('pts.usulan-tukin-susulan', ['bulan' => $bulan])

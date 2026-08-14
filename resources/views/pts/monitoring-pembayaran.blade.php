@@ -425,7 +425,7 @@ $months = [
           @if($hasTkgb)<th class="text-center align-middle tkgb-col">Nominal TUKIN</th>@endif
           <th class="text-center align-middle">Bersih SPTJM</th>
           @if($hasTkgb)<th class="text-center align-middle tkgb-col">Bersih TUKIN</th>@endif
-          <th class="text-center align-middle">Selisih</th>
+          <th class="text-center align-middle">Penyesuaian Serdos</th>
           <th class="text-center align-middle">Status</th>
         </tr>
       </thead>
@@ -443,7 +443,8 @@ $months = [
           @if(($jenisTunjangan ?? 'semua') == 'sptjm' && $hasTkgb)<td class="text-end tkgb-col">{{ number_format($pajakTkgb[$index] ?? 0,0,',','.') }}</td>@endif
           <td class="text-end">{{ number_format($bersihTpd[$index] ?? 0,0,',','.') }}</td>
           @if($hasTkgb)<td class="text-end tkgb-col">{{ number_format($bersihTkgb[$index] ?? 0,0,',','.') }}</td>@endif
-          <td class="text-end fw-bold {{ $sel < 0 ? 'text-danger' : ($sel > 0 ? 'text-success' : 'text-success') }}">{{ $sel < 0 ? '-' : ($sel > 0 ? '+' : '') }}{{ number_format(abs($sel),0,',','.') }}</td>
+          @php $adj = $tukinNilaiKurang[$index] ?? 0; @endphp
+          <td class="text-end fw-bold {{ $adj < 0 ? 'text-danger' : ($adj > 0 ? 'text-success' : 'text-secondary') }}">{{ $adj < 0 ? '-' : ($adj > 0 ? '+' : '') }}{{ number_format(abs($adj),0,',','.') }}</td>
           <td class="text-center">@if($st && isset($statusMap[$st]))<span class="badge {{ $statusMap[$st][0] }}" style="font-size:10px;">{{ $statusMap[$st][1] }}</span>@elseif($st && str_starts_with($st, 'kode:'))<span class="badge bg-label-secondary" style="font-size:10px;">{{ substr($st, 5) }}</span>@else - @endif</td>
         </tr>
         @endforeach
@@ -759,7 +760,7 @@ $months = [
             } else if (currentJenis === 'sptjm') {
                 thead.innerHTML=`<tr><th rowspan="2" class="text-center align-middle">Tahun</th><th rowspan="2" class="text-center align-middle">Bulan</th><th rowspan="2" class="text-center align-middle">Kode Usulan</th><th rowspan="2" class="text-center align-middle">Jabatan / Gol/MK</th><th rowspan="2" class="text-center align-middle">Gaji</th><th colspan="${hasTkgb?4:2}" class="text-center align-middle">Nominal</th><th rowspan="2" class="text-center align-middle">NO SP2D</th><th rowspan="2" class="text-center align-middle">TGL SP2D</th>${!data.isPns ? '<th rowspan="2" class="text-center align-middle">Selisih</th>' : ''}<th rowspan="2" class="text-center align-middle">Status</th></tr><tr><th class="text-center align-middle">Kotor TPD</th><th class="text-center align-middle">Bersih TPD</th>${hasTkgb?'<th class="text-center align-middle tkgb-col">Kotor TKGB</th><th class="text-center align-middle tkgb-col">Bersih TKGB</th>':''}</tr>`;
             } else {
-                thead.innerHTML=`<tr><th class="text-center">Tahun</th><th class="text-center">Bulan</th><th class="text-center">Jabatan / Gol-MK</th><th class="text-center">Gaji</th><th class="text-center">Nominal SPTJM</th>${hasTkgb?'<th class="text-center tkgb-col">Nominal TUKIN</th>':''}<th class="text-center">Bersih SPTJM</th>${hasTkgb?'<th class="text-center tkgb-col">Bersih TUKIN</th>':''}<th class="text-center">Selisih</th><th class="text-center">Status</th></tr>`;
+                thead.innerHTML=`<tr><th class="text-center">Tahun</th><th class="text-center">Bulan</th><th class="text-center">Jabatan / Gol-MK</th><th class="text-center">Gaji</th><th class="text-center">Nominal SPTJM</th>${hasTkgb?'<th class="text-center tkgb-col">Nominal TUKIN</th>':''}<th class="text-center">Bersih SPTJM</th>${hasTkgb?'<th class="text-center tkgb-col">Bersih TUKIN</th>':''}<th class="text-center">Penyesuaian Serdos</th><th class="text-center">Status</th></tr>`;
             }
           }
 
@@ -876,13 +877,10 @@ $months = [
                   let st = stb[i];
                   
                   if (currentJenis === 'semua') {
-                      s = gaji - (nomSptjm + nomTukin);
-                      if (s > 0) st = 'kurang';
-                      else if (s < 0) st = 'lebih';
-                      else st = 'selesai';
+                      s = data.tukinNilaiKurang ? (data.tukinNilaiKurang[i] ?? 0) : 0;
                   }
 
-                  let sc=s<0?'text-end text-danger fw-bold':(s>0?'text-end text-success fw-bold':'text-end text-success fw-bold'), ss='';
+                  let sc=s<0?'text-end text-danger fw-bold':(s>0?'text-end text-success fw-bold':'text-end text-secondary fw-bold'), ss='';
                   const pfx=s<0?'-':(s>0?'+':'');
                   let stH='-'; 
                   if(st&&statusCfg[st]) {
