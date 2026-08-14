@@ -749,35 +749,51 @@ class CutOffSisternasController extends Controller
 
     $diffResult = [];
     $hasNew = false;
+    $changedRows = [];
+
     foreach ($rows as $r) {
       $key = !empty($r['nidn']) ? $r['nidn'] : $r['nuptk'];
       $dbRecord = $existingDb->get($key);
 
       $bkdLama = ($dbRecord && !empty($dbRecord->kesimpulan_bkd)) ? $dbRecord->kesimpulan_bkd : '-';
       $isNewOrEmpty = (!$dbRecord || empty($dbRecord->kesimpulan_bkd) || trim($dbRecord->kesimpulan_bkd) === '-');
-      if ($isNewOrEmpty) {
-          $hasNew = true;
+
+      $isChanged = false;
+      if ($dbRecord) {
+        // Dosen ada di DB: berubah jika BKD di DB berbeda dengan BKD di CSV baru
+        $isChanged = ($dbRecord->kesimpulan_bkd !== $r['bkd_baru']);
+      } else {
+        // Dosen belum ada di DB: dianggap berubah (perlu ditambah) HANYA jika status BKD di CSV baru adalah TM
+        $isChanged = ($r['bkd_baru'] === 'TM');
+        $hasNew = true;
       }
-      
-      $diffResult[] = [
+
+      $item = [
         'nidn' => !empty($r['nidn']) ? $r['nidn'] : '—',
         'nuptk' => !empty($r['nuptk']) ? $r['nuptk'] : '—',
         'nama_dosen' => !empty($r['nama_dosen']) ? $r['nama_dosen'] : '—',
         'bkd_lama' => $bkdLama,
         'bkd_baru' => $r['bkd_baru'],
-        'is_changed' => (!$isNewOrEmpty && $dbRecord->kesimpulan_bkd !== $r['bkd_baru'])
+        'is_changed' => $isChanged
       ];
-    }
 
-    $isNewUpload = $existingDb->isEmpty();
-    $changedRows = [];
+      $diffResult[] = $item;
 
-    foreach ($diffResult as $item) {
-      if ($item['is_changed']) {
+      if ($isChanged) {
         $changedRows[] = $item;
       }
     }
 
+    // Merupakan upload baru HANYA JIKA belum ada pemetaan di k_data_sister DAN belum ada data di tabel data
+    $periodName = (str_contains($table, 'ganjil')) ? 'Ganjil' : ((str_contains($table, 'genap')) ? 'Genap' : '');
+    $hasMappingInSister = DB::table('k_data_sister')
+        ->where('tahun', $tahun)
+        ->when(!empty($periodName), function($q) use ($periodName) {
+            return $q->where('periode', $periodName);
+        })->exists();
+    $hasDataInTable = Schema::hasTable($table) && DB::table($table)->where('tahun', $tahun)->exists();
+
+    $isNewUpload = !$hasMappingInSister && !$hasDataInTable;
     $hasChanges = count($changedRows) > 0;
 
     return response()->json([
@@ -785,7 +801,7 @@ class CutOffSisternasController extends Controller
       'is_new_upload' => $isNewUpload,
       'has_changes' => $hasChanges,
       'has_new' => $hasNew,
-      'data' => $isNewUpload ? array_slice($diffResult, 0, 15) : array_slice($changedRows, 0, 15),
+      'data' => $isNewUpload ? $diffResult : $changedRows,
       'total' => $isNewUpload ? count($diffResult) : count($changedRows)
     ]);
   }

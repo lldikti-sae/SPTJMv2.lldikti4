@@ -1080,11 +1080,15 @@ function updateCutoffFileName(input, targetId) {
         {{-- ===== PANEL SET PERIODE SISTERNAS (DESAIN 3 FIX) ===== --}}
         {{-- ======================================================== --}}
         <div class="sp-card mb-4">
-            <div class="sp-header">
-                <h5 class="sp-title">
+            <div class="sp-header d-flex flex-wrap justify-content-between align-items-center gap-2">
+                <h5 class="sp-title mb-0">
                     <i class="bx bx-cog text-primary" style="font-size: 1.25rem;"></i>
                     SET PERIODE SISTERNAS
                 </h5>
+                <span class="badge bg-label-warning text-dark d-inline-flex align-items-center gap-1" style="font-size: 0.75rem; font-weight: 500; padding: 6px 10px; border-radius: 6px;">
+                    <i class="bx bx-info-circle text-warning fs-6"></i>
+                    <span>Ingin ganti tahun/periode? Klik tombol <strong>Reset</strong> untuk membuka kunci input.</span>
+                </span>
             </div>
 
             <form action="{{ route('admin.cutoff-sisternas.upload') }}" method="POST" enctype="multipart/form-data" class="uploadForm" id="spFormD3">
@@ -1217,13 +1221,47 @@ function updateCutoffFileName(input, targetId) {
 
                 {{-- Footer Actions (Konfirmasi & Cek Perubahan di Atas) --}}
                 <div class="sp-footer">
-                    <button type="button" class="sp-btn-reset" onclick="resetFormD3()">
-                        <i class="bx bx-reset"></i> Reset
-                    </button>
+                    <div class="d-flex align-items-center gap-2">
+                        <span class="text-muted small me-1 d-none d-sm-inline" style="font-size: 0.76rem; font-style: italic;">
+                            *Klik Reset untuk membuka kunci input jika ingin memilih periode lain
+                        </span>
+                        <button type="button" class="sp-btn-reset" onclick="resetFormD3()">
+                            <i class="bx bx-reset"></i> Reset
+                        </button>
+                    </div>
                     <button type="button" id="d1_check_diff_btn" class="sp-btn-save" onclick="coCheckDiffD1()">
                         <i class="bx bx-search-alt-2"></i> Konfirmasi &amp; Cek Perubahan Data
                     </button>
-                </div>             </div>
+                </div>
+
+                {{-- Diff Table Box --}}
+                <div id="d1_diff_box" style="display: none;" class="mt-3 pt-3 border-top">
+                    <div class="d-flex justify-content-between align-items-center mb-2.5">
+                        <span class="fw-bold text-dark" style="font-size:0.88rem;"><i class="bx bx-list-check text-primary me-1"></i> Pratinjau Perubahan Data:</span>
+                        <span class="badge bg-label-info text-dark" style="font-size:0.73rem; font-weight:600;"><i class="bx bx-info-circle me-1"></i> Centang kolom Aksi (kanan) jika data ingin dihapus</span>
+                    </div>
+
+                    <div class="table-responsive rounded-3 border mb-3" style="box-shadow: 0 1px 4px rgba(0,0,0,0.04); border-color: #e2e8f0 !important;">
+                        <table class="table table-hover align-middle mb-0" style="font-size: 0.84rem;">
+                            <thead style="background-color: #f8fafc; border-bottom: 1.5px solid #e2e8f0;">
+                                <tr>
+                                    <th style="padding: 11px 16px; font-weight: 700; color: #475569; text-transform: uppercase; font-size: 0.72rem; letter-spacing: 0.05em;">NIDN</th>
+                                    <th style="padding: 11px 16px; font-weight: 700; color: #475569; text-transform: uppercase; font-size: 0.72rem; letter-spacing: 0.05em;">NUPTK</th>
+                                    <th style="padding: 11px 16px; font-weight: 700; color: #475569; text-transform: uppercase; font-size: 0.72rem; letter-spacing: 0.05em;">Nama Dosen</th>
+                                    <th style="padding: 11px 16px; font-weight: 700; color: #475569; text-transform: uppercase; font-size: 0.72rem; letter-spacing: 0.05em; text-align: center;">Kesimpulan BKD Lama</th>
+                                    <th style="padding: 11px 16px; font-weight: 700; color: #475569; text-transform: uppercase; font-size: 0.72rem; letter-spacing: 0.05em; text-align: center;">Kesimpulan BKD Baru</th>
+                                    <th style="padding: 11px 16px; font-weight: 700; color: #475569; text-transform: uppercase; font-size: 0.72rem; letter-spacing: 0.05em; text-align: center; width: 130px;">Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody id="d1_diff_tbody">
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary w-100 py-2.5 fw-bold" style="background-color:#2563eb; border-color:#2563eb; border-radius:10px; font-size:0.92rem;">
+                        <i class="bx bx-save me-1"></i> Simpan Setting &amp; Data Cut Off
+                    </button>
+                </div>
 
                 {{-- Setting Pemetaan Periode Bayar & Pembayaran (Step 4 - Ditaruh Di Bawah Tombol Reset & Simpan) --}}
                 <div class="sp-d3-mapping-card mt-4">
@@ -1291,38 +1329,6 @@ function updateCutoffFileName(input, targetId) {
                             </tbody>
                         </table>
                     </div>
-                </div>
-
-                {{-- Diff Table Box --}}
-                <div id="d1_diff_box" style="display: none;" class="mt-3 pt-3 border-top">
-                    <div class="d-flex justify-content-between align-items-center mb-2.5">
-                        <span class="fw-bold text-dark" style="font-size:0.88rem;"><i class="bx bx-list-check text-primary me-1"></i> Pratinjau Perubahan Data:</span>
-                        <span class="badge bg-label-info text-dark" style="font-size:0.73rem; font-weight:600;"><i class="bx bx-info-circle me-1"></i> Centang kolom Aksi (kanan) jika data ingin dihapus</span>
-                    </div>
-
-
-                    <div class="table-responsive rounded-3 border mb-3" style="box-shadow: 0 1px 4px rgba(0,0,0,0.04); border-color: #e2e8f0 !important;">
-                        <table class="table table-hover align-middle mb-0" style="font-size: 0.84rem;">
-                            <thead style="background-color: #f8fafc; border-bottom: 1.5px solid #e2e8f0;">
-                                <tr>
-                                    <th style="padding: 11px 16px; font-weight: 700; color: #475569; text-transform: uppercase; font-size: 0.72rem; letter-spacing: 0.05em;">NIDN</th>
-                                    <th style="padding: 11px 16px; font-weight: 700; color: #475569; text-transform: uppercase; font-size: 0.72rem; letter-spacing: 0.05em;">NUPTK</th>
-                                    <th style="padding: 11px 16px; font-weight: 700; color: #475569; text-transform: uppercase; font-size: 0.72rem; letter-spacing: 0.05em;">Nama Dosen</th>
-                                    <th style="padding: 11px 16px; font-weight: 700; color: #475569; text-transform: uppercase; font-size: 0.72rem; letter-spacing: 0.05em; text-align: center;">Kesimpulan BKD Lama</th>
-                                    <th style="padding: 11px 16px; font-weight: 700; color: #475569; text-transform: uppercase; font-size: 0.72rem; letter-spacing: 0.05em; text-align: center;">Kesimpulan BKD Baru</th>
-                                    <th style="padding: 11px 16px; font-weight: 700; color: #475569; text-transform: uppercase; font-size: 0.72rem; letter-spacing: 0.05em; text-align: center; width: 130px;">Aksi</th>
-                                </tr>
-                            </thead>
-                            <tbody id="d1_diff_tbody">
-                            </tbody>
-                        </table>
-                    </div>
-
-                    <button type="submit" class="btn btn-primary w-100 py-2.5 fw-bold" style="background-color:#2563eb; border-color:#2563eb; border-radius:10px; font-size:0.92rem;">
-                        <i class="bx bx-save me-1"></i> Simpan Setting &amp; Data Cut Off
-                    </button>
-                </div>
-
             </form>
         </div>
 
@@ -1752,17 +1758,18 @@ function updateCutoffFileName(input, targetId) {
         if (typeof restoreD3FormState === 'function') {
             restoreD3FormState();
         }
+        if (typeof syncD3TahunPembayaran === 'function') {
+            syncD3TahunPembayaran();
+        }
         if (typeof updatePreviewD3 === 'function') {
             updatePreviewD3();
         }
 
-        // Lock Year & Period inputs if there is already a saved mapping in Step 4 table
+        // Lock all Step 1, 2, 3 inputs if there is already a saved mapping in Step 4 table
         const tbody = document.getElementById('spD3MappingTbody');
         const hasMapping = tbody && tbody.querySelector('tr') && !tbody.querySelector('td[colspan]');
-        if (hasMapping) {
-            const yearSelect = document.getElementById('d1_new_tahun_val');
-            if (yearSelect) yearSelect.disabled = true;
-            document.querySelectorAll('input[name="sp_periode_d3"]').forEach(rb => rb.disabled = true);
+        if (hasMapping && typeof lockAllD3Inputs === 'function') {
+            lockAllD3Inputs(true);
         }
 
         const diffBox = document.getElementById('d1_diff_box');
@@ -2185,9 +2192,9 @@ function updateCutoffFileName(input, targetId) {
                                     @endforeach
                                 </select>
                             </div>
-                            <div class="row g-4 align-items-stretch mt-1 mb-3.5">
+                            <div class="row g-4 align-items-stretch mt-1 mb-3.5 justify-content-center">
                                 <!-- Card 1: Semester Ganjil (50% / col-md-6) -->
-                                <div class="col-md-6 col-sm-12 d-flex">
+                                <div class="col-md-6 col-sm-12 d-flex" id="colCardGanjil">
                                     <div class="btn-select-period p-3 rounded-3 d-flex flex-column justify-content-between w-100 h-100" data-value="p_sister_ganjil" style="cursor: pointer; transition: all 0.2s ease;">
                                         <div class="w-100">
                                             <div class="d-flex justify-content-between align-items-center mb-2">
@@ -2219,7 +2226,7 @@ function updateCutoffFileName(input, targetId) {
                                 </div>
 
                                 <!-- Card 2: Semester Genap (50% / col-md-6) -->
-                                <div class="col-md-6 col-sm-12 d-flex">
+                                <div class="col-md-6 col-sm-12 d-flex" id="colCardGenap">
                                     @php
                                         $isGenapBerjalan = ((int)$tahunSession >= (int)date('Y'));
                                         $genapDefaultVal = $isGenapBerjalan ? 'p_sister_genap' : 'p_sister_genap';
@@ -3175,10 +3182,8 @@ function syncD3TahunPembayaran() {
     if (!yearSelect || !yearSelect.value) return;
     const selectedYr = parseInt(yearSelect.value);
     
-    const selectedPeriode = getSelectedD3PeriodeVal();
-    const isGanjil = selectedPeriode.includes('ganjil') || selectedPeriode === '1' || selectedPeriode === 'p_sister_ganjil';
-    
-    const targetBayarYear = isGanjil ? selectedYr.toString() : (selectedYr + 1).toString();
+    // Rumus: Tahun Pembayaran = Tahun Laporan + 1
+    const targetBayarYear = (selectedYr + 1).toString();
     
     const bayarYearSelect = document.getElementById('d3_tahun_pembayaran_select');
     if (bayarYearSelect) {
@@ -3516,9 +3521,11 @@ function resetFormD3() {
     if (yearSelect) {
         yearSelect.value = "{{ $tahunSession }}";
         try {
-            yearSelect.dispatchEvent(new Event('change'));
+            if (typeof onD3TahunChange === 'function') {
+                onD3TahunChange(yearSelect.value);
+            }
         } catch (e) {
-            console.error("Error dispatching yearSelect change: ", e);
+            console.error("Error calling onD3TahunChange: ", e);
         }
     }
 
@@ -3778,6 +3785,17 @@ function viewD3MappingRow(btn) {
     // Tampilkan modal
     $('#modalDashboardCutoff').modal('show');
 
+    // Tampilkan hanya card periode yang sesuai (dan pastikan card lawan BENER-BENER tersembunyi)
+    const colGanjil = document.getElementById('colCardGanjil');
+    const colGenap = document.getElementById('colCardGenap');
+    if (selectedTable === 'p_sister_ganjil') {
+        if (colGanjil) { colGanjil.classList.remove('d-none'); colGanjil.style.display = 'flex'; }
+        if (colGenap) { colGenap.classList.add('d-none'); colGenap.style.display = 'none'; }
+    } else {
+        if (colGenap) { colGenap.classList.remove('d-none'); colGenap.style.display = 'flex'; }
+        if (colGanjil) { colGanjil.classList.add('d-none'); colGanjil.style.display = 'none'; }
+    }
+
     // Trigger click pada tombol statistik Memenuhi pada card target agar data dosen LANGSUNG dimuat & card aktif
     if (targetCard.length > 0) {
         const memenuhiBtn = targetCard.find('.genap-stat-view:not(.d-none) .btn-stat-flat-memenuhi, .btn-stat-flat-memenuhi').first();
@@ -3792,10 +3810,15 @@ function viewD3MappingRow(btn) {
 $('#modalDashboardCutoff').on('shown.bs.modal', function () {
     if (typeof cutOffTable !== 'undefined' && cutOffTable) {
         cutOffTable.columns.adjust();
-        setTimeout(function() {
-            window._viewD3OverrideYear = null;
-        }, 500);
     }
+});
+
+$('#modalDashboardCutoff').on('hidden.bs.modal', function () {
+    window._viewD3OverrideYear = null;
+    const colGanjil = document.getElementById('colCardGanjil');
+    const colGenap = document.getElementById('colCardGenap');
+    if (colGanjil) { colGanjil.classList.remove('d-none'); colGanjil.style.display = 'flex'; }
+    if (colGenap) { colGenap.classList.remove('d-none'); colGenap.style.display = 'flex'; }
 });
 
 function editD3MappingRow(btn) {
