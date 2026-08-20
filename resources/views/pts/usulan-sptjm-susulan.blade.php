@@ -305,11 +305,19 @@ Swal.fire({
     timer: 1500
 });
 @endif
-@if(session('internal_error'))
+@if(session('error') || session('internal_error'))
 Swal.fire({
     icon: 'error',
-    title: 'Internal Error',
-    text: 'Terjadi kesalahan internal saat memproses usulan. Silakan coba lagi atau hubungi admin.',
+    title: 'Gagal',
+    text: '{!! session('error') ?? 'Terjadi kesalahan internal saat memproses usulan. Silakan coba lagi atau hubungi admin.' !!}',
+    showConfirmButton: true
+});
+@endif
+@if(session('info') || isset($info))
+Swal.fire({
+    icon: 'info',
+    title: 'Informasi',
+    text: '{!! session('info') ?? $info ?? '' !!}',
     showConfirmButton: true
 });
 @endif

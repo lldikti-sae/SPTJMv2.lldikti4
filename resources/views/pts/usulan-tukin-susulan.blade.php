@@ -322,6 +322,30 @@
       return;
     }
 
+    const unpaidSerdosCount = {{ $unpaidSerdosCount ?? 0 }};
+    if (unpaidSerdosCount > 0) {
+      Swal.fire({
+        icon: 'warning',
+        title: 'Serdos Belum Dibayar',
+        text: `Terdapat ${unpaidSerdosCount} dosen yang memiliki Sertifikat Dosen namun belum dibayar Serdos-nya pada bulan ini. Dosen tersebut otomatis tidak dapat diusulkan Tukin-nya. Apakah Anda tetap ingin melanjutkan usulan untuk dosen lainnya?`,
+        showCancelButton: true,
+        confirmButtonColor: "#3085d6",
+        cancelButtonColor: "#d33",
+        confirmButtonText: 'Ya, Lanjutkan',
+        cancelButtonText: 'Batal'
+      }).then((result) => {
+         if (result.isConfirmed) {
+            doSubmitUsulan();
+         }
+      });
+      return;
+    }
+
+    doSubmitUsulan();
+  }
+
+  function doSubmitUsulan() {
+
     Swal.fire({
       title: "Apakah anda yakin?",
       text: "Setelah mengusulkan, Anda tidak bisa membatalkan.",
@@ -367,12 +391,31 @@
     });
   }
 
-  @if(session('internal_error'))
+  @if(session('success'))
+  Swal.fire({
+      icon: 'success',
+      title: 'Berhasil',
+      text: "{{ session('success') }}",
+      timer: 1500,
+      showConfirmButton: false
+  });
+  @endif
+
+  @if(session('error') || session('internal_error'))
   Swal.fire({
     icon: 'error',
-    title: 'Internal Error',
-    text: "{{ session('internal_error') }}",
+    title: 'Gagal',
+    text: "{!! session('error') ?? session('internal_error') !!}",
     showConfirmButton: true
+  });
+  @endif
+
+  @if(session('info') || isset($info))
+  Swal.fire({
+      icon: 'info',
+      title: 'Informasi',
+      text: "{!! session('info') ?? $info ?? '' !!}",
+      showConfirmButton: true
   });
   @endif
 </script>

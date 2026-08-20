@@ -390,7 +390,7 @@ class UsulanSusulanSptjmPtsController extends Controller
 
     try {
       $request->validate([
-        'file' => 'required|file|mimes:pdf|max:2048',
+        'file' => 'required|file|mimes:pdf|max:10240',
         'bulan' => 'required',
         'tahun' => 'required|numeric',
         // allow missing pimpinan settings; default on server side

@@ -364,7 +364,6 @@ class ValidasiUsulanPicController extends Controller
       ->where('b.kesimpulan_bkd', 'M')
       ->selectRaw("$exprIdent as ident")
       ->groupBy('ident')
-      ->limit($limit)
       ->pluck('ident')
       ->values()
       ->all();

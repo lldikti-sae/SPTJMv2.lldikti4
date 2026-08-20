@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Helpers\ErrorAlias;
+use App\Services\TukinPaymentService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -175,6 +176,13 @@ class UsulanTukinSusulanController extends Controller
                 })
                 ->values();
 
+            $unpaidSerdosCount = 0;
+            foreach ($dosenListPNS as $d) {
+                if (!empty($d->sertifikat_dosen) && $d->sertifikat_dosen !== '-' && (float)($d->pembayaran_serdos ?? 0) <= 0) {
+                    $unpaidSerdosCount++;
+                }
+            }
+
             Log::debug('usulanTukin Susulan index loaded', [
                 'kode_pts' => $kodePts,
                 'bulan' => $bulan,
@@ -196,12 +204,14 @@ class UsulanTukinSusulanController extends Controller
 
                 $dosenList = collect();
                 $dosenListPNS = collect();
-                return view('pts.usulan-tukin-susulan', compact('dosenList', 'dosenListPNS', 'bulan'))
+                $unpaidSerdosCount = 0;
+                return view('pts.usulan-tukin-susulan', compact('dosenList', 'dosenListPNS', 'bulan', 'unpaidSerdosCount'))
                     ->with('internal_error', $alias['message']);
             }
         }
 
-        return view('pts.usulan-tukin-susulan', compact('dosenList', 'dosenListPNS', 'bulan'));
+        $unpaidSerdosCount = $unpaidSerdosCount ?? 0;
+        return view('pts.usulan-tukin-susulan', compact('dosenList', 'dosenListPNS', 'bulan', 'unpaidSerdosCount'));
     }
 
     public function usulkan(Request $request)
@@ -226,7 +236,7 @@ class UsulanTukinSusulanController extends Controller
                 'jabatan' => 'nullable|string',
                 'kota' => 'nullable|string',
                 'nomor_surat' => 'nullable|string',
-                'file' => 'nullable|file|mimes:pdf|max:2048',
+                'file' => 'nullable|file|mimes:pdf|max:10240',
             ]);
         } catch (ValidationException $ve) {
             Log::warning('usulkanTukinSusulan validation failed', [
@@ -251,11 +261,11 @@ class UsulanTukinSusulanController extends Controller
 
         // Sumber BKD
         if (in_array($bulan, [1, 2])) {
-            $joinTable = ['table' => 'p_sister_genap as b'];
+            $joinTable = ['table' => 'p_sister_tukin as b', 'kode_pt' => 'b.kode_pt', 'periode' => 'Genap'];
         } elseif (in_array($bulan, [3, 4, 5, 6, 7, 8])) {
-            $joinTable = ['table' => 'p_sister_ganjil as b'];
+            $joinTable = ['table' => 'p_sister_tukin as b', 'kode_pt' => 'b.kode_pt', 'periode' => 'Ganjil'];
         } else {
-            $joinTable = ['table' => 'p_sister_genap as b'];
+            $joinTable = ['table' => 'p_sister_tukin as b', 'kode_pt' => 'b.kode_pt', 'periode' => 'Genap'];
         }
 
         // Ambil list dosen persis seperti Berjalan (Aktif PNS)
@@ -360,11 +370,11 @@ class UsulanTukinSusulanController extends Controller
             ->where('Kode_PTS', $kodePts)
             ->whereMonth('Tanggal_Usulan', $currentMonth)
             ->where('Tahun', (string) $tahun)
-            ->where('Kode_Usulan', 'like', 'ST %')
+            ->where('Kode_Usulan', 'like', 'S %')
             ->distinct()
             ->count('Kode_Usulan');
         $noUsulan = $countUsulan + 1;
-        $idUsulan = 'ST ' . str_pad((string)$currentMonth, 2, '0', STR_PAD_LEFT) . $kodePts . ' ' . $noUsulan;
+        $idUsulan = 'S ' . str_pad((string)$currentMonth, 2, '0', STR_PAD_LEFT) . $kodePts . ' ' . $noUsulan;
         // Simpan tanggal usulan sebagai date (YYYY-MM-DD)
         $TanggalUsulan = now()->toDateString();
         $mapNilai = [
@@ -386,7 +396,7 @@ class UsulanTukinSusulanController extends Controller
         $fileRel = '';
         if ($request->hasFile('file')) {
             $ext = $request->file('file')->getClientOriginalExtension();
-            $filename = 'ST ' . $bulanAngka . $kodePts . ' ' . $noUsulan . '_' . $bulanTeks . '.' . $ext;
+            $filename = 'S ' . $bulanAngka . $kodePts . ' ' . $noUsulan . '_' . $bulanTeks . '.' . $ext;
             $request->file('file')->storeAs('public/uploadFile_TUKIN_S', $filename);
             $fileRel = 'uploadFile_TUKIN_S/' . $filename;
         }
@@ -458,20 +468,8 @@ class UsulanTukinSusulanController extends Controller
             $ids = $dosenList->pluck('nidn')->merge($dosenList->pluck('nuptk'))->filter()->unique()->toArray();
         }
 
-        $pendingKurangBayar = [];
-        if (\Illuminate\Support\Facades\Schema::hasTable('t_uraian_pembayaran') && !empty($ids)) {
-            $kurangBayarRows = \Illuminate\Support\Facades\DB::table('t_uraian_pembayaran')
-                ->whereIn('nidn', $ids)
-                ->where('status_cair', 0)
-                ->get();
-            foreach ($kurangBayarRows as $kb) {
-                $kbNidn = trim((string) $kb->nidn);
-                if (!isset($pendingKurangBayar[$kbNidn])) {
-                    $pendingKurangBayar[$kbNidn] = 0;
-                }
-                $pendingKurangBayar[$kbNidn] += (float) $kb->bersih;
-            }
-        }
+        $tukinService = app(TukinPaymentService::class);
+        $pendingAdjustments = !empty($ids) ? $tukinService->getPendingAdjustments($ids, (string) $tahun) : [];
 
         $updatedKurangBayarIds = [];
 
@@ -507,25 +505,36 @@ class UsulanTukinSusulanController extends Controller
                 if ($identifier === '') continue;
                 if (isset($existingKinerjaSet[$identifier])) continue;
 
+                $punyaSerdos = !empty(trim((string)$row->sertifikat_dosen)) && trim((string)$row->sertifikat_dosen) !== '-';
+                $pembayaranSerdos = (float) ($row->pembayaran_serdos ?? 0);
+                if ($punyaSerdos && $pembayaranSerdos <= 0) {
+                    continue; // Skip because Serdos not paid
+                }
+
                 $jab = $row->jabatan ?? '';
                 $kelas = $mapNilai[$jab]['kelas'] ?? '-';
                 $nilaiDasar = (float) ($mapNilai[$jab]['nilai'] ?? 0);
                 $statusTxt = (($row->aktif ?? '0') == '1') ? '1' : '0';
 
                 // Perhitungan TUKIN sesuai Sheet2
-                $persenKD = 60 / 100; // Selalu 60% berdasarkan instruksi Sheet2
-                $persenKP = (float) ($row->kp ?? 0) / 100; // Asumsi $row->kp adalah angka persentase 0-40
+                $persenKD = 60 / 100; // Selalu 60%
+                $persenKP = (float) ($row->kp ?? 0) / 100;
+                $persenPP = (float) ($row->pp ?? 0) / 100;
                 $nilaiKD = $nilaiDasar * $persenKD;
                 $nilaiKP = $nilaiDasar * $persenKP;
-                $potonganPeriodik = (float) ($row->pp ?? 0);
+                $nilaiPP = $nilaiDasar * $persenPP;
                 
-                $nilaiTukinMurni = $nilaiKD + $nilaiKP - $potonganPeriodik;
-                $tukinAdjustment = $pendingKurangBayar[$identifier] ?? 0;
-                $nilaiTukinDisesuaikan = $nilaiTukinMurni + $tukinAdjustment;
+                $nilaiTukinMurni = $nilaiKD + $nilaiKP - $nilaiPP;
+
+                // Kurang/Lebih Bayar adjustment (via TukinPaymentService)
+                $adj = $pendingAdjustments[$identifier] ?? ['kurang' => 0.0, 'lebih' => 0.0, 'netto' => 0.0];
+                $tukinResult = $tukinService->calculateAdjustedTukin($nilaiTukinMurni, $adj['netto']);
+                $nilaiTukinDisesuaikan = $tukinResult['tukinFinal'];
+                $tukinAdjustment = $tukinResult['adjustment'];
 
                 $toInsertKinerja[] = [
                     'Kode_Usulan' => $idUsulan,
-                    'NUPTK' => ($nuptk !== '' && $nuptk !== '-') ? $nuptk : (($nuptkD !== '' && $nuptkD !== '-') ? $nuptkD : null),
+                    'NUPTK' => ($nuptk !== '' && $nuptk !== '-') ? $nuptk : (($nuptkD !== '' && $nuptkD !== '-') ? $nuptkD : '0'),
                     'NIDN' => ($nidn !== '' && $nidn !== '-') ? $nidn : $identifier,
                     'Nama' => $row->nama,
                     'Jenis' => $row->jenis ?? 'PNS',
@@ -541,18 +550,21 @@ class UsulanTukinSusulanController extends Controller
                     'Bulan' => $bulanTeks,
                     'Tahun' => (string) $tahun,
                     'Kode_Cair' => null,
-                    'KD' => $nilaiKD,
-                    'KP' => $nilaiKP,
-                    'PP' => $potonganPeriodik,
+                    'KD' => $persenKD,
+                    'KP' => $persenKP,
+                    'PP' => $persenPP,
                     'Nilai_Bersih_Serdos' => 0,
                     'Nilai_Tukin' => $nilaiTukinMurni,
                     'Pajak' => 0,
                     'Nilai_Pajak' => 0,
                     'Nilai_Bersih' => $nilaiTukinDisesuaikan,
-                    'Nilai_Kurang' => $tukinAdjustment,
+                    'Nilai_Kurang' => $adj['kurang'],
+                    'Nilai_Lebih' => $adj['lebih'],
+                    'Netto_Adjustment' => $tukinAdjustment,
+                    'Sisa_Carry' => $tukinResult['sisaCarry'],
                 ];
 
-                if (isset($pendingKurangBayar[$identifier]) && $pendingKurangBayar[$identifier] != 0) {
+                if ($tukinAdjustment != 0) {
                     $updatedKurangBayarIds[] = $identifier;
                 }
 
@@ -633,11 +645,11 @@ class UsulanTukinSusulanController extends Controller
 
         // Tentukan sumber BKD berdasarkan bulan
         if (in_array($bulan, [1, 2])) {
-            $joinTable = ['table' => 'p_sister_genap as b', 'kode_pt' => 'b.kode_pt'];
+            $joinTable = ['table' => 'p_sister_tukin as b', 'kode_pt' => 'b.kode_pt', 'periode' => 'Genap'];
         } elseif (in_array($bulan, [3, 4, 5, 6, 7, 8])) {
-            $joinTable = ['table' => 'p_sister_ganjil as b', 'kode_pt' => 'b.kode_pt'];
+            $joinTable = ['table' => 'p_sister_tukin as b', 'kode_pt' => 'b.kode_pt', 'periode' => 'Ganjil'];
         } else {
-            $joinTable = ['table' => 'p_sister_genap as b', 'kode_pt' => 'b.kode_pt'];
+            $joinTable = ['table' => 'p_sister_tukin as b', 'kode_pt' => 'b.kode_pt', 'periode' => 'Genap'];
         }
 
         $dosenList = DB::table('s_transaksi_2 as d')

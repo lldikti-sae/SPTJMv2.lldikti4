@@ -102,6 +102,23 @@
 </div>
 
 <div class="content-wrapper">
+    <div class="row mb-3">
+        <div class="col-12">
+            <ul class="nav nav-pills custom-tabs" role="tablist">
+                <li class="nav-item">
+                    <a class="nav-link {{ ($mode ?? 'live') === 'live' ? 'active' : '' }}" href="{{ route('admin.kekurangan-bayar', ['mode' => 'live']) }}">
+                        <i class="bx bx-bolt-circle me-1"></i> Data Live TUKIN
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link {{ ($mode ?? 'live') === 'rekap' ? 'active' : '' }}" href="{{ route('admin.kekurangan-bayar', ['mode' => 'rekap']) }}">
+                        <i class="bx bx-archive me-1"></i> Data Rekap Arsip Lama (Legacy)
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
+
     <div class="row">
         <div class="col-12">
             <div class="card mb-4">
@@ -141,12 +158,16 @@
                                 </select>
                             </div>
                             <div class="col-lg-3 col-md-4 mb-2 d-flex align-items-end">
+                                @if(($mode ?? 'live') !== 'live')
                                 <button type="button" class="btn btn-outline-primary btn-sm me-2 px-2" id="btnCekDataKekurangan" style="min-width:130px;">
                                     <span class="tf-icons bx bx-search"></span>&nbsp; Cek Data
                                 </button>
                                 <button type="button" class="btn btn-warning btn-sm px-2" id="btnProsesKekurangan" style="min-width:130px;">
                                     <span class="tf-icons bx bx-loader"></span>&nbsp; Proses
                                 </button>
+                                @else
+                                <span class="badge bg-label-info"><i class="bx bx-info-circle me-1"></i> Mode Live: Cek & Proses Otomatis</span>
+                                @endif
                             </div>
                         </div>
                     </form>
@@ -182,6 +203,7 @@
                 <div class="tab-pane fade show active" id="tab-data-kurang" role="tabpanel" tabindex="0">
                     <div class="d-flex flex-wrap justify-content-between align-items-center mb-3 gap-3">
                         <form action="" method="GET" class="m-0 d-flex flex-wrap align-items-center gap-3">
+                            <input type="hidden" name="mode" value="{{ $mode ?? 'live' }}">
                             @if(request('lebih_page')) <input type="hidden" name="lebih_page" value="{{ request('lebih_page') }}"> @endif
                             @if(request('search_lebih')) <input type="hidden" name="search_lebih" value="{{ request('search_lebih') }}"> @endif
                             @if(request('selesai_page')) <input type="hidden" name="selesai_page" value="{{ request('selesai_page') }}"> @endif
@@ -363,6 +385,7 @@
                 <div class="tab-pane fade" id="tab-data-lebih" role="tabpanel" tabindex="0">
                     <div class="d-flex flex-wrap justify-content-between align-items-center mb-3 gap-3">
                         <form action="" method="GET" class="m-0 d-flex flex-wrap align-items-center gap-3">
+                            <input type="hidden" name="mode" value="{{ $mode ?? 'live' }}">
                             @if(request('kurang_page')) <input type="hidden" name="kurang_page" value="{{ request('kurang_page') }}"> @endif
                             @if(request('search_kurang')) <input type="hidden" name="search_kurang" value="{{ request('search_kurang') }}"> @endif
                             @if(request('selesai_page')) <input type="hidden" name="selesai_page" value="{{ request('selesai_page') }}"> @endif
@@ -548,6 +571,7 @@
                 <div class="tab-pane fade" id="tab-data-selesai" role="tabpanel" tabindex="0">
                     <div class="d-flex flex-wrap justify-content-between align-items-center mb-3 gap-3">
                         <form action="" method="GET" class="m-0 d-flex flex-wrap align-items-center gap-3">
+                            <input type="hidden" name="mode" value="{{ $mode ?? 'live' }}">
                             @if(request('kurang_page')) <input type="hidden" name="kurang_page" value="{{ request('kurang_page') }}"> @endif
                             @if(request('search_kurang')) <input type="hidden" name="search_kurang" value="{{ request('search_kurang') }}"> @endif
                             @if(request('lebih_page')) <input type="hidden" name="lebih_page" value="{{ request('lebih_page') }}"> @endif

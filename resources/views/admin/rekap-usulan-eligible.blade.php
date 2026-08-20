@@ -222,23 +222,25 @@
   });
   @endif
 
-  const btnProses = document.getElementById('btnProses')
-  btnProses.addEventListener('click', (e) => {
-    Swal.fire({
-      title: "Apakah Anda Yakin?",
-      text: "Anda akan memproses data dan tidak bisa diubah lagi!",
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonColor: "#3085d6",
-      cancelButtonColor: "#d33",
-      confirmButtonText: "Ya, Proses!",
-      cancelButtonText: "Batal!"
-    }).then((result) => {
-      if (result.isConfirmed) {
-        submitProses()
-      }
+  const btnProses = document.getElementById('btnProses');
+  if (btnProses) {
+    btnProses.addEventListener('click', (e) => {
+      Swal.fire({
+        title: "Apakah Anda Yakin?",
+        text: "Anda akan memproses data dan tidak bisa diubah lagi!",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#3085d6",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "Ya, Proses!",
+        cancelButtonText: "Batal!"
+      }).then((result) => {
+        if (result.isConfirmed) {
+          submitProses()
+        }
+      });
     });
-  })
+  }
 
   const submitProses = () => {
     let table = document.querySelector('#tableRekap tbody');

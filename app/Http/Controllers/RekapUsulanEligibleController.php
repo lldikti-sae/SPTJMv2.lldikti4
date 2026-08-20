@@ -64,6 +64,11 @@ class RekapUsulanEligibleController extends Controller
     $eligible_span = $request->Eligible_span;
     $tunjangan = $request->tunjangan;
     $tipe_sptjm = $request->input('tipe_sptjm', 'SPTJM');
+    
+    if ($tipe_sptjm === 'TUKIN') {
+        return $this->indexTukin($request);
+    }
+    
     //base query
     $query = DB::table('s_transaksi_2')
       ->select('*')
@@ -1144,8 +1149,8 @@ class RekapUsulanEligibleController extends Controller
       $row[] = (string) number_format(0, 0, ',', '.');
       $row[] = (string) number_format($totalBersih, 0, ',', '.');
       $row[] = (string) number_format(0, 0, ',', '.');
-      $row[] = (string) $item['No_Rek'];
-      $row[] = (string) $item['NPWP'];
+      $row[] = (string) ($item['No_Rek'] ?? '-');
+      $row[] = (string) ($item['NPWP'] ?? '-');
 
       $out[] = $row;
     }

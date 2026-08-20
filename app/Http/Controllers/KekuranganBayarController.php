@@ -871,9 +871,198 @@ class KekuranganBayarController extends Controller
       return $base->pluck('k.NIDN')->toArray();
   }
 
-  public function index()
+  private function indexLive(Request $request, $versi)
+  {
+      $searchKurang = $request->input('search_kurang');
+      $searchLebih = $request->input('search_lebih');
+      $searchSelesai = $request->input('search_selesai');
+      $perPage = (int) $request->input('per_page', 50);
+
+      $tukinData = DB::table('s_tunjangan_kinerja')
+          ->where('Tahun', $versi)
+          ->get();
+          
+      $sptjmData = DB::table('s_transaksi_2')
+          ->where('Tahun_Versi', $versi)
+          ->get();
+          
+      $sptjmMap = [];
+      foreach ($sptjmData as $row) {
+          $nidn = $row->NIDN ?: $row->NUPTK;
+          if ($nidn) $sptjmMap[$nidn] = $row;
+      }
+      
+      $monthsMap = [
+          'Januari' => 1, 'Februari' => 2, 'Maret' => 3, 'April' => 4,
+          'Mei' => 5, 'Juni' => 6, 'Juli' => 7, 'Agustus' => 8,
+          'September' => 9, 'Oktober' => 10, 'November' => 11, 'Desember' => 12
+      ];
+      
+      $tarifMap = [];
+      try {
+          $tarifMap = $this->loadTarifPajakMap();
+      } catch (\Throwable $e) {}
+      
+      $nidnResults = [];
+      
+      foreach ($tukinData as $t) {
+          $nidn = $t->NIDN ?: $t->NUPTK;
+          if (!$nidn) continue;
+          
+          $mStr = trim($t->Bulan);
+          $m = $monthsMap[$mStr] ?? 0;
+          if ($m === 0) continue;
+          
+          if (!isset($nidnResults[$nidn])) {
+              $nidnResults[$nidn] = (object)[
+                  'NIDN' => $t->NIDN,
+                  'NUPTK' => $t->NUPTK,
+                  'Nama' => $t->Nama,
+                  'Jenis' => $t->Jenis,
+                  'Jabatan12' => $t->Jabatan,
+                  'Aktif' => $t->Status,
+                  'Bank' => $sptjmMap[$nidn]->Bank ?? '',
+                  'jml_tpd' => 0, 'jml_tkgb' => 0,
+                  'jml_tpd_akt' => 0, 'jml_tkgb_akt' => 0,
+                  'nilai_pjk_tpd' => 0, 'nilai_pjk_tkgb' => 0,
+                  'nilai_pjk_tpd_akt' => 0, 'nilai_pjk_tkgb_akt' => 0,
+                  'bersih' => 0, 'bersih_akt' => 0,
+              ];
+              for ($i = 1; $i <= 12; $i++) {
+                  $nidnResults[$nidn]->{"db_tpd$i"} = 0;
+                  $nidnResults[$nidn]->{"db_tkgb$i"} = 0;
+                  $nidnResults[$nidn]->{"exp_tpd$i"} = 0;
+                  $nidnResults[$nidn]->{"exp_tkgb$i"} = 0;
+              }
+          }
+          
+          $hakTpd = (float)($t->KD ?? 0);
+          $hakTkgb = (float)($t->KP ?? 0);
+          
+          $sptjmRow = $sptjmMap[$nidn] ?? null;
+          $aktTpd = 0;
+          $aktTkgb = 0;
+          $sp2dOk = 0;
+          
+          if ($sptjmRow) {
+              $noSp2d = trim($sptjmRow->{"No_sp2d_$m"} ?? '');
+              $tglSp2d = trim($sptjmRow->{"Tgl_sp2d_$m"} ?? '');
+              $sp2dOk = ($noSp2d !== '' && $tglSp2d !== '') ? 1 : 0;
+              
+              if ($sp2dOk) {
+                  $gaji = (float) $this->parseMoney($sptjmRow->{"Gaji$m"} ?? 0);
+                  $kenaTkgb = $this->isGuruBesarAtauProfesor($sptjmRow->{"Jabatan$m"} ?? $t->Jabatan);
+                  [$aktTpd, $aktTkgb] = $this->splitAktualKotorFromGaji($gaji, $kenaTkgb);
+              }
+          }
+          
+          if ($sp2dOk) {
+              $nidnResults[$nidn]->{"db_tpd$m"} = $hakTpd;
+              $nidnResults[$nidn]->{"db_tkgb$m"} = $hakTkgb;
+              $nidnResults[$nidn]->{"exp_tpd$m"} = $aktTpd;
+              $nidnResults[$nidn]->{"exp_tkgb$m"} = $aktTkgb;
+              
+              $gol = $sptjmRow->{"Gol$m"} ?? '';
+              $tarif = (float) ($tarifMap[$t->Jenis][$gol] ?? 0);
+              $kenaTkgb = $this->isGuruBesarAtauProfesor($sptjmRow->{"Jabatan$m"} ?? $t->Jabatan);
+              
+              $pajakTpdHak = $hakTpd * $tarif;
+              $pajakTkgbHak = $kenaTkgb ? ($hakTkgb * $tarif) : 0;
+              $pajakTpdAkt = $aktTpd * $tarif;
+              $pajakTkgbAkt = $kenaTkgb ? ($aktTkgb * $tarif) : 0;
+              
+              $nidnResults[$nidn]->jml_tpd += $hakTpd;
+              $nidnResults[$nidn]->jml_tkgb += $hakTkgb;
+              $nidnResults[$nidn]->nilai_pjk_tpd += $pajakTpdHak;
+              $nidnResults[$nidn]->nilai_pjk_tkgb += $pajakTkgbHak;
+              $nidnResults[$nidn]->bersih += ($hakTpd - $pajakTpdHak) + ($hakTkgb - $pajakTkgbHak);
+              
+              $nidnResults[$nidn]->jml_tpd_akt += $aktTpd;
+              $nidnResults[$nidn]->jml_tkgb_akt += $aktTkgb;
+              $nidnResults[$nidn]->nilai_pjk_tpd_akt += $pajakTpdAkt;
+              $nidnResults[$nidn]->nilai_pjk_tkgb_akt += $pajakTkgbAkt;
+              $nidnResults[$nidn]->bersih_akt += ($aktTpd - $pajakTpdAkt) + ($aktTkgb - $pajakTkgbAkt);
+          }
+      }
+      
+      $kurangArr = [];
+      $lebihArr = [];
+      $selesaiArr = [];
+      
+      foreach ($nidnResults as $row) {
+          $kesimpulan = $row->bersih_akt - $row->bersih;
+          if (abs($kesimpulan) < 0.01) {
+              $selesaiArr[] = $row;
+              continue;
+          }
+          
+          if ($kesimpulan < 0) {
+              $kurangArr[] = $row;
+          } elseif ($kesimpulan > 0) {
+              $lebihArr[] = $row;
+          }
+      }
+      
+      $filterSearch = function($arr, $search) {
+          if (!$search) return $arr;
+          $search = strtolower($search);
+          return array_filter($arr, function($r) use ($search) {
+              return str_contains(strtolower($r->NIDN), $search)
+                  || str_contains(strtolower($r->NUPTK), $search)
+                  || str_contains(strtolower($r->Nama), $search)
+                  || str_contains(strtolower($r->Bank), $search);
+          });
+      };
+      
+      $kurangFiltered = $filterSearch($kurangArr, $searchKurang);
+      $lebihFiltered = $filterSearch($lebihArr, $searchLebih);
+      $selesaiFiltered = $filterSearch($selesaiArr, $searchSelesai);
+      
+      $paginate = function($items, $pageName, $perPage, $request) {
+          $page = \Illuminate\Pagination\Paginator::resolveCurrentPage($pageName);
+          $items = collect($items);
+          $paginator = new \Illuminate\Pagination\LengthAwarePaginator(
+              $items->forPage($page, $perPage)->values(),
+              $items->count(),
+              $perPage,
+              $page,
+              ['path' => $request->url(), 'query' => $request->query(), 'pageName' => $pageName]
+          );
+          return $paginator;
+      };
+      
+      $queryKurang = $paginate($kurangFiltered, 'kurang_page', $perPage, $request);
+      $queryLebih = $paginate($lebihFiltered, 'lebih_page', $perPage, $request);
+      $querySelesai = $paginate($selesaiFiltered, 'selesai_page', $perPage, $request);
+      
+      $bankList = DB::table('b_bank')->select('nama_bank')->whereNotNull('nama_bank')->where('nama_bank','!=','')->distinct()->orderBy('nama_bank')->pluck('nama_bank');
+
+      return view('admin.kekurangan-bayar', [
+        'versi' => $versi,
+        'detailKurang' => $queryKurang,
+        'detailLebih'  => $queryLebih,
+        'detailSelesai' => $querySelesai,
+        'rekapKurang'  => [],
+        'rekapLebih'   => [],
+        'processedRekapNidnsKurang' => [],
+        'processedRekapNidnsLebih' => [],
+        'bankList' => $bankList,
+        'flashInfo' => 'Data Live TUKIN aktif.',
+        'mode' => 'live'
+      ]);
+  }
+
+  public function index(Request $request)
   {
     $versi = session('tahun');
+    if (!$versi) {
+        return redirect()->route('admin.dashboard')->with('error', 'Tahun belum dipilih.');
+    }
+    
+    $mode = $request->input('mode', 'live');
+    if ($mode === 'live') {
+        return $this->indexLive($request, $versi);
+    }
 
     try {
       $tarifMap = $this->loadTarifPajakMap();

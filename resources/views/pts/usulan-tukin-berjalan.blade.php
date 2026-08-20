@@ -340,6 +340,30 @@
 				return;
 			}
 
+			const unpaidSerdosCount = {{ $unpaidSerdosCount ?? 0 }};
+			if (unpaidSerdosCount > 0) {
+				Swal.fire({
+					icon: 'warning',
+					title: 'Serdos Belum Dibayar',
+					text: `Terdapat ${unpaidSerdosCount} dosen yang memiliki Sertifikat Dosen namun belum dibayar Serdos-nya pada bulan ini. Dosen tersebut otomatis tidak dapat diusulkan Tukin-nya. Apakah Anda tetap ingin melanjutkan usulan untuk dosen lainnya?`,
+					showCancelButton: true,
+					confirmButtonColor: "#3085d6",
+					cancelButtonColor: "#d33",
+					confirmButtonText: 'Ya, Lanjutkan',
+					cancelButtonText: 'Batal'
+				}).then((result) => {
+					if (result.isConfirmed) {
+						doSubmitUsulan();
+					}
+				});
+				return;
+			}
+
+			doSubmitUsulan();
+		}
+
+		function doSubmitUsulan() {
+
 			Swal.fire({
 				title: "Apakah anda yakin?",
 				text: "Setelah mengusulkan, Anda tidak bisa membatalkan.",

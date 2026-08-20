@@ -383,7 +383,7 @@ class UsulanBerjalanSptjmPtsController extends Controller
 
     try {
       $request->validate([
-        'file' => 'required|file|mimes:pdf|max:2048',
+        'file' => 'required|file|mimes:pdf|max:10240',
         'bulan' => 'required',
         'tahun' => 'required|numeric',
         'nidn' => 'nullable',

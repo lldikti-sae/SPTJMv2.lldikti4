@@ -409,7 +409,17 @@ class MonitoringPembayaranController extends Controller
               $bersihTkgbVal = (float) ($tk->Nilai_Bersih ?? 0);
               
           } else {
-              $gajiAsli = 0;
+              // Hitung potensi tukin berdasarkan jabatan
+              $potensi = 0;
+              $jabAsli = strtolower($jabatanBulanan[$i - 1]);
+              if (str_contains($jabAsli, 'guru besar')) { $potensi = 19280000; }
+              elseif ($jabAsli === 'lektor kepala') { $potensi = 10936000; }
+              elseif ($jabAsli === 'lektor') { $potensi = 8757600; }
+              elseif ($jabAsli === 'asisten ahli') { $potensi = 5079200; }
+              elseif ($jabAsli === 'tanpa jabatan') { $potensi = 4595150; }
+              elseif ($jabAsli === 'cpns') { $potensi = 3915950; }
+              
+              $gajiAsli = $potensi;
               $tDasar = 0.60;
               $tNilaiKurang = 0;
           }
@@ -433,7 +443,7 @@ class MonitoringPembayaranController extends Controller
               // Nilai_Kurang pada tab Semua difungsikan untuk menampilkan penyesuaian (Selisih Serdos)
               $tNilaiKurang = $adjustment; 
               
-              $bersihTkgbVal = $nominalDasar + $nominalPrestasi - $nominalPotongan + $adjustment;
+              $bersihTkgbVal = $nominalDasar + $nominalPrestasi - $nominalPotongan - $bersihTpdVal + $adjustment;
           } else {
               $kotorTkgbVal = 0;
               $bersihTkgbVal = 0;
@@ -541,6 +551,10 @@ class MonitoringPembayaranController extends Controller
       // Selisih = expected gross (kotor) - actual paid (gaji)
       if ($jenisTunjangan === 'tukin') {
           $selisihBulan = 0;
+      } elseif ($jenisTunjangan === 'semua') {
+          $origKotorTkgb = $transaksiTahun ? (float) ($transaksiTahun->{'TKGB' . $bulanNum} ?? 0) : 0;
+          $origKotor = ($kotorTpd[$i] ?? 0) + $origKotorTkgb;
+          $selisihBulan = ($hasData && $origHasSp2d) ? ($origKotor - $gaji) : 0;
       } else {
           $selisihBulan = ($hasData && $origHasSp2d) ? ($kotor - $gaji) : 0;
       }
@@ -610,35 +624,89 @@ class MonitoringPembayaranController extends Controller
       
       if ($jenisTunjangan === 'tukin' && isset($tukinRecords[$bulanNum])) {
           $tk = $tukinRecords[$bulanNum];
-          if (!empty($tk->Keterangan_Status)) {
-              $statusBulanan[] = 'kode:' . $tk->Keterangan_Status;
+          $hasTukinKodeUsulan = !empty($tk->Kode_Usulan) && trim((string)$tk->Kode_Usulan) !== '-';
+          $hasTukinSp2d = !empty($tk->No_SP2D) && trim((string)$tk->No_SP2D) !== '-' && !empty($tk->Tanggal_SP2D) && trim((string)$tk->Tanggal_SP2D) !== '-';
+          
+          if ($hasTukinKodeUsulan) {
+              if ($hasTukinSp2d) {
+                  $statusBulanan[] = 'selesai';
+              } else {
+                  $statusBulanan[] = 'proses';
+              }
           } else {
-              $statusBulanan[] = 'usulan';
+              $nominal = (float) ($tk->Nilai_tukin_Jabatan ?? 0);
+              $ket = trim((string)($tk->Keterangan_Status ?? ''));
+              
+              if ($nominal == 0 && $ket !== '' && $ket !== '-' && strtolower($ket) !== 'aktif') {
+                  $statusBulanan[] = 'kode:' . $ket;
+              } else {
+                  $statusBulanan[] = null;
+              }
+          }
+      } elseif ($jenisTunjangan === 'semua') {
+          $isPns = (stripos($transaksi->Jenis ?? '', 'PNS') !== false && stripos($transaksi->Jenis ?? '', 'NON') === false);
+          $hasSerdos = $isPns && !empty($transaksiTahun->Sertifikat_Dosen) && trim($transaksiTahun->Sertifikat_Dosen) !== '-'; 
+          $kodeStr = is_string($kode) ? trim($kode) : '';
+          $hasSptjmKodeUsulan = ($kodeStr !== '' && $kodeStr !== '-');
+          $hasSptjmSp2d = $origHasSp2d;
+          
+          $hasTukinKodeUsulan = isset($tukinRecords[$bulanNum]) && !empty($tukinRecords[$bulanNum]->Kode_Usulan) && trim((string)$tukinRecords[$bulanNum]->Kode_Usulan) !== '-';
+          $hasTukinSp2d = isset($tukinRecords[$bulanNum]) && !empty($tukinRecords[$bulanNum]->No_SP2D) && trim((string)$tukinRecords[$bulanNum]->No_SP2D) !== '-';
+
+          if ($hasSerdos) {
+              if (($hasSptjmKodeUsulan || $hasTukinKodeUsulan) && (!$hasSptjmSp2d || !$hasTukinSp2d)) {
+                  $statusBulanan[] = 'proses';
+              } elseif ($hasSptjmKodeUsulan && $hasTukinKodeUsulan && $hasSptjmSp2d && $hasTukinSp2d) {
+                  $adj = $resolvedMonths[$bulanNum]['nominal'] ?? 0;
+                  if (abs($adj) <= 0.01) {
+                      $statusBulanan[] = 'selesai';
+                  } elseif ($adj > 0.01) {
+                      $statusBulanan[] = 'lebih';
+                  } elseif ($adj < -0.01) {
+                      $statusBulanan[] = 'kurang';
+                  }
+              } else {
+                  $statusBulanan[] = null;
+              }
+          } else {
+              if ($hasTukinKodeUsulan && !$hasTukinSp2d) {
+                  $statusBulanan[] = 'proses';
+              } elseif ($hasTukinKodeUsulan && $hasTukinSp2d) {
+                  $adj = $resolvedMonths[$bulanNum]['nominal'] ?? 0;
+                  if (abs($adj) <= 0.01) {
+                      $statusBulanan[] = 'selesai';
+                  } elseif ($adj > 0.01) {
+                      $statusBulanan[] = 'lebih';
+                  } elseif ($adj < -0.01) {
+                      $statusBulanan[] = 'kurang';
+                  }
+              } else {
+                  $statusBulanan[] = null;
+              }
           }
       } else {
-          if (!$hasData && !$kode && !$hasKodeCair) {
-            $statusBulanan[] = null;
-          } elseif ($isResolved && $hasData && abs($selisihBulan) < 0.01) {
-            $statusBulanan[] = 'selesai';
-          } elseif ($origHasSp2d) { // SP2D is present -> it's evaluating selisih immediately
-            if (abs($selisihBulan) <= 0.01) {
-              $statusBulanan[] = 'selesai';
-            } elseif ($selisihBulan < -0.01) {
-              $statusBulanan[] = 'kurang';
-            } elseif ($selisihBulan > 0.01) {
-              $statusBulanan[] = 'lebih';
-            }
-          } elseif ($hasKodeCair && !$origHasSp2d) { // Has kode cair but no SP2D -> Proses
-            $statusBulanan[] = 'proses';
-          } elseif (!$hasKodeCair && ($hasData || $kode)) { // No kode cair
-            $kodeStr = is_string($kode) ? trim($kode) : '';
-            if ($kodeStr !== '' && $kodeStr !== '-' && $gaji == 0) {
-              $statusBulanan[] = 'kode:' . $kodeStr;
-            } else {
-              $statusBulanan[] = 'usulan';
-            }
+          $kodeStr = is_string($kode) ? trim($kode) : '';
+          $hasSptjmKodeUsulan = ($kodeStr !== '' && $kodeStr !== '-');
+          $hasSptjmSp2d = $origHasSp2d;
+
+          if ($hasSptjmKodeUsulan) {
+              if ($hasSptjmSp2d) {
+                  if ($jenisTunjangan === 'sptjm') {
+                      $statusBulanan[] = 'selesai';
+                  } else {
+                      if (abs($selisihBulan) <= 0.01) {
+                          $statusBulanan[] = 'selesai';
+                      } elseif ($selisihBulan < -0.01) {
+                          $statusBulanan[] = 'kurang';
+                      } elseif ($selisihBulan > 0.01) {
+                          $statusBulanan[] = 'lebih';
+                      }
+                  }
+              } else {
+                  $statusBulanan[] = 'proses';
+              }
           } else {
-            $statusBulanan[] = null;
+              $statusBulanan[] = null;
           }
       }
     }
@@ -1099,7 +1167,14 @@ class MonitoringPembayaranController extends Controller
               $nominalPotongan = $nominalTukin * $tPotongan;
               
               $kotorTkgbVal = $nominalTukin;
-              $bersihTkgbVal = $nominalDasar + $nominalPrestasi - $bersihTpdVal - $nominalPotongan;
+
+              // Adjustment dari rekap admin (t_kekurangan) — kurang/lebih bayar netto
+              $adjustment = $resolvedMonths[$i]['nominal'] ?? 0;
+              
+              // Nilai_Kurang pada tab Semua difungsikan untuk menampilkan penyesuaian (Selisih Serdos)
+              $tNilaiKurang = $adjustment;
+              
+              $bersihTkgbVal = $nominalDasar + $nominalPrestasi - $nominalPotongan - $bersihTpdVal + $adjustment;
           } else {
               $kotorTkgbVal = 0;
               $bersihTkgbVal = 0;
@@ -1309,31 +1384,93 @@ class MonitoringPembayaranController extends Controller
       // Status logic — use origHasSp2d for original status, hasSp2d for resolved display
       $isResolved = (abs($originalSelisihBulan) > 0.01 && abs($selisihBulan) < 0.01) || isset($resolvedMonths[$bulanNum]);
       
-      if (!$hasData && !$kode && !$hasKodeCair) {
-        $statusBulanan[] = null;
-      } elseif ($isResolved && $hasData && abs($selisihBulan) < 0.01) {
-        $statusBulanan[] = 'selesai';
-      } elseif ($origHasSp2d) { // SP2D is present -> it's evaluating selisih immediately
-        if (abs($selisihBulan) <= 0.01) {
-          $statusBulanan[] = 'selesai';
-        } elseif ($selisihBulan < -0.01) {
-          $statusBulanan[] = 'kurang';
-        } elseif ($selisihBulan > 0.01) {
-          $statusBulanan[] = 'lebih';
-        }
-      } elseif ($hasKodeCair && !$origHasSp2d) { // Has kode cair but no SP2D -> Proses
-        $statusBulanan[] = 'proses';
-      } elseif (!$hasKodeCair && ($hasData || $kode)) { // No kode cair
-        // Jika ada kode usulan tapi gaji null/0, status = nama kode usulan (misal: Tugas Belajar, Mutasi, dll)
-        // Jika ada kode usulan DAN gaji > 0, status tetap 'usulan'
-        $kodeStr = is_string($kode) ? trim($kode) : '';
-        if ($kodeStr !== '' && $kodeStr !== '-' && $gaji == 0) {
-          $statusBulanan[] = 'kode:' . $kodeStr;
-        } else {
-          $statusBulanan[] = 'usulan';
-        }
+      if ($jenisTunjangan === 'tukin' && isset($tukinRecords[$bulanNum])) {
+          $tk = $tukinRecords[$bulanNum];
+          $hasTukinKodeUsulan = !empty($tk->Kode_Usulan) && trim((string)$tk->Kode_Usulan) !== '-';
+          $hasTukinSp2d = !empty($tk->No_SP2D) && trim((string)$tk->No_SP2D) !== '-' && !empty($tk->Tanggal_SP2D) && trim((string)$tk->Tanggal_SP2D) !== '-';
+          
+          if ($hasTukinKodeUsulan) {
+              if ($hasTukinSp2d) {
+                  $statusBulanan[] = 'selesai';
+              } else {
+                  $statusBulanan[] = 'proses';
+              }
+          } else {
+              $nominal = (float) ($tk->Nilai_tukin_Jabatan ?? 0);
+              $ket = trim((string)($tk->Keterangan_Status ?? ''));
+              
+              if ($nominal == 0 && $ket !== '' && $ket !== '-' && strtolower($ket) !== 'aktif') {
+                  $statusBulanan[] = 'kode:' . $ket;
+              } else {
+                  $statusBulanan[] = null;
+              }
+          }
+      } elseif ($jenisTunjangan === 'semua') {
+          $isPns = (stripos($transaksi->Jenis ?? '', 'PNS') !== false && stripos($transaksi->Jenis ?? '', 'NON') === false);
+          $hasSerdos = $isPns && !empty($transaksiTahun->Sertifikat_Dosen) && trim($transaksiTahun->Sertifikat_Dosen) !== '-'; 
+          
+          $kodeStr = is_string($kode) ? trim($kode) : '';
+          $hasSptjmKodeUsulan = ($kodeStr !== '' && $kodeStr !== '-');
+          $hasSptjmSp2d = $origHasSp2d;
+          
+          $hasTukinKodeUsulan = isset($tukinRecords[$bulanNum]) && !empty($tukinRecords[$bulanNum]->Kode_Usulan) && trim((string)$tukinRecords[$bulanNum]->Kode_Usulan) !== '-';
+          $hasTukinSp2d = isset($tukinRecords[$bulanNum]) && !empty($tukinRecords[$bulanNum]->No_SP2D) && trim((string)$tukinRecords[$bulanNum]->No_SP2D) !== '-';
+
+          if ($hasSerdos) {
+              if (($hasSptjmKodeUsulan || $hasTukinKodeUsulan) && (!$hasSptjmSp2d || !$hasTukinSp2d)) {
+                  $statusBulanan[] = 'proses';
+              } elseif ($hasSptjmKodeUsulan && $hasTukinKodeUsulan && $hasSptjmSp2d && $hasTukinSp2d) {
+                  $adj = $resolvedMonths[$bulanNum]['nominal'] ?? 0;
+                  if (abs($adj) <= 0.01) {
+                      $statusBulanan[] = 'selesai';
+                  } elseif ($adj > 0.01) {
+                      $statusBulanan[] = 'lebih';
+                  } elseif ($adj < -0.01) {
+                      $statusBulanan[] = 'kurang';
+                  }
+              } else {
+                  $statusBulanan[] = null;
+              }
+          } else {
+              if ($hasTukinKodeUsulan && !$hasTukinSp2d) {
+                  $statusBulanan[] = 'proses';
+              } elseif ($hasTukinKodeUsulan && $hasTukinSp2d) {
+                  $adj = $resolvedMonths[$bulanNum]['nominal'] ?? 0;
+                  if (abs($adj) <= 0.01) {
+                      $statusBulanan[] = 'selesai';
+                  } elseif ($adj > 0.01) {
+                      $statusBulanan[] = 'lebih';
+                  } elseif ($adj < -0.01) {
+                      $statusBulanan[] = 'kurang';
+                  }
+              } else {
+                  $statusBulanan[] = null;
+              }
+          }
       } else {
-        $statusBulanan[] = null;
+          $kodeStr = is_string($kode) ? trim($kode) : '';
+          $hasSptjmKodeUsulan = ($kodeStr !== '' && $kodeStr !== '-');
+          $hasSptjmSp2d = $origHasSp2d;
+
+          if ($hasSptjmKodeUsulan) {
+              if ($hasSptjmSp2d) {
+                  if ($jenisTunjangan === 'sptjm') {
+                      $statusBulanan[] = 'selesai';
+                  } else {
+                      if (abs($selisihBulan) <= 0.01) {
+                          $statusBulanan[] = 'selesai';
+                      } elseif ($selisihBulan < -0.01) {
+                          $statusBulanan[] = 'kurang';
+                      } elseif ($selisihBulan > 0.01) {
+                          $statusBulanan[] = 'lebih';
+                      }
+                  }
+              } else {
+                  $statusBulanan[] = 'proses';
+              }
+          } else {
+              $statusBulanan[] = null;
+          }
       }
     }
 
